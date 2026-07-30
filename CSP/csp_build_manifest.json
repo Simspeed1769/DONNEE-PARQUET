@@ -1,0 +1,72 @@
+{
+  "years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "status": {
+    "2015": "valide",
+    "2016": "valide",
+    "2017": "valide",
+    "2018": "valide",
+    "2019": "valide",
+    "2020": "valide",
+    "2021": "valide",
+    "2022": "valide",
+    "2023": "valide"
+  },
+  "built": [
+    {
+      "year": 2015,
+      "output": "CSP\\processed\\csp_core_2015.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2016,
+      "output": "CSP\\processed\\csp_core_2016.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2017,
+      "output": "CSP\\processed\\csp_core_2017.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2018,
+      "output": "CSP\\processed\\csp_core_2018.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2019,
+      "output": "CSP\\processed\\csp_core_2019.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2020,
+      "output": "CSP\\processed\\csp_core_2020.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2021,
+      "output": "CSP\\processed\\csp_core_2021.parquet",
+      "nomenclature": "PCS 2003"
+    },
+    {
+      "year": 2022,
+      "output": "CSP\\processed\\csp_core_2022.parquet",
+      "nomenclature": "PCS 2020"
+    },
+    {
+      "year": 2023,
+      "output": "CSP\\processed\\csp_core_2023.parquet",
+      "nomenclature": "PCS 2020"
+    }
+  ],
+  "output": "CSP\\csp_core.parquet"
+}

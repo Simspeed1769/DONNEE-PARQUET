@@ -1,0 +1,21 @@
+variable;libelle;type;definition
+annee;Année;SMALLINT;Millésime du recensement
+code_region;Code région;VARCHAR;Code INSEE de la région de résidence
+region;Région;VARCHAR;Libellé de la région de résidence
+age;Âge;UTINYINT;Âge au dernier anniversaire
+tranche_age;Tranche d’âge;VARCHAR;Classe décennale utilisée dans DAMIR
+tranche_age_ordre;Ordre de la tranche d’âge;UTINYINT;Tri technique des classes d’âge
+code_sexe;Code sexe;UTINYINT;1 hommes, 2 femmes
+sexe;Sexe;VARCHAR;Libellé du sexe
+niveau_csp;Niveau CSP;VARCHAR;groupe_6 ou categorie_29
+code_groupe_csp;Code groupe CSP;UTINYINT;Six grands groupes socioprofessionnels
+groupe_csp;Groupe CSP;VARCHAR;Libellé du groupe parent
+code_csp;Code CSP;VARCHAR;Code du groupe ou de la catégorie
+csp;CSP;VARCHAR;Libellé de la CSP
+effectif;Effectif pondéré;DOUBLE;Somme des poids IPONDI sur la cellule
+population_reference;Population de référence;DOUBLE;Total des actifs en emploi de la cellule
+part_csp_pct;Part de la CSP;DOUBLE;Effectif rapporté à la population de référence, en pourcentage
+nb_lignes_source;Lignes source;BIGINT;Nombre d’individus source agrégés dans la cellule
+nomenclature_csp;Nomenclature;VARCHAR;PCS 2003 jusqu’en 2021, PCS 2020 à partir de 2022
+champ_population;Champ de population;VARCHAR;Actifs ayant un emploi, TACT=11
+source;Source;VARCHAR;Référence INSEE du recensement

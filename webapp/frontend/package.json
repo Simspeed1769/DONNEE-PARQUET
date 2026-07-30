@@ -1,0 +1,25 @@
+{
+  "name": "damir-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build --config vite.config.ts",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "plotly.js-basic-dist-min": "^3.7.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-plotly.js": "^4.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@types/react-plotly.js": "^2.6.4"
+  }
+}

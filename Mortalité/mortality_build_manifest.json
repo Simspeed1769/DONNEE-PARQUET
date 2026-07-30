@@ -1,0 +1,7 @@
+{
+  "source": "C:\\Users\\smal\\Documents\\DAMIR\\Outil_damir\\Mortalité\\Effectifs_cause_mortalite.xlsx",
+  "output": "C:\\Users\\smal\\Documents\\DAMIR\\Outil_damir\\Mortalité\\mortalite_core.parquet",
+  "rows": 5160,
+  "years": 10,
+  "causes": 86
+}

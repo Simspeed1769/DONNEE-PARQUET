@@ -1,0 +1,1631 @@
+﻿PRS_NAT;libelle;grand_poste;poste;sous_poste
+1311;ACTES EN K CHIRURGICAL;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1312;ACTES DE SPECIALITE EN K;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1313;ACTES EN K D  URGENCE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1317;ACTES EN KCC: ACTES SPECIFIQUES DES CHIRURGIENS;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1318;ACTE DE PHONIATRIE PAR MEDECIN;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1321;ACTE DE CHIRURGIE CCAM;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1341;ACTES D  ANATOMO-CYTO-PATHOLOGIE/MEDECINS;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1352;ACTES TECHNIQUES MEDICAUX  (hors IMAGERIE) CCAM;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1361;VIDEOCAPSULE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1431;ACTES EN D (ET OCC POUR LA CRPCEN);Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1843;INDEMNITES FORFAITAIRES DE DEPLACEMENT MK ORTHOPEDIQUE ET RHUMATOLOGIQUE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1844;INDEMNITES FORFAITAIRES DE DEPLACEMENT MK RHUMATISMALE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1845;INDEMNITE FORFAITAIRE DEPLACEMENT NEUROLOGIQUE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1846;INDEMNITES FORFAITAIRES DE DEPLACEMENT MK PNEUMOLOGIE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1954;PARTICIPATION ASSURE CONSULTATIONS ET SOINS EXTERNES (CMU + AME);Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1956;PARTICIPATION ASSURE EN AMBULATOIRE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1960;SUPPLEMENT DEROGATOIRE SG SUR ACTE PROFESSIONNEL NON REMBOURSABLE (CNMSS);Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1961;SUPPLEMENT DEROGATOIRE SG SUR ACTE PROFESSIONNEL REMBOURSABLE (CNMSS);Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1981;FORFAIT IVG HONORAIRES DE VILLE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+2159;FORFAIT DE SECURITE DERMATOLOGIQUE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+2414;CONSULTATION IVG;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+2420;FORFAIT INTERVENTION DUREE < OU = 12 H PRIVE MEDIC;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+3214;ACTES EN BR;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+4113;PRATIQUES MEDICALES COMPLEMENTAIRES COTEES EN K;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+6126;FORFAIT GROSSESSE TAUX PLEIN TI;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6127;FORFAIT GROSSESSE TAUX REDUIT TI;Indemnités Journalières;IJ Maternité / Paternité;IJ réduites
+9142;MAJORATION LIEE A UN K D  URGENCE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+9570;BRONCHO-PNEUMOPATHIE CHRONIQUE OBSTRUCTIVE;Actes Technique et de Chirurgie;Actes Technique & Chirurgie;Actes Technique & Chirurgie
+1053;FORFAIT VSM;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1054;BILAN MRTC;Autres;Divers;Divers
+1062;CDE CONGE PARENTAL;Indemnités Journalières;IJ Maternité / Paternité;Congés (travailleurs indépendants)
+1063;CDE CONGE MALADIE;Indemnités Journalières;IJ Maladie;Congés (travailleurs indépendants)
+1064;CDE GARANTIE REVENU 1ERE ANNEE;Indemnités Journalières;Autres revenus de remplacement;Congés (travailleurs indépendants)
+1065;FORFAIT EFFECTEUR SAS;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1085;CONSULTATION PROTOCOLE COOPERATIF;Autres;Divers;Divers
+1087;AIDE ASSISTANT MEDICAL  COMPLEMENT;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1097;TELE EXPERTISE DOSSIER TRAITANT;Consultations Visites;Télémédecine;Télémédecine
+1128;DIFFERENTIEL REFERENT TRAITANT;Autres;Divers;Divers
+1147;CONTESTATION FORFAIT MEDECIN TRAITANT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1156;CONT. CAS COT.SOC.;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+1158;Acte de télé expertise;Consultations Visites;Télémédecine;Télémédecine
+1160;INVESTISSEMENT ACTIVITE SAISONNIERE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1165;TÉLÉ EXPERTISE - ALD ET/OU EHPAD;Consultations Visites;Télémédecine;Télémédecine
+1166;FORFAIT COMPLÉMENTAIRE TÉLÉ EXPERTISE;Consultations Visites;Télémédecine;Télémédecine
+1167;VERSEMENT DE PENALITE DE RETARD AMO;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+1170;PEC EXCEPTIONNELLE DÉPASSEMENT HONORAIRE;Autres;Divers;Divers
+1173;FORFAIT PATIENTELE MEDECIN TRAITANT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1176;CONTRAT INDIVIDUEL EMBAUCHE - AVANCE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1180;ROSP MT ENFANT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1181;ROSP MT ENFANT COMPLEMENT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+1183;CONTESTATION OPTAM;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+1184;CONTRAT INDIVIDUEL EMBAUCHE - SOLDE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1185;MURAINE - PAIEMENT DU BONUS ANNUEL;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1186;CONTRAT INDIVIDUEL EMBAUCHE   OBJECTIFS COMPLEMENTAIRES;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1187;CONTRAT COLLECTIF   AIDE INVESTISSEMENT;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1188;CONTRAT COLLECTIF   ATTEINTE DES OBJECTIFS;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1189;CONTRAT DE FORMATION;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1190;TELESURVEILLANCE : PRIME VARIABLE;Consultations Visites;Télémédecine;Télémédecine
+1193;TELE EXPERTISE DE NIVEAU 1;Consultations Visites;Télémédecine;Télémédecine
+1194;TELE EXPERTISE DE NIVEAU 2;Consultations Visites;Télémédecine;Télémédecine
+1196;FORFAIT INNOVATION SYSTEME DE SANTE;Autres;Divers;Divers
+1197;FORFAIT REQUERANT;Autres;Divers;Divers
+1198;FORFAIT REQUERANT COMPLEMENTAIRE;Autres;Divers;Divers
+1199;DEMANDE TELEEXPERTISE;Consultations Visites;Télémédecine;Télémédecine
+1201;TELESURVEILLANCE 1;Consultations Visites;Télémédecine;Télémédecine
+1202;TELESURVEILLANCE 2;Consultations Visites;Télémédecine;Télémédecine
+1223;MAJORATION MAINTIEN A DOMICILE;Autres;Divers;Divers
+1411;ACTES EN SCM (ET SPA POUR LA CRPCEN);Autres;Divers;Divers
+1425;COMPLEMENT AT 150% DENTAIRE;Autres;Divers;Divers
+1426;PEC EXCEPTIONNELLE DÉPASSEMENT DENTAIRE ;Autres;Divers;Divers
+1601;CONTRAT PRATIQUE VERSEMENT UNIQUEMENT;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1602;FORFAIT CONTRAT DE BONNES PRATIQUES;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1603;FORFAIT CONTRAT DE BONNES PRATIQUES CP1;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1604;FORFAIT CONTRAT DE BONNES PRATIQUES CP2;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1605;FORFAIT CONTRAT DE BONNES PRATIQUES CP3;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1609;CONTRAT DE BONNES PRATIQUES ZONE RURAL;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1611;CONTRAT DE BONNES PRATIQUES ZONE MONTAGNE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1612;CONTRAT DE BONNES PRATIQUES ZONE URBAINE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1613;CONTRAT DE BONNES PRATIQUES ZONE FRANCHE URBAINE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1614;CONTRAT DE BONNES PRATIQUES TRANSPORTEURS 2006;Transports;Transports de malades;Transports
+1615;CONTRAT DE BONNES PRATIQUES TRANSPORTEURS 2007;Transports;Transports de malades;Transports
+1616;CONTRAT DE BONNES PRATIQUES TRANSPORTEURS 2008;Transports;Transports de malades;Transports
+1617;REDEVANCE CHEF DE CLINIQUE;Autres;Divers;Divers
+1619;CONTRAT SANTE SOLIDARITE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1622;CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS - PHARMACIE/LPP;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1623;REVERSEMENTS CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS TRANSPORTS;Transports;Transports de malades;Transports
+1624;REVERSEMENTS CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS - PHARMACIE / LPP;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1625;PENALITES CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS - TRANSPORT;Transports;Transports de malades;Transports
+1626;PENALITES CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS - PHARMACIE / LPP;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1629;DEMO. AIDE FORFAITAIRE POLE SANTE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1631;DEMO. ACTIVITE POLE SANTE;Autres;Divers;Divers
+1632;SST AIDE ACTIVITE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1633;SST FRAIS DEPLACEMENT;Autres;Divers;Divers
+1634;CONTESTATION POUR AIDE FORFAITAIRE POUR LES ADHERENTS A L'OPTION DEMOGRAPHIE DANS UN GROUPE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1635;CONTESTATION POUR AIDE FORFAITAIRE POUR LES ADHERENTS A L'OPTION DEMOGRAPHIE DANS UN POLE DE SANTE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1636;CONTESTATION POUR AIDE A L'ACTIVITE POUR LES ADHERENTS A L'OPTION DEMOGRAPHIE DANS UN GROUPE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1638;CONTESTATION POUR AIDE A L'ACTIVITE POUR LES ADHERENTS A L'OPTION SST;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1645;PAIEMENT PRISE EN CHARGE FRAIS DEPLACEMENT - CSTM;Autres;Divers;Divers
+1650;AIDE A L'ACTIVITE   COTRAM;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+1653;PTMR  - MALADIE, MATERNITE, PATERNITE;Autres;Divers;Divers
+1654;FORFAIT IPA;Autres;Divers;Divers
+1701;CDS  MEDICAL OPTANT FORF DEBUT;Autres;Divers;Divers
+1702;CDS MEDICAL OPTANT FORF FIN;Autres;Divers;Divers
+1703;CDS MEDICAL OPTANT FORFTACITE;Autres;Divers;Divers
+1704;CDS DENTAIRE OPTANT FORF INITIAL;Autres;Divers;Divers
+1706;CDS DENTAIRE OPTANT FORF FINAL;Autres;Divers;Divers
+1715;FORFAIT MENSUEL COORDONNATEUR;Autres;Divers;Divers
+1716;FORFAIT MENSUEL PARTICIPATION;Autres;Divers;Divers
+1717;FORFAIT MENSUEL SOINS;Autres;Divers;Divers
+1718;FORFAIT D'ADHESION ZONE DEFICITAIRE;Autres;Divers;Divers
+1915;FORFAIT ASTREINTE PROF;Rémunérations forfaitaires des PS;Permanence des soins;Permanence
+1921;TEST DE DIAGNOSTIC RAPIDE ;Autres;Divers;Divers
+1951;PARTICIPATION FORFAITAIRE HORS TIERS PAYANT;Autres;Divers;Divers
+1952;PARTICIPATION FORFAITAIRE TIERS PAYANT;Autres;Divers;Divers
+1955;PARTICIPATION ASSURE CONSULTATIONS ET SOINS EXTERNES (REGIME LOCAL);Autres;Divers;Divers
+1971;FRANCHISE HORS TIERS PAYANT SUR MEDICAMENT;Autres;Divers;Divers
+1973;FRANCHISE HORS TIERS PAYANT SUR TRANSPORT;Transports;Transports de malades;Transports
+1975;FRANCHISE HORS TIERS PAYANT ACTE D'AUXILIAIRE MEDICAUX;Autres;Divers;Divers
+1977;PARTICIPATION ASSURE HORS TIERS PAYANT TRANSMISE SANS ACTE DE REFERENCE OU TYPE DE FRANCHISES;Autres;Divers;Divers
+1990;FORFAIT D'INTERVENTION PAR SORTIE SUR DEMANDE DE LA REGULATION;Rémunérations forfaitaires des PS;Permanence des soins;Permanence
+2102;PROTOCOLE FRANCO ALGERIEN;Autres;Divers;Divers
+2124;ENTRAINEMENT A LA DPA;Autres;Divers;Divers
+2125;ENTRAINEMENT A LA DPCA;Autres;Divers;Divers
+2130;DOTATION MIXTE MEDECINE;Autres;Divers;Divers
+2162;FORFAIT HAUTE TECHNICITE;Autres;Divers;Divers
+2171;DIFFERENTIEL TARIFAIRE AME;Autres;Divers;Divers
+2172;DIFFERENTIEL TARIFAIRE MIGRANTS;Autres;Divers;Divers
+2177;DIFFERENTIEL SSR AME;Autres;Divers;Divers
+2178;DIFFERENTIEL SSR MIGRANTS;Autres;Divers;Divers
+2184;COORDINATION PRELEVEMENT D ORGANES;Autres;Divers;Divers
+2192;DOTATION POPULATIONNELLE SSR;Hospitalisation;Dotations & forfaits établissements;Dotation SSR
+2193;DOTATION DE TRANSFORMATION SSR;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+2194;PLATEAU TECHNIQUE SPECIALISE;Autres;Divers;Divers
+2195;SUPPLEMENT ANTEPARTUM;Autres;Divers;Divers
+2199;SUPPLEMENT  JOURNALIER ZONE BASSE;Autres;Divers;Divers
+2206;VIH;Autres;Divers;Divers
+2214;SUPPLEMENT DEROGATOIRE SG SUR PRESTATION SEJOUR NON REMBOURSABLE (CNMSS);Autres;Divers;Divers
+2215;SUPPLEMENT DEROGATOIRE SG SUR PRESTATION SEJOUR REMBOURSABLE (CNMSS);Autres;Divers;Divers
+2253;TARIF JOURNALIER PRESTATIONS;Autres;Divers;Divers
+2254;VERSEMENT ACTIVITE SSR AME;Autres;Divers;Divers
+2255;VERSEMENT SOINS URGENTS SSR;Autres;Divers;Divers
+2256;FORFAIT INNOVATION ECLIPS;Autres;Divers;Divers
+2288;FORFAIT INNOVATION ONCOGRAMME;Autres;Divers;Divers
+2289;FORFAIT INNOVATION SUNRISE;Autres;Divers;Divers
+2291;PRIX DE JOURNEE FIDES ALM;Autres;Divers;Divers
+2295;DOTATION DE RESPONSABILITE ERRITORIALE;Autres;Divers;Divers
+2299;TARIF JOURNALIER LOCAL;Autres;Divers;Divers
+2300;TARIF JOURNALIER MIGRANTS;Autres;Divers;Divers
+2321;FORFAIT - LONG SEJOUR PERSONNES AGEES;Autres;Divers;Divers
+2411;INTERVENTION IVG;Autres;Divers;Divers
+2501;FORFAIT FIR PDSES PUBLIQUE;Autres;Divers;Divers
+2503;FORFAIT FIR CENTRE PERINATAUX DE PROXIMITE;Autres;Divers;Divers
+3102;CONTESTATION FORFAIT STRUCTURE PS AUXILIAIRES ;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3123;TELESOINS MK;Consultations Visites;Télémédecine;Télémédecine
+3159;MBRE SUP OPERE ;Autres;Divers;Divers
+3160;MBRE SUP NON OPERE ;Autres;Divers;Divers
+3161;AFFECTIONS SUR 2 TERRITOIRES;Radios, Analyses et Auxiliaires Médicaux;Kinésithérapie (référentiels);Rééducation
+3162;MBRE INF OPERE SS REF;Radios, Analyses et Auxiliaires Médicaux;Kinésithérapie (référentiels);Membre inférieur
+3163;MBRE INF NON OPERE SS REF;Radios, Analyses et Auxiliaires Médicaux;Kinésithérapie (référentiels);Membre inférieur
+3164;MBRE SUP OPERE SS REF;Radios, Analyses et Auxiliaires Médicaux;Kinésithérapie (référentiels);Membre supérieur
+3165;MBRE SUP NON OPERE SS REF;Radios, Analyses et Auxiliaires Médicaux;Kinésithérapie (référentiels);Membre supérieur
+3210;AIDE FINANCIERE A L'INTEROPERABILITE DMP;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+3301;CONTESTATION ROSP AOD;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3302;PAIEMENT GARANTIE CONVENTIONNELLE PHARMACIE;Autres;Divers;Divers
+3303;CONTESTATION GARANTIE CONVENTIONNELLE PHAMACIE;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+3310;BILAN MEDICATION PARTAGE;Autres;Divers;Divers
+3333;ANTI PALUDEEN;Autres;Divers;Divers
+3350;BILAN MEDICATION AVEC CHANGEMENT DE TRAITEMENT;Autres;Divers;Divers
+3367;BILAN MEDICATION SANS CHANGEMENT DE TRAITEMENT;Autres;Divers;Divers
+3369;CODE TRACEUR DISPENSATION ADAPTEE;Autres;Divers;Divers
+3378;CONTESTATION ROSP TRANSMISSION RPPS   ;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3391;REMU  OBJECTIF - PHARMACIEN;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+3392;REMU OBJECTIF - PHARMACIEN COMPLEMENT;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+3393;ROSP AVK;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3394;ROSP AVK COMPLEMENT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3396;ROSP ASTHME;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3397;ROSP ASTHME COMPLEMENT;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3398;ROSP TRANSMISSION RPPS;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3401;CONTESTATION DISPENSATION ADAPTEE;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+3406;REMU PHARMACIEN CANCER COLOREC.;Autres;Divers;Divers
+3407;CONTESTATION PHARM CANCER COLO.;Rémunérations forfaitaires des PS;Pénalités & régularisations;Régularisations
+3408;REMISE KIT DCC;Autres;Divers;Divers
+3417;ROSP PHIE BON USAGE PDT SANTE;Rémunérations forfaitaires des PS;ROSP & forfaits médecin;Forfaits
+3575;COMPLEMENT AT 150% LPP;Autres;Divers;Divers
+3591;PRISE EN CHARGE DEROGATOIRE LPP;Autres;Divers;Divers
+3592;PEC EXCEPTIONNELLE DÉPASSEMENT LPP;Autres;Divers;Divers
+3593;TELESURVEILLANCE : FOURNISSEUR DE LA SOLUTION;Consultations Visites;Télémédecine;Télémédecine
+3597;TELESURVEILLANCE 1;Consultations Visites;Télémédecine;Télémédecine
+3610;SUPPLEMENT DEROGATOIRE SG SUR PRESTATION PHARMACIE NON REMBOURSABLE (CNMSS);Autres;Divers;Divers
+3611;SUPPLEMENT DEROGATOIRE SG SUR PRESTATION SANITAIRE NON REMBOURSABLE (CNMSS);Autres;Divers;Divers
+3612;SUPPLEMENT DEROGATOIRE SG SUR PRESTATION SANITAIRE REMBOURSABLE (CNMSS);Autres;Divers;Divers
+4227;CONTRAT D'AMELIORATION DE LA QUALITE ET DE LA COORDINATION DES SOINS;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4230;PAIEMENT SORTIE BLANCHE;Autres;Divers;Divers
+4234;INDICIAIRE TRANSPORT PARTAGE;Transports;Transports de malades;Transports
+4235;REMBT FRAIS PARKING;Autres;Divers;Divers
+4310;FRAIS EXPERTISE CTX;Autres;Divers;Divers
+4311;FRAIS DE DEPLACEMENT - ENQU'TE LEGALE AT;Autres;Divers;Divers
+4317;HONORAIRE COMITE  REGIONAL  RECONNAISSANCE Maladie  Professionnelle;Autres;Divers;Divers
+4318;DEPLACEMENT COMITE REGIONAL RECONNAISSANCE MP;Autres;Divers;Divers
+4319;DEPLACEMENT PERSONNE ENTENDUE (CRRMP);Autres;Divers;Divers
+4320;AVIS SAPITEUR;Autres;Divers;Divers
+4326;PRETIUM PULCHRITUDINIS;Autres;Divers;Divers
+4327;PRETIUM SEXUALE;Autres;Divers;Divers
+4328;PREJUDICE D'AGREMENT;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+4329;PREJUDICE PERTE OU DIMINUTION PROMOTION PROFESSIONNELLE;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+4330;PREJUDICES EXTRA PATRIMONIAUX - HORS IV;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+4332;PREJUDICE AMIANTE;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+4359;FORFAIT UTILISATION DES TELESERVICES;Autres;Divers;Divers
+4360;FORFAIT PARTICIPATION A LA TELETRANSMISSION;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4361;FACTURATION FEUILLE DE SOINS (POUR INFORMATION);Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4362;ASTREINTE MEDECIN (POUR INFORMATION);Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4363;AIDE A LA FACTURATION FEUILLE DES FLUX NON SECURISES;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4364;AIDE MAINTENANCE TELETRANSMISSION;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4365;AIDE PORTABLE TELETRANSMISSION;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4366;AIDE DEMARRAGE TELETRANSMISSION;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4367;AIDE ADHESION RAPIDE DISPOSITIF;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+4369;FORFAIT PROFESSIONNEL DE SANTE CENTRE DE SANTE;Autres;Divers;Divers
+4370;FORFAIT D'INCITATION FORFAITAIRE A LA NUMERISATION ET A LA TRANSMISSION;Autres;Divers;Divers
+4373;EXAMEN DE SANTE;Autres;Divers;Divers
+4377;PIED SUPPORT MATERIEL;Autres;Divers;Divers
+4378;SUPPLEMENT OFFICINE DOM;Autres;Divers;Divers
+4392;RESPONSABILITE CIVILE ECHOGRAPHIE OBSTETRICALE;Autres;Divers;Divers
+4393;RESPONSABILITE CIVILE CHIRURGIE 1;Autres;Divers;Divers
+4394;RESPONSABILITE CIVILE CHIRURGIE 2;Autres;Divers;Divers
+4395;RESPONSABILITE CIVILE ANESTHESIE REANIMATION;Autres;Divers;Divers
+4512;FORFAIT CDC COTISANT  TI;Autres;Divers;Divers
+4514;FORFAIT CDC POLY-RETRAITE;Autres;Divers;Divers
+4515;ALLOCATION ORPHELIN D'UN TRAVAILLEUR INDEPENDANT DECEDE;Autres;Divers;Divers
+5128;FORFAIT C2S - OPTIQUE CLASSE A - SUPPLEMENT POUR MONTURE DE LUNETTES A COQUE - MOINS DE 6 ANS;Autres;Divers;Divers
+6011;CARENCE -;Autres;Divers;Divers
+6012;CARENCE +;Autres;Divers;Divers
+6013;IJ CARENCE (CRPCEN);Indemnités Journalières;IJ Maladie;IJ Maladie
+6014;COMPLEMENT IJ >PLAFOND   (CRPCEN);Autres;Divers;Divers
+6110;IJ NORMALES + 6MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6111;IJ NORMALES -3 MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6112;IJ NORMALES +3MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6113;IJ REDUITES -3MOIS;Indemnités Journalières;IJ Maladie;IJ réduites
+6114;IJ REDUITES +3MOIS;Indemnités Journalières;IJ Maladie;IJ réduites
+6117;IJ PARTIELLE,  PERTE DE SALAIRE -3MOIS;Indemnités Journalières;Autres revenus de remplacement;Autres revenus de remplacement
+6118;IJ PARTIELLE,  PERTE DE SALAIRE +3MOIS;Indemnités Journalières;Autres revenus de remplacement;Autres revenus de remplacement
+6120;INDEMNITE TEMPORAIRE D'INAPTITUDE AT/MP;Indemnités Journalières;IJ AT-MP;IJ AT-MP
+6122;IJ POSTNATALES;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6123;IJ EN CAS D  ADOPTION;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6124;IJ CONGE SUPPLEMENTAIRE PREMA;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6125;INDEMNITE REMPLACEMENT CONJOINTS COLLABORATEURS TI;Indemnités Journalières;IJ Maladie;IJ Maladie
+6131;IJ NORMALES POUR CURE THERMALE;Indemnités Journalières;IJ Maladie;IJ normales
+6132;IJ MAJOREES POUR CURE THERMALE;Indemnités Journalières;IJ Maladie;IJ majorées
+6133;IJ REDUITES POUR CURE THERMALE;Indemnités Journalières;IJ Maladie;IJ réduites
+6134;IJ MALADIE  PAMC MOINS DE 3 MOIS;Indemnités Journalières;IJ Maladie;IJ Maladie
+6135;IJ MALADIE  PAMC PLUS DE 3 MOIS;Indemnités Journalières;IJ Maladie;IJ Maladie
+6208;FORFAIT CONGE REPIT POUR DECES DE L'ENFANT PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6209;CONGE REPIT POUR DECES DE L'ENFANT;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6210;IJ PATERNITE HOSPITALISATION ENFANT;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6212;IJ CONGE MATERNITE AU PERE;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6214;IJ CONGE SUPPLEMENTAIRE MATERNITE PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6215;IJ CONGE POSTNATAL PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6231;IJ CONGE PRENATAL PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6232;IJ CONGE ADOPTION PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6233;IJ CONGE PATHOLOGIQUE PAMC;Indemnités Journalières;IJ Maladie;IJ Maladie
+6236;IJ PATERNITE PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6241;ALLOCATION ACCOMPAGNEMENT FIN DE VIE CESSATION ACTIVITE TEMPS PLEIN;Indemnités Journalières;IJ Maladie;IJ Maladie
+6242;ALLOCATION ACCOMPAGNEMENT FIN DE VIE CESSATION ACTIVITE REDUITE;Indemnités Journalières;IJ Maladie;IJ réduites
+6251;ALLOCATION NUIT NORMALE - 3 MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6252;ALLOCATION NUIT NORMALE + 3 MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6257;ALLOCATION EXPOSITION NORMALE - 3 MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6258;ALLOCATION EXPOSITION NORMALE + 3 MOIS;Indemnités Journalières;IJ Maladie;IJ normales
+6263;ALLOCATION EXPOSITION ARRET + 6 MOIS;Indemnités Journalières;IJ Maladie;IJ Maladie
+6264;ALLOCATION EXPOSITION ARRET + 6 MOIS ET 3 ENFANTS;Indemnités Journalières;IJ Maladie;IJ Maladie
+7111;PENSION INVALIDITE AVANTAGES DE BASE;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+7112;PENSION INVALIDITE ALLOCATIONS SUPPLEMENTAIRES;Invalidité, Décès & Rentes;Pensions & rentes;Pensions & rentes
+8121;PRESTATION COMPLEMENTAIRE POUR RECOURS A TIERCE PERSONNE;Autres;Divers;Divers
+8226;INDEMNITE EN CAPITAL ACCIDENT DU TRAVAIL;Autres;Divers;Divers
+9131;INDEMNITE DE PERTE DE SALAIRE Y COMPRIS  DIALYSE A DOMICILE;Indemnités Journalières;Autres revenus de remplacement;Autres revenus de remplacement
+9431;PREVENTION ENTRETIEN DE SANTE;Autres;Divers;Divers
+9512;AUTRES ACTIONS COLLECTIVES DE PREVENTION;Autres;Divers;Divers
+9569;RETOUR DOM. INSUFFISANT CARDIAQUE;Autres;Divers;Divers
+9601;MUTUELLE CHAMBRE PARTICULIERE (CAVIMAC);Autres;Divers;Divers
+9604;MUTUELLE LONG SEJOUR;Autres;Divers;Divers
+9711;PRIME DE LAYETTE (CLERCS ET  EMPLOYES DE NOTAIRES);Autres;Divers;Divers
+9712;ALLOCATION VOYAGE DES ENFANTS A LA COLONIE DU PRARIAND (CLERCS ET EMPLOYES DE NOTAIRES);Autres;Divers;Divers
+9720;AMENAGEMENT PRET;Autres;Divers;Divers
+9724;AIDE A LA SCOLARITE (CRPCEN);Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+9725;ACCUEIL JEUNE ENFANT (CRPCEN);Autres;Divers;Divers
+9729;ACCUEIL JEUNE ENFANT - CRPCEN 1;Autres;Divers;Divers
+9730;ACCUEIL JEUNE ENFANT - CRPCEN 2;Autres;Divers;Divers
+9733;AIDE AU REPIT D'UN INDEPENDANT ACTIF;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+9734;AIDE AUX INDEPENDANTS INVALIDES;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+9735;AIDE AU MAINTIEN DANS L'ACTIVITE;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Contrats & aides
+9737;CONSULTATION MEDICO-PRO TI                                                                                                                                                                          ;Autres;Divers;Divers
+9752;GARDES MALADES A DOMICILE;Rémunérations forfaitaires des PS;Permanence des soins;Permanence
+1055;SUIVI MRTC;Non remboursable;Non remboursable;Non Remboursable
+1122;EXAMEN SPECIAL (PROTOCOLE);Non remboursable;Non remboursable;Non Remboursable
+1139;REMUNERATION DES ADHERENTS AU  CAPI;Non remboursable;Non remboursable;Non Remboursable
+1163;REMUNERATION DEPISTAGE DU CANCER COLORECTAL;Prévention & Dépistage;Dépistages;Dépistages
+1175;PEC EXCEPTIONNELLE DEPASSEMENT HONORAIRE TP;Non remboursable;Non remboursable;Non Remboursable
+1177;AIDE FINANCIERE MATERNITE PATERNITE ADOPTION;Maternité & Adoption (forfaits);Forfait;Forfait
+1319;MAJORATION FORFAIT ACCOUCHEMENT;Maternité & Adoption (forfaits);Obstetrique;Obstetrique
+1322;ACTE D'OBSTETRIQUE CCAM;Maternité & Adoption (forfaits);Obstetrique;Obstetrique
+1427;PEC EXCEPTIONNELLE DEPASSEMENT DENTAIRE TP;Non remboursable;Non remboursable;Non Remboursable
+1511;FORFAIT D  ACCOUCHEMENT SIMPLE DES SAGES-FEMMES (FORFAIT N91);Maternité & Adoption (forfaits);Obstetrique;Obstetrique
+1781;FORFAIT PREVENTION/DEPISTAGE (FP0) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1782;FORFAIT PREVENTION/DEPISTAGE (FP1) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1783;FORFAIT PREVENTION/DEPISTAGE (FP2) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1784;FORFAIT PREVENTION/DEPISTAGE (FP3) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1785;FORFAIT PREVENTION/DEPISTAGE (FP4) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1786;FORFAIT PREVENTION/DEPISTAGE (FP5) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1787;FORFAIT PREVENTION/DEPISTAGE (FP6) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1788;FORFAIT PREVENTION/DEPISTAGE (FP7) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1789;FORFAIT PREVENTION/DEPISTAGE (FP8) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1791;FORFAIT PREVENTION/DEPISTAGE (FP9) FILIERES ET RESEAUX;Prévention & Dépistage;Dépistages;Dépistages
+1910;Plan personnalisé de santé;Non remboursable;Non remboursable;Non Remboursable
+1912;HONORAIRES NON VENTILABLES INDIVIDUALISES;Non remboursable;Non remboursable;Non Remboursable
+2244;Forfait Innovation ARGUS II;Non remboursable;Non remboursable;Non Remboursable
+2248;Forfait Innovation HIFU;Non remboursable;Non remboursable;Non Remboursable
+2266;FORFAIT INNOVATION ECHOPULSE;Non remboursable;Non remboursable;Non Remboursable
+2267;FORFAIT INNOVATION METAGLUT1;Non remboursable;Non remboursable;Non Remboursable
+2268;FORFAIT INNOVATION RETINA;Non remboursable;Non remboursable;Non Remboursable
+2269;FORFAIT PATHOLOGIE CHRONIQUE 1;Non remboursable;Non remboursable;Non Remboursable
+2270;FORFAIT PATHOLOGIE CHRONIQUE 2;Non remboursable;Non remboursable;Non Remboursable
+2276;FORFAIT INNOVATION WISE CRT;Non remboursable;Non remboursable;Non Remboursable
+2279;FORFAIT INNOVATION DNERVA;Non remboursable;Non remboursable;Non Remboursable
+2315; APPAREILLAGE VENTILATION PRESSION POSITIVE CONTINUE ;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+2337;SEANCE DE DIAGNOSTIC;Non remboursable;Non remboursable;Non Remboursable
+2338;FORFAIT PETIT MATERIEL;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+2342;FORFAIT POUR GARDE DE DEBUT DE NUIT EN ETABLIS. PRIVE;Non remboursable;Non remboursable;Non Remboursable
+2502;FORFAIT FIR CENTRE DEPISTAGE ANONYME ET GRATUIT;Prévention & Dépistage;Dépistages;Dépistages
+3321;FORFAIT PHARMACEUTIQUE EN MATERNITE;Maternité & Adoption (forfaits);Forfait;Forfait
+3511;APPAREILS D  ASSISTANCE RESPIRATOIRE,OXYGENOTHERAPIE A DOMICILE;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3512;AUTRES MATERIELS POUR TRAITEMENTS A DOMICILE (CHAP. 1);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3513;MATERIELS ET APPAREILS DE CONTENTION ET DE MAINTIEN (CHAP. 2);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3514;MATERIELS ET APPAREILS POUR TRAITEMENTS DIVERS (CHAP. 3);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3518;APPAREIL GENERATEUR D AEROSOL;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3521;ORTHESES (PETIT APPAREILLAGE) (CHAP. 1);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3522;DIVERS ORTHESES;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3540;PROTHESE AUDITIVE RAC ZERO;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3541;APPAREILS ELECTRONIQUES DE SURDITE  (CHAP 3.);Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3542;PROTHESES EXTERNES NON ORTHOPEDIQUES (CHAP. 4);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3543;PROTHESES OCULAIRES ET FACIALES (CHAP. 5);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3544;CHAUSSURES ORTHOPEDIQUES (CHAP. 6);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3545;ORTHOPROTHESES (CHAP 7.);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3546;ACCESSOIRES DE PROTHESES ET D  ORTHOPEDIE (CENTRES D  APPAR.) (CHAP.8);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3547;APPAREILS ELECTRONIQUES DE SURDITE (CONSOMMABLES Y.C. PILES);Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives Divers
+3548;ORTHOPROTHESES COUTEUSES;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3549;PROCESSEUR POUR IMPLANT OSTE-INTEGRE;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3550;PROTHESE AUDITIVE SUIVI;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3551;IMPLANT INTERNE (CHAP. 1, 2 ET 3);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3552;IMPLANT MU PAR ELECTRICITE (CHAP. 4);Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3558;PROTHESE AUDITIVE DEPASSEMENT RAC ZERO;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3561;VEHICULES POUR HANDICAPES PHYSIQUES;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3571;FRAIS DE GESTION APPAREILLAGE;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+3573;FOURNITURE ET EQUIPEMENT DEROGATOIRES;Non remboursable;Non remboursable;Non Remboursable
+3586;PROTHESE AUDITIVE PANIER 1 - RESTE A CHARGE ZERO - OREILLE GAUCHE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3587;PROTHESE AUDITIVE PANIER 1 - RESTE A CHARGE ZERO - OREILLE DROITE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3588;PROTHESE AUDITIVE PANIER 2 - AVEC RESTE A CHARGE - OREILLE GAUCHE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3589;PROTHESE AUDITIVE PANIER 2 - AVEC RESTE A CHARGE - OREILLE DROITE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+3590;PROTHESES AUDITIVES - ACCESSOIRES;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives Divers
+3594;PEC EXCEPTIONNELLE DEPASSEMENT LPP TP;Non remboursable;Non remboursable;Non Remboursable
+3595;PROTHESES AUDITIVES - PILES;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives Divers
+4114;COMPLEMENT SURVEILLANCE THERMALE;Autres Postes;Cure Thermale;Cure Thermale
+4131;FRAIS DE TRANSPORT - CURES THERMALES;Autres Postes;Cure Thermale;Cure Thermale
+4132;FRAIS D  HOTEL - CURES THERMALES;Autres Postes;Cure Thermale;Cure Thermale
+4141;FORFAIT THERMAL 1;Autres Postes;Cure Thermale;Cure Thermale
+4142;FORFAIT THERMAL 2 AVEC KINESITEHRAPIE;Autres Postes;Cure Thermale;Cure Thermale
+4143;FORFAIT THERMAL 2EME ORIENTATION;Autres Postes;Cure Thermale;Cure Thermale
+4144;FORFAIT THERMAL 3 AVEC 9 SEANCES KINESITHERAPIE;Autres Postes;Cure Thermale;Cure Thermale
+4145;FORFAIT THERMAL 72 SEANCES AVEC KINE;Autres Postes;Cure Thermale;Cure Thermale
+4151;FORFAIT THERMAL 18 SEANCES COLLECTIVES;Autres Postes;Cure Thermale;Cure Thermale
+4152;FORFAIT THERMAL 18 SEANCES INDIVIDUELLES;Autres Postes;Cure Thermale;Cure Thermale
+4153;FORFAIT THERMAL 9 SEANCES COLLECTIVES;Autres Postes;Cure Thermale;Cure Thermale
+4154;FORFAIT THERMAL 9 SEANCES INDIVIDUELLES;Autres Postes;Cure Thermale;Cure Thermale
+4155;THERMAL-SEVRAGE DES PSYCHOTROPES;Autres Postes;Cure Thermale;Cure Thermale
+4156;THERMAL-SUITE CANCER DU SEIN;Autres Postes;Cure Thermale;Cure Thermale
+4157;THERMAL-TROUBLE COMPORTEMENT 72 SEANCES;Autres Postes;Cure Thermale;Cure Thermale
+4158;THERMAL-TROUBLE COMPORTEMENT 108 SEANCES;Autres Postes;Cure Thermale;Cure Thermale
+4321;FRAIS FUNERAIRES;Invalidité, Décès & Rentes;Allocations décès & obsèques;Allocation obsèques
+4339;REMBOURSEMENT DE SOINS;Non remboursable;Non remboursable;Non Remboursable
+4381;ACTES NON NOMENCLATURE;Non remboursable;Non remboursable;Non Remboursable
+5401;FORFAIT AUDIO-PROTHESE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives Divers
+5402;FORFAIT C2S  PROTHESE AUDITIVE PANIER 2 - AVEC RESTE A CHARGE - OREILLE GAUCHE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+5403;FORFAIT CMU/C2S PROTHESE AUDITIVE PANIER 2 - AVEC RESTE A CHARGE - OREILLE DROITE;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+6128;FORFAIT ADOPTION TAUX PLEIN TI;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6129;FORFAIT ADOPTION TAUX REDUIT TI;Indemnités Journalières;IJ Maternité / Paternité;IJ réduites
+6211;ALLOCATION FEMME ENCEINTE;Indemnités Journalières;IJ Maladie;IJ Maladie
+6221;ALLOCATION REPOS MATERNEL NORMAL;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6222;ALLOCATION REPOS MATERNEL ADOPTION;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6234;INDEMNITE MATERNITE EN CAS DE NAISSANCES MULTIPLES;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6237;INDEMNITE PATERNITE CONJOINT PAMC;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6312;RDS ALLOC MATERNITE;Maternité & Adoption (forfaits);Forfait;Forfait
+9111;COMPLEMENT TICKET MODERATEUR;Non remboursable;Non remboursable;Non Remboursable
+9118;FRAIS FUNERAIRES;Invalidité, Décès & Rentes;Allocations décès & obsèques;Allocation obsèques
+9119;COMPLEMENT POUR CURE THERMALE;Autres Postes;Cure Thermale;Cure Thermale
+9132;FRAIS DE DEPLACEMENT EN CURE THERMALE;Autres Postes;Cure Thermale;Cure Thermale
+9133;FRAIS D  HEBERGEMENT EN CURE THERMALE;Autres Postes;Cure Thermale;Cure Thermale
+9134;PRIME DE FIN DE REEDUCATION PROFESSIONNELLE;Non remboursable;Non remboursable;Non Remboursable
+9204;DEPISTAGE MALADIES SURCHARGE-DYSLIPEMIE;Prévention & Dépistage;Dépistages;Dépistages
+9205;DEPISTAGE CONDUITE ADDICTIVE;Prévention & Dépistage;Dépistages;Dépistages
+9206;DEPISTAGE AMIANTE;Prévention & Dépistage;Dépistages;Dépistages
+9207;DEPISTAGE SURDITE;Prévention & Dépistage;Dépistages;Dépistages
+9221;TEST DE DEPISTAGE RAPIDE (FOURNISSEUR);Prévention & Dépistage;Dépistages;Dépistages
+9311;DEPISTAGE DU CANCER COLO-RECTAL;Prévention & Dépistage;Dépistages;Dépistages
+9312;DEPISTAGE DU CANCER DU SEIN (PREVENTION MALADIE);Prévention & Dépistage;Dépistages;Dépistages
+9318;ANALYSES DEPISTAGE CANCER UTERUS (PREVENTION MALADIE);Prévention & Dépistage;Dépistages;Dépistages
+9319;PRELEVEMENTS DEPISTAGE CANCER UTERUS (PREVENTION MALADIE);Prévention & Dépistage;Dépistages;Dépistages
+9434;ACTE DE DEPISTAGE DU CANCER COLORECTAL;Prévention & Dépistage;Dépistages;Dépistages
+9521;ACTES DE PREVENTION;Prévention & Dépistage;Examens & actions de prévention;Prévention
+9718;ACTION SOCIALE CURE THERMALE;Autres Postes;Cure Thermale;Cure Thermale
+9726;PRESTATIONS SUPPLÉMENTAIRES OPTIQUES CRPCEN;Non remboursable;Non remboursable;Non Remboursable
+9727;PRESTATIONS SUPPLÉMENTAIRES ACOUSTIQUES CRPCEN;Non remboursable;Non remboursable;Non Remboursable
+9731;COMPLEMENT A L'ACS;Non remboursable;Non remboursable;Non Remboursable
+9736;APUREMENT PRET;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+9743;AIDES A LA DEAMBULATION ET AU TRANSPORT;Appareillage & Prothèses (LPP);Prothèses orthopédiques;Protheses Orthopediques
+9771;AIDES PROTHESES AUDITIVES;Appareillage & Prothèses (LPP);Prothèses auditives;Protheses Auditives
+9775;AIDES MENAGERES PROGRAMME D'ACCOMPAGNEMENT APRES INTERVENTION ORTHOPEDIQUE;Non remboursable;Non remboursable;Non Remboursable
+9776;ACTES FOURNITURES PROGRAMME D'ACCOMPAGNEMENT APRES INTERVENTION ORTHOPEDIQUE;Non remboursable;Non remboursable;Non Remboursable
+1049;SUPPL. PEDIATRIQUE URGENCE 2;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1050;FORFAIT CONSULTATION URGENCE 0;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1051;SUPPL. PEDIATRIQUE URGENCE 1;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1056;TELECONSULTATION GENERALISTE IVG;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1057;TELECONSULTATION SPECIALISTE IVG;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1058;EXAMEN OBLIGATOIRE ENFANT COJ;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1059;EXAMEN OBLIGATOIRE ENFANT COK;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1060;MAJORATION GYNECO MEDICALE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1061;MAJORATION PSY ENFANT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1067;SUPPLEMENT URGENCE CCMU 3;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1068;SUPP. AVIS DE SPECIALISTE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1076;CODE TRACEUR SAS;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1077;SUPPLEMENT URGENCE CCMU 2;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1081;FORFAIT CONSULTATION URGENCE 1;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1082;FORFAIT CONSULTATION URGENCE 2;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1083;FORFAIT CONSULTATION URGENCE 3;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1084;FORFAIT CONSULTATION URGENCE 4;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1089;EXAMEN OBLIGATOIRE ENFANT COM;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1090;EXAMEN OBLIGATOIRE ENFANT COH;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1091;EXAMEN OBLIGATOIRE ENFANT COD;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1092;EXAMEN OBLIGATOIRE ENFANT COG;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1093;EXAMEN OBLIGATOIRE ENFANT COB;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1094;EXAMEN OBLIGATOIRE ENFANT COA;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1095;MAJORATION SPECIFIQUE MOINS DE 16 ANS MAYOTTE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1096;TELECONSULTATION MEDECIN TRAITANT AVEC EHPAD;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1098;CONSULTATION CCMU 3;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1099;CONSULTATION CCMU 4 ET 5;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1101;AVIS PONCTUEL DE CONSULTANT PUPH;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1102;AVIS PONCTUEL DE CONSULTANT PSYCHIATRE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1103;AVIS PONCTUEL DE CONSULTANT DU MEDECIN;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1104;CONSULTATION OBLIGATOIRE ENFANT;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1105;CONSULTATION COMPLEXE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1106;MAJORATION CONSULTATION COMPLEXE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1107;CONSULTATION TRES COMPLEXE ENFANT;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1108;MAJORATION CONSULTATION TRES COMPLEXE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1109;CONSULTATION SPECIALISTE MEDECINE GENERALE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1110;CONSULTATION MEDECINE GENERALE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1111;CONSULTATION COTEE C;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1112;CONSULTATION COTEE CS;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1113;CONSULTATION COTEE CNP;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1114;CONSULTATION SPECIFIQUE CARDIOLOGIE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1115;CONSULTATION BILAN;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1116;MAJORATION FORFAITAIRE TRANSITOIRE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1117;CONSULTATION DES SPECIALISTES COTEE C2;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1118;CONSULTATION DES PSYCHIATRES COTEE C2,5;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1119;MAJORATION TRANSITOIRE SPECIFIQUE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1120;COMPLEMENT CONSULTATION SPECIALISTE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1124;REMUNERATION MEDECIN TRAITANT PAR PATIENT  EN ALD;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1125;MAJORATION DE COORDINATION DES GENERALISTES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1126;MAJORATION DE COORDINATION SPECIALISTES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1127;MAJORATION DE COORDINATION CARDIOLOGUES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1129;MAJORATION FORFAITAIRE TRANSITOIRE (POUR LES MOINS DE 16 ANS);Consultations Visites;Consultations / Visites;Indemnites Majorations
+1130;FORFAIT MEDECIN TRAITANT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1131;MAJORATION CONSULTATION APPAREILLAGE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1132;MAJORATION CONSULTATION ENDOCRINO;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1133;MAJORATION GENERALISTE ENFANT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1134;MAJORATION PREMIERE CONSULTATION FAMILLE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1135;MAJORATION CONSULTATION ANNUELLE FAMILLE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1136;MAJORATION ANNUELLE DE SYNTHESE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1137;MAJORATION NOURRISSON;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1140;CONSULTATION SPECIFIQUE DE DEPISTAGE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1141;MAJORATION PEDIATRE ENFANT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1148;REMUNERATION FORFAITAIRE PAR CONSULTATION POUR LE SUIVI DES PERSONNES AGEES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1149;CONTESTATION REMUNERATION SUIVI PERSONNES AGEES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1150;REMUNERATION PRATICIENS TERRITORIAUX DE MEDECINE GENERALE ;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1157;Acte de téléconsultation;Consultations Visites;Consultations / Visites;Autres Consultations
+1164;TÉLÉ CONSULTATION - ALD ET / OU EHPAD;Consultations Visites;Consultations / Visites;Autres Consultations
+1168;CONSULTATION DE CONTRACEPTION ET PREVENTION;Consultations Visites;Consultations / Visites;Autres Consultations
+1174;TELESURVEILLANCE : MEDECIN TELESURVEILLANT;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1178;FORFAIT STRUCT. MEDECIN;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1179;FORFAIT STRUCT. MEDECIN COMPLEMENT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1182;REMUNERATION OPTAM;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1191;TELECONSULTATION TOUTES SPECIALITES;Consultations Visites;Consultations / Visites;Consultations Specialistes
+1192;TELECONSULTATION GENERALISTE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1209;VISITE SPECIALISTE MEDECINE GENERALE;Consultations Visites;Consultations / Visites;Visites Generalistes
+1210;VISITE MEDECINE GENERALE;Consultations Visites;Consultations / Visites;Visites Generalistes
+1211;VISITE COTEE V;Consultations Visites;Consultations / Visites;Visites Generalistes
+1212;VISITE COTEE VS;Consultations Visites;Consultations / Visites;Visites Specialistes
+1213;VISITE COTEE VNP;Consultations Visites;Consultations / Visites;Visites Specialistes
+1214;VISITE LONGUE ET COMPLEXE;Consultations Visites;Consultations / Visites;Visites Generalistes
+1215;AVIS PONCTUEL DE CONSULTANT MEDECIN (VISITE);Consultations Visites;Consultations / Visites;Visites Generalistes
+1216;AVIS PONCTUEL DE CONSULTANT PSYCHIATRE (VISITE);Consultations Visites;Consultations / Visites;Visites Specialistes
+1221;VISITE D  URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1222;VISITE URGENCE VU/MU;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1224;MD (CRITERES MEDICAUX);Consultations Visites;Consultations / Visites;Indemnites Majorations
+1225;MDE ( CRITERES ENVIRONNEMENTAUX);Consultations Visites;Consultations / Visites;Indemnites Majorations
+1226;MD DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1227;MD  DE MILIEU NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1228;MD  DE DIMANCHE ET JOUR FERIES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1229;MDE  DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1231;MDE MILIEU DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1232;MDE DIMANCHE ET JOUR FERIES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1345;MAJORATION TRANSITOIRE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1521;MAJORATION POUR GARDE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1627;CONTRAT INCITATIF CHIRURGIEN-DENTISTE;Consultations Visites;Consultations / Visites;Autres Consultations
+1644;MAJO REMUNERATION ARS - CSTM;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1705;CDS DENTAIRE OPTANT FORF SUIVI;Consultations Visites;Consultations / Visites;Autres Consultations
+1711;FORFAIT MEDECIN REFERENT DEBUT DE CONTRAT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1712;FORFAIT MEDECIN REFERENT FIN DE CONTRAT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1811;IK PLAINE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1812;IK MONTAGNE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1813;IK PIED SKI;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1814;FRAIS DE DEPLACEMENT VACATION;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1821;ID PARIS LYON MARSEILLE, +100.000 HA, -100.000 HA;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1901;MAJORATION PERSONNES AGEES EN ETABLISSEMENT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1903;MAJORATION ENFANT GENERALISTE ;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1904;MAJORATION ENFANT PEDIATRE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1905;NOUVEAU FORFAIT ENFANT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1906;NOUVEAU FORFAIT PEDIATRIQUE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1914;FORFAIT PEDIATRIQUE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1918;MAJORATION D'URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1922;CONSULTATION;Consultations Visites;Consultations / Visites;Consultations Generalistes
+1931;MAJORATION NOURRISSON PEDIATRE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1932;MAJORATION NOURRISSON GENERALISTE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1933;MAJORATION CONSULTATION REGULEE  DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1934;MAJORATION CONSULTATION REGULEE MILIEU DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1935;MAJORATION CONSULTATION REGULEE DIMANCHE, JOURS FERIES ET ASSIMILES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1936;MAJORATION VISITE REGULEE  DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1937;MAJORATION VISITE REGULEE MILIEU DE NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1938;MAJORATION VISITE REGULEE DE DIMANCHE, JOURS FERIES ET ASSIMILES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1941;MAJORATION CONSULTATION REGULEE SAMEDI APRES MIDI;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1942;MAJORATION VISITE REGULEE SAMEDI APRES MIDI;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1943;MAJORATION URGENCE MT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1944;MAJORATION CORRESPONDANT URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1945;MAJORATION MEDECIN TRAITANT REGULATION;Consultations Visites;Consultations / Visites;Indemnites Majorations
+1957;MAJORATION HORS PARCOURS DE SOINS;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2169;DOTATION POPULATIONNELLE PSY;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2173;DIFFERENTIEL PSY REGLEMENTAIRE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2174;DIFFERENTIEL PSY AME;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2175;DIFFERENTIEL PSY MIGRANTS;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2179;DOTATION DE TRANSFORMATION PSY;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2197;DOTATION MIG PSY;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2198;DOTATION ACTIVITE PSY;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2207;REORIENTATION URGENCE 2 MILIEU NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2208;REORIENTATION URGENCE 1 MILIEU NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2216;FORFAIT CONSULTATION URGENCE PRIVE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2218;REORIENTATION URGENCE 1;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2219;REORIENTATION URGENCE 2;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2228;REORIENTATION URGENCE 1 NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2233;REORIENTATION URGENCE 2 NUIT;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2236;FORFAIT CONSOMMABLE CARDIOLOGIE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2238;FORFAIT D ACCUEIL ET DE TRAITEMENT DES URGENCES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2239;FORFAIT ANNUEL D URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2277;REORIENTATION URGENCE 1 FERIE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2278;REORIENTATION URGENCE 2 FERIE  ;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2280;FORFAIT IFAQ PSY;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2281;FORFAIT PATIENT URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2286;FORFAIT PATIENT URGENCE RO;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2287;FORFAIT PATIENT URGENCE RL;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2294;DOTATION QUALITE URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2297;FORFAIT PATIENT URGENCE MINORE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2298;FORFAIT URGENCE MINORE ALM;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2309;COMPLEMENT FORFAIT URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+2380;FORFAIT PSYCHIATRIE SEANCE COLL, 1 INTERVENANT 3 à 4H;Consultations Visites;Consultations / Visites;Autres Consultations
+2381;FORFAIT PSYCHIATRIE SEANCE IND, 1 INTERVENANT 3 à 4H;Consultations Visites;Consultations / Visites;Autres Consultations
+2382;FORFAIT PSYCHIATRIE SEANCE COLL, 2 INTERVENANTS 3 à 4H;Consultations Visites;Consultations / Visites;Autres Consultations
+2383;FORFAIT PSYCHIATRIE SEANCE IND. 2 INTERVENANTS 3 à 4H;Consultations Visites;Consultations / Visites;Autres Consultations
+2384;FORFAIT PSYCHIATRIE SEANCE COLL, 1 INTERVENANT 6 à 8H;Consultations Visites;Consultations / Visites;Autres Consultations
+2385;FORFAIT PSYCHIATRIE SEANCE IND. 1 INTERVENANT 6 à 8H;Consultations Visites;Consultations / Visites;Autres Consultations
+2386;FORFAIT PSYCHIATRIE SEANCE COLL, 2 INTERVENANT 6 à 8H;Consultations Visites;Consultations / Visites;Autres Consultations
+2387;FORFAIT PSYCHIATRIE SEANCE IND. 2 INTERVENANTS 6 à 8H;Consultations Visites;Consultations / Visites;Autres Consultations
+2426;CONSULTATION IVG SPECIALISTE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+3103;TELECONSULTATION LORS D'UN SOIN;Consultations Visites;Consultations / Visites;Consultations Generalistes
+3104;TELECONSULTATION LIEU DEDIE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+3105;TELECONSULTATION DOMICILE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+3308;CODE TRACEUR TELECONSULTATION;Consultations Visites;Consultations / Visites;Autres Consultations
+4331;REMBOURSEMENTS DE SOINS A L  ETRANGER (ET1 A ET6 ET ET8 A ET9, ETB ETA, ETH, ETT, ETP, ETX );Consultations Visites;Consultations / Visites;Soins à l'etranger
+4374;MÉCANISME DE COMPENSATION AUX CENTRES DE SANTÉ ;Consultations Visites;Consultations / Visites;Indemnites Majorations
+4376;LIGNE TELEPHONIQUE DEDIEE;Consultations Visites;Consultations / Visites;Consultations Generalistes
+4396;PRIME RESPONSABILITE SPECIALISTE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+4397;PRIME ACCREDITATION SPECIALISTE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+8221;MAJORATIONS CRISTALLISEES;Consultations Visites;Consultations / Visites;Indemnites Majorations
+9121;COMPLEMENT TICKET MODERATEUR POUR ENFANT DE MOINS D UN AN;Consultations Visites;Consultations / Visites;Consultations Generalistes
+9141;MAJORATION LIEE A UNE VISITE D  URGENCE;Consultations Visites;Consultations / Visites;Indemnites Majorations
+9191;TICKET MODERATEUR - PREVENTION BUCCO-DENTAIRE;Consultations Visites;Consultations / Visites;Autres Consultations
+9201;ENTRETIEN EVALUATION PSYCHOLOGUE;Consultations Visites;Consultations / Visites;Autres Consultations
+9202;ACCOMPAGNEMENT PSYCHOLOGIQUE DE SOUTIEN;Consultations Visites;Consultations / Visites;Autres Consultations
+9203;PSYCHOTHERAPIE STRUCTUREE;Consultations Visites;Consultations / Visites;Autres Consultations
+9411;CONSULTATION HYGIENE BUCCO-DENTAIRE;Consultations Visites;Consultations / Visites;Autres Consultations
+9421;PREVENTION BUCCO-DENTAIRE: CONSULTATION;Consultations Visites;Consultations / Visites;Autres Consultations
+9432;TM DES INDEMNITES DE DEPLACEMENTS ID et MD;Consultations Visites;Consultations / Visites;Indemnites Majorations
+9433;TM DE LA RETINOPATHIE DIABETIQUE;Consultations Visites;Consultations / Visites;Consultations Specialistes
+9435;BUCCO DENT. CONSULTATION COMPLEXE;Consultations Visites;Consultations / Visites;Autres Consultations
+9513;CONSULTATION PREVENTION;Consultations Visites;Consultations / Visites;Autres Consultations
+9514;CONSULTATION DIETETIQUE;Consultations Visites;Consultations / Visites;Autres Consultations
+1400;BRIDGE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1401;PROTHESE FIXE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1402;PROTHESE FIXE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1403;REPARATION FACETTE PROTHESE AMOVIBLE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1404;REPARATION ADJONCTION RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1405;REPARATION PROTHESE ADJOINTE SIMPLE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1406;SUPPLEMENT PROTHESE RESINE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1407;COURONNE TRANSITOIRE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses provisoires
+1408;COURONNE ZIRCONE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1409;INLAY CORE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Inlay Core
+1410;INLAY ONLAY RAC MOERE;Dentaire;Dentaire Soins;Dentaire Inlay Onlay
+1412;PROTHESE AMOVIBLE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1413;REPARATION PROTHESE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1414;SUPPLEMENT PROTHESE METALLIQUE RAC MODERE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1415;PROTHESE FIXE METALLIQUE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1416;COURONNE TRANSITOIRE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses provisoires
+1417;COURONNE ZIRCONE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1418;INLAY CORE RAC 0;Dentaire;Dentaire Protheses;Dentaire Inlay Core
+1419;PROTHESE AMOVIBLE RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1420;PROTHESE AMOVIBLE DE TRANSITION RAC 0;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1421;ACTES DE PROTHESE DENTAIRE PRATIQUES PAR LE MEDECIN;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1422;TRAITEMENTS D  ORTHODONTIE PRATIQUES PAR LE MEDECIN (ET EOS POUR LA CRPCEN);Dentaire;Dentaire Orthodontie;Dentaire Orthodontie
+1423;ACTES DE PROTHESE DENTAIRE PRATIQUES PAR LE CHIRURGIEN-DENTISTE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1424;TRAITEMENTS D  ORTHODONTIE PRATIQUES PAR LE CHIRURGIEN-DENTISTE (ET ETO POUR LA CRPCEN);Dentaire;Dentaire Orthodontie;Dentaire Orthodontie
+1432;ACTES EN DC;Dentaire;Dentaire Soins;Dentaire Soins
+1434;PREVENTION BUCCO-DENTAIRE: CONSULTATION - MATER;Dentaire;Dentaire Soins;Dentaire Soins
+1437;Majoration spécifique PDS Clinique Dentiste;Dentaire;Dentaire Soins;Dentaire Soins
+1438;BUCCO DENT. CONSULTATION COMPLEXE MATERNITE;Dentaire;Dentaire Soins;Dentaire Soins
+1451;SOINS DENTAIRES;Dentaire;Dentaire Soins;Dentaire Soins
+1452;PROTHESE AMOVIBLE DEFINITIVE RESINE, A partir du 01/04/2019 (en date de soins) PROTHESE AMOVIBLE RESINE TARIF LIBRE ;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1453;PROPHYLAXIE BUCCO DENTAIRE CCAM;Dentaire;Dentaire Soins;Dentaire Soins
+1461;ACTES DIVERS PROTHESE DENTAIRE CCAM;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1462;PROTHESE FIXE METALLIQUE, A partir du 01/04/2019 (en date de soins) PROTHESE FIXE METALLIQUE TARIF LIBRE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1463;PROTHESE DENTAIRE FIXE ESTHETIQUE CCAM;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1464;PROTHESE DENTAIRE AMOVIBLE CCAM;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1465;IMPLANTOLOGIE - CCAM;Dentaire;Dentaire Implantologie;Dentaire Implantologie
+1466;TRAITEMENT ORTHOPEDIE DENTO FACIALE CCAM;Dentaire;Dentaire Soins;Dentaire Soins
+1470;ENDODONTIE;Dentaire;Dentaire Soins;Dentaire Soins
+1471;INLAY-ONLAY, A partir du 01/04/2019 (en date de soins) INLAY-ONLAY TARIF LIBRE;Dentaire;Dentaire Soins;Dentaire Inlay Onlay
+1472;PARODONTOLOGIE;Dentaire;Dentaire Parodontologie;Dentaire Parodontologie
+1473;INLAY-CORE, A partir du 01/04/2019 (en date de soins) INLAY-CORE TARIF LIBRE;Dentaire;Dentaire Protheses;Dentaire Inlay Core
+1474;PROTHESE AMOVIBLE DEFINITIVE METALLIQUE, A partir du 01/04/2019 (en date de soins) PROTHESE AMOVIBLE METALLIQUE TARIF LIBRE;Dentaire;Dentaire Protheses;Dentaire Protheses amovibles
+1475;PROTHESE DENTAIRE PROVISOIRE, A partir du 01/04/2019 (en date de soins) COURONNE TRANSITOIRE TARIF LIBRE ;Dentaire;Dentaire Protheses;Dentaire Protheses provisoires
+1476;PROTHESE FIXE CERAMIQUE, A partir du 01/04/2019 (en date de soins) PROTHESE FIXE CERAMIQUE TARIF LIBRE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+1477;REPARATION SUR PROTHESE, A partir du 01/04/2019 (en date de soins) REPARATION PROTHESE TARIF LIBRE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+1523;Permanence Rémunération demi-journée Chirurgien-dentiste;Dentaire;Dentaire Soins;Dentaire Soins
+5201;FORFAIT PROTHESE DENTAIRE ADJOINTE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+5202;FORFAIT REPARATION PROTHESE ADJOINTE;Dentaire;Dentaire Protheses;Dentaire Protheses divers
+5203;FORFAIT PROTHESE DENTAIRE CONJOINTE;Dentaire;Dentaire Protheses;Dentaire Protheses fixes
+5204;FORFAIT ORTHODONTIE;Dentaire;Dentaire Orthodontie;Dentaire Orthodontie
+5205;FORFAIT PROTHESE CONJOINTE (C2S HORS PANIER DE SOINS);Dentaire;Dentaire Protheses;Dentaire Protheses divers
+5206;FORFAIT ORTHODONTIQUE (CMU HORS PANIER DE SOINS);Dentaire;Dentaire Orthodontie;Dentaire Orthodontie
+9412;HYGIENE BUCCO-DENTAIRE N91 (SCELLEMENT D  UNE MOLAIRE);Dentaire;Dentaire Soins;Dentaire Soins
+9413;HYGIENE BUCCO-DENTAIRE N92 (SCELLEMENT DE DEUX MOLAIRES);Dentaire;Dentaire Soins;Dentaire Soins
+9414;HYGIENE BUCCO-DENTAIRE N93 (SCELLEMENT DE TROIS MOLAIRES);Dentaire;Dentaire Soins;Dentaire Soins
+9415;HYGIENE BUCCO-DENTAIRE N94 (SCELLEMENT DE QUATRE MOLAIRES);Dentaire;Dentaire Soins;Dentaire Soins
+9429;CAMPAGNE BUCCO DENTAIRE MOCALES;Dentaire;Dentaire Soins;Dentaire Soins
+9761;AIDES FINANCIERES INDIVIDUELLES ORTHODONTIE;Dentaire;Dentaire Orthodontie;Dentaire Orthodontie
+1072;SUPP. NUIT MEDECIN URGENTISTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1073;SUPP DIMANCHE/FERIE -URGENTISTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1074;SUPP NUIT SPE/BIO/IMAGERIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1075;SUP DIMANCHE/FERIE SPE/BIO/IMAGE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1078;SUPPLEMENT URGENCE BIOLOGIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1079;SUPPLEMENT URGENCE IMAGERIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1080;SUPPLEMENT URGENCE MODE ARRIVEE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1121;HONORAIRE DE SURVEILLANCE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1123;SUITE D  EXAMEN DE SANTE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1152;MAJORATION SUIVI DES ENFANTS GRANDS PREMATURES OU ATTEINTS DE PATHOLOGIE CONGENITALE GRAVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1153;MAJORATION CONSULTATION POUR INSUFFISANT CARDIAQUE APRES HOSPITALISATION;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1154;MAJORATION CONSULTATION SUIVI APRES HOSPITALISATION PATIENTS A FORTE COMORBIDITE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1172;TELESURVEILLANCE : PS EFFECTUANT L'ACCOMPAGNEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1314;FORFAIT CHIRURGIE 1;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+1315;FORFAIT CHIRURGIE 2;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+1323;ACTE D'ANESTHESIE CCAM;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+1721;FORFAIT PROFESSIONNEL (F01) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1722;FORFAIT PROFESSIONNEL (F02) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1723;FORFAIT PROFESSIONNEL (F03) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1724;FORFAIT PROFESSIONNEL (F04) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1725;FORFAIT PROFESSIONNEL (F05) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1726;FORFAIT PROFESSIONNEL (F06) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1727;FORFAIT PROFESSIONNEL (F07) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1728;FORFAIT PROFESSIONNEL (F08) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1729;FORFAIT PROFESSIONNEL (F09) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1731;FORFAIT PROFESSIONNEL (F10) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1732;FORFAIT PROFESSIONNEL (F11) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1733;FORFAIT PROFESSIONNEL (F12) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1734;FORFAIT PROFESSIONNEL (F13) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1735;FORFAIT PROFESSIONNEL (F14) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1736;FORFAIT PROFESSIONNEL (F15) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1741;FORFAIT CONSULTATION (FC0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1742;FORFAIT CONSULTATION (FC1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1743;FORFAIT CONSULTATION (FC2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1744;FORFAIT CONSULTATION (FC3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1745;FORFAIT CONSULTATION (FC4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1746;FORFAIT CONSULTATION (FC5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1747;FORFAIT CONSULTATION (FC6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1748;FORFAIT CONSULTATION (FC7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1749;FORFAIT CONSULTATION (FC8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1751;FORFAIT CONSULTATION (FC9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1761;FORFAIT FORMATION (FF0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1762;FORFAIT FORMATION (FF1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1763;FORFAIT FORMATION (FF2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1764;FORFAIT FORMATION (FF3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1765;FORFAIT FORMATION (FF4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1766;FORFAIT FORMATION (FF5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1767;FORFAIT FORMATION (FF6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1768;FORFAIT FORMATION (FF7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1769;FORFAIT FORMATION (FF8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1771;FORFAIT FORMATION (FF9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1908;FORFAIT SORTIE PRECOCE ET TEST GUTHRIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1909;FORFAIT SORTIE PRECOCE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1916;REMUNERATION POUR GARDE ETS PRIVES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1917;REMUNERATION POUR ASTREINTE ETS PRIVES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1992;PERMANENCE REMUNERATION DE NUIT;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1993;PERMANENCE REMUNERATION MILIEU DE NUIT;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1994;PERMANENCE REMUNERATION DIMANCHE ET FERIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1995;PERMANENCE REMUNERATION TOTAL;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1996;PERMANENCE REMUNERATION SAMEDI MATIN;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1997;PERMANENCE REMUNERATION SAMEDI APRES MIDI;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1998;ASTREINTE DE JOUR CORRESPONDANT SAMU;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+1999;ASTREINTE DE NUIT CORRESPONDANT SAMU;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2100;FORFAIT ENVIRONNEMENT HOSPITALIER 7;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2101;HBGT TEMP NON MEDICALISE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2103;SUPPLEMENT TRANSPORT PERMISSION THERAPEUTIQUE (PSY/SSR);Hospitalisation;Transport;Transport
+2104;SUPPLEMENT TRANSPORT PROVISOIRE (PSY/SSR);Hospitalisation;Transport;Transport
+2105;SUPPLEMENT TRANSPORT DEFINITIF (PSY/SSR);Hospitalisation;Transport;Transport
+2106;TRANSPORT DEFINITIF DIALYSE;Hospitalisation;Transport;Transport
+2107;TRANSPORT SEANCE DIALYSE;Hospitalisation;Transport;Transport
+2108;SUPPLEMENT TRANSPORT 2;Hospitalisation;Transport;Transport
+2109;SUPPLEMENT TRANSPORT SEANCES;Hospitalisation;Transport;Transport
+2110;FRAIS SEJOUR SSR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2111;FRAIS D HEBERGEMENT ET ENVIRONNEMENT EN GHS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2112;FRAIS DE SEJOUR SUPPLEMENTAIRE AU GHS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2113;GROUPE HOMOGENE DE TARIFS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2114;SUPPLEMENT SOINS PARTICULIEREMENT COUTEUX (ARRETE DU 29/06/1978);Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2115;SUPPLEMENT SOINS CONTINUS;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2116;SUPPLEMENT NEONATOLOGIE 1;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2117;SUPPLEMENT NEONATOLOGIE 2;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2118;SUPPLEMENT NEONATOLOGIE 3;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2119;SUPPLEMENT DEFIBRILLATEUR;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2120;DIFFERENTIEL TARIFAIRE CLINIQUE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2121;HEMODIALYSE EN CENTRE OU EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2122;AUTODIALYSE SIMPLE OU ASSISTEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2123;ENTRAINEMENT A L HEMODIALYSE A DOMICILE ET A L AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2126;HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2127;DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2128;DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2129;FORFAIT D'HEMODIALYSE EN CENTRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2131;FORFAIT D HEMODIALYSE EN CENTRE POUR ENFANT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2132;FORFAIT D HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2133;DIALYSE TIERCE PERSONNE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2134;FORFAIT D AUTODIALYSE SIMPLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2135;FORFAIT D AUTODIALYSE ASSISTEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2136;FORFAIT D HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2137;FORFAIT DE DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2138;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2139;FORFAIT D ENTRAINEMENT A L HEMODIALYSE A  DOMICILE ET AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2140;FORFAIT D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2141;FRAIS DE CHAMBRE PARTICULIERE POUR CONVENANCE PERSONNELLE;Hospitalisation;Hospi.Chambre Part.Lit Accompa;Hospi Chambre Part. Lit Accomp
+2142;FORFAIT D ENTRAINEMENT A DIALYSE PERITONEALE CONTINUE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2143;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2144;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE CONTINUE AMBULATOIRE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2145;FORFAIT DE DIALYSE PERITONEALE AUTOMATISE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2146;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2147;FORFAIT D'ENTRAINEMENT A L'HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2148;SUPPLEMENT  JOURNALIER ZONE HAUTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2149;SUPPLEMENT  JOURNALIER ZONE EXTREME HAUTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2150;VIDEOCAPSULE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2151;SUPPLEMENT REANIMATION;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2152;SUPPLEMENT SURVEILLANCE CONTINUE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2153;FORFAIT SOINS INTENSIFS;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2154;REANIMATION PEDIATRIQUE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2155;FORFAIT ENVIRONNEMENT HOSPITALIER 1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2156;FORFAIT ENVIRONNEMENT HOSPITALIER 2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2157;FORFAIT ENVIRONNEMENT HOSPITALIER 3;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2158;FORFAIT ENVIRONNEMENT HOSPITALIER 4;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2163;SUPPLEMENT JOURNALIER DIALYSE PERITONEALE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2164;ADMINISTRATION DE PRODUITS ET PRESTATIONS EN ENVIRONNEMENT HOSPITALIER;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2165;FORFAIT PRESTATION INTERMEDIAIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2167;FORFAIT ENVIRONNEMENT HOSPITALIER 5;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2168;FORFAIT ENVIRONNEMENT HOSPITALIER 6;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2170;FIR ETS PRIVES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2180;DIFFERENTIEL TARIFAIRE FIDES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2181;PRELEVEMENT D ORGANE 1;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2182;PRELEVEMENT D ORGANE 2;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2183;PRELEVEMENT D ORGANE 3;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2185;PRELEVEMENT D ORGANE 4;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2186;PRELEVEMENT D'ORGANE 5;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2187;PRELEVEMENT D'ORGANE 6;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2188;PRELEVEMENT D'ORGANE 7;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2189;PRELEVEMENT D'ORGANE 8;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2190;PRELEVEMENT D'ORGANE 9;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2191;PRELEVEMENT D'ORGANE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2196;SUPPLEMENT RADIOTHERAPIE PEDIATRIQUE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2209;FORFAIT CONSULTATION URGENCE HOPITAL MILIEU NUIT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2210;FORFAIT CONSULTATION URGENCE HOPITAL NUIT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2211;FRAIS DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2212;MAJORATION PMSI;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2213;FRAIS DE SEJOUR IME;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2217;FORFAIT CONSULTATION URGENCE HOPITAL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2220;FORFAIT CONSULTATION URGENCE HOPITAL FERIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2221;SUPPLEMENT CHAMBRE PARTICULIERE;Hospitalisation;Hospi.Chambre Part.Lit Accompa;Hospi Chambre Part. Lit Accomp
+2222;SUPPLEMENT POUR SURVEILLANCE DU MALADE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2223;FRAIS D  HOSPITALISATION DU NOUVEAU-NE DONNANT LIEU A FACTURATION EN SUPPLEMENT DE L  HOSPITALISATION DE LA MERE EN MAISON DE REPOS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2224;SUPPLEMENT POUR  CHAMBRE CHAUDE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2225;SUPPLEMENT POUR INCUBATEUR;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2226;SUPPLEMENT POUR CHAMBRE PLOMBEE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2227;SUPPLEMENT POUR ALIMENTATION PARENTERALE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2229;FORFAIT PRISE EN CHARGE DU NOUVEAU NE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2230;PRIX DE JOURNEE REGIME LOCAL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2232;FORFAIT TRANSPLANTATION D  ORGANE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2234;FORFAIT D  ENTREE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2235;FORFAIT D  ACTIVITE NON PROGRAMMEE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
+2237;TM PJ - PART OC;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2240;TARIF JOURNALIER COMPLEMENTAIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2241;FRAIS DE SALLE D  OPERATION;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2242;FRAIS D  ANESTHESIE ET REANIMATION;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2243;FRAIS D  ENVIRONNEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2245;FRAIS DE SALLE D  ACCOUCHEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2246;FRAIS DE SALLE D  ACCOUCHEMENT MULTIPLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2247;FORFAIT PSYCHIATRIE  DE SECURITE - HOSPITALISATION AVEC HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2250;FORFAIT JOURNALIER - PART OC;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2251;FORFAIT JOURNALIER;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2252;FORFAIT JOURNALIER DE SORTIE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2257;FJ TRANSPLANTATION ORGANES;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2258;FORFAIT DE SOINS JOURNALIER;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2260;FORFAIT HOPITAL PROXIMITE COMPLEMENTAIRE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2261;FORFAIT ACCUEIL DU PATIENT N 1;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2262;FORFAIT ACCUEIL DU PATIENT N 2;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2271;FORFAIT HPT GROUPE 1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2272;FORFAIT HPT GROUPE 1.2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2273;FORFAIT HPT 15 %;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2274;FORFAIT HPT GROUPE 2 + FAS1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2275;FORFAIT HPT GROUPE 2 + FAS2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2282;PARTICIPATION ASSURE TRANSITOIRE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2283;PARTICIPATION ASSURE HOSPITALISATION PUBLIQUE (CMU + AME);Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2284;PARTICIPATION ASSURE HOSPITALISATION PUBLIQUE (REGIME LOCAL);Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2285;PARTICIPATION ASSURE SUR SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2290;FORFAIT JOURNALIER RL PRIVE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
+2331;RADIUMTHERAPIE ET CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2334;SEANCE D  HEMODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2336;FORFAIT POUR CONSULTATION EN CENTRE MEDICO-PSYCHO PEDAGOGIQUE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2339;AUTRES FORFAITS DIVERS (Y COMPRIS NUTRITION ENTERALE A DOMICILE);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2341;SUPPLEMENT AU FORFAIT CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2343;FORFAIT POUR GARDE DE NUIT OU SAMEDI APRES MIDI EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2344;FORFAIT DE GARDE NUIT ET FERIE EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2345;FORFAIT POUR ASTREINTE DE DEBUT DE NUIT EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2346;FORFAIT POUR ASTREINTE DE NUIT OU SAMEDI APRES MIDI EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2347;FORFAIT D'ASTREINTE NUIT ET FERIE EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2388;FORFAIT PSYCHIATRIE DE SECURITE HOSPITALISATION SANS HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2389;PRISE EN CHARGE DE NUIT POUR UNE DUREE ENTRE 8 ET 12H;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+2412;ANESTHESIE GENERALE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2419;FORFAIT INTERVENTION AMBULATOIRE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2421;INTERVENTION + ANESTHESIE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2423;FORFAIT INTERVENTION AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2424;INTERVENTION + ANESTHESIE AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2425;FORFAIT IVG POUR 24H SUPPLEMENTAIRES - SECTEUR PRIVE/SECTEUR PUBLIC;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+3101;FORFAIT STRUCTURE PS AUXILIAIRES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3145;AMPUTATIONS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3146;AFF RESPIRATOIRES MAX FACIAL ET ORL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3147;DEVIATION RACHIS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3148;AFF NEURO MUSC OU RHUM INFLAM;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3149;SOINS PALLIATIFS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3151;REEDUC ABDO ET PERINEOSPHINCTERIENNE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3152;RACHIS NON OPERE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3153;RACHIS OPERE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3154;REEDUC AFFECTIONS VASCULAIRES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3155;MEMBRE INFERIEUR OPERE ;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3156;MEMBRE INFERIEUR NON OPERE ;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3337;FORFAIT FAUSSE COUCHE VILLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3338;FORFAIT FAUSSE COUCHE VILLE SANS ÉCHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3339;FORFAIT FAUSSE COUCHE ETABLISSEMENT AVEC ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3340;FORFAIT FAUSSE COUCHE ETABLISSEMENT SANS ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3344;ACCOMPAGNEMENT ANTIVITAMINE K INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3345;ACCOMPAGNEMENT ANTIVITAMINE SUIVANT;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3346;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3347;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX DIRECTS SUIVANT ;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3348;ACCOMP. SUIVI INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3349;ACCOMP. SUIVI SUPPL.;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+3358;ACCOMPAGNEMENT CHIMIOTHERAPIE PATIENTS SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS POUR L'ANNEE INITIALE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3368;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX (PREMIERE ANNEE);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3370;ACCOMPAGNEMENT CHIMIOTHERAPIE SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3376;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3380;HONO DISP COMP  ;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3412;TRANSPORT DU PRODUIT;Hospitalisation;Transport;Transport
+4111;FORFAIT DE SURVEILLANCE MEDICALE  1ER HANDICAP;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+4112;FORFAIT DE SURVEILLANCE MEDICALE REDUIT  2EME HANDICAP;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+4203;SUPPLEMENT TRANSPORT PERSONNE MOBILITE REDUITE;Hospitalisation;Transport;Transport
+4204;FORFAIT TRANSPORT URGENCE EXTRAMUROS CPAM MEUSE;Hospitalisation;Transport;Transport
+4205;FORFAIT TRANSPORT URGENCE INTRAMUROS CPAM MEUSE;Hospitalisation;Transport;Transport
+4206;PRESTATION FIN DE GARDE AMBULANCE;Hospitalisation;Transport;Transport
+4207;FORFAIT TRANSPORT D'URGENCE EXPERIMENTATION CPAM AUDE;Hospitalisation;Transport;Transport
+4208;FORFAIT D'URGENCE SUR APPEL DU SAMU EXPERIMENTATION CPAM BOUCHES-DU-RHONE;Hospitalisation;Transport;Transport
+4209;COMPLEMENT TRANSPORTS D'URGENCE;Hospitalisation;Transport;Transport
+4210;Taxi tarif A;Hospitalisation;Transport;Transport
+4211;SERVICES MOBILES D  URGENCE ET DE REANIMATION (SMUR);Hospitalisation;Transport;Transport
+4212;AMBULANCES AGREEES;Hospitalisation;Transport;Transport
+4213;VEHICULES SANITAIRES LEGERS (VSL);Hospitalisation;Transport;Transport
+4214;TAXIS;Hospitalisation;Transport;Transport
+4215;VEHICULES PERSONNELS;Hospitalisation;Transport;Transport
+4216;TRANSPORT REEDUCATION PROFESSIONNEL;Hospitalisation;Transport;Transport
+4217;Taxi tarif B;Hospitalisation;Transport;Transport
+4218;Taxi tarif C;Hospitalisation;Transport;Transport
+4219;AUTRES MODES DE TRANSPORT;Hospitalisation;Transport;Transport
+4220;Taxi tarif D;Hospitalisation;Transport;Transport
+4221;AMBULANCE AGREEE DE GARDE;Hospitalisation;Transport;Transport
+4222;INDEMNITE DE GARDE AMBULANCIERE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+4224;PRATIQUE DE GEO LOCALISATION PAR DISPOSITIF EMBARQUE;Hospitalisation;Transport;Transport
+4225;FORFAIT TRANSPORT PARTAGE PAR 2 PERSONNES;Hospitalisation;Transport;Transport
+4226;FORFAIT TRANSPORT PARTAGE PAR 3 PERSONNES;Hospitalisation;Transport;Transport
+4229;Taxi tarif F;Hospitalisation;Transport;Transport
+4232;INTERVENTION DURANT GARDE;Hospitalisation;Transport;Transport
+4233;INTERVENTION HORS GARDE;Hospitalisation;Transport;Transport
+4315;AUTOPSIE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+4322;TRANSPORT DU CORPS;Hospitalisation;Transport;Transport
+9112;COMPLEMENT FRAIS DE TRANSPORT ET DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9113;FRAIS OCCASIONNE PAR LE DON D ORGANES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+9114;COMPLEMENT AUX FRAIS D HOSPITALISATION DE LA MERE QUI ALLAITE SON ENFANT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9143;SUPPLEMENT POUR SOINS AUX POLYTRAUMATISES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
+9774;ACTES FOURNITURES SORTIE D'HOSPITALISATION COORDONNEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9901;TRANSPORT POUR PERSONNE ACCOMPAGNANTE (MILITAIRES);Hospitalisation;Transport;Transport
+1066;FORFAIT REGULATEUR SAS;HP;HP;HP
+1138;REMUNERATION ADDITIONNELLE CAPI;HP;HP;HP
+1142;REMUNERATION ADHESION SOPHIA (SOINS DE VILLE);HP;HP;HP
+1143;REMUNERATION RENOUVELLEMENT SOPHIA (SOINS DE VILLE);HP;HP;HP
+1144;REMUNERATION FORFAITAIRE POUR LE SUIVI DES PATIENTS EN POST ALD;HP;HP;HP
+1145;REMUNERATION OBJECTIF MEDECIN ET CENTRES DE SANTE;HP;HP;HP
+1146;REMUNERATION OBJECTIF MEDECIN COMPLEMENT ET CENTRES DE SANTE;HP;HP;HP
+1155;REMU CAS COTISATIONS SOCIALES;HP;HP;HP
+1161;COMPENSATION DE LA PERTE D'ACTIVITE DES PS;HP;HP;HP
+1162;REMUNERATION DES PRATICIENS TERRITORIAUX DE MEDECINE AMBULATOIRE;HP;HP;HP
+1169;REMUNERATION POUR CERTIFICAT DE DECES ;HP;HP;HP
+1171;RÉMUNÉRATION MÉDECIN TRAITANT CENTRES DE SANTÉ;HP;HP;HP
+1195;FOND INNOVATION - PAIEMENT;HP;HP;HP
+1606;FORFAIT CONTRAT DE BONNES PRATIQUES;HP;HP;HP
+1608;FORFAIT CONTRAT DE SANTE PUBLIQUE BIOLOGISTES;HP;HP;HP
+1610;RÉMUNÉRATION CONTRAT D'ACCÈS AUX SOINS DENTAIRES;HP;HP;HP
+1618;COMPLEMENT DE REMUNERATION CHEF DE CLINIQUE;HP;HP;HP
+1621;CONTRAT D'AMELIORATION DE L'ORGANISATION DES SOINS - TRANSPORTS;HP;HP;HP
+1628;DEMO. AIDE FORFAITAIRE GROUPE;HP;HP;HP
+1630;DEMO. ACTIVITE GROUPE;HP;HP;HP
+1637;CONTESTATION POUR AIDE A L'ACTIVITE POUR LES ADHERENTS A L'OPTION DEMOGRAPHIE DANS UN POLE DE SANTE;HP;HP;HP
+1639;CONTESTATION POUR FRAIS DE DEPLACEMENT POUR LES ADHERENTS A L'OPTION SST;HP;HP;HP
+1640;FORFAIT AIDE A L'INSTALLATION DU MEDECIN - CAIM;HP;HP;HP
+1641;MAJORATION AIDE À L'INSTALLATION DU MEDECIN - CAIM;HP;HP;HP
+1642;MAJORATION POUR EXERCICE PARTIEL EN HÔPITAL DE PROXIMITÉ - CAIM;HP;HP;HP
+1643;PAIEMENT AIDE ACTIVITE - CSTM;HP;HP;HP
+1646;AIDE FORFAITAIRE - COSCOM;HP;HP;HP
+1647;REMUNERATION COMPLEMENTAIRE ACCUEIL DE STAGIAIRE - COSCOM;HP;HP;HP
+1648;REMUNERATION COMPLEMENTAIRE EXERCICE EN HOPITAL - COSCOM;HP;HP;HP
+1649;PAIEMENT MAJORATION DE LA REMUNERATION ARS - COSCOM;HP;HP;HP
+1651;PAIEMENT MAJORATION REMUNERATION ARS   COTRAM;HP;HP;HP
+1652;PTMR  -  REMPLACEMENT;HP;HP;HP
+1919;DEPENSES DE MEDECINE FORFAITAIRE (OMNIPRATICIENS ET AUXILIAIRES MEDICAUX);HP;HP;HP
+1920;CONTRAT DEMOGRAPHIQUE SAGE-FEMME;HP;HP;HP
+1924;INDEMNISATION VACATION MEDECINS;HP;HP;HP
+1925;REMUNERATION VACCINATION GRIPPE A PAR MEDECIN RETRAITE ET SALARIES HORS OBLIGATIONS ;HP;HP;HP
+1927;REMUNERATION CPTS ;HP;HP;HP
+1962;VACATION MEDECIN VACCINATION COVID 19;HP;HP;HP
+1991;REMUNERATION REGULATION;HP;HP;HP
+2160;MISSION D'INTERET GENERAL SSR;HP;HP;HP
+2161;FORFAIT MISSION D INTERET GENERAL D AIDE A LA CONTRACTUALISATION;HP;HP;HP
+2176;DIFFERENTIEL SSR REGLEMENTAIRE;HP;HP;HP
+2201;BUDGET GLOBAL;HP;HP;HP
+2202;MEDICALISATION DES PERSONNES AGEES;HP;HP;HP
+2203;SSAD : SERVICE DE SOINS A DOMICILE;HP;HP;HP
+2204;CAMSP: CENTRE ACTION MEDICO-SOCIALE PRECOCE;HP;HP;HP
+2205;CCAA : CENTRE DE CURE AMBULATOIRE EN ALCOOLOGIE;HP;HP;HP
+2249;FORFAIT ACTIVITE ISOLE;HP;HP;HP
+2259;SAISIE MANUELLE DES SEJOURS POUR LEQUELS LE FJ EST SUPERIEUR AU TM;HP;HP;HP
+2263;FORFAIT IFAQ;HP;HP;HP
+2264;FORFAIT IFAQ SSR;HP;HP;HP
+2265;DOTATION MODULEE A L'ACTIVITE;HP;HP;HP
+2371;TARIF SOINS GIR 1 ET 2;HP;HP;HP
+2372;TARIF SOINS GIR 3 ET 4;HP;HP;HP
+2373;TARIF SOINS GIR 5 ET 6;HP;HP;HP
+3126;CONTRAT DEMOGRAPHIQUE KINE;HP;HP;HP
+3144;VACATION HORS MEDECINS VACCI COVID19;HP;HP;HP
+3150;INDEMNITE INFLATION;HP;HP;HP
+3300;REMUNERATION ROSP AOD;HP;HP;HP
+3330;ECART INDEMNISABLE RETROCESSION;HP;HP;HP
+3375;REMUNERATION PHARMACIENS POUR VACCINS H1N1;HP;HP;HP
+3395;Plan personnalisé de santé pharmacie;HP;HP;HP
+3399;REMUNERATION PHARMACIENS POUR VACCINS H1N1 - REGULARISATION COMPTABLE ET SAISIE MANUELLE;HP;HP;HP
+3400;REMUNERATION DISPENSATION ADAPTEE;HP;HP;HP
+3572;ECART TIPS INDEMNISABLE;HP;HP;HP
+3576;PRESTATION PARTICULIERE ET PANDEMIE;HP;HP;HP
+4223;PART ASSOCIATION TRANSPORTEUR;HP;HP;HP
+4228;CONTRAT D'AMELIORATION DE LA QUALITE ET DE LA COORDINATION DES SOINS COMPLEMENT;HP;HP;HP
+4231;COMPLEMENT MINIMUM GARANTI;HP;HP;HP
+4312;FRAIS DE DEPLACEMENT - COLLEGE 3 MEDECINS;HP;HP;HP
+4313;HONORAIRES;HP;HP;HP
+4314;ENQUETE;HP;HP;HP
+4316;FRAIS EXPERTISE AMI;HP;HP;HP
+4323;INDEMNITE ALLOUEE EN REPARATION DES PREJUDICES EXTRA-PATRIMOMIAUX;HP;HP;HP
+4324;INDEMNITE DE CHANGEMENT D  EMPLOI;HP;HP;HP
+4341;FRAIS DE TUTELLE;HP;HP;HP
+4342;COTISATIONS A.T. EN CAS DE READAPTATION FONCTIONNELLE;HP;HP;HP
+4343;COTISATIONS A.T. EN CAS DE REEDUCATION PROFESSIONNELLE;HP;HP;HP
+4351;PRIME DE FIN DE REEDUCATION;HP;HP;HP
+4352;AUTRES PRESTATIONS DIVERSES;HP;HP;HP
+4353;INDEMNITE POUR PERTE DE SALAIRE (MALADIE, AT);Indemnités Journalières;Autres revenus de remplacement;Autres revenus de remplacement
+4368;FORFAIT STRUCTURE CENTRE DE SANTE;HP;HP;HP
+4371;FORFAIT DE SOINS MEDICALISES (REGIME DES MINISTRES DES CULTES ET DES MEMBRES CONGR. ET COLL.RELIGIEUSES);HP;HP;HP
+4372;FORFAIT REPOS CONVALESCENCE (REGIME DES MINISTRES DES CULTES ET DES MEMBRES CONGR. ET COLL.RELIGIEUSES);HP;HP;HP
+4375;AIDE OUTIL DE MISE A JOUR;HP;HP;HP
+4379;AVANCE RÉMUNÉRATION SPÉCIFIQUE CENTRES DE SANTÉ ;HP;HP;HP
+4380;SOLDE RÉMUNÉRATION SPÉCIFIQUE CENTRES DE SANTÉ ;HP;HP;HP
+4391;RESPONSABILITE CIVILE PROFESSIONNELLE;HP;HP;HP
+4411;AIDE SOCIALE;HP;HP;HP
+4412;DISPENSAIRES ANTITUBERCULEUX;HP;HP;HP
+4413;DISPENSAIRES ANTIVENERIENS;HP;HP;HP
+4414;HYGIENE MENTALE;HP;HP;HP
+4415;ETABLISSEMENTS DE LUTTE CONTRE LA TUBERCULOSE;HP;HP;HP
+4416;PROTECTION MATERNELLE ET INFANTILE;HP;HP;HP
+4417;AUTRES PARTICIPATIONS FORFAITAIRES NON INDIVIDUALISEES;HP;HP;HP
+4419;AUTRES DEPENSES NON INDIVIDUALISEES;HP;HP;HP
+4501;CONTROLES MEDICAUX (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+4511;CAPITAL DECES;HP;HP;HP
+4513;FORFAIT CDC RETRAITE TI;HP;HP;HP
+4611;FORFAIT DIVERS PAYES A LA STRUCTURE DE SOINS (FILIERES ET RESEAUX);HP;HP;HP
+4612;FORFAIT D EDUCATION THERAPEUTIQUE ET D INTERESSEMENT (FILIERES ET RESEAUX);HP;HP;HP
+6115;IJ MAJOREES -3MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6116;IJ MAJOREES +3MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6119;IJ MAJOREES + 6 MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6121;IJ PRENATALES;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6213;INDEMNITE DE REMPLACEMENT PATERNITE;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6235;INDEMNITE DE REMPLACEMENT CONJOINTE COLLABORATRICE;Indemnités Journalières;IJ Maladie;IJ Maladie
+6238;INDEMNITES PATERNITE CONJOINT INFIRMIER;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+6239;INDEMNITÉ MALADIE DOUBLE ACTIVITÉ  PAMC;Indemnités Journalières;IJ Maladie;IJ Maladie
+6253;ALLOCATION NUIT MAJOREE  3 ENFANTS - 3 MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6254;ALLOCATION NUIT MAJOREE  3 ENFANTS + 3 MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6255;ALLOCATION NUIT MAJOREE ARRET + 6 MOIS ;Indemnités Journalières;IJ Maladie;IJ majorées
+6256;ALLOCATION NUIT MAJOREE ARRET + 6 MOIS ET 3 ENFANTS;Indemnités Journalières;IJ Maladie;IJ majorées
+6261;ALLOCATION EXPOSITION MAJOREE 3 ENFANTS - 3 MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6262;ALLOCATION EXPOSITION MAJOREE 3 ENFANTS + 3 MOIS;Indemnités Journalières;IJ Maladie;IJ majorées
+6311;RDS IJ MATERNITE;HP;HP;HP
+7113;PENSION INVALIDITE MAJORATIONS POUR ASSISTANCE D  UNE TIERCE PERSONNE;HP;HP;HP
+7119;PENSIONS D  INVALIDITE SERVIES PAR LE REGIME SPECIAL DE SECURITE SOCIALE DANS LES MINES;HP;HP;HP
+8111;RENTES DE VICTIME;HP;HP;HP
+8113;RENTES DE CONJOINT SURVIVANT;HP;HP;HP
+8114;RENTES DE REVERSION;HP;HP;HP
+8115;RENTES D  ORPHELIN;HP;HP;HP
+8116;RENTES D  ASCENDANT;HP;HP;HP
+8117;MAJORATION FAUTE INEXCUSABLE RENTE ASCENDANT;HP;HP;HP
+8118;MAJORATION FAUTE INEXCUSABLE RENTE VICTIME;HP;HP;HP
+8119;MAJORATION FAUTE INEXCUSABLE RENTE CONJOINT;HP;HP;HP
+8120;MAJORATION FAUTE INEXCUSABLE RENTE ORPHELIN;HP;HP;HP
+8222;RACHAT OBLIGATOIRE;HP;HP;HP
+8223;RACHAT FACULTATIF TOTAL;HP;HP;HP
+8224;RACHAT FACULTATIF PARTIEL;HP;HP;HP
+8225;TRANSFERT DE CAPITAUX;HP;HP;HP
+8227;MAJORATION FAUTE INEXCUSABLE INDEMNITE EN CAPITAL;HP;HP;HP
+9115;PERTE DE SALAIRE POUR ENFANT MALADE;Indemnités Journalières;Autres revenus de remplacement;Autres revenus de remplacement
+9116;INDEMNITES JOURNALIERES MATERNITE POUR CERTAINES CATEGORIES D ASSURES;Indemnités Journalières;IJ Maternité / Paternité;IJ Maternité / Paternité
+9122;ALLOCATION DECES;HP;HP;HP
+9135;AIDE FINANCIERE EXCEPTIONNELLE (SECOURS);HP;HP;HP
+9144;HONORAIRES REMUNERANT LA PERMANENCE TELEPHONIQUE SUR LA BASE DE 3 C DE L HEURE (ASTREINTE);HP;HP;HP
+9151;PLAN SEGUIN;HP;HP;HP
+9152;PLAN EVIN;HP;HP;HP
+9161;PRESTATIONS SUPPLEMENTAIRES ALSACE-MOSELLE;HP;HP;HP
+9162;SURVEILLANCE MEDICALE MATERNELLE EN ACTION SANITAIRE ET SOCIALE;HP;HP;HP
+9163;CENTRE EXAMEN SANTE  SAISIE MANUELLE;HP;HP;HP
+9164;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9165;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9166;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9167;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9168;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9169;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9170;PRESTATIONS D ASS SNCF ET REGIME GENERAL;HP;HP;HP
+9425;TM POUR DC (MSA);HP;HP;HP
+9426;TM POUR SC(MSA);HP;HP;HP
+9427;TM POUR Z(MSA);HP;HP;HP
+9567;REMUNERATION ADHESION SOPHIA (PREVENTION);HP;HP;HP
+9568;REMUNERATION RENOUVELLEMENT SOPHIA (PREVENTION);HP;HP;HP
+9701;COMPLEMENT D ACTION SOCIALE APPAREIL DE SURDITE (CLERCS ET EMPLOYES DE NOTAIRES, PORT AUTONOME DE BORDEAUX);HP;HP;HP
+9702;COMPLEMENT D ACTION SOCIALE BRIDGE (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9703;COMPLEMENT D ACTION SOCIALE DENTAIRE (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9704;COMPLEMENT D ACTION SOCIALE PROTHESES DENTAIRES (CLERCS ET EMPLOYES DE NOTAIRES, PORT AUTONOME DE BORDEAUX);HP;HP;HP
+9705;COMPLEMENT D ACTION SOCIALE DENTAIRE ALSACE MOSELLE (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9706;COMPLEMENT D ACTION SOCIALE OPTIQUE (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9707;COMPLEMENT D ACTION SOCIALE OPTIQUE, ENFANT DE MOINS DE 16 ANS (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9708;COMPLEMENT D ACTION SOCIALE MONTURES (CLERCS ET EMPLOYES DE NOTAIRES, PORT AUTONOME DE BORDEAUX);HP;HP;HP
+9709;COMPLEMENT D ACTION SOCIALE VERRES (CLERCS ET  EMPLOYES DE NOTAIRES, PORT AUTONOME DE BORDEAUX);HP;HP;HP
+9710;COMPLEMENT D ACTION SOCIALE LENTILLES (CLERCS ET EMPLOYES DE NOTAIRES, PORT AUTONOME DE BORDEAUX);HP;HP;HP
+9713;AIDE AUX SEJOURS DES ENFANTS (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9714;ALLOCATION VACANCES (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9715;AIDES FINANCIERES INDIVIDUELLES OPTIQUE;HP;HP;HP
+9716;ACTION SOCIALE DENTAIRE;HP;HP;HP
+9717;ACTION SOCIALE AUDITIF;HP;HP;HP
+9719;AIDES FINANCIERES INDIVIDUELLES HOSPITALISATION;HP;HP;HP
+9721;AIDES FINANCIERES INDIVIDUELLES DIFFICULTES FINANCIERES;HP;HP;HP
+9722;AIDES FINANCIERES INDIVIDUELLES AUTRES;HP;HP;HP
+9723;VACANCES RETRAITES (CLERCS ET EMPLOYES DE NOTAIRES);HP;HP;HP
+9732;AIDE A L'ACQUISITION D'UNE COUVERTURE COMPLEMENTAIRE POUR LES VICTIMES DU SEUIL ACS;HP;HP;HP
+9741;AIDES AU LOGEMENT;HP;HP;HP
+9742;AIDE A LA COMMUNICATION HORS AUDITIF;HP;HP;HP
+9744;AUTRES TYPES D AIDES;HP;HP;HP
+9751;FOURNITURES ET ACCESSOIRES NON REMBOURSABLES;HP;HP;HP
+9763;AIDES FINANCIERES A CARACTERE SOCIAL AFFECTEES AU LOGEMENT;HP;HP;HP
+9764;AIDES FINANCIERES A CARACTERE SOCIAL AFFECTEES AUX BESOINS ALIMENTAIRES ET VESTIMENTAIRES;HP;HP;HP
+9765;AIDES FINANCIERES A CARACTERE SOCIAL AFFECTEES AUX FRAIS DE SCOLARISATION;HP;HP;HP
+9766;AIDES FINANCIERES A CARACTERE SOCIAL AFFECTEES AUX REGLEMENTS D'IMPOTS TAXES ET PRIMES;HP;HP;HP
+9767;AIDES FINANCIERES A CARACTERE SOCIAL D'ATTENTE DE VERSEMENT DE REVENUS DE SUBSTITUTION;HP;HP;HP
+9768;AIDES FINANCIERES A CARACTERE SOCIAL AFFECTEES AUX FRAIS D'OBSEQUES;HP;HP;HP
+9769;AIDES FINANCIERES A CARACTERE SOCIAL PALLIANT L'ABSENCE DE REVENUS;HP;HP;HP
+9772;AIDES MENAGERES;HP;HP;HP
+9773;AIDES MENAGERES SORTIE D'HOSPITALISATION COORDONNEE;HP;HP;HP
+9778;BILANS DE COMPETENCES ET REORIENTATION PROFESSIONNELLE;HP;HP;HP
+9801;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9802;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9803;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9804;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9805;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9806;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9807;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9808;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9809;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9810;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9811;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9812;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9813;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9814;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9815;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9816;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9817;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9818;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9819;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9820;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9821;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9822;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9823;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9824;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9825;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9826;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9827;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9828;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9829;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9830;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9831;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9832;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9833;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9834;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9835;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9836;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9837;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9838;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9839;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9840;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9841;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9842;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9843;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9844;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9845;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9846;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9847;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9848;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9849;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9850;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9851;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9852;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9853;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9854;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9855;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9856;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9857;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9858;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9859;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9860;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9861;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9862;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9863;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9864;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9865;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9866;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9867;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9868;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9869;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9870;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9871;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9872;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9873;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9874;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9875;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9876;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9877;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9878;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9879;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9880;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9881;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9882;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9883;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9884;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9885;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9886;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9887;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9888;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9889;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9890;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9891;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9892;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9893;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9894;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9895;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9896;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9897;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9898;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9899;CODES MIS A LA DISPOSITION DE LA SNCF;HP;HP;HP
+9902;AIDE SOCIALE (MILITAIRES);HP;HP;HP
+9911;AIDE MENAGERE;HP;HP;HP
+9912;AIDE MENAGERE FAMILIALE (MILITAIRES);HP;HP;HP
+9999;VALEUR INCONNUE;HP;HP;HP
+1522;MAJORATION ASTREINTE;Optique;Optique Monture;Optique Monture divers
+3500;VERRE DE CLASSE B, UNIFOCAL SPHERO-CYLINDRIQUE A SPHERE POSITIVE COMPLEXE;Optique;Optique Verres;Optique Verres
+3501;VERRE DE CLASSE B, UNIFOCAL SPHERO-CYLINDRIQUE A SPHERE NEGATIVE TRES COMPLEXE;Optique;Optique Verres;Optique Verres
+3502;VERRE DE CLASSE B, UNIFOCAL SPHERO-CYLINDRIQUE A SPHERE POSITIVE SIMPLE;Optique;Optique Verres;Optique Verres
+3503;VERRE DE CLASSE B, UNIFOCAL SPHERO-CYLINDRIQUE A SPHERE NEGATIVE SIMPLE;Optique;Optique Verres;Optique Verres
+3504;VERRE DE CLASSE B, NEUTRE OU UNIFOCAL SPHERIQUE SIMPLE;Optique;Optique Verres;Optique Verres
+3505;MONTURE ENFANT DE CLASSE A;Optique;Optique Monture;Optique Monture Enfant
+3506;MONTURE ADULTE DE CLASSE A;Optique;Optique Monture;Optique Monture Adulte
+3507;VERRE DE CLASSE A, MULTIFOCAL OU PROGRESSIF TRES COMPLEXE;Optique;Optique Verres;Optique Verres
+3508;VERRE DE CLASSE A, MULTIFOCAL OU PROGRESSIF COMPLEXE;Optique;Optique Verres;Optique Verres
+3509;VERRE DE CLASSE A, UNIFOCAL COMPLEXE;Optique;Optique Verres;Optique Verres
+3510;VERRE DE CLASSE A, NEUTRE OU UNIFOCAL SIMPLE;Optique;Optique Verres;Optique Verres
+3519;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERO-CYLINDRIQUE A SPHERE NEGATIVE SIMPLE;Optique;Optique Verres;Optique Verres
+3520;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERO-CYLINDRIQUE A SPHERE POSITIVE SIMPLE;Optique;Optique Verres;Optique Verres
+3523;MONTURE MOINS DE 18 ANS CMU;Optique;Optique Monture;Optique Monture Enfant
+3524;OPTIQUE ENFANT -A- MULTIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3525;OPTIQUE ENFANT -B- MULTIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3526;FORFAIT OPTIQUE -N° 6 MULTIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3527;OPTIQUE -ENFANT-N°1 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3528;OPTIQUE -ENFANT-N°2 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3529;FORFAIT OPTIQUE -ENFANT-N° 3 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3530;FORFAIT OPTIQUE -ENFANT-N° 4 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3531;OPTIQUE MEDICALE PROPREMENT DIT;Optique;Optique Verres;Optique Verres
+3532;MONTURE/LUNETTE POUR ENFANT DE - DE 18 ANS CRPCEN (HORS CODAGE LPP);Optique;Optique Monture;Optique Monture Enfant
+3533;VERRES / VERRES POUR ENFANT<18 ans -CRPCEN- (hors codage LPP);Optique;Optique Verres;Optique Verres
+3534;REPARATION;Optique;Optique Verres;Optique Verres
+3535;LENTILLES OPTIQUES;Optique;Optique Lentille;Optique Lentille Remboursee
+3536;VERRES UNIFOCAUX OP1 (CMU);Optique;Optique Verres;Optique Verres
+3537;VERRES UNIFOCAUX OP2 (CMU);Optique;Optique Verres;Optique Verres
+3538;VERRES UNIFOCAUX OP3 (CMU);Optique;Optique Verres;Optique Verres
+3539;VERRES UNIFOCAUX OP4 (CMU);Optique;Optique Verres;Optique Verres
+3553;OPTIQUE -ENFANT-N°5 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3554;OPTIQUE -ENFANT-N°6 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3555;OPTIQUE -ENFANT-N°7 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3556;OPTIQUE -ENFANT-N°8 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3557;OPTIQUE -ENFANT-N°9 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+3559;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERIQUE SIMPLE;Optique;Optique Verres;Optique Verres
+3560;VERRE DE CLASSE B, UNIFOCAL SPHERIQUE COMPLEXE;Optique;Optique Verres;Optique Verres
+3562;VERRE DE CLASSE B, UNIFOCAL SPHERO-CYLINDRIQUE A SPHERE NEGATIVE COMPLEXE;Optique;Optique Verres;Optique Verres
+3563;MONTURE ADULTE DE CLASSE B;Optique;Optique Monture;Optique Monture Adulte
+3564;MONTURE ENFANT DE CLASSE B;Optique;Optique Monture;Optique Monture Enfant
+3565;OPTIQUE - ADAPTATION VERRE DE CLASSE A;Optique;Optique Verres;Optique Verres
+3566;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERIQUE COMPLEXE;Optique;Optique Verres;Optique Verres
+3567;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERO-CYLINDRIQUE A SPHERE NEGATIVE COMPLEXE;Optique;Optique Verres;Optique Verres
+3568;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERO-CYLINDRIQUE A SPHERE NEGATIVE TRES COMPLEXE;Optique;Optique Verres;Optique Verres
+3569;VERRE DE CLASSE B, MULTIFOCAL OU PROGRESSIF SPHERO-CYLINDRIQUE A SPHERE POSITIVE COMPLEXE;Optique;Optique Verres;Optique Verres
+3570;OPTIQUE - AUTRE SUPPLEMENT;Optique;Optique Verres;Optique Verres
+3578;OPTIQUE CLASSE A - SUPPLEMENT POUR MONTURE DE LUNETTES A COQUE - MOINS DE 6 ANS;Optique;Optique Monture;Optique Monture divers
+3579;OPTIQUE CLASSE B - SUPPLEMENT POUR MONTURE DE LUNETTES A COQUE - MOINS DE 6 ANS;Optique;Optique Monture;Optique Monture divers
+3580;OPTIQUE - ADAPTATION VERRE DE CLASSE B;Optique;Optique Verres;Optique Verres
+3581;VERRES UNIFOCAUX OP5(CMU);Optique;Optique Verres;Optique Verres
+3582;VERRES UNIFOCAUX OP6(CMU);Optique;Optique Verres;Optique Verres
+3583;MONTURE (CMU);Optique;Optique Monture;Optique Monture divers
+3584;OPTIQUE - APPAIRAGE NIVEAU 1, 2 OU 3 VERRE DE CLASSE A;Optique;Optique Verres;Optique Verres
+3585;OPTIQUE ¿ SUPPLEMENT POUR VERRES TEINTES (PLAFONNE);Optique;Optique Verres;Optique Verres
+5101;FORFAIT VERRES UNIFOCAUX OP1;Optique;Optique Verres;Optique Verres
+5102;FORFAIT VERRES UNIFOCAUX OP2;Optique;Optique Verres;Optique Verres
+5103;FORFAIT VERRES UNIFOCAUX OP3;Optique;Optique Verres;Optique Verres
+5104;FORFAIT VERRES UNIFOCAUX OP4;Optique;Optique Verres;Optique Verres
+5105;FORFAIT VERRES UNIFOCAUX OP5;Optique;Optique Verres;Optique Verres
+5106;FORFAIT VERRES UNIFOCAUX OP6;Optique;Optique Verres;Optique Verres
+5107;FORFAIT MONTURE CMU;Optique;Optique Monture;Optique Monture divers
+5108;FORFAIT CMUC MONTURE MOINS DE 18 ANS OME;Optique;Optique Monture;Optique Monture Enfant
+5109;TM DU FORFAIT OPTIQUE -ENFANT-N° 1 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5110;TM DU FORFAIT OPTIQUE -ENFANT-N° 2 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5111;FORFAIT MONTURE MOINS DE 18 ANS CMU OV3;Optique;Optique Monture;Optique Monture Enfant
+5112;FORFAIT MONTURE MOINS DE 18 ANS CMU OV4;Optique;Optique Monture;Optique Monture Enfant
+5113;FORFAIT MONTURE MOINS DE 18 ANS CMU OV5;Optique;Optique Monture;Optique Monture Enfant
+5114;TM DU FORFAIT OPTIQUE -ENFANT-N° 6 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5115;TM DU FORFAIT OPTIQUE -ENFANT-N° 7 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5116;TM DU FORFAIT OPTIQUE -ENFANT-N° 8 UNIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5117;FORFAIT MONTURE MOINS DE 18 ANS CMU OV9;Optique;Optique Monture;Optique Monture Enfant
+5118;TM DU FORFAIT OPTIQUE ENFANT -A- MULTIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5119;TM DU FORFAIT OPTIQUE ENFANT -B- MULTIFOCAUX (CMU);Optique;Optique Verres;Optique Verres
+5120;FORFAIT MONTURE MOINS DE 18 ANS CMU OP7;Optique;Optique Monture;Optique Monture Enfant
+5121;FORFAIT C2S - VERRE DE CLASSE A, NEUTRE OU UNIFOCAL SIMPLE;Optique;Optique Verres;Optique Verres
+5122;FORFAIT C2S - VERRE DE CLASSE A, UNIFOCAL COMPLEXE;Optique;Optique Verres;Optique Verres
+5123;FORFAIT C2S - VERRE DE CLASSE A, MULTIFOCAL OU PROGRESSIF COMPLEXE;Optique;Optique Verres;Optique Verres
+5124;FORFAIT C2S - VERRE DE CLASSE A, MULTIFOCAL OU PROGRESSIF TRES COMPLEXE;Optique;Optique Verres;Optique Verres
+5125;FORFAIT C2S - MONTURE ADULTE DE CLASSE A;Optique;Optique Monture;Optique Monture Adulte
+5126;FORFAIT C2S - MONTURE ENFANT DE CLASSE A;Optique;Optique Monture;Optique Monture Enfant
+5127;FORFAIT C2S - OPTIQUE - ADAPTATION VERRE DE CLASSE A;Optique;Optique Verres;Optique Verres
+5129;FORFAIT C2S - OPTIQUE - APPAIRAGE NIVEAU 1, 2 OU 3 VERRE DE CLASSE A;Optique;Optique Verres;Optique Verres
+5130;FORFAIT C2S - OPTIQUE ¿ SUPPLEMENT POUR VERRES TEINTES (PLAFONNE);Optique;Optique Verres;Optique Verres
+8112;MAJORATIONS POUR ASSISTANCE D  UNE TIERCE PERSONNE;Optique;Optique Monture;Optique Monture divers
+1052;REMU BIOSIMILAIRE;Pharmacie;pharmacie;Pharmacie Autres
+1923;EXAMEN DE SUIVI POST NATAL;Pharmacie;Pharmacie;Pharmacie Autres
+1926;ACTE DE VACCINATION GRIPPE A/H1N1;Pharmacie;Pharmacie;Vaccin
+1928;REMUNERATION VACCINATION COVID 19;Pharmacie;Pharmacie;Vaccin
+1929;ACTE DE VACCINATION COVID 19;Pharmacie;Pharmacie;Vaccin
+1930;ACTE D INJECTION DU VACCIN COVID19;Pharmacie;Pharmacie;Vaccin
+1959;ADMINISTRATION  VACCIN;Pharmacie;Pharmacie;Vaccin
+1972;FRANCHISE TIERS PAYANT SUR MEDICAMENT;Pharmacie;Pharmacie;Pharmacie Autres
+1974;FRANCHISE TIERS PAYANT SUR TRANSPORT;Pharmacie;Pharmacie;Pharmacie Autres
+1976;FRANCHISE TIERS PAYANT ACTE D'AUXILIAIRE MEDICAUX;Pharmacie;Pharmacie;Pharmacie Autres
+1978;PARTICIPATION ASSURE EN TIERS PAYANT TRANSMISE SANS ACTE DE REFERENCE OU TYPE DE FRANCHISES;Pharmacie;Pharmacie;Pharmacie Autres
+2166;ADMINISTRATION DE MEDICAMENTS EN ENVIRONNEMENT HOSPITALIER;Pharmacie;Pharmacie;Pharmacie Autres
+2231;FORFAIT PHARMACEUTIQUE;Pharmacie;Pharmacie;Pharmacie Autres
+2335;FORFAIT DE PANSEMENT;Pharmacie;Pharmacie;Pharmacie Autres
+2415;MEDICAMENTS: MIFEYGINE;Pharmacie;Pharmacie;Pharmacie Autres
+2416;MEDICAMENTS: PROSTAGLANDINES;Pharmacie;Pharmacie;Pharmacie Autres
+2418;VERIFICATION ECHOGRAPHIQUE;Pharmacie;Pharmacie;Pharmacie Autres
+2422;FORFAIT POUR IVG MEDICAMENTEUSE;Pharmacie;Pharmacie;Pharmacie Autres
+2428;ECHO PRE IVG;Pharmacie;Pharmacie;Pharmacie Autres
+3304;PAIEMENT QUALITE DE SERVICE PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3305;CONTESTATION QUALITE DE SERVICE PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3306;BILAN MEDICATION REMUNERATION PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3307;BILAN MEDICATION CONTESTATION PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3311;PHARMACIE 100%;Pharmacie;Pharmacie;Pharmacie 100%
+3312;PHARMACIE PH4;Pharmacie;Pharmacie;Pharmacie Autres
+3313;PHARMACIE 65%;Pharmacie;Pharmacie;Pharmacie 65%
+3314;HORMONE DE CROISSANCE;Pharmacie;Pharmacie;Pharmacie Autres
+3315;MEDICAMENTS ANTIRETROVIRAUX;Pharmacie;Pharmacie;Pharmacie Autres
+3316;MEDICAMENTS D  EXCEPTION;Pharmacie;Pharmacie;Pharmacie Autres
+3317; PHARMACIE HOSPITALIERE A 100%;Pharmacie;Pharmacie;Pharmacie 100%
+3318; PHARMACIE HOSPITALIERE A 65%;Pharmacie;Pharmacie;Pharmacie 65%
+3319; PHARMACIE HOSPITALIERE ;Pharmacie;Pharmacie;Pharmacie Autres
+3320;PHARMACIE HOSPITALIERE EN SUS DU GHS;Pharmacie;Pharmacie;Pharmacie Autres
+3322;MAJORATION POUR ACHAT HORS HEURES OUVRABLES;Pharmacie;Pharmacie;Pharmacie Autres
+3323;COPIE D  ORDONNANCE;Pharmacie;Pharmacie;Pharmacie Autres
+3324;ECART MEDICAMENT INDEMNISABLE;Pharmacie;Pharmacie;Pharmacie Autres
+3325;MAJORATION PHARMACIE DES ILES;Pharmacie;Pharmacie;Pharmacie Autres
+3326;PREPARATION MAGISTRALE REMBOURSABLE;Pharmacie;Pharmacie;Pharmacie Autres
+3327;PREPARATION MAGISTRALE HOMEOPATHIQUE;Pharmacie;Pharmacie;Pharmacie Autres
+3328;MEDICAMENTS  HOMEOPATHIQUES UNITAIRES;Pharmacie;Pharmacie;Pharmacie Autres
+3329;FORFAIT MEDICAMENT IVG VILLE;Pharmacie;Pharmacie;Pharmacie Autres
+3331;VACCIN ANTI-GRIPPE;Pharmacie;Pharmacie;Vaccin
+3332;VACCIN ROR;Pharmacie;Pharmacie;Vaccin
+3334;Vaccin anti grippe Hémisphère Sud VAXIGRIP HS  ;Pharmacie;Pharmacie;Vaccin
+3335;Vaccin anti grippe Hémisphère Sud FLUARIX HS  ;Pharmacie;Pharmacie;Vaccin
+3336;PHARMACIE SOUS ATU SEJOUR;Pharmacie;Pharmacie;Pharmacie Autres
+3341;PHARMACIE 15%;Pharmacie;Pharmacie;Pharmacie 15%
+3342;PREPARATION MAGISTRALE ALLOPATHIQUE 15 %;Pharmacie;Pharmacie;Pharmacie Autres
+3343;PREPARATION MAGISTRALE ALLOPATHIQUE;Pharmacie;Pharmacie;Pharmacie Autres
+3351;MEDICAMENT AVEC UNE AUTORISATION TEMPORAIRE D'UTILISATION;Pharmacie;Pharmacie;Pharmacie Autres
+3352;PREPARATION MAGISTRALE HOSPITALIRE;Pharmacie;Pharmacie;Pharmacie Autres
+3353;PREPARATION HOSPITALIERE;Pharmacie;Pharmacie;Pharmacie Autres
+3354;MEDICAMENT AVEC AUTORISATION D'IMPORTATION;Pharmacie;Pharmacie;Pharmacie Autres
+3355;MARGE FORFAITAIRE (MEDICAMENTS HOSPITALIERS);Pharmacie;Pharmacie;Pharmacie Autres
+3356;PHARMACIE HOSPITALIERE DEROGATOIRE;Pharmacie;Pharmacie;Pharmacie Autres
+3357;PHARMACIE HOSPITALIERE MMH;Pharmacie;Pharmacie;Pharmacie Autres
+3359;TROD ANGINE PHARMACIEN;Pharmacie;Pharmacie;Pharmacie Autres
+3360;VACCINATION GRIPPE PHARMACIEN;Pharmacie;Pharmacie;Vaccin
+3361;GARDE PHARMACIE NUIT;Pharmacie;Pharmacie;Pharmacie Autres
+3362;GARDE PHARMACIE FERIE;Pharmacie;Pharmacie;Pharmacie Autres
+3363;GARDE PHARMACIE DIMANCHE;Pharmacie;Pharmacie;Pharmacie Autres
+3364;HONORAIRE MEDICAMENT REMBOURSABLE;Pharmacie;Pharmacie;Pharmacie Autres
+3365;HONORAIRE DISPENSATION EN LIEN AVEC AGE;Pharmacie;Pharmacie;Pharmacie Autres
+3366;HONORAIRE DE DISPENSATION MEDICAMENTS SPECIFIQUES;Pharmacie;Pharmacie;Pharmacie Autres
+3371;PAIEMENT PONCTUEL PHARMACIE COVID;Pharmacie;Pharmacie;Pharmacie Autres
+3372;PAIEMENT PONCTUEL PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3373;PHARMACIE EN SUS DU GMT;Pharmacie;Pharmacie;Pharmacie Autres
+3374;KIT ANTI-GRIPPE;Pharmacie;Pharmacie;Pharmacie Autres
+3377;SPECIALITE PHARMACEUTIQUE ONEREUSE SSR;Pharmacie;Pharmacie;Pharmacie Autres
+3379;Honoraire de dispensation spécifique vaccins anti grippaux Hémisphère Sud;Pharmacie;Pharmacie;Vaccin
+3381;PREPARATION PHARMACEUTIQUE INDIVIDUALISEE (ALLERGENES);Pharmacie;Pharmacie;Pharmacie Autres
+3382;PRISE EN CHARGE DEROGATOIRE PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3383;HONO DISP 1 ;Pharmacie;Pharmacie;Pharmacie Autres
+3384;HONO DISP 2 ;Pharmacie;Pharmacie;Pharmacie Autres
+3385;HONO DISP 4 ;Pharmacie;Pharmacie;Pharmacie Autres
+3386;HONO DISP 7 ;Pharmacie;Pharmacie;Pharmacie Autres
+3387;HONO DISP GC 1 ;Pharmacie;Pharmacie;Pharmacie Autres
+3388;HONO DISP GC 2 ;Pharmacie;Pharmacie;Pharmacie Autres
+3389;HONO DISP GC 4 ;Pharmacie;Pharmacie;Pharmacie Autres
+3390;HONO DISP GC 7 ;Pharmacie;Pharmacie;Pharmacie Autres
+3402;TELESOINS PHARMACIE;Pharmacie;Pharmacie;Pharmacie Autres
+3403;REMUNERATION PHARMACIEN COVID 19;Pharmacie;Pharmacie;Pharmacie Autres
+3410;DISPENSATION PHARMACIE A DOMICILE;Pharmacie;Pharmacie;Pharmacie Autres
+3411;SANG,PLASMA ET LEURS DERIVES;Pharmacie;Pharmacie;Pharmacie Autres
+3413;LAIT HUMAIN;Pharmacie;Pharmacie;Pharmacie Autres
+3414;AUTRES PRODUITS D  ORIGINE HUMAINE;Pharmacie;Pharmacie;Pharmacie Autres
+3415;RAPPEL VACCIN ADULTE PHARMACIEN;Pharmacie;Pharmacie;Vaccin
+3416;PHIE DEPISTAGE INFECTION URINAIRE;Pharmacie;Pharmacie;Pharmacie Autres
+3418;REMU PHIE DEP INFEC URINAIRE;Pharmacie;Pharmacie;Pharmacie Autres
+3419;REMU PHIE DISPENSATION DOM;Pharmacie;Pharmacie;Pharmacie Autres
+3420;REMU PHIE DISPENSATION UNITE;Pharmacie;Pharmacie;Pharmacie Autres
+3421;PHIE EN AAC ET AAP - SEJOUR SSR;Pharmacie;Pharmacie;Pharmacie Autres
+3515;ARTICLES DE PANSEMENTS (CHAP. 4);Pharmacie;Pharmacie;Pharmacie Autres
+3516;NUTRIMENTS POUR INTOLERANTS AU GLUTEN (CHAP. 3);Pharmacie;Pharmacie;Pharmacie Autres
+3517;ALIMENTS DESTINES A DES FINS MEDICALES;Pharmacie;Pharmacie;Pharmacie Autres
+3574;DISPOSITIF MEDICAL (PRISE EN CHARGE EXCEPTIONNELLE);Pharmacie;Pharmacie;Pharmacie Autres
+3577;DELIVRANCE TAG PHIE;Pharmacie;Pharmacie;Pharmacie Autres
+3596;DELIVRANCE DE MASQUE;Pharmacie;Pharmacie;Pharmacie Autres
+3598;DELIVRANCE AUTOTESTS EN PHIE;Pharmacie;Pharmacie;Pharmacie Autres
+3599;REALISATION TAG EN PHIE;Pharmacie;Pharmacie;Pharmacie Autres
+4382;PHARMACIE NON REMBOURSABLE;Pharmacie;Pharmacie;Pharmacie Autres
+9211;VACCIN (MILITAIRES) / VACCIN GRIPPE (CRPCEN);Pharmacie;Pharmacie;Vaccin
+9430;TM DE L'ACTE DE VACCINATION GRIPPE A/H1N1;Pharmacie;Pharmacie;Vaccin
+9566;TRAITEMENT NICOTINIQUE DE SUBSTITUTION;Pharmacie;Pharmacie;Pharmacie Autres
+9762;AIDES FINANCIERES INDIVIDUELLES PHARMACIE/LPP;Pharmacie;pharmacie;Pharmacie Autres
+9777;PHARMACIE NON REMBOURSABLE SOINS PALLIATIFS;Pharmacie;Pharmacie;Pharmacie Autres
+1069;SUPP. IMAGERIE EN COUPE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1070;BIO MEDICALE CLASSE AGE 2;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+1071;BIO MEDICALE CLASSE AGE 3;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+1086;TELESOINS SF;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1088;AIDE ASSISTANT MEDICAL ;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1100;PROTOCOLE MURAINE - BILAN VISUEL ;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1159;renouvellement d'optique;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1316;ACTES DE DIAGNOSTIC COTES KE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1320;FORFAIT RADIOGRAPHIE,ECHOGRAPHIE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1324;ACTE D'ECHOGRAPHIE CCAM;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1331;ACTES DE RADIOLOGIE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1332;ACTES DE RADIOLOGIE NUCLEAIRE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1333;MAJORATION POUR PRODUIT RADIOPHARMACEUTIQUE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1335;ACTE DE RADIOLOGIE MAMMOGRAPHIE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1336;ACTE DE RADIOLOGIE MAMMOGRAPHIE DEPISTAGE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1342;MAJORATION ANATOMO-CYTO-PATHOLOGIE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+1351;ACTE D'IMAGERIE (hors ECHOGRAPHIE) CCAM;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1433;ACTES EN SC (ET SCA POUR LA CRPCEN);Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1435;PREVENTION BUCCO-DENTAIRE: RADIO DEUX CLICHES-MATER;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1436;PREVENTION BUCCO-DENTAIRE: RADIO QUATRE CLICHES-MATER;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1439;BUCCO DENT. CONSULTATION ET RADIO PANORAMIQUE MATERNITE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+1512;FORFAIT D  ACCOUCHEMENT MULTIPLE DES SAGES-FEMMES (FORFAIT N92);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1607;FORFAIT CONTRAT DE SANTE PUBLIQUE INFIRMIER;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1707;CDS INFIRMIER OPTANT FORF DEBUT;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1708;CDS INFIRMIER OPTANT FORF FIN;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1841;INDEMNITES FORFAITAIRES DE DEPLACEMENT;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1842;INDEMNITES FORFAITAIRES DE DEPLACEMENT DES AUXILIAIRES MEDICAUX ET ASSIMILES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1847;INDEMNITES FORFAITAIRES DE DEPLACEMENT DE SORTIE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1848;INDEMNITES FORFAITAIRES DEPLACEMENT INFIRMIERS;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1849;INDEMNITE FORFAITAIRE DEPLACEMENT MK PERS. AGEE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1907;REMUNERATION DES SOINS DE PROXIMITE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1911;ACTES DES SAGES-FEMMES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1913;MAJORATION MILIEU DE NUIT;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1939;MAJORATION SAGE-FEMME;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+1940;FORFAIT SORTIE PRECOCE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+2332;READAPTATION FONCTIONNELLE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+2333;REEDUCATION PROFESSIONNELLE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+2351;FORFAIT TECHNIQUE NORMAL IRMN -SCANNERS;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2352;FORFAIT TECHNIQUE REDUIT IRMN -SCANNERS;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2353;FORFAIT TECHNIQUE SCANNER (SPP expo amiante);Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2354;FORFAIT TECHNIQUE TOMOGRAPHIE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2355;FORFAIT CONCOMMABLE MEDECINE NUCLEAIRE 01;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2356;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 02;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2357;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 03;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2358;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 04;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2359;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 05;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2360;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 06;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2361;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 07;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2362;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 08;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2363;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 09;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2364;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 10;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2365;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 11;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2366;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 12;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2367;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 13;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2368;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 14;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2369;FORFAIT CONSOMMABLE MEDECINE NUCLEAIRE 15;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2391;FORFAIT TECHNIQUE TARIF REDUIT N°2;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2392;FORFAIT TECHNIQUE TARIF REDUIT N°3;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+2413;INVESTIGATIONS BIOLOGIQUES;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+2417;VERIFICATION BIOLOGIQUE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+2504;FORFAIT FIR EDUCATION THERAPEUTIQUE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3106;SOINS INFIRMIERS EXTERNALISES (PEC LOURDE);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3107;SOINS INFIRMIERS EXTERNALISES (PEC INTERMEDIAIRE);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3108;SOINS INFIRMIERS EXTERNALISES (PEC LEGERE);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3109;Majoration Infirmier Enfant;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3110;CONTRAT INCITATIF INFIRMIER;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3111;ACTES EN AMI;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3112;ACTES INFIRMIERS DE SOINS (AMI3-AMI13,AMI16);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3113;ACTES INFIRMIERS DES SAGES-FEMMES (SFI);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3115;DEMARCHE INFIRMIER;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3116;MAJORATION POUR ACTE UNIQUE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3117;MAJORATION DE COORDINATION ET D'ENVIRONNEMENT DE SOIN INFIRMIER;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3118;REMUNERATION VACCINATION GRIPPE A PAR INFIRMIERS LIBERAUX;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3119;REMUNERATION VACCINATION GRIPPE A PAR INFIRMIER RETRAITE OU SALARIE HORS OBLIGATIONS ;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3120;SOINS INFIRMIERS EXTERNALISES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3121;ACTES AMC;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3122;ACTES EN AMK;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3124;FORFAIT TROUBLES NEURO-DEVELOPPEMENT;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3125;ACTES DE KINESITHERAPIE OSTEO-ARTICULAIRE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3127;FORFAIT PRISE EN CHARGE AVC;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3128;RETOUR A DOMICILE POST CHIRURGIE ORTHOPEDIQUE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3129;PRATIQUE AVANCEE INFIRMIER MIP;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3130;PRATIQUE AVANCEE INFIRMIER PAI;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3131;ACTES DES PEDICURES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3132;ACTES DES ORTHOPHONISTES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3133;ACTES DES ORTHOPTISTES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3134;ACTE DE PEDICURE-PODOLOGUE (DIABETIQUE);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3135;FORFAIT EVALUATION DOMICILE HANDICAP;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3136;MAJORATION ENFANT - ORTHOPHONIE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3137;FORFAIT POST HOSPITALISATION - ORTHOPHONIE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3138;FORFAIT EVALUATION DOMICILE HANDICAP - ORTHOPHONIE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3139;CONTRAT INCITATIF ORTHOPHONISTE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3140;TELESOINS INFIRMIERS;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3141;TELESOINS PODOLOGUES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3142;TELESOINS ORTHOPHONISTES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3143;TELESOINS ORTHOPTISTES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3157;REEDUC PERSONNE AGEE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3158;REEDUC BRULURES;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3211;ACTES DE BIOLOGIE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3212;ACTES D  ANATOMO-CYTO-PATHOLOGIE EN LABORATOIRE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3213;FORFAIT PREALABLE BIOLOGIE IVG VILLE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3216;FORFAIT ULTERIEUR BIOLOGIE IVG VILLE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3221;PRELEVEMENT AUTRE QUE SANGUIN PAR UN DIRECTEUR DE LABORATOIRE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3222;PRELEVEMENT SANGUIN PAR UN DIRECTEUR DE LABORATOIRE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3223;PRELEVEMENT;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3225;PRELEVEMENT PAR PONCTION VEINEUSE DIRECTE POUR UN MEDECIN BIOLOGISTE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+3309;CODE TRACEUR ACCOMPAGNEMENT;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3404;ENTRETIEN FEMME ENCEINTE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+3405;REMUNERATION LABO TESTS PCR COVID 19;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Remuneration test PCR
+4325;INDEMNITE COMPLEMENTAIRE POUR REEDUCATION PROFESSIONNELLE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+6191;INDEMNITE DE NOURRITURE;Indemnités Journalières;IJ Maladie;IJ Maladie
+9123;COMPLEMENT MALADIES CHRONIQUES ET MAINTIEN A DOMICILE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+9129;INDEMNITES COMPLEMENTAIRES EN REEDUCATION PROFESSIONNELLE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+9313;FRAIS DE LECTURE POUR MAMMOGRAPHIE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+9422;PREVENTION BUCCO-DENTAIRE: RADIO DEUX CLICHES;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+9423;PREVENTION BUCCO-DENTAIRE: RADIO QUATRE CLICHES;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+9424;PREVENTION BUCCO-DENTAIRE: RADIO EN IMAGERIE NUMERISEE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+9436;BUCCO DENT. CONSULTATION ET RADIO PANORAMIQUE;Radios, Analyses et Auxiliaires Médicaux;Radio Imagerie Scanner;Radio Imagerie Scanner
+9511;EXAMEN ET BILAN DE SANTE;Radios, Analyses et Auxiliaires Médicaux;Analyses Prelevements;Analyses Prelevements
+9602;FORFAIT DE SOINS INFIRMIERS MUTUELLE SECTEUR MEDICAL (CAVIMAC);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+9603;FORFAIT DE SOINS INFIRMIERS MUTUELLE SECTEUR REPOS CONVALESCENCE (CAVIMAC);Radios, Analyses et Auxiliaires Médicaux;Auxiliaires Medicaux;Auxiliaires Medicaux
+0;SANS OBJET;Codes réservés;Codes réservés;Divers
+2200;DOTATION FILE ACTIVE PSY;Hospitalisation;Dotations & forfaits établissements;Dotation File Active Psy
+1325;ACTE DE CHIRURGIE CD CCAM;Actes Technique et de Chirurgie;Chirurgie;Chirurgie
+1353;ACTE D'IMAGERIE CD CCAM;Radios, Analyses et Auxiliaires Médicaux;Imagerie;Imagerie
+1454;CONSULTATION CD;Consultations Visites;Consultations;Consultations
+1354;ACTE TECHNIQUE MEDICAL CD CCAM;Actes Technique et de Chirurgie;Actes techniques;Actes techniques
+4245;Code 4245 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+1046;TELECONSULTATION SPECIALISTE;Consultations Visites;Télémédecine;Télémédecine
+1048;CONSULTATION INIT MT ALD;Consultations Visites;Consultations;Consultations
+1041;CONSULT. PSYCHIATRE NEUROLOGUE;Consultations Visites;Consultations;Consultations
+2303;SUPPLEMENT TRANSPORT PROVISOIRE SSR;Transports;Transports de malades;Transports
+1042;CONSULTATION PEDIATRE 0-2 ANS;Consultations Visites;Consultations;Consultations
+4243;Code 4243 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+1455;CONSULTATION SPECIALISTE CD;Consultations Visites;Consultations;Consultations
+4244;Code 4244 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+1043;CONSULTATION PEDIATRE 2-6 ANS;Consultations Visites;Consultations;Consultations
+3172;SEANCE PSYCHOMOTRICIEN;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+1440;Code 1440 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+1044;CONSULTATION PEDIATRE 6 ANS ET +;Consultations Visites;Consultations;Consultations
+4237;AVION TRANSPORT SANITAIRE;Transports;Transports de malades;Transports
+3602;SUPPLT CONDITIONNEL OPTIQUE CLS A;Optique;Optique;Optique
+1982;VACCINATION HPV 1ERE DOSE;Prévention & Dépistage;Examens & actions de prévention;Prévention
+1443;Code 1443 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+1983;VACCINATION HPV 2EME DOSE;Prévention & Dépistage;Examens & actions de prévention;Prévention
+1965;MAJO DIMANCHE / NUIT HORS URGENCE;Consultations Visites;Classement par plage (à confirmer);À confirmer
+1946;FORFAIT SAGE-FEMME REFERENTE;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires médicaux;Auxiliaires
+1204;Code 1204 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+1218;VISITE SOINS PALLIATIFS;Consultations Visites;Visites;Visites
+3170;SEANCE ERGOTHERAPEUTE;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+3167;BILAN PSYCHOLOGUE;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+1441;Code 1441 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+1442;Code 1442 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+2302;SUPPLEMENT TRANSPORT DEFINITIF SSR;Transports;Transports de malades;Transports
+1953;Code 1953 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+3423;RDV PREVENTION PHARMACIE;Pharmacie;Pharmacie;Pharmacie
+3168;SEANCE PSYCHOLOGUE;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+3601;TELESURVEILLANCE DEROGATOIRE;Consultations Visites;Télémédecine;Télémédecine
+1467;CONSULTATION COMPLEXE CD;Consultations Visites;Consultations;Consultations
+1203;RDV PREVENTION MEDECIN SAGE-FEMME;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires médicaux;Auxiliaires
+1460;AVIS PONCTUEL DE CONSULTANT CD;Consultations Visites;Consultations;Consultations
+4247;Code 4247 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+3171;BILAN PSYCHOMOTRICIEN;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+4236;AVION EVACUATION SANITAIRE;Hospitalisation;Classement par plage (à confirmer);À confirmer
+3433;Code 3433 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+9728;AMELIORATION QUALITE VIE (CRPCEN);HP;Classement par plage (à confirmer);À confirmer
+1039;TELECONSULTATION PEDIATRE 2-6 ANS;Consultations Visites;Télémédecine;Télémédecine
+1047;CONSULTATION PSYCHIATRE RAPIDE SUITE ORIENTATION SAS OU MTT;Consultations Visites;Consultations;Consultations
+1040;TELECONSULTATION PEDIATRE 0-2 ANS;Consultations Visites;Télémédecine;Télémédecine
+3427;Code 3427 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+3169;BILAN ERGOTHERAPEUTE;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+2293;DOTATION NOUVELLES ACTIVITES;Hospitalisation;Dotations & forfaits établissements;Dotation Nouvelles Activites
+4239;BATEAU TRANSPORT SANITAIRE;Transports;Transports de malades;Transports
+2304;SUPPLEMENT TRANSPORT PERMISSION THERAPEUTIQUE SSR;Transports;Transports de malades;Transports
+1947;FORFAIT ASTREINTE SAGE-FEMME;Radios, Analyses et Auxiliaires Médicaux;Auxiliaires médicaux;Auxiliaires
+1967;Code 1967 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+4241;TRAIN TRANSPORT SANITAIRE;Transports;Transports de malades;Transports
+1948;FORFAIT DE SURVEILLANCE SF;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Forfaits
+3166;RDV PREVENTION INFIRMIER;Radios, Analyses et Auxiliaires Médicaux;Imagerie;Imagerie
+9208;DEPISTAGE SCOLAIRE ENFANT;Prévention & Dépistage;Examens & actions de prévention;Prévention
+4400;Code 4400 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+4246;Code 4246 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+1966;Code 1966 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+1035;Code 1035 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+3426;Code 3426 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+2296;Code 2296 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+1524;Code 1524 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+1949;MAJORATION DE SURVEILLANCE SF;Actes Technique et de Chirurgie;Majorations;Majorations
+4401;Code 4401 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+1963;MAJO URGENCE + DE 75 ANS SAMU/AMB;Consultations Visites;Classement par plage (à confirmer);À confirmer
+1032;Code 1032 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+4402;Code 4402 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+1456;VISITE CD;Consultations Visites;Visites;Visites
+1034;Code 1034 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+9209;Code 9209 (retiré avant 2023);Prévention & Dépistage;Codes retirés (classement par plage);À confirmer
+1468;Code 1468 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+1033;Code 1033 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+9210;FORMATION DEPISTAGE SCOLAIRE;Prévention & Dépistage;Examens & actions de prévention;Prévention
+1031;Code 1031 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+4159;DETECTION FRAGILITE SENIOR MILIEU THERMAL;Autres Postes;Classement par plage (à confirmer);À confirmer
+1964;MAJORATION 19H-21H;Actes Technique et de Chirurgie;Majorations;Majorations
+1984;Code 1984 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+4334;Code 4334 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+1444;Code 1444 (retiré avant 2023);Dentaire;Codes retirés (classement par plage);À confirmer
+3424;PRESCRIPTION RENFORCEE REMBOURSABLE;Pharmacie;Classement par plage (à confirmer);À confirmer
+4333;FRAIS EXPERTISE CTX AT;HP;Classement par plage (à confirmer);À confirmer
+1038;Code 1038 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+9212;FORMATION LANGAGE ENSEIGNANT;Prévention & Dépistage;Classement par plage (à confirmer);À confirmer
+1457;VISITE SPECIALISTE CD;Consultations Visites;Visites;Visites
+3173;TELESOINS PREVENTION PODOLOGUE;Consultations Visites;Télémédecine;Télémédecine
+9605;GESTION DU REPIT;Radios, Analyses et Auxiliaires Médicaux;Classement par plage (à confirmer);À confirmer
+1045;EXAM PARENTAL GROSSESSE CO-PARENT;Consultations Visites;Classement par plage (à confirmer);À confirmer
+1459;INDEMNITE FORFAITAIRE DEPLACEMENT CD;Rémunérations forfaitaires des PS;Contrats & aides aux PS;Forfaits
+4240;TRAIN EVACUATION SANITAIRE;Hospitalisation;Classement par plage (à confirmer);À confirmer
+4335;Code 4335 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+4238;BATEAU EVACUATION SANITAIRE;Hospitalisation;Classement par plage (à confirmer);À confirmer
+3217;ACTE DE DEPISTAGE DU CANCER COLORECTAL;Prévention & Dépistage;Examens & actions de prévention;Prévention
+5131;Code 5131 (retiré avant 2023);Optique;Codes retirés (classement par plage);À confirmer
+4336;Code 4336 (retiré avant 2023);HP;Codes retirés (classement par plage);À confirmer
+1205;Code 1205 (retiré avant 2023);Consultations Visites;Codes retirés (classement par plage);À confirmer
+3600;PRESERVATIFS GRATUITS;Pharmacie;Classement par plage (à confirmer);À confirmer
+3431;Code 3431 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+3430;Code 3430 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+3425;PRESCRIPTION RENFORCEE INVALIDE;Pharmacie;Classement par plage (à confirmer);À confirmer
+3428;Code 3428 (retiré avant 2023);Pharmacie;Codes retirés (classement par plage);À confirmer
+4248;Code 4248 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+4253;Code 4253 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer
+4252;Code 4252 (retiré avant 2023);Hospitalisation;Codes retirés (classement par plage);À confirmer

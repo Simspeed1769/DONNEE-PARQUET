@@ -1,0 +1,35 @@
+# Données de travail suivies avec Git LFS
+# (voir .gitattributes)
+
+# Environnements et caches Python
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+**/pytest-cache-files-*/
+*.py[cod]
+
+# Logs et fichiers générés
+*.log
+*.tsbuildinfo
+coverage/
+
+# Sources brutes CSP : elles servent à reconstruire les données, mais ne sont
+# pas nécessaires pour exécuter DAMIR (les fichiers csp_core*.parquet le sont).
+CSP/raw/
+CSP/Années/
+CSP/RP20*_INDREG_*.zip
+CSP/RP20*_indreg.parquet
+
+# Frontend
+node_modules/
+dist/
+
+# Fichiers locaux et secrets
+.env
+.env.*
+!.env.example
+
+# Historique Git de l'ancien sous-projet webapp, conservé localement
+webapp/.git.damir-history/
+.git.donnee-parquet-history/
