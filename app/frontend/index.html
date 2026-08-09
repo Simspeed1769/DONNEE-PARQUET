@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0d0c" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="description"
+      content="DAMIR Studio — exploration des dépenses de santé de l’Assurance Maladie"
+    />
+    <title>DAMIR Studio · Forsides</title>
+  </head>
+  <body>
+    <!--
+      PANORAMA — contrat de direction (seed 44fe545c)
+      THESIS: le Panorama est la présentation en train d'être montée, pas un
+      tableau de bord. Il refuse la grille de tuiles égales où chaque graphique
+      est trop petit pour être lu et trop nu pour être projeté.
+      OWN-WORLD: le monde DAMIR existant, hérité sans retouche — papier chaud,
+      encre presque noire, accent rouge Forsides, palette de séries validée pour
+      les visions atypiques dans les deux thèmes. La composition change,
+      l'identité non.
+      STORY: fixer une portée en une ligne, parcourir quatre lectures en
+      vignettes, en ouvrir une à taille de projection, l'emporter avec son
+      titre, sa phrase et sa source déjà écrits.
+      FIRST VIEWPORT: barre de portée en haut, quatre vignettes vivantes à
+      gauche, scène sur tout le reste. L'action principale, « Copier l'image »,
+      au pied de la scène.
+      FORM: établi de présentation, candidat 6 de la liste structurelle.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with
+      the finish review, the verdict, and DESIGN.md.
+    -->
+    <!-- L'écran d'attente précède la feuille de styles : ses couleurs sont
+         écrites ici, littéralement, sinon le premier dixième de seconde
+         s'affiche en blanc chez un utilisateur en thème sombre. Ce sont les
+         mêmes valeurs que --paper, --ink et --ink-muted dans theme.css. -->
+    <style>
+      .boot { position: fixed; inset: 0; display: grid; place-items: center;
+        background: #f7f6f3; color: #14130f;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .boot span { color: #7d7a71; font-size: 13px; }
+      @media (prefers-color-scheme: dark) {
+        .boot { background: #0e0d0c; color: #f6f5f1; }
+        .boot span { color: #8b8880; }
+      }
+    </style>
+    <div id="root">
+      <div class="boot">
+        <div style="display:grid;gap:10px;text-align:center">
+          <strong style="font-size:18px">DAMIR Studio</strong>
+          <span>Chargement de l’interface…</span>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

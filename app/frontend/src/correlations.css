@@ -1,0 +1,415 @@
+/* — Croisements —
+   L'écran hérite du monde de l'exploration : même rail, mêmes contrôles, mêmes
+   jetons. Ne vivent ici que la réponse en clair et l'échelle de force, qui sont
+   les deux formes propres à cette question. */
+
+/* — La réponse —
+   Elle occupe le haut de la toile parce que c'est ce qu'on est venu chercher.
+   Le ton se lit d'abord à la teinte du bandeau, mais jamais à elle seule : le
+   verdict est écrit, et l'échelle le montre. */
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.answer.positive { border-color: color-mix(in srgb, var(--good) 34%, var(--line)); }
+.answer.neutral { border-color: color-mix(in srgb, var(--warning) 40%, var(--line)); }
+.answer.critical { border-color: color-mix(in srgb, var(--critical) 34%, var(--line)); }
+
+.answer-question {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  letter-spacing: .005em;
+}
+
+.answer h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-xl);
+  font-weight: 660;
+  letter-spacing: -.022em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+/* Le point de statut double la teinte du cadre — la couleur ne porte jamais
+   seule, le verdict est écrit juste à côté. */
+.answer h2::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+.answer.positive h2::before { background: var(--good); }
+.answer.neutral h2::before { background: var(--warning); }
+.answer.critical h2::before { background: var(--critical); }
+
+/* Le raisonnement est rangé, jamais retiré : l'actuaire l'ouvre, le lecteur
+   pressé lit le verdict et l'échelle sans le traverser. */
+.answer-detail > summary {
+  padding: var(--space-1) 0;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+  cursor: pointer;
+}
+.answer-detail > summary:hover { color: var(--ink-secondary); }
+.answer-detail > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.answer-detail[open] > summary { margin-bottom: var(--space-2); }
+.answer-detail > p + p { margin-top: var(--space-2); }
+
+.answer-why {
+  margin: 0;
+  max-width: 78ch;
+  color: var(--ink-secondary);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+.answer-fix {
+  margin: 0;
+  max-width: 78ch;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+}
+
+/* — Le modèle —
+   Le tableau est l'interface : on y range, on y trie, on y éteint. Tout le
+   reste — les phrases, le graphique des effets, les réserves — en découle. */
+
+.regression { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.regression-setup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.regression-setup label { display: block; min-width: 0; }
+.regression-setup label > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+  letter-spacing: .02em;
+}
+.regression-setup select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.regression-setup select:hover { border-color: var(--line-strong); }
+
+/* — Ce qu'on tient constant —
+   Trois puces, une ligne. Le geste le plus important de l'écran doit être le
+   plus court à faire, pas le plus visible. */
+
+.regression-factors {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.regression-factors-label {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+  letter-spacing: .02em;
+}
+.regression-factor-chips { display: inline-flex; gap: var(--space-2); flex-wrap: wrap; }
+.regression-factor-chips button {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 620;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), color .16s var(--ease);
+}
+.regression-factor-chips button:hover { color: var(--ink); border-color: var(--line-strong); }
+.regression-factor-chips button.on {
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.regression-factors-hint { margin: 0; color: var(--ink-muted); font-size: var(--text-2xs); }
+
+/* Les niveaux d'un facteur : présents, chiffrés, mais visiblement d'un autre
+   ordre que les variables qu'on a choisies. */
+.regression-factor-row td { background: color-mix(in srgb, var(--surface-sunken) 55%, transparent); }
+.regression-factor-group {
+  display: block;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+}
+.regression-factor-level { display: block; margin-top: 2px; color: var(--ink-secondary); }
+.regression-factor-level small { color: var(--ink-muted); }
+
+.regression-empty {
+  margin: 0;
+  padding: var(--space-6);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.regression-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow-x: auto;
+}
+.regression-table { width: 100%; border-collapse: collapse; font-size: var(--text-xs); }
+.regression-table th,
+.regression-table td {
+  padding: 9px var(--space-3);
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+.regression-table thead th {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+}
+.regression-table thead th button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.regression-table thead th button:hover { color: var(--ink); }
+.regression-table th:nth-child(2),
+.regression-table td:nth-child(2) { text-align: left; white-space: normal; }
+.regression-table tbody tr:last-child th,
+.regression-table tbody tr:last-child td { border-bottom: 0; }
+.regression-table tbody tr:hover { background: var(--surface-hover); }
+/* Une variable éteinte reste dans le tableau : c'est ce qui permet de voir ce
+   qu'elle portait en la rallumant. */
+.regression-table tbody tr.off td { opacity: .45; }
+.regression-table tbody tr.dragging { opacity: .5; }
+
+.regression-grip { width: 26px; padding-right: 0 !important; color: var(--ink-muted); cursor: grab; text-align: center !important; }
+.regression-variable { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.regression-variable input { width: 14px; height: 14px; accent-color: var(--accent); }
+.regression-variable span { color: var(--ink); font-weight: 600; }
+.regression-selection {
+  display: block;
+  max-width: 260px;
+  margin: 5px 0 0 22px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+}
+
+.regression-effect { color: var(--ink); font-variant-numeric: tabular-nums; }
+.regression-effect.strong { font-weight: 700; }
+.regression-interval,
+.regression-p { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+
+.regression-remove {
+  padding: 0 5px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.regression-remove:hover { color: var(--ink); background: var(--surface-sunken); }
+
+.regression-hint {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+}
+
+.regression-chart {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.regression-sentences { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding-left: var(--space-5); }
+.regression-sentences li { color: var(--ink-secondary); font-size: var(--text-sm); line-height: 1.6; max-width: 82ch; }
+
+.regression-fit { margin: 0; color: var(--ink-muted); font-size: var(--text-xs); }
+
+.regression-notes > summary {
+  padding: var(--space-2) 0;
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  font-weight: 620;
+  cursor: pointer;
+}
+.regression-notes > summary:hover { color: var(--ink); }
+.regression-notes ul { display: flex; flex-direction: column; gap: 6px; margin: 0 0 var(--space-3); padding-left: var(--space-5); }
+.regression-notes li { color: var(--ink-muted); font-size: var(--text-xs); line-height: 1.55; max-width: 82ch; }
+
+/* — L'échelle de force — */
+
+.strength { margin: var(--space-3) 0 0; }
+
+.strength-track {
+  position: relative;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--diverge-2) 26%, var(--surface-sunken)),
+    var(--surface-sunken) 50%,
+    color-mix(in srgb, var(--diverge-6) 26%, var(--surface-sunken))
+  );
+}
+
+/* L'intervalle de confiance, dessiné à sa vraie largeur. */
+.strength-band {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.strength-band.crosses { background: color-mix(in srgb, var(--warning) 42%, transparent); }
+
+/* Le zéro : le seul repère qui décide de la lecture. */
+.strength-zero {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: 50%;
+  width: 1px;
+  background: var(--ink-muted);
+}
+
+.strength-mark {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  background: var(--ink);
+}
+.strength-mark b {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--ink);
+  font-size: var(--text-2xs);
+  font-weight: 680;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.strength figcaption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+}
+
+/* — Inverser les axes — */
+
+.cross-swap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 620;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), color .16s var(--ease);
+}
+.cross-swap:hover { color: var(--ink); border-color: var(--line-strong); background: var(--surface-hover); }
+
+/* — Le détail statistique —
+   Replié pour le manager, entier pour l'actuaire. Chaque coefficient porte sa
+   définition : c'est la condition pour qu'il soit rangé sans être perdu. */
+
+.stat-detail > summary {
+  padding: var(--space-3) 0;
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  font-weight: 620;
+  cursor: pointer;
+}
+.stat-detail > summary:hover { color: var(--ink); }
+.stat-detail > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.stat-detail dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.stat-detail dl > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stat-detail dt { color: var(--ink-muted); font-size: var(--text-2xs); font-weight: 640; }
+.stat-detail dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-lg);
+  font-weight: 660;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+.stat-detail p { margin: 2px 0 0; color: var(--ink-secondary); font-size: var(--text-2xs); line-height: 1.55; }
+.stat-detail em { font-style: italic; }
+
+@media (max-width: 720px) {
+  .answer { padding: var(--space-4); }
+  .answer h2 { font-size: var(--text-lg); }
+  .answer-why { font-size: var(--text-base); }
+  .strength figcaption { font-size: 10px; }
+}

@@ -1,0 +1,467 @@
+/* — Les écrans DAMIR : Panorama et Comparer —
+   Même forme que Pathologies, CSP et Mortalité : un titre, une barre de portée
+   compacte, puis le graphique. La règle qui tient tout l'écran est que **la
+   hauteur de la barre ne dépend pas de ce qui est ouvert** : listes et tiroirs
+   se superposent au contenu au lieu de le pousser, si bien que le graphique
+   reste à la même place du premier au dernier geste. */
+
+.damir-page { position: relative; }
+
+/* Le titre est plus bas que sur les fiches d'une seule source : ici la barre de
+   portée est riche, et chaque pixel qu'elle prend au-dessus du graphique est un
+   pixel de défilement de plus avant d'atteindre ce qu'on est venu voir. */
+.damir-hero { margin-bottom: 18px; }
+.damir-hero h1 { font-size: clamp(1.55rem, 2.1vw, 1.95rem); }
+.damir-hero p { margin-top: 7px; font-size: .8rem; }
+.damir-hero-side { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+/* — Les trois sections —
+   Trois profondeurs d'une même exploration, pas trois outils. Le libellé porte
+   la question à laquelle la section répond : c'est ce qui permet de choisir sans
+   avoir à essayer. */
+
+.damir-sections {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.damir-sections button {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), background .16s var(--ease);
+}
+.damir-sections button:hover { border-color: var(--line-strong); background: var(--surface-hover); }
+.damir-sections button strong { color: var(--ink-soft); font-size: .72rem; font-weight: 700; }
+.damir-sections button small { color: var(--muted); font-size: .56rem; }
+.damir-sections button.active {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.damir-sections button.active strong { color: var(--red-dark); }
+.damir-sections button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* La question à laquelle la vue courante répond, à gauche de son choix. */
+.damir-question { margin: 0; color: var(--muted); font-size: .62rem; }
+
+/* Le choix des modalités vit sous le graphique : on regarde d'abord, on ajuste
+   ensuite — l'inverse d'un formulaire qu'il faut remplir avant de voir. */
+.damir-picker { margin-top: 16px; padding: 16px 20px; }
+
+/* — Comparaison libre —
+   Trois choix seulement dans la barre : abscisse, ordonnée, forme. Les filtres
+   n'y sont pas, ils appartiennent à chaque série. */
+
+.free-bar-row { grid-template-columns: minmax(180px, 1fr) minmax(200px, 1.2fr) auto; }
+.free-bar .pathology-toggle { height: 39px; }
+
+.free-series { margin-top: 16px; padding: 16px 20px; }
+.free-series > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.free-series > header strong { display: block; color: var(--ink); font-size: .74rem; font-weight: 700; }
+.free-series > header small { display: block; margin-top: 2px; color: var(--muted); font-size: .58rem; }
+
+.free-series-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.free-series-list li {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.free-series-list li.open { border-color: var(--line-strong); background: var(--surface-muted); }
+
+.free-series-head { display: flex; align-items: center; gap: 10px; }
+.free-series-head input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: .68rem;
+}
+.free-series-head input:hover { border-color: var(--line); }
+.free-series-head input:focus { border-color: var(--line-strong); background: var(--surface); outline: none; }
+
+.free-series-head .series-scope-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-pill);
+  color: var(--ink-soft) !important;
+  background: var(--surface);
+  font-size: .58rem;
+  font-weight: 620;
+  cursor: pointer;
+  opacity: 1;
+}
+.free-series-head .series-scope-toggle.on { color: var(--red-dark) !important; border-color: var(--accent-line) !important; background: var(--accent-wash); }
+
+.free-series-remove {
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.free-series-remove:hover:not(:disabled) { color: var(--ink); background: var(--surface-muted); }
+.free-series-remove:disabled { opacity: .3; cursor: not-allowed; }
+
+.free-series-list .series-scope-note { margin-left: 19px; margin-top: 4px; }
+
+.free-series-filters {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.free-series-filters .advanced-filter-panel {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.free-series-filters .advanced-filter-heading { display: none; }
+
+/* — La barre de portée —
+   Deux lignes : ce qu'on regarde, puis sur qui et quand. Les champs rares
+   vivent dans le tiroir « Plus de filtres ». */
+
+.scope-bar { position: relative; display: block; overflow: visible; padding: 14px 18px 16px; }
+
+.scope-bar-row { display: grid; align-items: end; gap: 11px; }
+.scope-bar-service { grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(220px, 1.2fr); }
+.scope-bar-scope {
+  grid-template-columns: minmax(180px, 1.2fr) minmax(186px, .9fr) repeat(3, minmax(120px, .8fr)) auto;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.scope-bar-row > label,
+.scope-bar-field { display: block; min-width: 0; }
+
+/* Volontairement limité aux enfants directs d'une ligne : les cases à cocher
+   des listes déroulantes sont elles aussi des `label > span`, et une règle plus
+   large les mettait en capitales, sur deux lignes, illisibles. */
+.scope-bar-row > label > span,
+.scope-bar-field > span {
+  display: block;
+  margin: 0 0 6px 2px;
+  color: var(--muted);
+  font-size: .53rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.scope-bar-row select,
+.scope-bar-drawer-field select {
+  width: 100%;
+  height: 39px;
+  padding: 0 31px 0 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  background: var(--surface);
+  font-size: .63rem;
+}
+.scope-bar select:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Le sélecteur multiple porte son propre libellé interne. Dans la barre, la
+   légende est déjà écrite au-dessus : le répéter à l'intérieur du champ
+   volerait la place au seul texte qui apprend quelque chose — l'état de la
+   sélection. */
+.scope-bar .multi-select { margin-top: 0; }
+.scope-bar .multi-select summary { min-height: 39px; justify-content: space-between; }
+.scope-bar .multi-select summary strong { max-width: none; }
+/* Uniquement les champs de la barre, désignés par leur conteneur direct : le
+   tiroir vit lui aussi dans une ligne, mais ses champs n'ont pas de légende
+   au-dessus d'eux et gardent donc celle que porte le sélecteur. */
+.scope-bar-field > .multi-select summary > span:first-child { display: none; }
+
+/* Le point qui règle le grief d'origine : une liste ouverte flottait le
+   contenu vers le bas et chassait le graphique hors de l'écran. Elle se pose
+   désormais **au-dessus**, et la barre garde sa hauteur. */
+.scope-bar .multi-select { position: relative; }
+.scope-bar .multi-popover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 5px);
+  right: 0;
+  left: 0;
+  min-width: 240px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-floating);
+}
+
+.scope-bar-period-pair { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px; }
+.scope-bar-period-pair i { color: var(--muted); font-style: normal; font-size: .7rem; }
+/* Deux millésimes côte à côte : la réserve de 31 px pour la flèche de la liste
+   avalait « 2015 » et n'en laissait voir que le premier chiffre. */
+.scope-bar-period-pair select { padding: 0 6px 0 9px; text-align: center; }
+
+.scope-bar-trailing { display: flex; align-items: center; gap: 8px; }
+.scope-bar-drawer { position: relative; }
+
+.scope-bar-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 39px;
+  padding: 0 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  background: var(--surface);
+  font-size: .6rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .16s var(--ease), color .16s var(--ease);
+}
+.scope-bar-more:hover { color: var(--ink); border-color: var(--ink-muted); }
+.scope-bar-more.open { color: var(--red-dark); border-color: var(--accent-line); background: var(--accent-wash); }
+.scope-bar-more em {
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9px;
+  color: var(--accent-ink);
+  background: var(--accent);
+  font-size: .52rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.scope-bar-drawer-panel {
+  position: absolute;
+  z-index: 45;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-floating);
+}
+.scope-bar-drawer-panel .multi-select { margin-top: 0; }
+.scope-bar-drawer-field > span {
+  display: block;
+  margin: 0 0 6px 2px;
+  color: var(--muted);
+  font-size: .53rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.scope-bar-reset {
+  padding: 0 4px;
+  border: 0;
+  color: var(--red-dark);
+  background: transparent;
+  font-size: .58rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.scope-bar-reset:hover { text-decoration: underline; }
+
+/* — La scène —
+   Le graphique occupe la largeur, et il est déjà visible : le titre tient sur
+   une ligne, les onglets sont à sa droite, et tout le reste est replié. */
+
+.damir-stage { margin-top: 16px; padding: 20px 22px 14px; }
+
+.damir-stage-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.damir-stage-title { min-width: 0; }
+.damir-stage-title h2 {
+  margin: 6px 0 0;
+  max-width: 46ch;
+  color: var(--ink);
+  font-size: 1.05rem;
+  letter-spacing: -.015em;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.damir-views { flex: 0 0 auto; }
+
+/* — La bande —
+   Repères chiffrés à gauche, choix de forme à droite. Une seule ligne : les
+   repères avaient été retirés parce qu'un bandeau de tuiles poussait le
+   graphique hors de l'écran, ils reviennent sans reprendre cette hauteur. */
+
+.damir-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.damir-highlights { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; min-width: 0; }
+.damir-highlight { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
+.damir-highlight strong {
+  color: var(--ink);
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+}
+.damir-highlight small { color: var(--muted); font-size: .58rem; white-space: nowrap; }
+/* Le sens de la variation est écrit — « +3,8 % » — avant d'être coloré : la
+   teinte confirme, elle ne porte pas. */
+.damir-highlight.up strong { color: var(--success); }
+.damir-highlight.down strong { color: var(--red-dark); }
+
+.damir-forms { flex: 0 0 auto; }
+
+.damir-note {
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  font-size: .61rem;
+  line-height: 1.5;
+}
+
+.damir-stage-chart { margin-top: 12px; animation: damir-stage-enter .3s cubic-bezier(.16, 1, .3, 1); }
+@keyframes damir-stage-enter {
+  from { opacity: .6; transform: translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+.damir-placeholder,
+.damir-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  margin: 0;
+  padding: 24px;
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  font-size: .68rem;
+  text-align: center;
+}
+.damir-placeholder .skeleton { width: 100%; height: 300px; }
+
+.damir-selection { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; color: var(--ink-soft); font-size: .62rem; }
+
+.damir-stage-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.damir-source { color: var(--muted); font-size: .55rem; }
+.damir-actions { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.damir-actions button {
+  padding: 9px 13px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  color: var(--red-dark);
+  background: var(--accent-wash);
+  font-size: .6rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .16s var(--ease), opacity .16s var(--ease);
+}
+.damir-actions button:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
+.damir-actions button:disabled { opacity: .45; cursor: not-allowed; }
+.damir-notice { color: var(--ink-soft); font-size: .57rem; }
+
+/* — Ce qui est rangé —
+   Les réserves et le tableau ne sont pas retirés : ils sont repliés. L'actuaire
+   les ouvre, le manager ne les traverse pas pour atteindre le graphique. */
+
+.damir-drawers { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+
+.damir-details > summary {
+  padding: 9px 2px;
+  color: var(--ink-soft);
+  font-size: .6rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.damir-details > summary:hover { color: var(--ink); }
+.damir-details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.damir-caveats { display: flex; flex-direction: column; gap: 7px; margin: 4px 0 12px; padding-left: 18px; }
+.damir-caveats li { max-width: 92ch; color: var(--ink-soft); font-size: .62rem; line-height: 1.55; }
+
+.damir-table-scroll { max-height: 340px; margin-bottom: 12px; overflow: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+.damir-table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.damir-table-scroll table { width: 100%; border-collapse: collapse; font-size: .62rem; }
+.damir-table-scroll th,
+.damir-table-scroll td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.damir-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  font-weight: 750;
+}
+.damir-table-scroll th:first-child,
+.damir-table-scroll thead th:first-child { text-align: left; }
+.damir-table-scroll tbody th { color: var(--ink-soft); font-weight: 650; }
+.damir-table-scroll tbody td { color: var(--ink); }
+.damir-table-scroll tbody tr:last-child th,
+.damir-table-scroll tbody tr:last-child td { border-bottom: 0; }
+
+/* — Adaptations — */
+
+@media (max-width: 1240px) {
+  .scope-bar-service { grid-template-columns: 1fr 1fr; }
+  .scope-bar-scope { grid-template-columns: 1fr 1fr 1fr; }
+  .scope-bar-trailing { grid-column: 1 / -1; justify-content: flex-start; }
+  .scope-bar-drawer-panel { right: auto; left: 0; }
+}
+
+@media (max-width: 860px) {
+  .scope-bar-service,
+  .scope-bar-scope { grid-template-columns: 1fr 1fr; }
+  .damir-stage-head { align-items: flex-start; flex-direction: column; }
+  .damir-views { align-self: stretch; overflow-x: auto; }
+}
+
+@media (max-width: 620px) {
+  .scope-bar-service,
+  .scope-bar-scope { grid-template-columns: 1fr; }
+  .damir-stage-foot { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .damir-stage-chart { animation: none; }
+}

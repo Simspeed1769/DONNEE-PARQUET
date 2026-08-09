@@ -14,22 +14,28 @@ __pycache__/
 *.tsbuildinfo
 coverage/
 
+# Fichiers dérivés reconstruits par preparer.bat : les versionner doublerait le
+# poids du dépôt sans rien apporter, puisqu'ils se régénèrent depuis les cubes
+# sources en quelques minutes.
+data/cube_damir_compact.parquet
+data/.cache/
+
 # Sources brutes CSP : elles servent à reconstruire les données, mais ne sont
 # pas nécessaires pour exécuter DAMIR (les fichiers csp_core*.parquet le sont).
-CSP/raw/
-CSP/Années/
-CSP/RP20*_INDREG_*.zip
-CSP/RP20*_indreg.parquet
+data/csp/raw/
+data/csp/Années/
+data/csp/RP20*_INDREG_*.zip
+data/csp/RP20*_indreg.parquet
 
 # Frontend
 node_modules/
 dist/
 
+# Configuration locale de l'agent (permissions, historique de session) :
+# spécifique à la machine, ne doit pas être partagée entre postes.
+.claude/
+
 # Fichiers locaux et secrets
 .env
 .env.*
 !.env.example
-
-# Historique Git de l'ancien sous-projet webapp, conservé localement
-webapp/.git.damir-history/
-.git.donnee-parquet-history/

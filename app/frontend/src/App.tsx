@@ -1,0 +1,260 @@
+import { Component, lazy, Suspense, useEffect, useMemo, useState } from "react";
+import type { ComponentType, ErrorInfo, LazyExoticComponent, ReactNode } from "react";
+import { getMetadata } from "./api";
+import { ThemeToggle } from "./components/ThemeToggle";
+import type { Metadata, PageKey } from "./types";
+
+const CHUNK_RELOAD_KEY = "damir-chunk-reload";
+
+function lazyPage<T extends ComponentType<any>>(
+  loader: () => Promise<{ default: T }>,
+): LazyExoticComponent<T> {
+  return lazy(() => loader()
+    .then((module) => {
+      window.sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+      return module;
+    })
+    .catch((reason: unknown) => {
+      if (!window.sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
+        window.sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
+        window.location.reload();
+      }
+      return Promise.reject(reason);
+    }));
+}
+
+const pageImports = {
+  damir: () => import("./pages/DamirPage"),
+  pathologies: () => import("./pages/PathologyPage"),
+  csp: () => import("./pages/CspPage"),
+  mortality: () => import("./pages/MortalityPage"),
+  correlations: () => import("./pages/CorrelationsPage"),
+  benchmarks: () => import("./pages/BenchmarksPage"),
+  extraction: () => import("./pages/ExtractionPage"),
+  methodology: () => import("./pages/MethodologyPage"),
+};
+
+const PAGES: PageKey[] = ["damir", "pathologies", "csp", "mortality", "correlations", "benchmarks", "extraction", "methodology"];
+
+const DamirPage = lazyPage(() => pageImports.damir().then((module) => ({ default: module.DamirPage })));
+const PathologyPage = lazyPage(() => pageImports.pathologies().then((module) => ({ default: module.PathologyPage })));
+const CspPage = lazyPage(() => pageImports.csp().then((module) => ({ default: module.CspPage })));
+const MortalityPage = lazyPage(() => pageImports.mortality().then((module) => ({ default: module.MortalityPage })));
+const CorrelationsPage = lazyPage(() => pageImports.correlations().then((module) => ({ default: module.CorrelationsPage })));
+const BenchmarksPage = lazyPage(() => pageImports.benchmarks().then((module) => ({ default: module.BenchmarksPage })));
+const ExtractionPage = lazyPage(() => pageImports.extraction().then((module) => ({ default: module.ExtractionPage })));
+const MethodologyPage = lazyPage(() => pageImports.methodology().then((module) => ({ default: module.MethodologyPage })));
+
+function preloadPage(page: PageKey) {
+  void pageImports[page]().catch(() => undefined);
+}
+
+class PageErrorBoundary extends Component<{ children: ReactNode }, { message: string | null }> {
+  state = { message: null as string | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { message: error.message || "La page n’a pas pu être chargée." };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("DAMIR page error", error, info);
+  }
+
+  render() {
+    if (this.state.message) {
+      return <div className="page-load-error"><strong>La page n’a pas pu s’ouvrir</strong><span>Une nouvelle version de l’application est disponible.</span><button type="button" onClick={() => window.location.reload()}>Recharger la page</button></div>;
+    }
+    return this.props.children;
+  }
+}
+
+type IconName = "explore" | "map" | "chart" | "grid" | "download" | "book" | "panel" | "link";
+type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality";
+
+function Icon({ name }: { name: IconName }) {
+  const paths: Record<IconName, React.ReactNode> = {
+    explore: <><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8 12.5 10.5 10l2 2 3-3.5"/></>,
+    map: <><path d="m9 4-6 2.5v13L9 17l6 3 6-2.5v-13L15 7z"/><path d="M9 4v13"/><path d="M15 7v13"/></>,
+    grid: <><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></>,
+    chart: <><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19H2"/></>,
+    download: <><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></>,
+    book: <><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13v16h4.5a2.5 2.5 0 0 1 2.5 2.5z"/></>,
+    panel: <><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></>,
+    link: <><path d="M10 13.5a4 4 0 0 0 5.7.4l3-3a4 4 0 0 0-5.7-5.7l-1.7 1.7"/><path d="M14 10.5a4 4 0 0 0-5.7-.4l-3 3a4 4 0 0 0 5.7 5.7l1.7-1.7"/></>,
+  };
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
+}
+
+function pageFromLocation(): PageKey {
+  const page = new URLSearchParams(window.location.search).get("page");
+  // Panorama et Comparer ne font plus qu'un écran : les adresses qui les
+  // désignaient y sont redirigées plutôt que cassées.
+  if (page === "analysis" || page === "explore" || page === "panorama") return "damir";
+  return PAGES.includes(page as PageKey) ? page as PageKey : "damir";
+}
+
+function Loader() {
+  return <div className="page-loader"><div className="skeleton" /></div>;
+}
+
+function App() {
+  const [page, setPage] = useState<PageKey>(pageFromLocation);
+  const [routeVersion, setRouteVersion] = useState(0);
+  const [metadata, setMetadata] = useState<Metadata | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.localStorage.getItem("damir-sidebar-collapsed") === "1");
+  const [extractionSource, setExtractionSource] = useState<ExtractionSource>(() => {
+    const value = new URLSearchParams(window.location.search).get("source");
+    return value === "pathologies" || value === "csp" || value === "mortality" ? value : "damir";
+  });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getMetadata(controller.signal)
+      .then(setMetadata)
+      .catch((reason: Error) => { if (reason.name !== "AbortError") setError(reason.message); });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      setPage(pageFromLocation());
+      const value = new URLSearchParams(window.location.search).get("source");
+      setExtractionSource(value === "pathologies" || value === "csp" || value === "mortality" ? value : "damir");
+      setRouteVersion((value) => value + 1);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("damir-sidebar-collapsed", sidebarCollapsed ? "1" : "0");
+  }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "\\") {
+        event.preventDefault();
+        setSidebarCollapsed((collapsed) => !collapsed);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const navigate = (nextPage: PageKey, supplied?: URLSearchParams) => {
+    const params = supplied ?? new URLSearchParams();
+    params.set("page", nextPage);
+    const commitNavigation = () => {
+      window.history.pushState(null, "", `${window.location.pathname}?${params.toString()}`);
+      setPage(nextPage);
+      if (nextPage === "extraction") {
+        const source = params.get("source");
+        setExtractionSource(source === "pathologies" || source === "csp" || source === "mortality" ? source : "damir");
+      }
+      setRouteVersion((value) => value + 1);
+    };
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const startViewTransition = (document as Document & {
+      startViewTransition?: (update: () => void) => unknown;
+    }).startViewTransition;
+    if (startViewTransition && !reducedMotion) startViewTransition.call(document, commitNavigation);
+    else commitNavigation();
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+  };
+
+  const sourceLabel = useMemo(() => {
+    if (page === "pathologies" || (page === "extraction" && extractionSource === "pathologies")) return "Cartographie Cnam";
+    if (page === "csp" || (page === "extraction" && extractionSource === "csp")) return "Recensement Insee · 2015–2023";
+    if (page === "mortality" || (page === "extraction" && extractionSource === "mortality")) return "CépiDc · 2015–2024";
+    if (page === "damir") return "Open DAMIR";
+    if (page === "correlations") return "Croisements entre sources";
+    if (page === "benchmarks") return "Repères multi-sources";
+    if (page === "methodology") return "Sources & définitions";
+    return "Open DAMIR";
+  }, [page, extractionSource]);
+
+  const sourceContext = useMemo(() => {
+    if (page === "pathologies" || (page === "extraction" && extractionSource === "pathologies")) return "Pathologies";
+    if (page === "csp" || (page === "extraction" && extractionSource === "csp")) return "CSP";
+    if (page === "mortality" || (page === "extraction" && extractionSource === "mortality")) return "Mortalité";
+    if (page === "damir") return "DAMIR";
+    if (page === "correlations") return "Croisements";
+    if (page === "benchmarks") return "Repères";
+    if (page === "methodology") return "Référentiel";
+    return "DAMIR";
+  }, [page, extractionSource]);
+
+  const navButton = (key: PageKey, icon: IconName, label: string, pill?: string) => (
+    <button
+      type="button"
+      title={label}
+      aria-current={page === key ? "page" : undefined}
+      className={`nav-item ${page === key ? "active" : ""}`}
+      onPointerEnter={() => preloadPage(key)}
+      onFocus={() => preloadPage(key)}
+      onClick={() => navigate(key)}
+    >
+      <Icon name={icon} /><span className="nav-label">{label}</span>
+      {pill ? <span className="nav-pill">{pill}</span> : null}
+    </button>
+  );
+
+  return (
+    <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      <aside className="sidebar" id="main-sidebar">
+        <div className="brand"><div className="brand-mark"><span /></div><div><strong>DAMIR</strong><small>Studio</small></div></div>
+        <nav className="main-nav" aria-label="Navigation principale">
+          <div className="nav-section">
+            <span className="nav-caption">EXPLORER</span>
+            {navButton("damir", "map", "DAMIR")}
+            {navButton("pathologies", "chart", "Pathologies")}
+            {navButton("csp", "grid", "CSP")}
+            {navButton("mortality", "chart", "Mortalité")}
+          </div>
+          <div className="nav-section">
+            <span className="nav-caption">CROISER</span>
+            {navButton("correlations", "link", "Croisements")}
+            {navButton("benchmarks", "grid", "Repères", "4")}
+          </div>
+          <div className="nav-section nav-section-tools">
+            <span className="nav-caption">EXTRAIRE</span>
+            {navButton("extraction", "download", "Extraire")}
+          </div>
+          <div className="nav-section nav-section-method">
+            <span className="nav-caption">RÉFÉRENTIEL</span>
+            {navButton("methodology", "book", "Données & méthode")}
+          </div>
+        </nav>
+        <div className="sidebar-status"><span className="live-dot"/><div><strong>{metadata?.reliability.status ?? "Chargement des données"}</strong><small>Référentiel commun</small></div></div>
+      </aside>
+
+      <main className="main-content">
+        <header className="topbar">
+          <div className="topbar-leading">
+            <button type="button" className="sidebar-toggle" onClick={() => setSidebarCollapsed((collapsed) => !collapsed)} aria-controls="main-sidebar" aria-expanded={!sidebarCollapsed} title={`${sidebarCollapsed ? "Déployer" : "Replier"} la navigation · Ctrl+\\`}><Icon name="panel" /></button>
+            <div className="topbar-context"><span>Forsides</span><i /><span>{sourceContext}</span></div>
+          </div>
+          <div className="topbar-actions">
+            <span className="source-chip">{sourceLabel}</span>
+            <ThemeToggle />
+            <div className="avatar" title="Espace local">FS</div>
+          </div>
+        </header>
+        {error ? <div className="content-wrap"><div className="error-banner"><strong>Impossible de démarrer DAMIR Studio</strong><span>{error}</span></div></div> : null}
+        {!metadata ? <Loader /> : <PageErrorBoundary key={`${page}-${routeVersion}`}><Suspense fallback={<Loader />}>
+          {page === "damir" ? <DamirPage key={`damir-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "pathologies" ? <PathologyPage key={`pathologies-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "csp" ? <CspPage key={`csp-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "mortality" ? <MortalityPage key={`mortality-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "benchmarks" ? <BenchmarksPage key={`benchmarks-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} /> : null}
+          {page === "methodology" ? <MethodologyPage /> : null}
+        </Suspense></PageErrorBoundary>}
+      </main>
+    </div>
+  );
+}
+
+export default App;

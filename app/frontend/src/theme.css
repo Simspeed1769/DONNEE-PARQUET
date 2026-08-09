@@ -1,0 +1,258 @@
+/* Socle de design DAMIR.
+ *
+ * Une seule source de vérité pour les couleurs, la typographie et les
+ * espacements. Deux thèmes complets : le mode sombre est *choisi*, pas obtenu
+ * en inversant le mode clair — ses couleurs de série sont des marches
+ * distinctes des mêmes teintes, validées contre la surface sombre.
+ *
+ * La palette catégorielle passe les six contrôles de la méthode dataviz dans
+ * les deux modes (bande de clarté, plancher de chroma, séparation
+ * daltonienne, plancher vision normale, contraste). En mode clair, trois
+ * teintes passent sous 3:1 : la règle de secours s'applique — l'interface
+ * expose toujours les étiquettes directes et la vue tableau, si bien que la
+ * couleur ne porte jamais seule l'information.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* — Surfaces et encres — */
+  --paper: #f7f6f3;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f2f1ed;
+  --surface-hover: #f6f5f1;
+
+  --ink: #14130f;
+  --ink-secondary: #4e4c45;
+  --ink-muted: #7d7a71;
+  --ink-inverse: #ffffff;
+
+  --line: #e4e2db;
+  --line-strong: #cfccc2;
+  --grid: #eceae3;
+
+  /* — Accent de marque — */
+  --accent: #d8383c;
+  --accent-hover: #bd2d31;
+  --accent-ink: #ffffff;
+  --accent-wash: #fdeeee;
+  --accent-line: #f2cdcd;
+
+  /* — États — */
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --warning-text: #7a5300;
+  --critical: #d03b3b;
+  --critical-text: #a32020;
+
+  /* — Palette de séries (ordre fixe, jamais recyclé) — */
+  --series-1: #e34948;
+  --series-2: #2a78d6;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #008300;
+  --series-7: #4a3aa7;
+  --series-8: #eb6834;
+  --series-other: #9a968c;
+
+  /* — Rampe séquentielle (une teinte, clair → foncé) — */
+  --ramp-1: #cde2fb;
+  --ramp-2: #9ec5f4;
+  --ramp-3: #6da7ec;
+  --ramp-4: #3987e5;
+  --ramp-5: #2a78d6;
+  --ramp-6: #256abf;
+  --ramp-7: #184f95;
+  --ramp-8: #0d366b;
+
+  /* — Rampe divergente (sous ← pivot → au-dessus) —
+     L'indice de spécialisation se lit de part et d'autre de 100 : une rampe
+     à une seule teinte y ferait passer « deux fois moins » pour « un peu ».
+     Orange contre bleu est la paire divergente qui reste distinguable pour
+     les deutéranopies et protanopies, contrairement au rouge-vert. */
+  --diverge-1: #8a3a0d;
+  --diverge-2: #c4661f;
+  --diverge-3: #eda877;
+  --diverge-4: #ece9e2;
+  --diverge-5: #86b6ee;
+  --diverge-6: #2a78d6;
+  --diverge-7: #14477f;
+  /* Territoire sans donnée : ni un zéro, ni une valeur basse. */
+  --map-void: #e8e6df;
+
+  /* — Typographie — */
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-2xs: .688rem;
+  --text-xs: .75rem;
+  --text-sm: .813rem;
+  --text-base: .875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.125rem;
+  --text-hero: clamp(2.25rem, 4vw, 3rem);
+
+  /* — Espacement, rayons, ombres — */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px rgba(20, 19, 15, .05);
+  --shadow: 0 4px 16px rgba(20, 19, 15, .07);
+  --shadow-lg: 0 18px 44px rgba(20, 19, 15, .14);
+
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Le mode sombre : ses propres marches, validées contre la surface sombre.
+ * Déclaré sous les deux portées — la requête média suit le réglage système,
+ * la portée [data-theme] laisse la bascule manuelle gagner dans les deux sens. */
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
+    --paper: #0e0d0c;
+    --surface: #171614;
+    --surface-raised: #1f1e1b;
+    --surface-sunken: #121110;
+    --surface-hover: #24221f;
+
+    --ink: #f6f5f1;
+    --ink-secondary: #b9b6ac;
+    --ink-muted: #8b8880;
+    --ink-inverse: #14130f;
+
+    --line: #2c2a26;
+    --line-strong: #3d3a35;
+    --grid: #26241f;
+
+    --accent: #f0575b;
+    --accent-hover: #f87074;
+    --accent-ink: #14130f;
+    --accent-wash: #2a1817;
+    --accent-line: #4a2725;
+
+    --good: #0ca30c;
+    --good-text: #35c935;
+    --warning: #fab219;
+    --warning-text: #e0a428;
+    --critical: #d03b3b;
+    --critical-text: #f07070;
+
+    --series-1: #e66767;
+    --series-2: #3987e5;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --series-7: #9085e9;
+    --series-8: #d95926;
+    --series-other: #6f6c64;
+
+    --ramp-1: #0d366b;
+    --ramp-2: #184f95;
+    --ramp-3: #256abf;
+    --ramp-4: #2a78d6;
+    --ramp-5: #3987e5;
+    --ramp-6: #6da7ec;
+    --ramp-7: #9ec5f4;
+    --ramp-8: #cde2fb;
+
+    /* Sur fond sombre, les deux extrémités s'éclaircissent et c'est le pivot
+       qui s'assombrit : l'écart reste lisible dans les deux sens. */
+    --diverge-1: #f5b478;
+    --diverge-2: #e08a45;
+    --diverge-3: #9a6236;
+    --diverge-4: #3a3833;
+    --diverge-5: #35608f;
+    --diverge-6: #4d94e8;
+    --diverge-7: #8fc0f5;
+    --map-void: #2e2c28;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+    --shadow: 0 4px 16px rgba(0, 0, 0, .45);
+    --shadow-lg: 0 18px 44px rgba(0, 0, 0, .6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper: #0e0d0c;
+  --surface: #171614;
+  --surface-raised: #1f1e1b;
+  --surface-sunken: #121110;
+  --surface-hover: #24221f;
+
+  --ink: #f6f5f1;
+  --ink-secondary: #b9b6ac;
+  --ink-muted: #8b8880;
+  --ink-inverse: #14130f;
+
+  --line: #2c2a26;
+  --line-strong: #3d3a35;
+  --grid: #26241f;
+
+  --accent: #f0575b;
+  --accent-hover: #f87074;
+  --accent-ink: #14130f;
+  --accent-wash: #2a1817;
+  --accent-line: #4a2725;
+
+  --good: #0ca30c;
+  --good-text: #35c935;
+  --warning: #fab219;
+  --warning-text: #e0a428;
+  --critical: #d03b3b;
+  --critical-text: #f07070;
+
+  --series-1: #e66767;
+  --series-2: #3987e5;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #d95926;
+  --series-other: #6f6c64;
+
+  --ramp-1: #0d366b;
+  --ramp-2: #184f95;
+  --ramp-3: #256abf;
+  --ramp-4: #2a78d6;
+  --ramp-5: #3987e5;
+  --ramp-6: #6da7ec;
+  --ramp-7: #9ec5f4;
+  --ramp-8: #cde2fb;
+
+  /* La bascule manuelle doit porter *tout* le thème sombre, pas la partie que
+     la requête média avait déjà. Sans ces sept marches et ce gris de vide, une
+     carte basculée à la main gardait l'échelle divergente claire et peignait
+     les territoires sans donnée en beige vif sur fond noir. */
+  --diverge-1: #f5b478;
+  --diverge-2: #e08a45;
+  --diverge-3: #9a6236;
+  --diverge-4: #3a3833;
+  --diverge-5: #35608f;
+  --diverge-6: #4d94e8;
+  --diverge-7: #8fc0f5;
+  --map-void: #2e2c28;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow: 0 4px 16px rgba(0, 0, 0, .45);
+  --shadow-lg: 0 18px 44px rgba(0, 0, 0, .6);
+}
