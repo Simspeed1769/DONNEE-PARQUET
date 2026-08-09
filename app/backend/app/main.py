@@ -24,14 +24,12 @@ from .cache import DiskCache, fingerprint
 from .analysis import (
     DIMENSIONS,
     METRICS,
-    AnalysisRequest,
     ExtractionRequest,
     analysis_metadata,
     extraction_columns,
     extraction_preview,
     extraction_rows,
     hierarchy_options,
-    run_analysis,
 )
 from .csp import (
     CSP_DIMENSIONS,
@@ -445,14 +443,6 @@ def options(
     sub_post: str | None = None,
 ) -> dict[str, Any]:
     return hierarchy_options(repository, grand_post, post, sub_post)
-
-
-@app.post("/api/analysis")
-def analysis(payload: AnalysisRequest) -> dict[str, Any]:
-    try:
-        return run_analysis(repository, payload, REGIONS)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.post("/api/workbench")

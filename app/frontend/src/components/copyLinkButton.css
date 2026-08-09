@@ -1,0 +1,31 @@
+/* Bouton « Copier le lien » du shell.
+   Même gabarit que .theme-toggle (styles.css), en fichier dédié plutôt qu'ajouté
+   à styles.css : ce sont deux boutons distincts qui ne doivent pas partager une
+   classe nommée d'après l'un des deux. Uniquement des jetons de theme.css. */
+
+.copy-link-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-secondary);
+  background: var(--surface);
+  cursor: pointer;
+  transition: color .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+}
+.copy-link-button:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.copy-link-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+/* La coche de confirmation prend la teinte de succès partagée avec le reste
+   de l'application (--good), pas une couleur inventée pour l'occasion. */
+.copy-link-button[aria-label="Lien copié"] {
+  color: var(--good-text);
+  border-color: color-mix(in srgb, var(--good) 45%, var(--line));
+}

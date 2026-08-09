@@ -30,7 +30,7 @@ import { download, renderSlide, SOURCE_LINE } from "../panorama/exportSlide";
 import { periodValue, yearValues, type PanoramaResponse } from "../panorama/model";
 import type { ExploreMeasure } from "../explore/model";
 import type { AdvancedFilters, Metadata } from "../types";
-import { filtersFromSearch, formatValue, writeFilters } from "../utils";
+import { formatValue, writeFilters } from "../utils";
 
 /** Le périmètre et la mesure appartiennent à l'écran DAMIR, pas à la section :
  *  passer d'une section à l'autre est un changement de question, pas de sujet. */

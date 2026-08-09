@@ -1,6 +1,7 @@
 import { Component, lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { ComponentType, ErrorInfo, LazyExoticComponent, ReactNode } from "react";
 import { getMetadata } from "./api";
+import { CopyLinkButton } from "./components/CopyLinkButton";
 import { ThemeToggle } from "./components/ThemeToggle";
 import type { Metadata, PageKey } from "./types";
 
@@ -237,6 +238,7 @@ function App() {
           </div>
           <div className="topbar-actions">
             <span className="source-chip">{sourceLabel}</span>
+            <CopyLinkButton />
             <ThemeToggle />
             <div className="avatar" title="Espace local">FS</div>
           </div>

@@ -153,16 +153,6 @@ class FilterPayload(BaseModel):
     ald: int | None = Field(default=None, ge=0, le=1)
 
 
-class AnalysisRequest(FilterPayload):
-    mode: Literal["evolution", "women_men", "breakdown", "top", "distribution", "liquidation"] = "evolution"
-    measure: str = "reimbursed"
-    comparison_measure: str | None = None
-    time_axis: Literal["care", "payment"] = "care"
-    dimension: str = "auto"
-    box_dimension: str = "grand_post"
-    point_dimension: str = "region"
-
-
 class ExtractionRequest(FilterPayload):
     dimensions: list[str] = Field(default_factory=lambda: ["year", "sex", "region"])
     measures: list[str] = Field(default_factory=lambda: ["reimbursed"])
@@ -332,6 +322,9 @@ def hierarchy_options(repo: QueryRepository, grand_post: str | None, post: str |
 
 
 def _unknown_share(repo: QueryRepository, payload: FilterPayload) -> float | None:
+    """Part du remboursement portée par une modalité non renseignée sur au
+    moins une dimension. Utilisée par `studio.py` (Repères) pour signaler
+    qu'un calcul agrégé laisse de côté une part non négligeable du périmètre."""
     where, params = cube_where(payload)
     rows = repo.query(
         f"""SELECT 100.0 * SUM(CASE WHEN c.age = 99 OR c.sexe IN (0, 9)
@@ -342,166 +335,6 @@ def _unknown_share(repo: QueryRepository, payload: FilterPayload) -> float | Non
     )
     value = rows[0]["value"] if rows else None
     return float(value) if value is not None else None
-
-
-def run_analysis(repo: QueryRepository, payload: AnalysisRequest, regions: dict[int, str]) -> dict[str, Any]:
-    metric = _metric(payload.measure)
-    warnings: list[str] = []
-    ticket_requested = payload.measure == "copayment" or payload.comparison_measure == "copayment"
-    if ticket_requested:
-        if payload.grand_post in POSTES_SANS_BASE:
-            warnings.append(
-                "Le ticket modérateur n’a pas de sens sur ce poste sans base de remboursement ; "
-                "préférez le montant remboursé."
-            )
-        elif not payload.grand_post and not payload.service_codes:
-            warnings.append(
-                "Le ticket modérateur exclut les prestations en espèces et forfaitaires sans base "
-                "de remboursement, afin d’éviter un montant artificiellement négatif."
-            )
-    if payload.mode == "liquidation" or (payload.mode == "evolution" and payload.time_axis == "payment"):
-        if not repo.has_delays:
-            raise ValueError("Le cube des délais n’est pas disponible.")
-
-    if payload.mode == "liquidation":
-        where, params = delay_where(payload)
-        rows = repo.query(
-            f"""SELECT (d.flx // 100) * 12 + (d.flx % 100) - (d.soi_ann * 12 + d.soi_moi) AS delay,
-                       SUM(d.rem)::DOUBLE AS value
-                FROM delays d LEFT JOIN transco t USING (prs_nat) WHERE {where}
-                GROUP BY 1 HAVING delay BETWEEN 0 AND 24 ORDER BY 1""", params
-        )
-        total = sum(float(row["value"] or 0) for row in rows)
-        cumulative = 0.0
-        points = []
-        for row in rows:
-            cumulative += float(row["value"] or 0)
-            points.append({"x": f"M+{int(row['delay'])}", "y": 100 * cumulative / total if total else 0})
-        return _response("line", "Cadence de liquidation des remboursements",
-                         "Part cumulée du montant liquidé après le mois de soins", "percent",
-                         series=[{"name": "Montant liquidé", "points": points}],
-                         warnings=["La cadence porte sur toutes les populations confondues."])
-
-    if payload.mode == "evolution" and payload.time_axis == "payment":
-        where, params = delay_where(payload, payment_axis=True)
-        rows = repo.query(
-            f"""SELECT d.flx // 100 AS x, SUM(d.rem)::DOUBLE AS value
-                FROM delays d LEFT JOIN transco t USING (prs_nat) WHERE {where}
-                GROUP BY 1 ORDER BY 1""", params
-        )
-        return _response("line", "Évolution en date de remboursement",
-                         "Montants selon l’année de paiement par l’Assurance Maladie", "money",
-                         series=[{"name": "Montant remboursé", "points": [
-                             {"x": int(row["x"]), "y": float(row["value"] or 0)} for row in rows
-                         ]}], warnings=["Sur cet axe, seul le montant remboursé est disponible et les filtres population ne s’appliquent pas."])
-
-    where, params = cube_where(
-        payload,
-        ignore_sex=payload.mode == "women_men",
-        exclude_base_less=ticket_requested,
-    )
-    unknown_share = _unknown_share(repo, payload)
-    if unknown_share is not None and unknown_share >= 0.05:
-        warnings.append(f"{unknown_share:.1f} % du montant comporte au moins une modalité population inconnue.")
-
-    if payload.mode in ("evolution", "women_men"):
-        if payload.mode == "women_men":
-            rows = repo.query(
-                f"""SELECT c.soi_ann AS x, c.sexe AS series, ({metric.expression})::DOUBLE AS value
-                    FROM cube c LEFT JOIN transco t USING (prs_nat)
-                    WHERE {where} AND c.sexe IN (1, 2) GROUP BY 1, 2 ORDER BY 1, 2""", params
-            )
-            series = [{"name": SEXES[code], "points": [
-                {"x": int(row["x"]), "y": float(row["value"] or 0)}
-                for row in rows if int(row["series"]) == code
-            ]} for code in (2, 1)]
-            title = f"{metric.label} · Femmes et hommes"
-        else:
-            rows = repo.query(
-                f"""SELECT c.soi_ann AS x, ({metric.expression})::DOUBLE AS value
-                    FROM cube c LEFT JOIN transco t USING (prs_nat)
-                    WHERE {where} GROUP BY 1 ORDER BY 1""", params
-            )
-            series = [{"name": metric.label, "points": [
-                {"x": int(row["x"]), "y": float(row["value"] or 0)} for row in rows
-            ]}]
-            if payload.comparison_measure and payload.comparison_measure != payload.measure:
-                comparison = _metric(payload.comparison_measure)
-                compare_rows = repo.query(
-                    f"""SELECT c.soi_ann AS x, ({comparison.expression})::DOUBLE AS value
-                        FROM cube c LEFT JOIN transco t USING (prs_nat)
-                        WHERE {where} GROUP BY 1 ORDER BY 1""", params
-                )
-                series.append({"name": comparison.label, "unit": comparison.kind, "points": [
-                    {"x": int(row["x"]), "y": float(row["value"] or 0)} for row in compare_rows
-                ]})
-            title = f"Évolution annuelle · {metric.label}"
-        return _response("line", title, f"Années de soins {payload.start_year}–{payload.end_year}",
-                         metric.kind, series=series, warnings=warnings, unknown_share=unknown_share)
-
-    if payload.mode in ("breakdown", "top"):
-        if payload.mode == "top":
-            dimension = "service"
-        elif payload.dimension == "auto":
-            dimension = "service" if payload.sub_post else "sub_post" if payload.post else "post" if payload.grand_post else "grand_post"
-        else:
-            dimension = payload.dimension
-        def grouped_rows(dimension_key: str) -> tuple[str, list[dict[str, Any]]]:
-            label, expression = _dimension_expression(dimension_key, service_label=True)
-            group_expression = "c.prs_nat" if dimension_key == "service" else expression
-            rows = repo.query(
-                f"""SELECT {expression} AS label, ({metric.expression})::DOUBLE AS value
-                    FROM cube c LEFT JOIN transco t USING (prs_nat) WHERE {where}
-                    GROUP BY {group_expression} HAVING ({metric.expression}) IS NOT NULL
-                    ORDER BY value DESC LIMIT {10 if payload.mode == 'top' else 20}""", params
-            )
-            return label, rows
-
-        dimension_label, rows = grouped_rows(dimension)
-        if (payload.mode == "breakdown" and payload.dimension == "auto" and dimension == "post"
-                and metric.kind != "percent" and rows):
-            positive_total = sum(max(float(row["value"] or 0), 0) for row in rows)
-            leading_share = max(float(rows[0]["value"] or 0), 0) / positive_total if positive_total else 0
-            if leading_share >= 0.95:
-                dimension = "sub_post"
-                dimension_label, rows = grouped_rows(dimension)
-        bars = [{"label": _mapped_label(dimension, row["label"], regions),
-                 "value": float(row["value"] or 0)} for row in rows]
-        title = "Top 10 prestations" if payload.mode == "top" else f"Répartition par {dimension_label.lower()}"
-        return _response("bar", title, metric.label, metric.kind, bars=bars,
-                         warnings=warnings, unknown_share=unknown_share)
-
-    if payload.mode == "distribution":
-        x_label, x_expression = _dimension_expression(payload.box_dimension)
-        point_label, point_expression = _dimension_expression(payload.point_dimension)
-        x_group = "c.prs_nat" if payload.box_dimension == "service" else x_expression
-        point_group = "c.prs_nat" if payload.point_dimension == "service" else point_expression
-        rows = repo.query(
-            f"""SELECT {x_expression} AS category, {point_expression} AS point,
-                       ({metric.expression})::DOUBLE AS value
-                FROM cube c LEFT JOIN transco t USING (prs_nat) WHERE {where}
-                GROUP BY {x_group}, {point_group} HAVING ({metric.expression}) IS NOT NULL
-                ORDER BY value DESC LIMIT 10000""", params
-        )
-        points = [{"category": _mapped_label(payload.box_dimension, row["category"], regions),
-                   "point": _mapped_label(payload.point_dimension, row["point"], regions),
-                   "value": float(row["value"] or 0)} for row in rows]
-        return _response("box", f"Distribution par {x_label.lower()}",
-                         f"Chaque point représente : {point_label.lower()}", metric.kind,
-                         box_points=points, warnings=warnings, unknown_share=unknown_share)
-
-    raise ValueError(f"Mode d’analyse inconnu : {payload.mode}")
-
-
-def _response(chart_type: str, title: str, subtitle: str, unit: str, *,
-              series: list[dict[str, Any]] | None = None,
-              bars: list[dict[str, Any]] | None = None,
-              box_points: list[dict[str, Any]] | None = None,
-              warnings: list[str] | None = None,
-              unknown_share: float | None = None) -> dict[str, Any]:
-    return {"chart_type": chart_type, "title": title, "subtitle": subtitle, "unit": unit,
-            "series": series or [], "bars": bars or [], "box_points": box_points or [],
-            "warnings": warnings or [], "unknown_share": unknown_share}
 
 
 def _extraction_query(payload: ExtractionRequest, *, include_count: bool, limit: int) -> tuple[str, list[Any]]:

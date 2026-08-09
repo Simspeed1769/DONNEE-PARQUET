@@ -28,7 +28,6 @@ import { EChart } from "../charts/EChart";
 import { buildOption, pieOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
 import { paletteColor, useChartTokens } from "../charts/tokens";
 import { AdvancedFilterPanel } from "../components/AdvancedFilterPanel";
-import { MultiSelect } from "../components/MultiSelect";
 import {
   assignColorSlots, evaluate, periodValueOf, valuesOf,
   type ExploreMeasure, type ExploreResponse, type ExploreSeries,

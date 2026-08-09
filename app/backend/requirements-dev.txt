@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# Suite de tests uniquement : pas installé par preparer.bat, qui prépare le
+# poste d'un manager pour faire tourner l'application, pas pour la tester.
+pytest>=8,<9

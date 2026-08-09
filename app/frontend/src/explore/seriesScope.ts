@@ -26,8 +26,9 @@ import type { AdvancedFilters, CodeOption, Metadata } from "../types";
  *  la série suit le périmètre commun. */
 export type SeriesScope = AdvancedFilters;
 
-/** Une série composée librement, qui ne descend d'aucune modalité. */
-export const FREE_PREFIX = "free:";
+/** Une série composée librement, qui ne descend d'aucune modalité. Interne au
+ *  module : seul `isFree` a besoin de la valeur exacte du préfixe. */
+const FREE_PREFIX = "free:";
 
 export function isFree(key: string): boolean {
   return key.startsWith(FREE_PREFIX);
@@ -57,13 +58,6 @@ export function lockedField(breakdown: string, free: boolean): keyof AdvancedFil
 const ARRAY_FIELDS = [
   "service_codes", "sexes", "ages", "regions", "insurances", "envelopes",
 ] as const;
-
-/** Le périmètre effectif d'une série : le sien s'il existe, sinon le commun.
- *  La période vient toujours du commun. */
-export function applyScope(base: AdvancedFilters, scope: SeriesScope | undefined): AdvancedFilters {
-  if (!scope) return base;
-  return { ...scope, start_year: base.start_year, end_year: base.end_year };
-}
 
 export type ScopeChip = { field: string; text: string };
 
@@ -173,43 +167,7 @@ export function scopeChips(scope: SeriesScope | undefined, base: AdvancedFilters
   return chips;
 }
 
-export function isEmpty(scope: SeriesScope | undefined, base: AdvancedFilters,
-                        metadata: Metadata): boolean {
-  return scopeChips(scope, base, metadata).length === 0;
-}
-
-/** Le libellé complet d'une série : sa modalité, puis ce qui la distingue.
- *
- *  Une série libre n'a pas de modalité : elle **est** son périmètre, et son nom
- *  se lit entièrement dans ses filtres. Sans filtre, elle porte le périmètre
- *  commun et le dit. */
-export function scopedLabel(base_label: string, scope: SeriesScope | undefined,
-                            base: AdvancedFilters, metadata: Metadata,
-                            free = false): string {
-  const chips = scopeChips(scope, base, metadata);
-  if (free) return chips.length ? chips.map((chip) => chip.text).join(" · ") : "Périmètre commun";
-  return chips.length ? `${base_label} · ${chips.map((chip) => chip.text).join(" · ")}` : base_label;
-}
-
 /** Clé de cache d'un périmètre, pour ne relancer que ce qui a changé. */
 export function scopeKey(scope: SeriesScope | undefined): string {
   return scope ? JSON.stringify(scope) : "";
-}
-
-/** Lecture / écriture dans l'adresse : une comparaison composée doit pouvoir
- *  être partagée telle quelle. */
-export function scopesToParam(scopes: Record<string, SeriesScope>): string | null {
-  const kept = Object.entries(scopes);
-  return kept.length ? JSON.stringify(Object.fromEntries(kept)) : null;
-}
-
-export function scopesFromParam(raw: string | null): Record<string, SeriesScope> {
-  if (!raw) return {};
-  try {
-    const parsed = JSON.parse(raw) as Record<string, SeriesScope>;
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    // Une adresse tronquée ou bricolée ne doit pas empêcher l'écran de s'ouvrir.
-    return {};
-  }
 }

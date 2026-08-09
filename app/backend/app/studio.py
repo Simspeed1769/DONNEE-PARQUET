@@ -9,7 +9,6 @@ from .analysis import (
     DIMENSIONS,
     METRICS,
     POSTES_SANS_BASE,
-    AnalysisRequest,
     FilterPayload,
     QueryRepository,
     _dimension_expression,
@@ -1056,9 +1055,3 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
             {"key": "mortality", "label": "Mortalité", "status": "Disponible" if mortality_available else "Indisponible", "common_dimensions": ["time", "age", "sex"]},
         ],
     }
-
-
-def legacy_payload(payload: WorkbenchRequest) -> AnalysisRequest:
-    """Kept for explicit compatibility during the transition."""
-    return AnalysisRequest(**_filter_data(payload), mode="evolution", measure=payload.measure,
-                           time_axis=payload.time_axis)
