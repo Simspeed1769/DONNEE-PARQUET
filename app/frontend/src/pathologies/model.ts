@@ -99,7 +99,14 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       return row ? valueOf(row) : null;
     }),
   }));
-  const ageForms: FormOption[] = [{ key: "bar", label: "Barres" }, { key: "line", label: "Courbe" }];
+  const ageForms: FormOption[] = [
+    { key: "bar", label: "Barres" },
+    { key: "line", label: "Courbe" },
+    // Une pyramide adosse deux effectifs au même axe : elle compte des
+    // personnes. Sur une prévalence, les deux ailes seraient des taux, et leur
+    // longueur ne se lirait plus comme un nombre de patients.
+    ...(!isRate && ageSeries.length === 2 ? [{ key: "pyramid", label: "Pyramide" }] : []),
+  ];
   const ageForm = resolveForm(ageForms, forms.age);
 
   /* — Sexe : le profil agrégé sur toutes les tranches — */
@@ -211,7 +218,9 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       key: "age",
       nav: "Âge",
       title: `${measureLabel} par âge et sexe`,
-      question: "Quels âges sont les plus touchés, et cela diffère-t-il entre femmes et hommes ?",
+      question: ageForm === "pyramid"
+        ? "Comment les patientes et les patients se répartissent-ils par âge ?"
+        : "Quels âges sont les plus touchés, et cela diffère-t-il entre femmes et hommes ?",
       caveats: base,
       forms: ageForms,
       form: ageForm,
@@ -221,7 +230,10 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
         rows: ageLabels.map((ageLabel, index) => [ageLabel, ...ageSeries.map((serie) => formatValue(serie.values[index], kind))]),
       },
       ariaLabel: `${measureLabel} par âge et sexe · ${label}`,
-      height: CHART_HEIGHT,
+      // Une pyramide a besoin d'une ligne par tranche d'âge.
+      height: ageForm === "pyramid"
+        ? Math.max(CHART_HEIGHT, 80 + ageLabels.length * 26)
+        : CHART_HEIGHT,
       empty: ageLabels.length ? null : "Aucune tranche d’âge renseignée.",
       xTitle: "Tranche d’âge",
     },

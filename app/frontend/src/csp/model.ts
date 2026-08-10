@@ -95,7 +95,14 @@ export function buildCspReadings(input: CspInput): Reading[] {
       return row ? (isShare ? row.share : row.effectif) : null;
     }),
   }));
-  const ageForms: FormOption[] = [{ key: "bar", label: "Barres" }, { key: "line", label: "Courbe" }];
+  const ageForms: FormOption[] = [
+    { key: "bar", label: "Barres" },
+    { key: "line", label: "Courbe" },
+    // Une pyramide compte des personnes de part et d'autre d'un axe : sur une
+    // part, ses deux ailes seraient des pourcentages et sa forme mentirait sur
+    // le poids réel de chaque tranche.
+    ...(!isShare && ageSeries.length === 2 ? [{ key: "pyramid", label: "Pyramide" }] : []),
+  ];
   const ageForm = resolveForm(ageForms, forms.age);
 
   // La part d'un sexe se recalcule sur ses propres effectifs : moyenner des
@@ -221,7 +228,9 @@ export function buildCspReadings(input: CspInput): Reading[] {
       key: "age",
       nav: "Âge",
       title: `${measureLabel} par âge et sexe`,
-      question: "Comment cela se répartit-il selon l’âge ?",
+      question: ageForm === "pyramid"
+        ? "Comment les femmes et les hommes du groupe se répartissent-ils par âge ?"
+        : "Comment cela se répartit-il selon l’âge ?",
       caveats: base,
       forms: ageForms,
       form: ageForm,
@@ -231,7 +240,10 @@ export function buildCspReadings(input: CspInput): Reading[] {
         rows: ageLabels.map((label, index) => [label, ...ageSeries.map((item) => formatValue(item.values[index], kind))]),
       },
       ariaLabel: `${measureLabel} par âge et sexe · ${cspLabel}`,
-      height: CHART_HEIGHT,
+      // Une pyramide a besoin d'une ligne par tranche d'âge.
+      height: ageForm === "pyramid"
+        ? Math.max(CHART_HEIGHT, 80 + ageLabels.length * 26)
+        : CHART_HEIGHT,
       empty: ageLabels.length ? null : "Aucune tranche d’âge renseignée.",
       xTitle: "Tranche d’âge",
     },

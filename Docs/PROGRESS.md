@@ -89,3 +89,25 @@
   des dénominateurs le dit en toutes lettres plutôt que de laisser croire à un
   taux homogène.
 - **Écarté** : rien.
+
+## v3 · Phase 6 — Quatre formes de plus, chacune sous condition
+
+- **Fait** : aires empilées (part du total, année après année), barres
+  divergentes autour de zéro sur la rampe `--diverge`, carte de chaleur
+  année × modalité sur la rampe séquentielle, pyramide des âges. Toutes passent
+  par `buildOption`, héritent donc des transitions, du titre d'axe et de
+  l'export en clair.
+- **Conditions, jamais un bouton grisé** : les aires et les écarts demandent
+  deux années ; la carte de chaleur, quatre séries — en dessous elle est moins
+  lisible que les barres qu'elle remplacerait ; les aires demandent en outre une
+  mesure additive et des séries de même population. La pyramide n'est offerte
+  que sur des effectifs : sur une prévalence ou une part, ses deux ailes
+  seraient des taux et leur longueur mentirait sur le nombre de personnes.
+- **Décision de nommage** : « Aires 100 % » a été renommé « Aires empilées ».
+  Les séries retenues ne pèsent qu'une partie du total et l'empilement ne
+  remplit pas la hauteur ; le nom dit la forme, l'axe dit la part.
+- **Signalé, hors périmètre** : en thème sombre, les panneaux de contenu restent
+  clairs dans toute l'application — y compris sur des écrans qu'aucune phase de
+  v3 n'a touchés, Repères par exemple. C'est antérieur à cette mission et la
+  correction demanderait de reprendre `styles.css`.
+- **Écarté** : rien.

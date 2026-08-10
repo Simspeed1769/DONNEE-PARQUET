@@ -55,7 +55,8 @@ const BREAKDOWNS: Array<{ key: BreakdownKey; label: string; field: string | null
   { key: "year", label: "Année", field: null },
 ];
 
-type ViewKey = "line" | "bar" | "rank" | "index" | "change" | "pie";
+type ViewKey = "line" | "bar" | "rank" | "index" | "change" | "pie"
+  | "shareArea" | "diverging" | "heatmap";
 
 type View = {
   key: ViewKey;
@@ -66,6 +67,12 @@ type View = {
   /** Forme qui compose un tout à partir des séries : elle ment dès qu'elles ne
    *  portent pas sur la même population. */
   cumulative?: boolean;
+  /** Nombre d'années sous lequel la forme n'a rien à montrer : une déformation
+   *  dans le temps demande au moins deux points, un écart aussi. */
+  needsYears?: number;
+  /** Nombre de séries sous lequel la forme est moins lisible que celles qu'elle
+   *  remplacerait : une carte de chaleur à deux lignes est un tableau. */
+  needsSeries?: number;
   question: string;
 };
 
@@ -79,6 +86,13 @@ const VIEWS: View[] = [
   { key: "index", label: "Base 100", form: "line", reading: "index", question: "Laquelle progresse le plus vite, quelle que soit sa taille ?" },
   { key: "change", label: "Variation", form: "bar", reading: "change", question: "De combien chacune varie-t-elle d'une année sur l'autre ?" },
   { key: "pie", label: "Camembert", form: "pie", reading: "value", needsAdditive: true, cumulative: true, question: "Comment le total se partage-t-il ?" },
+  // « Aires 100 % » promettrait un empilement qui remplit la hauteur ; les
+  // séries retenues ne pèsent qu'une partie du total, et le reste n'est pas
+  // dessiné quand « Autres » est masqué. Le nom dit donc la forme, et l'axe dit
+  // la part.
+  { key: "shareArea", label: "Aires empilées", form: "shareArea", reading: "share", needsAdditive: true, cumulative: true, needsYears: 2, question: "Comment le partage du total se déforme-t-il d’une année à l’autre ?" },
+  { key: "diverging", label: "Écarts", form: "diverging", reading: "value", needsYears: 2, question: "Qui progresse, qui recule sur la période ?" },
+  { key: "heatmap", label: "Carte de chaleur", form: "heatmap", reading: "value", needsYears: 2, needsSeries: 4, question: "Où et quand est-ce le plus fort ?" },
 ];
 
 const MAX_SERIES = 8;
@@ -265,22 +279,12 @@ export function CompareSection({
     window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
   }, [breakdown, viewKey, active, scopes, names, showOther]);
 
-  // Une vue devenue impossible retombe sur les courbes, toujours valides.
-  const view = useMemo(() => {
-    const chosen = VIEWS.find((item) => item.key === viewKey) ?? VIEWS[0];
-    return chosen.needsAdditive && !additive ? VIEWS[0] : chosen;
-  }, [viewKey, additive]);
   /** Une forme cumulative — un camembert, une pile — suppose que les parts
    *  s'additionnent en un tout. Dès que deux séries ne décrivent pas la même
    *  population, ce tout n'existe pas : la forme est **retirée**, jamais
    *  proposée grisée. */
   /** Deux séries qui ne portent pas sur la même population. */
   const mixedPopulations = active.some((key) => isFree(key) || scopes[key]);
-
-  const availableViews = useMemo(
-    () => VIEWS.filter((item) => (!item.needsAdditive || additive) && !(item.cumulative && mixedPopulations)),
-    [additive, mixedPopulations],
-  );
 
   const slots = useMemo(() => assignColorSlots(active, slotMemory.current, MAX_SERIES), [active]);
 
@@ -342,6 +346,29 @@ export function CompareSection({
   const sample = sharedResponse ?? Object.values(overrideResults)[0] ?? null;
   const years = sample?.years ?? [];
   const periodLabel = years.length ? (years.length === 1 ? String(years[0]) : `${years[0]}–${years.at(-1)}`) : "Période";
+
+  /** Ce que le modèle autorise, et donc ce que la barre des formes affiche.
+   *
+   *  Une forme dont les conditions ne sont pas réunies est **absente**, jamais
+   *  grisée : un bouton désactivé laisse croire qu'il manque un réglage, alors
+   *  que ce sont les données qui ne s'y prêtent pas. Une aire à 100 % ou un
+   *  écart demandent deux années ; une carte de chaleur, quatre séries — en
+   *  dessous, elle est moins lisible que les barres qu'elle remplacerait. */
+  const offers = useCallback((item: View) => (
+    (!item.needsAdditive || additive)
+    && !(item.cumulative && mixedPopulations)
+    && years.length >= (item.needsYears ?? 0)
+    && active.length >= (item.needsSeries ?? 0)
+  ), [additive, mixedPopulations, years.length, active.length]);
+
+  const availableViews = useMemo(() => VIEWS.filter(offers), [offers]);
+
+  // Une vue devenue impossible retombe sur les courbes, toujours valides.
+  const view = useMemo(() => {
+    const chosen = VIEWS.find((item) => item.key === viewKey) ?? VIEWS[0];
+    return offers(chosen) ? chosen : VIEWS[0];
+  }, [viewKey, offers]);
+
   const asPie = view.form === "pie";
 
   const seriesData = useMemo((): ExploreSeries[] => {
@@ -420,9 +447,12 @@ export function CompareSection({
     return buildOption({
       form: view.form, categories, series: chartSeries, kind, unitLabel, tokens: palette,
       directLabels: view.form === "line" && chartSeries.length > 1 && chartSeries.length <= 6,
-      // Le classement et la cascade tournent l'axe des modalités : il n'y porte
-      // plus des années mais les séries que l'on compare.
-      xTitle: view.form === "rank" || view.form === "waterfall" ? "Séries comparées" : "Année",
+      // Le classement, la cascade et les écarts tournent l'axe des modalités :
+      // il n'y porte plus des années mais les séries que l'on compare. La carte
+      // de chaleur, elle, garde les années en abscisse.
+      xTitle: view.form === "rank" || view.form === "waterfall" || view.form === "diverging"
+        ? "Séries comparées"
+        : "Année",
     });
   }, [asPie, view, categories, chartSeries, kind, unitLabel, periodLabel]);
 

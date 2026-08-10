@@ -3,7 +3,8 @@ import type { ChartTokens } from "./tokens";
 import { paletteColor, seriesColor } from "./tokens";
 import { formatValue, scaleFor } from "../utils";
 
-export type ChartForm = "line" | "area" | "bar" | "stack" | "share" | "rank" | "slope" | "waterfall" | "pie";
+export type ChartForm = "line" | "area" | "bar" | "stack" | "share" | "rank" | "slope"
+  | "waterfall" | "pie" | "shareArea" | "diverging" | "heatmap" | "pyramid";
 
 export type ChartSeries = {
   key: string;
@@ -41,12 +42,16 @@ const AXIS_NAME_GAP = 30;
 
 /** Le même titre, pour un axe de modalités devenu vertical. Écrit en haut de
  *  l'axe plutôt qu'en son milieu : au milieu, il faudrait le coucher, et un
- *  libellé pivoté se lit mal. */
-function verticalAxisName(tokens: ChartTokens, title: string | undefined) {
+ *  libellé pivoté se lit mal.
+ *
+ *  Sur un axe inversé — le classement, la cascade — le haut est le *début* de
+ *  l'axe et non sa fin : sans ce détour, le titre irait se poser en bas, contre
+ *  les graduations de l'axe des valeurs. */
+function verticalAxisName(tokens: ChartTokens, title: string | undefined, inverse = false) {
   return title
     ? {
       name: title,
-      nameLocation: "end" as const,
+      nameLocation: (inverse ? "start" : "end") as "start" | "end",
       nameGap: 12,
       nameTextStyle: {
         color: tokens.inkSecondary, fontSize: 12, fontFamily: tokens.font,
@@ -130,8 +135,14 @@ export function buildOption(input: ChartInput): EChartsOption {
   if (form === "rank") return rankOption(input, scale, scaled);
   if (form === "waterfall") return waterfallOption(input, scale, scaled);
   if (form === "slope") return slopeOption(input, scale, scaled);
+  if (form === "diverging") return divergingOption(input, scale, scaled);
+  if (form === "heatmap") return heatmapOption(input);
+  if (form === "pyramid") return pyramidOption(input, scale, scaled);
 
-  const stacked = form === "area" || form === "stack" || form === "share";
+  // L'aire empilée à 100 % partage toute sa mécanique avec la pile à 100 % : ce
+  // qui change est le remplissage continu, qui donne à voir une composition qui
+  // se déforme d'une année à l'autre plutôt qu'une suite de compositions.
+  const stacked = form === "area" || form === "stack" || form === "share" || form === "shareArea";
   const asBar = form === "bar" || form === "stack" || form === "share";
   // Une série unique en barres laisse la place d'écrire chaque valeur au-dessus
   // de sa colonne. C'est ce qui rend une comparaison de deux années lisible
@@ -235,7 +246,7 @@ export function buildOption(input: ChartInput): EChartsOption {
       name: scale.label,
       nameTextStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font, align: "left" },
       nameGap: 12,
-      max: form === "share" ? 100 : undefined,
+      max: form === "share" || form === "shareArea" ? 100 : undefined,
       ...axisCommon(tokens),
     },
     series: series as EChartsOption["series"],
@@ -403,6 +414,275 @@ function rankOption(input: ChartInput, scale: { label: string },
   };
 }
 
+/** Barres divergentes : des valeurs signées, de part et d'autre de zéro.
+ *
+ *  Ici la couleur porte un **signe et une ampleur**, pas une identité : c'est
+ *  donc la rampe divergente — deux teintes autour d'un gris neutre — et jamais
+ *  la palette catégorielle. Une seule série, une barre par modalité, l'axe zéro
+ *  marqué : c'est lui qui donne son sens à la forme.
+ */
+function divergingOption(input: ChartInput, scale: { label: string },
+                         scaled: (value: number | null) => number | null): EChartsOption {
+  const { tokens } = input;
+
+  // Deux dispositions, comme pour le classement. Une série unique de valeurs
+  // déjà signées se lit modalité par modalité ; plusieurs séries se lisent sur
+  // leur écart entre la première et la dernière période — qui progresse, qui
+  // recule.
+  const first = 0;
+  const last = input.categories.length - 1;
+  const rows = (input.rankBy === "category" || input.series.length <= 1
+    ? input.categories.map((category, index) => ({
+      label: String(category),
+      value: input.series[0]?.values[index] ?? null,
+    }))
+    : input.series.map((serie) => {
+      const start = serie.values[first];
+      const end = serie.values[last];
+      return {
+        label: serie.label,
+        value: start === null || start === undefined || end === null || end === undefined
+          ? null
+          : end - start,
+      };
+    })
+  ).filter((row) => row.value !== null);
+
+  // Les extrêmes des deux côtés, pour graduer la rampe symétriquement : sans
+  // cela, un côté peu étendu saturerait sa teinte et paraîtrait plus fort.
+  const magnitude = Math.max(...rows.map((row) => Math.abs(row.value ?? 0)), 0) || 1;
+  const middle = (tokens.diverge.length - 1) / 2;
+
+  const shade = (value: number): string => {
+    const position = middle + (value / magnitude) * middle;
+    const index = Math.round(Math.min(tokens.diverge.length - 1, Math.max(0, position)));
+    return tokens.diverge[index];
+  };
+
+  return {
+    animationDuration: 380,
+    grid: { left: 8, right: 56, top: input.xTitle ? 24 : 8, bottom: 8, containLabel: true },
+    tooltip: {
+      trigger: "item",
+      ...tooltipCommon(tokens),
+      formatter: (params: any) => {
+        const row = rows[params.dataIndex];
+        return `<div style="font-weight:650;margin-bottom:4px">${row.label}</div>
+          <div style="color:${tokens.inkSecondary}"><b style="color:${tokens.ink}">${formatValue(row.value, input.kind, true)}</b></div>`;
+      },
+    },
+    xAxis: {
+      type: "value",
+      name: scale.label,
+      nameTextStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font },
+      ...axisCommon(tokens),
+    },
+    yAxis: {
+      type: "category",
+      data: rows.map((row) => row.label),
+      inverse: true,
+      ...axisCommon(tokens),
+      ...verticalAxisName(tokens, input.xTitle, true),
+      splitLine: { show: false },
+      axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
+    },
+    series: [{
+      id: "diverging",
+      type: "bar",
+      data: rows.map((row) => {
+        const positive = (row.value ?? 0) >= 0;
+        return {
+          value: scaled(row.value),
+          itemStyle: {
+            color: shade(row.value ?? 0),
+            borderRadius: (positive ? [0, 4, 4, 0] : [4, 0, 0, 4]) as [number, number, number, number],
+          },
+          // L'étiquette se pose du côté où la barre s'étend, sinon elle
+          // chevaucherait l'axe zéro sur les valeurs négatives.
+          label: { position: positive ? "right" : "left" },
+        };
+      }),
+      barMaxWidth: 24,
+      label: {
+        show: true, distance: 8,
+        color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font,
+        formatter: (params: any) => formatValue(rows[params.dataIndex].value, input.kind, true),
+      },
+      markLine: {
+        silent: true,
+        symbol: "none",
+        data: [{ xAxis: 0 }],
+        lineStyle: { color: tokens.line, width: 1 },
+        label: { show: false },
+      },
+    }],
+  };
+}
+
+/** Carte de chaleur année × modalité.
+ *
+ *  Elle répond à une question que ni la courbe ni la barre ne posent bien quand
+ *  les modalités se comptent par dizaines : *où et quand* est-ce fort ? Une
+ *  magnitude simple appelle une rampe séquentielle d'une seule teinte, du clair
+ *  au foncé — jamais un arc-en-ciel, dont les paliers ne s'ordonnent pas.
+ */
+function heatmapOption(input: ChartInput): EChartsOption {
+  const { tokens } = input;
+  const cells: Array<[number, number, number | null]> = [];
+  input.series.forEach((serie, row) => {
+    input.categories.forEach((_, column) => {
+      cells.push([column, row, serie.values[column] ?? null]);
+    });
+  });
+  const known = cells.map(([, , value]) => value).filter((value): value is number => value !== null);
+  const bounds: [number, number] = [Math.min(...known, 0), Math.max(...known, 0)];
+
+  return {
+    animationDuration: 380,
+    grid: {
+      left: 8, right: 16, top: 8,
+      // Trois choses s'empilent sous la grille : les graduations, le titre de
+      // l'axe, puis la légende de la rampe. Chacune a sa bande.
+      bottom: input.xTitle ? 66 : 40,
+      containLabel: true,
+    },
+    tooltip: {
+      trigger: "item",
+      ...tooltipCommon(tokens),
+      formatter: (params: any) => {
+        const [column, row, value] = params.data as [number, number, number | null];
+        return `<div style="font-weight:650;margin-bottom:4px">${input.series[row]?.label ?? ""}</div>
+          <div style="color:${tokens.inkSecondary}">${input.categories[column]} ·
+          <b style="color:${tokens.ink}">${readable(value, input.kind)}</b></div>`;
+      },
+    },
+    xAxis: {
+      type: "category",
+      data: input.categories,
+      ...axisCommon(tokens),
+      ...axisName(tokens, input.xTitle),
+      splitLine: { show: false },
+      splitArea: { show: false },
+    },
+    yAxis: {
+      type: "category",
+      data: input.series.map((serie) => serie.label),
+      ...axisCommon(tokens),
+      splitLine: { show: false },
+      splitArea: { show: false },
+      axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
+    },
+    visualMap: {
+      type: "continuous",
+      min: bounds[0],
+      max: bounds[1],
+      calculable: false,
+      orient: "horizontal",
+      left: "center",
+      // Sous le titre d'axe, jamais dessus.
+      bottom: 2,
+      itemWidth: 14,
+      itemHeight: 120,
+      textGap: 10,
+      textStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font },
+      text: [formatValue(bounds[1], input.kind), formatValue(bounds[0], input.kind)],
+      inRange: { color: tokens.ramp },
+    },
+    series: [{
+      id: "heatmap",
+      type: "heatmap",
+      data: cells.filter((cell) => cell[2] !== null),
+      // 2 px de surface entre les cellules : la séparation se fait par le vide.
+      itemStyle: { borderColor: tokens.surface, borderWidth: MARK_GAP },
+      emphasis: { itemStyle: { borderColor: tokens.ink, borderWidth: 1.5 } },
+      progressive: 0,
+    }],
+  } as EChartsOption;
+}
+
+/** Pyramide des âges : deux profils adossés au même axe.
+ *
+ *  Les femmes s'étendent vers la gauche, les hommes vers la droite. Le signe
+ *  négatif n'est qu'un procédé de tracé : les valeurs affichées, en infobulle
+ *  comme sur l'axe, restent positives — une pyramide qui annoncerait « −12 000
+ *  femmes » mentirait sur ce qu'elle montre.
+ */
+function pyramidOption(input: ChartInput, scale: { label: string },
+                       scaled: (value: number | null) => number | null): EChartsOption {
+  const { tokens } = input;
+  const [left, right] = input.series;
+  const mirrored = (serie: ChartSeries | undefined, sign: number) =>
+    (serie?.values ?? []).map((value) => {
+      const next = scaled(value);
+      return next === null ? null : next * sign;
+    });
+
+  const absolute = (serie: ChartSeries | undefined, index: number) =>
+    readable(serie?.values[index] ?? null, input.kind);
+
+  return {
+    animationDuration: 380,
+    grid: { left: 8, right: 16, top: 8, bottom: input.xTitle ? AXIS_NAME_GAP : 8, containLabel: true },
+    tooltip: {
+      trigger: "axis",
+      ...tooltipCommon(tokens),
+      axisPointer: { type: "shadow" },
+      formatter: (params: any) => {
+        const rows = Array.isArray(params) ? params : [params];
+        const index = rows[0]?.dataIndex ?? 0;
+        const head = `<div style="font-weight:650;margin-bottom:6px">${input.categories[index]}</div>`;
+        return head + [left, right].map((serie, position) => {
+          const color = paletteColor(tokens, serie?.colorIndex ?? position, 2, false);
+          return `<div style="display:flex;align-items:center;gap:8px;margin:2px 0">
+            <span style="width:8px;height:8px;border-radius:50%;background:${color};flex:0 0 auto"></span>
+            <span style="flex:1;color:${tokens.inkSecondary}">${serie?.label ?? ""}</span>
+            <b style="font-variant-numeric:tabular-nums">${absolute(serie, index)}</b></div>`;
+        }).join("");
+      },
+    },
+    legend: HTML_LEGEND,
+    xAxis: {
+      type: "value",
+      name: scale.label,
+      nameLocation: "middle",
+      nameGap: AXIS_NAME_GAP - 8,
+      nameTextStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font },
+      ...axisCommon(tokens),
+      // L'axe compte des effectifs de part et d'autre : ses graduations
+      // restent positives des deux côtés.
+      axisLabel: {
+        color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font,
+        formatter: (value: number) => formatValue(Math.abs(value), input.kind),
+      },
+    },
+    yAxis: {
+      type: "category",
+      data: input.categories,
+      ...axisCommon(tokens),
+      ...verticalAxisName(tokens, input.xTitle),
+      splitLine: { show: false },
+      axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font },
+    },
+    series: [left, right].map((serie, position) => {
+      const color = paletteColor(tokens, serie?.colorIndex ?? position, 2, false);
+      return {
+        id: serie?.key ?? `pyramid-${position}`,
+        name: serie?.label ?? "",
+        type: "bar" as const,
+        stack: "pyramid",
+        data: mirrored(serie, position === 0 ? -1 : 1),
+        itemStyle: {
+          color,
+          borderColor: tokens.surface,
+          borderWidth: MARK_GAP,
+          borderRadius: (position === 0 ? [4, 0, 0, 4] : [0, 4, 4, 0]) as [number, number, number, number],
+        },
+        barMaxWidth: 26,
+      };
+    }) as EChartsOption["series"],
+  };
+}
+
 function slopeOption(input: ChartInput, scale: { label: string },
                      scaled: (value: number | null) => number | null): EChartsOption {
   const { tokens } = input;
@@ -488,7 +768,7 @@ function waterfallOption(input: ChartInput, scale: { label: string },
       data: rows.map((row) => row.label),
       inverse: true,
       ...axisCommon(tokens),
-      ...verticalAxisName(tokens, input.xTitle),
+      ...verticalAxisName(tokens, input.xTitle, true),
       splitLine: { show: false },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
     },
