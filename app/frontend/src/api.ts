@@ -280,10 +280,6 @@ export function getCspEvolution(
   return post<CspEvolution>("/api/csp/evolution", payload, signal);
 }
 
-export function getCspGeography(url: string, signal?: AbortSignal): Promise<Record<string, unknown>> {
-  return request<Record<string, unknown>>(url, signal);
-}
-
 export function getMortalityMetadata(signal?: AbortSignal): Promise<MortalityMetadata> {
   return request<MortalityMetadata>("/api/mortality/meta", signal);
 }

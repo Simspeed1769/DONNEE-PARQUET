@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Data, Layout } from "plotly.js";
-import Plotly from "plotly.js-basic-dist-min";
-import createPlotlyComponent from "react-plotly.js/factory";
+import type { ECharts } from "echarts/core";
 import {
   downloadText,
   getCspMetadata,
@@ -13,6 +11,9 @@ import {
   runWorkbench,
 } from "../api";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
+import { EChart } from "../charts/EChart";
+import { useChartTokens } from "../charts/tokens";
+import { rankOption, trendOption } from "../benchmarks/charts";
 import type {
   AdvancedFilters,
   CspMetadata,
@@ -34,10 +35,6 @@ import {
   writeFilters,
   yearStatusLabel,
 } from "../utils";
-
-const Plot = createPlotlyComponent(Plotly);
-const RED = "#ef4647";
-const INK = "#3b3633";
 
 type RepereSource = "damir" | "pathologies" | "csp" | "mortality";
 type CalculationKey = "value" | "period_total" | "average_unit" | "cagr" | "change" | "dispersion";
@@ -177,6 +174,8 @@ export function BenchmarksPage({ metadata, routeVersion, onOpenExtraction, onOpe
   const [hoveredPoint, setHoveredPoint] = useState<ReperePoint | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const tokens = useChartTokens();
+  const [plotInstance, setPlotInstance] = useState<ECharts | null>(null);
 
   const [damirFilters, setDamirFilters] = useState<AdvancedFilters>(() => filtersFromSearch(metadata, initial));
   const [damirMeasure, setDamirMeasure] = useState(() => {
@@ -886,49 +885,30 @@ export function BenchmarksPage({ metadata, routeVersion, onOpenExtraction, onOpe
     mortalityEndYear,
   ]);
 
+  const plotHeight = model?.chartType === "bar" ? Math.max(320, model.points.length * 25 + 90) : 315;
   const plot = useMemo(() => {
-    if (!model) return { data: [] as Data[], layout: {} as Partial<Layout> };
-    const customdata = model.points.map((point) => [
-      point.label,
-      formatExact(point.value, model.seriesKind, model.seriesUnitLabel),
-    ]);
-    const data: Data[] = model.chartType === "bar"
-      ? [{
-          type: "bar",
-          orientation: "h",
-          x: model.points.map((point) => point.value),
-          y: model.points.map((point) => point.label),
-          customdata,
-          marker: { color: model.points.map((_, index) => index === model.points.length - 1 ? RED : "#3b3633") },
-          hovertemplate: "<b>%{customdata[0]}</b><br>%{customdata[1]}<extra></extra>",
-        } as Data]
-      : [{
-          type: "scatter",
-          mode: "lines+markers",
-          x: model.points.map((point) => point.label),
-          y: model.points.map((point) => point.value),
-          customdata,
-          line: { color: RED, width: 3 },
-          marker: { color: RED, size: 7, line: { color: "#fff", width: 2 } },
-          hovertemplate: "<b>%{customdata[0]}</b><br>%{customdata[1]}<extra></extra>",
-        } as Data];
-    const layout: Partial<Layout> = {
-      height: model.chartType === "bar" ? Math.max(320, model.points.length * 25 + 90) : 315,
-      margin: model.chartType === "bar" ? { l: 190, r: 28, t: 18, b: 50 } : { l: 70, r: 24, t: 18, b: 48 },
-      paper_bgcolor: "rgba(0,0,0,0)",
-      plot_bgcolor: "rgba(0,0,0,0)",
-      font: { family: "Inter, Arial, sans-serif", color: "#536074", size: 12 },
-      showlegend: false,
-      hoverlabel: { bgcolor: "#fff", bordercolor: RED, font: { color: INK } },
-      xaxis: model.chartType === "bar"
-        ? { gridcolor: "#ece9e5", ticksuffix: model.seriesKind === "percent" ? " %" : "" }
-        : { gridcolor: "#ece9e5", type: "category" },
-      yaxis: model.chartType === "bar"
-        ? { gridcolor: "rgba(0,0,0,0)", automargin: true }
-        : { gridcolor: "#ece9e5", ticksuffix: model.seriesKind === "percent" ? " %" : "" },
+    if (!model) return null;
+    const format = (value: number) => formatExact(value, model.seriesKind, model.seriesUnitLabel);
+    return model.chartType === "bar"
+      ? rankOption({ rows: model.points, format, kind: model.seriesKind, tokens })
+      : trendOption({ rows: model.points, format, kind: model.seriesKind, tokens });
+  }, [model, tokens]);
+
+  useEffect(() => {
+    if (!plotInstance || !model) return;
+    const points = model.points;
+    const onHover = (params: any) => {
+      const point = points[params.dataIndex];
+      if (point) setHoveredPoint(point);
     };
-    return { data, layout };
-  }, [model]);
+    const onLeave = () => setHoveredPoint(null);
+    plotInstance.on("mouseover", onHover);
+    plotInstance.on("mouseout", onLeave);
+    return () => {
+      plotInstance.off("mouseover", onHover);
+      plotInstance.off("mouseout", onLeave);
+    };
+  }, [plotInstance, model]);
 
   const selectSource = (next: RepereSource) => {
     setSource(next);
@@ -1133,20 +1113,7 @@ export function BenchmarksPage({ metadata, routeVersion, onOpenExtraction, onOpe
             if (event.currentTarget.open) setValuesOpen(false);
           }}>
             <summary>Voir le contexte <span>Évolution ou classement</span></summary>
-            <Plot
-              data={plot.data}
-              layout={plot.layout}
-              config={{ responsive: true, displaylogo: false, displayModeBar: false }}
-              style={{ width: "100%", height: `${plot.layout.height ?? 315}px` }}
-              useResizeHandler
-              onHover={(event) => {
-                const point = event.points[0];
-                const label = Array.isArray(point.customdata) ? String(point.customdata[0]) : String(point.x ?? point.y ?? "");
-                const value = Number(model.chartType === "bar" ? point.x : point.y);
-                if (Number.isFinite(value)) setHoveredPoint({ label, value });
-              }}
-              onUnhover={() => setHoveredPoint(null)}
-            />
+            {plot ? <div className="benchmarks-chart"><EChart option={plot} height={plotHeight} ariaLabel={`Contexte · ${model.seriesLabel}`} onInstance={setPlotInstance} /></div> : null}
           </details>
 
           <details className="benchmarks-values" open={valuesOpen} onToggle={(event) => setValuesOpen(event.currentTarget.open)}>

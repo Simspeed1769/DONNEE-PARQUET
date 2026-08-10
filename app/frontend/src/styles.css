@@ -1890,7 +1890,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: #667184; background: #f4f
   font-weight: 650;
   text-align: right;
 }
-.benchmarks-context .js-plotly-plot {
+.benchmarks-context .benchmarks-chart {
   padding: 8px 0 4px;
   border-top: 1px solid #e7e7e3;
 }
