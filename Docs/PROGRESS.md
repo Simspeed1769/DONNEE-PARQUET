@@ -111,3 +111,27 @@
   v3 n'a touchés, Repères par exemple. C'est antérieur à cette mission et la
   correction demanderait de reprendre `styles.css`.
 - **Écarté** : rien.
+
+## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
+
+Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de
+population existaient depuis la phase 2 mais personne ne pouvait les atteindre,
+et le seul chemin qui y menait faussait la série.
+
+- **Le tiroir était rogné.** `.scope-editor` s'ouvrait en `position: absolute`
+  au-dessus d'une liste qui vit déjà dans un panneau à défilement : deux zones
+  de défilement imbriquées se disputaient la molette, et la section Population —
+  sexe, âge, territoire, assurance, enveloppe, motif — restait sous la coupure.
+  Le tiroir revient **dans le flux**, sous sa ligne de série : il pousse la
+  liste, et le seul défilement du panneau y donne accès en entier.
+- **La modalité se perdait en silence.** Ouvrir le périmètre d'une série tirée
+  d'une modalité l'initialisait au périmètre *commun*, sans sa propre
+  restriction : régler « Pharmacie » sur les femmes en faisait *tous les postes,
+  femmes*, et le montant triplait sans que rien ne l'annonce. `scopeForSeries`
+  amorce désormais le périmètre avec la modalité de la série. « Pharmacie ·
+  Femmes » se lit à 11–16 Md € là où la pharmacie entière pèse 25–34.
+- **Réglage, pas code** : le thème sombre était resté enregistré dans le
+  navigateur après les vérifications de la phase 6. Les « barres horizontales »
+  vues sur les courbes en étaient la conséquence — les lignes de grille passent
+  au quasi-noir en sombre et se détachent sur un panneau resté clair, ce qui est
+  le défaut de thème déjà signalé ci-dessus.

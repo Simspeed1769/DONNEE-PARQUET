@@ -67,6 +67,38 @@ const ARRAY_FIELDS = [
   "service_codes", "sexes", "ages", "regions", "insurances", "envelopes",
 ] as const;
 
+/** Le périmètre de départ d'une série tirée d'une modalité.
+ *
+ *  Une série « Pharmacie » **est** le périmètre commun restreint à la
+ *  pharmacie : cette restriction est implicite tant que la série n'a pas de
+ *  périmètre propre, mais elle doit être écrite noir sur blanc dès qu'on lui en
+ *  donne un. Partir du seul périmètre commun la perdrait en silence — régler le
+ *  sexe sur « femmes » transformerait la pharmacie en *tous les postes*, avec un
+ *  montant qui triple sans que rien ne l'annonce.
+ *
+ *  Une série libre, elle, ne descend d'aucune modalité : son périmètre de départ
+ *  est le périmètre commun, sans plus.
+ */
+export function scopeForSeries(breakdown: string, key: string, free: boolean,
+                               base: AdvancedFilters): SeriesScope {
+  const scope: SeriesScope = { ...base };
+  const field = lockedField(breakdown, free);
+  if (!field) return scope;
+
+  if (field === "grand_post" || field === "post" || field === "sub_post") {
+    scope[field] = key;
+    return scope;
+  }
+  if (field === "ald") {
+    scope.ald = Number(key);
+    return scope;
+  }
+  const code = Number(key);
+  const listed = ARRAY_FIELDS.find((candidate) => candidate === field);
+  if (listed && Number.isFinite(code)) scope[listed] = [code];
+  return scope;
+}
+
 type ScopeChip = { field: string; text: string };
 
 function named(codes: number[], options: CodeOption[],

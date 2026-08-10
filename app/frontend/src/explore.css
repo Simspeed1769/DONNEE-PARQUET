@@ -510,22 +510,24 @@
 }
 .series-scope-note button:hover { color: var(--ink); background: var(--surface-sunken); }
 
+/* Le périmètre d'une série s'ouvre **dans le flux**, sous sa ligne.
+ *
+ *  Il flottait auparavant en `position: absolute` par-dessus la liste, alors
+ *  que celle-ci vit déjà dans un panneau qui défile : le tiroir était rogné par
+ *  son parent, et deux zones de défilement imbriquées se disputaient la molette.
+ *  Résultat, les filtres de population — sexe, âge, territoire — existaient mais
+ *  restaient hors d'atteinte. En restant dans le flux, le tiroir pousse la
+ *  liste, et le seul défilement du panneau suffit à l'atteindre en entier. */
 .scope-editor {
-  position: absolute;
-  z-index: 60;
-  top: calc(100% + 4px);
-  right: 0;
-  left: 0;
+  flex: 0 0 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  max-height: 60vh;
+  margin-top: var(--space-2);
   padding: var(--space-3);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow-lg);
-  overflow-y: auto;
 }
 /* Le panneau de filtres est ici un contenu, pas un encadré : il perd son
    cadre propre pour ne pas doubler celui du tiroir. */

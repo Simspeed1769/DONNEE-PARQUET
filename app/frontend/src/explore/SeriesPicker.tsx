@@ -4,7 +4,7 @@ import { AdvancedFilterPanel, type FilterField } from "../components/AdvancedFil
 import { seriesColor, type ChartTokens } from "../charts/tokens";
 import type { AdvancedFilters, Metadata } from "../types";
 import { formatValue } from "../utils";
-import { isFree, lockedField, scopeChips, type SeriesScope } from "./seriesScope";
+import { isFree, lockedField, scopeChips, scopeForSeries, type SeriesScope } from "./seriesScope";
 
 type Props = {
   /** Ce sur quoi porte la recherche : la dimension découpée. */
@@ -283,9 +283,11 @@ export function SeriesPicker({
                     className={`series-scope-toggle ${chips.length ? "on" : ""}`}
                     aria-expanded={editing === key}
                     onClick={() => {
-                      // Ouvrir un périmètre part du commun : on règle un écart,
-                      // on ne repart pas d'une feuille blanche.
-                      if (!seriesScope) onScopeChange(key, { ...base });
+                      // Ouvrir un périmètre part du commun **et de la modalité
+                      // de la série** : on règle un écart, on ne repart pas
+                      // d'une feuille blanche — et surtout on ne perd pas en
+                      // route ce que la série était.
+                      if (!seriesScope) onScopeChange(key, scopeForSeries(breakdown, key, free, base));
                       setEditing((current) => (current === key ? null : key));
                     }}
                     title="Régler le périmètre de cette série"
@@ -313,7 +315,7 @@ export function SeriesPicker({
                   <ScopeEditor
                     label={labels.get(key) ?? key}
                     free={free}
-                    scope={seriesScope ?? { ...base }}
+                    scope={seriesScope ?? scopeForSeries(breakdown, key, free, base)}
                     locked={lockedField(breakdown, free)}
                     metadata={metadata}
                     onChange={(next) => onScopeChange(key, next)}
