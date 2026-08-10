@@ -579,29 +579,11 @@ export function CompareSection({
       {error ? <div className="analysis-error"><strong>Le calcul n’a pas abouti</strong><span>{error}</span></div> : null}
 
       <article className="panel damir-stage">
-        <header className="damir-stage-head">
-          <div className="damir-stage-title">
-            <span className="section-kicker">Comparer selon · {breakdownLabelLower}</span>
-            <h2>{measure?.label ?? "Chargement…"} — {chartSeries.length} série{chartSeries.length > 1 ? "s" : ""}</h2>
-          </div>
-          <div className="pathology-toggle damir-views" role="tablist" aria-label="Comparer selon">
-            {BREAKDOWNS.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                role="tab"
-                aria-selected={breakdown === item.key}
-                className={breakdown === item.key ? "active" : ""}
-                onClick={() => setBreakdown(item.key)}
-              >{item.label}</button>
-            ))}
-          </div>
-        </header>
-
-        {/* Ce que je compare, **avant** le graphique : c'est le premier geste,
-            il doit être le premier élément. Le rail reste compact — un résumé
-            sur une ligne — et son édition s'ouvre en position absolue, par
-            dessus le graphique, qui ne descend donc jamais d'un pixel. */}
+        {/* Ce que je compare, **juste sous les filtres** : l'enchaînement se
+            lit alors dans l'ordre où il se pense — je restreins le périmètre,
+            je vois aussitôt quelles séries en découlent, puis je choisis la
+            forme et je lis le graphique. Le rail reste compact, un résumé sur
+            une ligne ; son édition s'ouvre en dessous et pousse le reste. */}
         <div className="compare-rail" ref={railRef}>
           <div className="compare-rail-summary">
             <span className="compare-rail-label">Ce que je compare</span>
@@ -658,6 +640,25 @@ export function CompareSection({
             </div>
           ) : null}
         </div>
+
+        <header className="damir-stage-head">
+          <div className="damir-stage-title">
+            <span className="section-kicker">Comparer selon · {breakdownLabelLower}</span>
+            <h2>{measure?.label ?? "Chargement…"} — {chartSeries.length} série{chartSeries.length > 1 ? "s" : ""}</h2>
+          </div>
+          <div className="pathology-toggle damir-views" role="tablist" aria-label="Comparer selon">
+            {BREAKDOWNS.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                role="tab"
+                aria-selected={breakdown === item.key}
+                className={breakdown === item.key ? "active" : ""}
+                onClick={() => setBreakdown(item.key)}
+              >{item.label}</button>
+            ))}
+          </div>
+        </header>
 
         <div className="damir-strip">
           <p className="damir-question">{view.question}</p>
