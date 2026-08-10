@@ -551,6 +551,18 @@
 .guided-chart-card > header strong { display: block; color: var(--ink); font-size: var(--text-sm); font-weight: 640; }
 .guided-chart-card > header small { display: block; margin-top: 2px; color: var(--ink-muted); font-size: var(--text-2xs); }
 .guided-chart-card > header select { height: 32px; font-size: var(--text-2xs); }
+.guided-card-actions { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.guided-card-actions button:not(.link-button) {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.guided-card-actions button:not(.link-button):hover { color: var(--ink); border-color: var(--line-strong); }
 
 .guided-region-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-3); }
 .guided-region-legend button {

@@ -60,6 +60,34 @@ export function readTokens(): ChartTokens {
   };
 }
 
+/** Les jetons du thème **clair**, quel que soit le thème affiché.
+ *
+ *  Une image exportée circule hors de l'outil : elle est projetée, collée dans
+ *  une présentation, imprimée. Un fond sombre y devient un rectangle noir dans
+ *  un document blanc. L'export compose donc toujours en clair — et il ne peut
+ *  pas se contenter de lire les jetons courants, qui sont ceux du thème à
+ *  l'écran.
+ *
+ *  Les valeurs claires vivent dans le `:root` de base de theme.css ; le sombre
+ *  n'arrive que par `@media (prefers-color-scheme: dark)` — désarmé par
+ *  `:where(:not([data-theme="light"]))` — ou par `:root[data-theme="dark"]`.
+ *  Poser `data-theme="light"` le temps d'une lecture neutralise donc les deux.
+ *  La restitution est synchrone : le navigateur recalcule les styles pour
+ *  répondre à `getComputedStyle`, mais ne repeint pas avant la fin de la tâche,
+ *  si bien que l'écran ne clignote pas.
+ */
+export function readLightTokens(): ChartTokens {
+  const root = document.documentElement;
+  const previous = root.getAttribute("data-theme");
+  root.setAttribute("data-theme", "light");
+  try {
+    return { ...readTokens(), mode: "light" };
+  } finally {
+    if (previous === null) root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", previous);
+  }
+}
+
 /** Suit à la fois la bascule manuelle et le réglage du système. */
 export function useChartTokens(): ChartTokens {
   const [tokens, setTokens] = useState<ChartTokens>(readTokens);

@@ -26,10 +26,11 @@ import {
   type CorrelationResult,
 } from "../api";
 import { EChart, type EChartsOption } from "../charts/EChart";
-import { useChartTokens } from "../charts/tokens";
+import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { GuidedPanel } from "../correlations/GuidedPanel";
 import { RegressionPanel } from "../correlations/RegressionPanel";
-import { download, renderSlide, SOURCE_LINE } from "../panorama/exportSlide";
+import { SOURCE_LINE } from "../panorama/exportSlide";
+import { ExportPngButton } from "../components/ExportPngButton";
 
 type Props = { onOpenMethodology: () => void };
 
@@ -44,6 +45,12 @@ type Side = "x" | "y";
 type Mode = "guided" | "link" | "model";
 
 const CHART_HEIGHT = 440;
+
+/** Quatre sources se rencontrent ici : la mention les nomme toutes. */
+const CROSS_SOURCE_LINE = SOURCE_LINE.replace(
+  "Open DAMIR, Assurance Maladie",
+  "Open DAMIR · Cartographie des pathologies · Insee · CépiDc",
+);
 
 /** Force du lien, en toutes lettres. Les seuils n'ont rien d'universel : ils
  *  décrivent l'ampleur observée, jamais une preuve. */
@@ -99,7 +106,6 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
   const [result, setResult] = useState<CorrelationResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   const chart = useRef<ECharts | null>(null);
 
@@ -255,7 +261,7 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
 
   /* — Le nuage — */
 
-  const option = useMemo<EChartsOption>(() => {
+  const buildScatter = useCallback((tokens: ChartTokens): EChartsOption => {
     if (!result || !result.points.length) return {};
     const xs = result.points.map((point) => point.x);
     const minimum = Math.min(...xs);
@@ -338,7 +344,9 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
         }] : []),
       ],
     } as EChartsOption;
-  }, [result, statistics, tokens, answer]);
+  }, [result, statistics, answer]);
+
+  const option = useMemo(() => buildScatter(tokens), [buildScatter, tokens]);
 
   /* — Emporter le nuage — */
 
@@ -357,34 +365,6 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
    *  le même geste avec ses propres échecs selon le navigateur. Ce que l'écran
    *  range — la conclusion, les réserves — repart en revanche dans l'image, qui
    *  circule sans personne pour la commenter. */
-  const exportChart = useCallback(async () => {
-    const instance = chart.current;
-    if (!instance || !result || !question) return;
-    setNotice(null);
-    const title = question.charAt(0).toUpperCase() + question.slice(1);
-    try {
-      const blob = await renderSlide(instance, {
-        title,
-        reading: answer ? `${answer.verdict}. ${answer.why}` : null,
-        caveats: [
-          ...(result.warnings ?? []).map((warning) => warning.text),
-          ...(answer?.fix ? [answer.fix] : []),
-        ],
-        scope,
-      }, tokens);
-      download(blob, title);
-      setNotice("Image enregistrée.");
-    } catch (reason) {
-      setNotice(reason instanceof Error ? reason.message : "L’image n’a pas pu être produite.");
-    }
-  }, [result, question, answer, scope, tokens]);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = window.setTimeout(() => setNotice(null), 6000);
-    return () => window.clearTimeout(timer);
-  }, [notice]);
-
   /* — Sélecteurs — */
 
   const metricPicker = (side: Side, caption: string) => {
@@ -598,12 +578,21 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
               <div className="chart-placeholder"><div className="skeleton" /></div>
             )}
             <footer className="chart-footer">
-              <span>{SOURCE_LINE.replace("Open DAMIR, Assurance Maladie", "Open DAMIR · Cartographie des pathologies · Insee · CépiDc")}</span>
+              <span>{CROSS_SOURCE_LINE}</span>
               <div>
-                {notice ? <span className="damir-notice" role="status">{notice}</span> : null}
-                <button type="button" onClick={exportChart} disabled={!result?.points.length}>
-                  Enregistrer en PNG
-                </button>
+                <ExportPngButton
+                  defaultTitle={question ? question.charAt(0).toUpperCase() + question.slice(1) : "Croisement"}
+                  scope={scope}
+                  caveats={[
+                    ...(result?.warnings ?? []).map((warning) => warning.text),
+                    ...(answer?.fix ? [answer.fix] : []),
+                  ]}
+                  reading={answer ? `${answer.verdict}. ${answer.why}` : null}
+                  sourceLine={CROSS_SOURCE_LINE}
+                  filenamePrefix="croisement"
+                  buildOption={buildScatter}
+                  disabled={!result?.points.length}
+                />
               </div>
             </footer>
           </section>

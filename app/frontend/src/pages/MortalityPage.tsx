@@ -4,7 +4,7 @@ import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { PageHero } from "../components/PageHero";
 import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
-import { useChartTokens } from "../charts/tokens";
+import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { ageProfileOption, evolutionOption, sexProfileOption, topCausesOption } from "../mortality/charts";
 import { mortalityCaveats } from "../mortality/model";
 import { formatValue } from "../utils";
@@ -94,30 +94,37 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     dimensions: "year,cause,population", measures: "deaths,share",
   }));
 
-  const evolution = useMemo(() => {
+  /* Les arguments de chaque lecture vivent à part de la palette : l'écran les
+     assemble avec le thème courant, l'export les réassemble en clair. */
+  const evolutionInput = useMemo(() => {
     const isShare = evolutionMeasure === "share";
-    return evolutionOption({
+    return {
       years: overview?.annual.map((item) => item.year) ?? [],
       values: overview?.annual.map((item) => (isShare ? item.share : item.deaths)) ?? [],
       kind: isShare ? "percent" : "quantity",
-      tokens,
-    });
-  }, [overview, evolutionMeasure, tokens]);
+    };
+  }, [overview, evolutionMeasure]);
+  const evolution = useMemo(() => evolutionOption({ ...evolutionInput, tokens }), [evolutionInput, tokens]);
 
   const topCausesHeight = Math.max(360, (overview?.top_causes.length ?? 0) * 29 + 95);
-  const topChart = useMemo(() => {
-    const rows = (overview?.top_causes ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths }));
-    return topCausesOption({ rows, kind: "quantity", tokens });
-  }, [overview, tokens]);
+  const topCausesInput = useMemo(() => ({
+    rows: (overview?.top_causes ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths })),
+    kind: "quantity",
+  }), [overview]);
+  const sexProfileInput = useMemo(() => ({
+    rows: (overview?.profiles.sex ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths })),
+    kind: "quantity",
+  }), [overview]);
+  const ageProfileInput = useMemo(() => ({
+    rows: (overview?.profiles.age ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths })),
+    kind: "quantity",
+  }), [overview]);
 
-  const profileCharts = useMemo(() => {
-    const sexRows = (overview?.profiles.sex ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths }));
-    const ageRows = (overview?.profiles.age ?? []).map((item) => ({ key: item.code, label: item.label, value: item.deaths }));
-    return {
-      sex: sexProfileOption({ rows: sexRows, kind: "quantity", tokens }),
-      age: ageProfileOption({ rows: ageRows, kind: "quantity", tokens }),
-    };
-  }, [overview, tokens]);
+  const topChart = useMemo(() => topCausesOption({ ...topCausesInput, tokens }), [topCausesInput, tokens]);
+  const profileCharts = useMemo(() => ({
+    sex: sexProfileOption({ ...sexProfileInput, tokens }),
+    age: ageProfileOption({ ...ageProfileInput, tokens }),
+  }), [sexProfileInput, ageProfileInput, tokens]);
 
   const visibleKpis = useMemo(() => {
     if (!overview) return [];
@@ -134,10 +141,10 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   }, [overview]);
 
   const complementary = complementaryView === "causes"
-    ? { title: "Principales causes de décès", note: `${overview?.context.year ?? ""} · ${selectedPopulationLabel} · causes principales`, chart: topChart, height: topCausesHeight, readingKey: "causes" as const }
+    ? { title: "Principales causes de décès", note: `${overview?.context.year ?? ""} · ${selectedPopulationLabel} · causes principales`, chart: topChart, height: topCausesHeight, readingKey: "causes" as const, build: (t: ChartTokens) => topCausesOption({ ...topCausesInput, tokens: t }) }
     : complementaryView === "sex"
-      ? { title: "Femmes / hommes", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.sex, height: 290, readingKey: "sex" as const }
-      : { title: "Tranches d’âge", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.age, height: 310, readingKey: "age" as const };
+      ? { title: "Femmes / hommes", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.sex, height: 290, readingKey: "sex" as const, build: (t: ChartTokens) => sexProfileOption({ ...sexProfileInput, tokens: t }) }
+      : { title: "Tranches d’âge", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.age, height: 310, readingKey: "age" as const, build: (t: ChartTokens) => ageProfileOption({ ...ageProfileInput, tokens: t }) };
 
   const evolutionTable = useMemo(() => ({
     columns: ["Année", evolutionMeasure === "share" ? "Part" : "Décès"],
@@ -186,6 +193,7 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
           headerActions={<div className="pathology-toggle"><button type="button" className={evolutionMeasure === "deaths" ? "active" : ""} onClick={() => setEvolutionMeasure("deaths")}>Nombre</button><button type="button" className={evolutionMeasure === "share" ? "active" : ""} onClick={() => setEvolutionMeasure("share")}>Part</button></div>}
           height={365}
           option={evolution}
+          exportOption={(t) => evolutionOption({ ...evolutionInput, tokens: t })}
           loading={loading}
           ariaLabel={`${evolutionMeasure === "share" ? "Part de la cause parmi les décès" : "Nombre de décès"} · ${overview.context.cause_label}`}
           tableColumns={evolutionTable.columns}
@@ -203,6 +211,7 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
           headerActions={<div className="mortality-view-choice" aria-label="Vue complémentaire"><button type="button" className={complementaryView === "causes" ? "active" : ""} onClick={() => setComplementaryView("causes")}>Causes</button><button type="button" className={complementaryView === "sex" ? "active" : ""} onClick={() => setComplementaryView("sex")}>Sexe</button><button type="button" className={complementaryView === "age" ? "active" : ""} onClick={() => setComplementaryView("age")}>Âge</button></div>}
           height={complementary.height}
           option={complementary.chart}
+          exportOption={complementary.build}
           loading={loading}
           ariaLabel={complementary.title}
           tableColumns={complementaryTable.columns}

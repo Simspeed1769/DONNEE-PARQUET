@@ -7,6 +7,7 @@ import "./explore.css";
 import "./panorama.css";
 import "./correlations.css";
 import "./components/copyLinkButton.css";
+import "./components/exportPngButton.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

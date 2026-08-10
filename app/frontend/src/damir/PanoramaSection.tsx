@@ -26,11 +26,13 @@ import { EChart } from "../charts/EChart";
 import { useChartTokens } from "../charts/tokens";
 import { OFF_MAP_REGIONS, useFrenchMap } from "../charts/frenchMap";
 import { buildSlides, type FormKey, type Slide, type SlideKey } from "../panorama/slides";
-import { download, renderSlide, SOURCE_LINE } from "../panorama/exportSlide";
+import { SOURCE_LINE } from "../panorama/exportSlide";
+import { ExportPngButton } from "../components/ExportPngButton";
+import { downloadText } from "../api";
 import { periodValue, yearValues, type PanoramaResponse } from "../panorama/model";
 import type { ExploreMeasure } from "../explore/model";
 import type { AdvancedFilters, Metadata } from "../types";
-import { formatValue, writeFilters } from "../utils";
+import { csvFromRows, formatValue, writeFilters } from "../utils";
 
 /** Le périmètre et la mesure appartiennent à l'écran DAMIR, pas à la section :
  *  passer d'une section à l'autre est un changement de question, pas de sujet. */
@@ -113,7 +115,6 @@ export function PanoramaSection({
   const [response, setResponse] = useState<PanoramaResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
 
   const stageChart = useRef<ECharts | null>(null);
 
@@ -181,17 +182,20 @@ export function PanoramaSection({
 
   const selectedRegion = filters.regions.length === 1 ? String(filters.regions[0]) : null;
 
-  const slides = useMemo<Slide[]>(() => {
-    if (!response || !measure) return [];
-    return buildSlides({
-      response,
-      measure,
-      tokens,
-      consolidatedThrough: metadata.reliability.consolidated_through,
-      highlightedRegion: selectedRegion,
-      forms,
-    });
-  }, [response, measure, tokens, metadata, selectedRegion, forms]);
+  /* La description des lectures vit à part de la palette : l'écran les assemble
+     avec le thème courant, l'export les réassemble en clair. */
+  const slidesInput = useMemo(() => (response && measure ? {
+    response,
+    measure,
+    consolidatedThrough: metadata.reliability.consolidated_through,
+    highlightedRegion: selectedRegion,
+    forms,
+  } : null), [response, measure, metadata, selectedRegion, forms]);
+
+  const slides = useMemo<Slide[]>(
+    () => (slidesInput ? buildSlides({ ...slidesInput, tokens }) : []),
+    [slidesInput, tokens],
+  );
 
   const slide = slides.find((item) => item.key === view) ?? slides[0] ?? null;
 
@@ -272,32 +276,6 @@ export function PanoramaSection({
      selon le navigateur ; le PNG, lui, marche partout et se glisse dans
      n'importe quelle présentation. */
 
-  const exportPng = useCallback(async () => {
-    const instance = stageChart.current;
-    if (!instance || !slide) return;
-    setNotice(null);
-    try {
-      const blob = await renderSlide(instance, {
-        title: slide.title,
-        // L'image emporte le périmètre et les réserves, que l'écran range :
-        // hors de l'outil, personne n'est là pour les rappeler.
-        reading: null,
-        caveats: slide.caveats,
-        scope,
-      }, tokens);
-      download(blob, slide.title);
-      setNotice("Image enregistrée.");
-    } catch (reason) {
-      setNotice(reason instanceof Error ? reason.message : "L’image n’a pas pu être produite.");
-    }
-  }, [slide, scope, tokens]);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = window.setTimeout(() => setNotice(null), 5000);
-    return () => window.clearTimeout(timer);
-  }, [notice]);
-
   /* — Filtrage croisé depuis la carte — */
 
   const toggleRegion = useCallback((code: string) => {
@@ -331,6 +309,14 @@ export function PanoramaSection({
   // son tour au lieu de faire tomber l'écran entier.
   const mapPending = slide?.key === "territory" && !map.ready && !map.error;
   const exportable = Boolean(slide) && !slide?.empty && !mapUnavailable && !mapPending;
+
+  const exportCsv = () => {
+    if (!slide) return;
+    const columns = slide.table.columns.map((column, index) => ({ key: String(index), label: column }));
+    const rows = slide.table.rows.map((row) =>
+      Object.fromEntries(row.map((cell, index) => [String(index), cell])));
+    downloadText(`damir_${slide.key}_${measureKey}.csv`, csvFromRows(columns, rows));
+  };
 
   const openExtraction = () => {
     const next = new URLSearchParams();
@@ -453,8 +439,22 @@ export function PanoramaSection({
         <footer className="damir-stage-foot">
           <span className="damir-source">{SOURCE_LINE}</span>
           <div className="damir-actions">
-            {notice ? <span className="damir-notice" role="status">{notice}</span> : null}
-            <button type="button" onClick={exportPng} disabled={!exportable}>Enregistrer en PNG</button>
+            {slidesInput && slide ? (
+              <ExportPngButton
+                defaultTitle={slide.title}
+                scope={scope}
+                caveats={[...slide.caveats, ...(response?.warnings ?? [])]}
+                sourceLine={SOURCE_LINE}
+                filenamePrefix="damir"
+                buildOption={(t) => {
+                  const rebuilt = buildSlides({ ...slidesInput, tokens: t })
+                    .find((item) => item.key === slide.key);
+                  return rebuilt?.option ?? slide.option;
+                }}
+                disabled={!exportable}
+              />
+            ) : null}
+            <button type="button" onClick={exportCsv} disabled={!slide}>Exporter le CSV</button>
             <button type="button" onClick={openExtraction}>Extraire la donnée</button>
           </div>
         </footer>

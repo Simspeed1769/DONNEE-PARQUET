@@ -21,12 +21,12 @@
  *  qu'implicite.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { runExplore, type ExploreRequest } from "../api";
 import { ScopeBar } from "../components/ScopeBar";
-import { EChart } from "../charts/EChart";
+import { EChart, type EChartsOption } from "../charts/EChart";
 import { buildOption, pieOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
-import { paletteColor, useChartTokens } from "../charts/tokens";
+import { paletteColor, useChartTokens, type ChartTokens } from "../charts/tokens";
 import { SeriesPicker } from "../explore/SeriesPicker";
 import {
   applyReading, assignColorSlots, periodValueOf, rankedKeys, readingKind,
@@ -34,7 +34,9 @@ import {
   type ExploreMeasure, type ExploreResponse, type ExploreSeries, type Reading,
 } from "../explore/model";
 import { isFree, newFreeKey, scopeChips, type SeriesScope } from "../explore/seriesScope";
-import { csvFromRows, defaultFilters, formatValue, writeFilters } from "../utils";
+import { csvFromRows, formatValue, writeFilters } from "../utils";
+import { ExportPngButton } from "../components/ExportPngButton";
+import { SOURCE_LINE } from "../panorama/exportSlide";
 import type { SectionProps } from "./PanoramaSection";
 
 type BreakdownKey = "grand_post" | "post" | "sub_post" | "service" | "region" | "age" | "sex" | "year";
@@ -344,18 +346,22 @@ export function CompareSection({
   const unitLabel = asPie ? (measure?.unit_label ?? "") : (measure ? readingUnitLabel(view.reading, measure) : "");
   const categories = useMemo<Array<string | number>>(() => (asPie ? [periodLabel] : years), [asPie, periodLabel, years]);
 
-  const option = useMemo(() => {
+  /* Une seule description du graphique, deux rendus : celui de l'écran avec le
+     thème courant, celui de l'image avec la palette claire. */
+  const buildChart = useCallback((palette: ChartTokens): EChartsOption => {
     if (asPie) {
       return pieOption({
         slices: chartSeries.map((item) => ({ key: item.key, label: item.label, colorIndex: item.colorIndex, value: item.values[0] ?? null })),
-        tokens, kind, centerLabel: `cumul ${periodLabel}`,
+        tokens: palette, kind, centerLabel: `cumul ${periodLabel}`,
       });
     }
     return buildOption({
-      form: view.form, categories, series: chartSeries, kind, unitLabel, tokens,
+      form: view.form, categories, series: chartSeries, kind, unitLabel, tokens: palette,
       directLabels: view.form === "line" && chartSeries.length > 1 && chartSeries.length <= 6,
     });
-  }, [asPie, view, categories, chartSeries, kind, unitLabel, tokens, periodLabel]);
+  }, [asPie, view, categories, chartSeries, kind, unitLabel, periodLabel]);
+
+  const option = useMemo(() => buildChart(tokens), [buildChart, tokens]);
 
   const modalitySelectionCount = active.filter((key) => !isFree(key) && !scopes[key]).length;
   const otherCount = pickable ? Math.max(0, (sharedResponse?.bucket_count ?? 0) - modalitySelectionCount) : 0;
@@ -376,6 +382,17 @@ export function CompareSection({
     }),
     [chartSeries, tableColumns, kind],
   );
+
+  /** Le périmètre en une ligne : sans lui l'image ne dit pas sur quelle
+   *  population portent les séries. */
+  const compareScope = [
+    filters.start_year === filters.end_year
+      ? String(filters.start_year)
+      : `${filters.start_year}–${filters.end_year}`,
+    `comparé selon ${breakdownLabelLower}`,
+    `${chartSeries.length} série${chartSeries.length > 1 ? "s" : ""}`,
+    filters.sub_post ?? filters.post ?? filters.grand_post ?? null,
+  ].filter((part): part is string => Boolean(part)).join(" · ");
 
   const exportCsv = () => {
     const columns = [{ key: "label", label: activeBreakdown.label }, ...tableColumns.map((column) => ({ key: column, label: column }))];
@@ -495,8 +512,20 @@ export function CompareSection({
         ) : null}
 
         <footer className="damir-stage-foot">
-          <span className="damir-source">Source · Open DAMIR, Assurance Maladie · Traitement Forsides</span>
+          <span className="damir-source">{SOURCE_LINE}</span>
           <div className="damir-actions">
+            <ExportPngButton
+              defaultTitle={`${measure?.label ?? "Comparaison"} — ${activeBreakdown.label.toLowerCase()}`}
+              scope={compareScope}
+              caveats={[
+                ...(sharedResponse?.warnings ?? []),
+                ...(hasFreeOrScoped ? ["Une ou plusieurs séries portent leur propre périmètre : les courbes ne décrivent pas forcément la même population et ne s’additionnent pas."] : []),
+              ]}
+              sourceLine={SOURCE_LINE}
+              filenamePrefix="damir-comparer"
+              buildOption={buildChart}
+              disabled={!chartSeries.length}
+            />
             <button type="button" onClick={exportCsv} disabled={!chartSeries.length}>Exporter le CSV</button>
             <button type="button" onClick={() => {
               const next = new URLSearchParams();

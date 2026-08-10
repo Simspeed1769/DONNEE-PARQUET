@@ -13,9 +13,10 @@
  *  déjà produits par le serveur suffisent et restent affichés.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ECharts } from "echarts/core";
 import {
+  downloadText,
   runRegression,
   type CorrelationCatalogue,
   type RegressionRequest,
@@ -25,6 +26,9 @@ import {
 import { EChart, type EChartsOption } from "../charts/EChart";
 import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { effectsOption, formatEffect } from "./RegressionPanel";
+import { ExportPngButton } from "../components/ExportPngButton";
+import { SOURCE_LINE } from "../panorama/exportSlide";
+import { csvFromRows } from "../utils";
 
 type Props = { catalogue: CorrelationCatalogue | null };
 
@@ -35,6 +39,12 @@ type XEntry = { id: string; kind: XKind; metric: string; selection: string | nul
 const MAX_X = 3;
 const DEFAULT_YEAR = 2022;
 const SCATTER_HEIGHT = 380;
+
+/** Quatre sources se rencontrent ici : la mention les nomme toutes. */
+const CROSS_SOURCE_LINE = SOURCE_LINE.replace(
+  "Open DAMIR, Assurance Maladie",
+  "Open DAMIR · Cartographie des pathologies · Insee · CépiDc",
+);
 
 let counter = 0;
 function newId(): string {
@@ -275,6 +285,39 @@ export function GuidedPanel({ catalogue }: Props) {
     return (catalogue?.regions ?? []).map((item) => item.label).filter((label) => seen.has(label));
   }, [result, catalogue]);
 
+  /** Le périmètre en une ligne : sans lui, l'image ne dit pas sur quelles
+   *  cellules porte le modèle. */
+  const guidedScope = [
+    startYear === endYear ? String(startYear) : `${startYear}–${endYear}`,
+    "cellules région × âge × sexe",
+    ageSexHeld ? "à âge et sexe comparables" : "sans contrôle d’âge ni de sexe",
+    regionHeld ? "région tenue constante" : null,
+  ].filter((part): part is string => Boolean(part)).join(" · ");
+
+  /** Les réserves du serveur, précédées de la garde écologique : c'est celle
+   *  qui doit voyager avec l'image, où personne n'est là pour la rappeler. */
+  const guidedCaveats = [
+    "Chaque point est une cellule région × âge × sexe, jamais une personne : un résultat ne se lit pas au niveau individuel.",
+    ...(result?.warnings ?? []).map((warning) => warning.text),
+  ];
+
+  const exportCells = (points: RegressionResult["points"]) => {
+    const columns = [
+      { key: "label", label: "Cellule" },
+      { key: "region", label: "Région" },
+      { key: "age", label: "Tranche d’âge" },
+      { key: "sex", label: "Sexe" },
+      ...xTerms.map((term) => ({ key: term.key, label: term.label })),
+      { key: "observed", label: yLabel },
+    ];
+    const rows = points.map((point) => ({
+      label: point.label, region: point.region ?? "", age: point.age ?? "", sex: point.sex ?? "",
+      ...Object.fromEntries(xTerms.map((term) => [term.key, formatValue(point.predictors[term.key])])),
+      observed: formatValue(point.observed),
+    }));
+    downloadText("croisement_guide_cellules.csv", csvFromRows(columns, rows));
+  };
+
   return (
     <div className="guided">
       <ol className="guided-steps">
@@ -394,7 +437,17 @@ export function GuidedPanel({ catalogue }: Props) {
           </ul>
 
           <section className="guided-chart-card">
-            <header><strong>Effet de chaque variable</strong><small>Intervalle à 95 %</small></header>
+            <header>
+              <div><strong>Effet de chaque variable</strong><small>Intervalle à 95 %</small></div>
+              <ExportPngButton
+                defaultTitle={`Ce qui explique ${yLabel.toLowerCase()}`}
+                scope={guidedScope}
+                caveats={guidedCaveats}
+                sourceLine={CROSS_SOURCE_LINE}
+                filenamePrefix="croisement-guide"
+                buildOption={(t) => effectsOption(xTerms, t, xTerms[0]?.effect_kind ?? "absolute")}
+              />
+            </header>
             <EChart
               option={effectsOption(xTerms, tokens, xTerms[0]?.effect_kind ?? "absolute")}
               height={Math.max(180, 70 + xTerms.length * 46)}
@@ -407,11 +460,22 @@ export function GuidedPanel({ catalogue }: Props) {
             <section className="guided-chart-card">
               <header>
                 <div><strong>Nuage des cellules</strong><small>{primaryTerm.label} · {yLabel}</small></div>
-                {xTerms.length > 1 ? (
-                  <select value={primaryKey ?? ""} onChange={(event) => setPrimaryKey(event.target.value)} aria-label="Variable affichée en abscisse">
-                    {xTerms.map((term) => <option key={term.key} value={term.key}>{term.label}</option>)}
-                  </select>
-                ) : null}
+                <div className="guided-card-actions">
+                  {xTerms.length > 1 ? (
+                    <select value={primaryKey ?? ""} onChange={(event) => setPrimaryKey(event.target.value)} aria-label="Variable affichée en abscisse">
+                      {xTerms.map((term) => <option key={term.key} value={term.key}>{term.label}</option>)}
+                    </select>
+                  ) : null}
+                  <ExportPngButton
+                    defaultTitle={`${yLabel} et ${primaryTerm.label.toLowerCase()}`}
+                    scope={guidedScope}
+                    caveats={guidedCaveats}
+                    sourceLine={CROSS_SOURCE_LINE}
+                    filenamePrefix="croisement-guide"
+                    buildOption={(t) => scatterOption(result.points, primaryTerm, yLabel, t, null)}
+                  />
+                  <button type="button" onClick={() => exportCells(result.points)}>Exporter le CSV</button>
+                </div>
               </header>
               <EChart
                 option={scatterOption(result.points, primaryTerm, yLabel, tokens, hoveredRegion)}

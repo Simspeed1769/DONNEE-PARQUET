@@ -1,0 +1,66 @@
+/* Le bouton d'export et son champ de titre.
+   Fichier dédié plutôt qu'ajout à styles.css ; uniquement des jetons de
+   theme.css. Le bouton lui-même hérite du gabarit de sa barre d'actions
+   (.damir-actions, .chart-footer) : seul le panneau est propre à ce module. */
+
+.export-png { position: relative; display: inline-flex; align-items: center; gap: var(--space-2); }
+
+.export-png-panel {
+  position: absolute;
+  z-index: 60;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(340px, 80vw);
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+}
+.export-png-panel label { display: block; }
+.export-png-panel label > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 640;
+}
+.export-png-panel input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+}
+.export-png-panel input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-line);
+  outline-offset: 1px;
+}
+.export-png-panel p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+}
+.export-png-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3); }
+.export-png-actions button:last-child {
+  padding: 7px 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 640;
+  cursor: pointer;
+}
+.export-png-actions button:last-child:disabled { opacity: .6; cursor: progress; }

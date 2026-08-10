@@ -98,11 +98,17 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
     };
   }, [metadata, year, level, cspCode, region, age, sex]);
 
-  const map = useMemo(() => {
+  /* Les arguments de chaque lecture vivent à part de la palette : l'écran les
+     assemble avec le thème courant, l'export les réassemble en clair. */
+  const mapInput = useMemo(() => {
     const mainland = (overview?.territories ?? []).filter((item) => Number(item.code) >= 11);
-    const rows = mainland.map((item) => ({ code: item.code, label: item.label, value: mapMeasure === "share" ? item.share : item.effectif }));
-    return mapOption({ rows, highlighted: region !== "FR" ? region : null, kind: mapMeasure === "share" ? "percent" : "quantity", tokens });
-  }, [overview, mapMeasure, region, tokens]);
+    return {
+      rows: mainland.map((item) => ({ code: item.code, label: item.label, value: mapMeasure === "share" ? item.share : item.effectif })),
+      highlighted: region !== "FR" ? region : null,
+      kind: mapMeasure === "share" ? "percent" : "quantity",
+    };
+  }, [overview, mapMeasure, region]);
+  const map = useMemo(() => mapOption({ ...mapInput, tokens }), [mapInput, tokens]);
 
   useEffect(() => {
     if (!mapInstance) return;
@@ -114,16 +120,20 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
     return () => { mapInstance.off("click", handler); };
   }, [mapInstance, region]);
 
-  const ageSex = useMemo(() => {
+  const ageSexInput = useMemo(() => {
     const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
     const visibleSexes = sex === 0 ? [2, 1] : [sex];
-    const rows = visibleSexes.map((sexCode) => ({
-      label: sexCode === 2 ? "Femmes" : "Hommes",
-      sexCode,
-      values: ages.map((ageLabel) => overview?.age_sex.find((item) => item.age === ageLabel && item.sex_code === sexCode)?.share ?? null),
-    }));
-    return ageSexOption({ ages, rows, kind: "percent", tokens });
-  }, [overview, sex, tokens]);
+    return {
+      ages,
+      rows: visibleSexes.map((sexCode) => ({
+        label: sexCode === 2 ? "Femmes" : "Hommes",
+        sexCode,
+        values: ages.map((ageLabel) => overview?.age_sex.find((item) => item.age === ageLabel && item.sex_code === sexCode)?.share ?? null),
+      })),
+      kind: "percent",
+    };
+  }, [overview, sex]);
+  const ageSex = useMemo(() => ageSexOption({ ...ageSexInput, tokens }), [ageSexInput, tokens]);
 
   // L'API renvoie une série sur tous les millésimes disponibles pour le
   // périmètre courant. Le fallback garde la fiche utilisable pendant le
@@ -140,26 +150,31 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
   const evolutionYears = useMemo(() => annual.map((item) => item.year), [annual]);
   const evolutionMinYear = evolutionYears.length ? Math.min(...evolutionYears) : year;
   const evolutionMaxYear = evolutionYears.length ? Math.max(...evolutionYears) : year;
-  const evolution = useMemo(() => evolutionOption({
+  const evolutionInput = useMemo(() => ({
     years: evolutionYears,
     values: annual.map((item) => (trendMeasure === "share" ? item.share : item.effectif)),
     currentYear: overview?.context.year ?? year,
     kind: trendMeasure === "share" ? "percent" : "quantity",
-    tokens,
-  }), [annual, evolutionYears, trendMeasure, year, overview, tokens]);
+  }), [annual, evolutionYears, trendMeasure, year, overview]);
+  const evolution = useMemo(() => evolutionOption({ ...evolutionInput, tokens }), [evolutionInput, tokens]);
 
-  const composition = useMemo(() => {
+  const compositionInput = useMemo(() => {
     const rows = (overview?.composition ?? []).map((item) => ({
       code: item.code, label: item.label, value: item.share, franceValue: item.france_share,
     }));
     const contextual = overview?.context.region !== "FR";
-    const height = Math.max(430, rows.length * (contextual ? 28 : 25) + 130);
-    const option = compositionOption({
-      rows, ownCode: cspCode, contextual, regionLabel: overview?.context.region_label ?? "Périmètre",
-      kind: "percent", tokens,
-    });
-    return { option, height };
-  }, [overview, cspCode, tokens]);
+    return {
+      input: {
+        rows, ownCode: cspCode, contextual,
+        regionLabel: overview?.context.region_label ?? "Périmètre", kind: "percent",
+      },
+      height: Math.max(430, rows.length * (contextual ? 28 : 25) + 130),
+    };
+  }, [overview, cspCode]);
+  const composition = useMemo(() => ({
+    option: compositionOption({ ...compositionInput.input, tokens }),
+    height: compositionInput.height,
+  }), [compositionInput, tokens]);
 
   const evolutionTable = useMemo(() => ({
     columns: ["Millésime", trendMeasure === "share" ? "Part" : "Effectif"],
@@ -251,6 +266,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
           headerActions={<div className="pathology-toggle" aria-label="Mesure de l'évolution"><button className={trendMeasure === "share" ? "active" : ""} onClick={() => setTrendMeasure("share")}>Part</button><button className={trendMeasure === "effectif" ? "active" : ""} onClick={() => setTrendMeasure("effectif")}>Effectif</button></div>}
           height={365}
           option={annual.length > 1 ? evolution : null}
+          exportOption={(t) => evolutionOption({ ...evolutionInput, tokens: t })}
           empty={annual.length > 1 ? undefined : "L'évolution sera disponible dès qu'un second millésime sera chargé."}
           loading={loading}
           ariaLabel={`Évolution de la CSP · ${overview.context.csp_label}`}
@@ -269,6 +285,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
           headerActions={<div className="pathology-toggle"><button className={mapMeasure === "share" ? "active" : ""} onClick={() => setMapMeasure("share")}>Part</button><button className={mapMeasure === "effectif" ? "active" : ""} onClick={() => setMapMeasure("effectif")}>Effectif</button></div>}
           height={520}
           option={franceMap.ready ? map : null}
+          exportOption={(t) => mapOption({ ...mapInput, tokens: t })}
           empty={franceMap.error ?? undefined}
           loading={loading}
           ariaLabel={`Répartition régionale · ${overview.context.csp_label}`}
@@ -305,6 +322,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
           headerActions={<span className="quality-badge">Part dans chaque population</span>}
           height={430}
           option={ageSex}
+          exportOption={(t) => ageSexOption({ ...ageSexInput, tokens: t })}
           loading={loading}
           ariaLabel={`Profil âge et sexe · ${overview.context.csp_label}`}
           tableColumns={ageSexTable.columns}
@@ -323,6 +341,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
           headerActions={region !== "FR" ? <span className="quality-badge">Comparaison France</span> : <span className="quality-badge">France entière</span>}
           height={composition.height}
           option={composition.option}
+          exportOption={(t) => compositionOption({ ...compositionInput.input, tokens: t })}
           loading={loading}
           ariaLabel={`Composition · ${overview.context.region_label}`}
           tableColumns={compositionTable.columns}

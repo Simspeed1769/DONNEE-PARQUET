@@ -11,12 +11,13 @@
  *  une lecture qu'elle ne peut pas porter.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { ECharts } from "echarts/core";
+import { downloadText } from "../api";
 import { EChart, type EChartsOption } from "../charts/EChart";
-import { useChartTokens } from "../charts/tokens";
-import { download, renderSlide } from "../panorama/exportSlide";
+import type { ChartTokens } from "../charts/tokens";
+import { csvFromRows } from "../utils";
+import { ExportPngButton } from "./ExportPngButton";
 
 type Props = {
   kicker: string;
@@ -36,6 +37,10 @@ type Props = {
   /** `null` tant que la réponse n'est pas là ; une chaîne quand la lecture est
    *  impossible pour ce périmètre (fond de carte indisponible, par exemple). */
   option: EChartsOption | null;
+  /** La même lecture, reconstruite pour une palette donnée : l'export la
+   *  redemande en clair, sans quoi une image sortie en thème sombre serait
+   *  sombre. Absente, la carte n'offre pas d'export. */
+  exportOption?: (tokens: ChartTokens) => EChartsOption;
   empty?: string | null;
   loading?: boolean;
   ariaLabel: string;
@@ -57,34 +62,14 @@ type Props = {
 };
 
 export function ChartShell({
-  kicker, title, headerActions, beforeChart, afterChart, height, option, empty, loading = false, ariaLabel, onInstance,
+  kicker, title, headerActions, beforeChart, afterChart, height, option, exportOption, empty,
+  loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
 }: Props) {
-  const tokens = useChartTokens();
-  const [instance, setInstance] = useState<ECharts | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const bindInstance = useCallback((next: ECharts | null) => {
-    setInstance(next);
-    onInstance?.(next);
-  }, [onInstance]);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = window.setTimeout(() => setNotice(null), 5000);
-    return () => window.clearTimeout(timer);
-  }, [notice]);
-
-  const exportPng = async () => {
-    if (!instance || !option) return;
-    setNotice(null);
-    try {
-      const blob = await renderSlide(instance, { title, reading: null, caveats, scope, sourceLine }, tokens);
-      download(blob, title, filenamePrefix);
-      setNotice("Image enregistrée.");
-    } catch (reason) {
-      setNotice(reason instanceof Error ? reason.message : "L’image n’a pas pu être produite.");
-    }
+  const exportCsv = () => {
+    const columns = tableColumns.map((column, index) => ({ key: String(index), label: column }));
+    const rows = tableRows.map((row) => Object.fromEntries(row.map((cell, index) => [String(index), cell])));
+    downloadText(`${filenamePrefix}_${tableColumns[0]?.toLowerCase() ?? "valeurs"}.csv`, csvFromRows(columns, rows));
   };
 
   return (
@@ -98,7 +83,7 @@ export function ChartShell({
 
       <div className="damir-stage-chart">
         {option ? (
-          <EChart option={option} height={height} stale={loading} ariaLabel={ariaLabel} onInstance={bindInstance} />
+          <EChart option={option} height={height} stale={loading} ariaLabel={ariaLabel} onInstance={onInstance} />
         ) : empty ? (
           <p className="damir-fallback">{empty}</p>
         ) : (
@@ -111,8 +96,18 @@ export function ChartShell({
       <footer className="damir-stage-foot">
         <span className="damir-source">{sourceLine}</span>
         <div className="damir-actions">
-          {notice ? <span className="damir-notice" role="status">{notice}</span> : null}
-          <button type="button" onClick={exportPng} disabled={!option}>Enregistrer en PNG</button>
+          {exportOption ? (
+            <ExportPngButton
+              defaultTitle={title}
+              scope={scope}
+              caveats={caveats}
+              sourceLine={sourceLine}
+              filenamePrefix={filenamePrefix}
+              buildOption={exportOption}
+              disabled={!option}
+            />
+          ) : null}
+          <button type="button" onClick={exportCsv} disabled={!tableRows.length}>Exporter le CSV</button>
           {onExtract ? <button type="button" onClick={onExtract}>Extraire</button> : null}
         </div>
       </footer>

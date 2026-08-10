@@ -128,7 +128,11 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
 
   const kind = measure === "patients" ? "quantity" : "percent";
   const currentRegionLabel = metadata?.regions.find((item) => item.code === region)?.label ?? "Périmètre sélectionné";
-  const evolution = useMemo(() => evolutionOption({
+
+  /* Chaque lecture garde ses arguments à part de la palette : l'écran les
+     assemble avec le thème courant, l'export les réassemble avec le thème
+     clair. Une seule description, deux rendus. */
+  const evolutionInput = useMemo(() => ({
     years: overview?.annual.map((item) => item.year) ?? [],
     values: overview?.annual.map((item) => (measure === "patients" ? item.patients : item.prevalence)) ?? [],
     regionLabel: currentRegionLabel,
@@ -136,24 +140,24 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     franceValues: region !== "99" && measure === "prevalence" ? overview?.france_annual.map((item) => item.prevalence) : undefined,
     filled: region === "99",
     kind,
-    tokens,
-  }), [overview, measure, region, currentRegionLabel, kind, tokens]);
+  }), [overview, measure, region, currentRegionLabel, kind]);
+  const evolution = useMemo(() => evolutionOption({ ...evolutionInput, tokens }), [evolutionInput, tokens]);
 
-  const ageProfile = useMemo(() => {
+  const ageProfileInput = useMemo(() => {
     const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
     const valuesFor = (sex: string) => ages.map((ageLabel) =>
       overview?.age_sex.find((item) => item.age === ageLabel && item.sex === sex)?.prevalence ?? null);
-    return ageSexOption({
+    return {
       ages,
       femmes: valuesFor("femmes"),
       hommes: valuesFor("hommes"),
       highlightLabel: age === "tsage" ? null : (selectedAgeLabel ?? null),
       kind: "percent",
-      tokens,
-    });
-  }, [overview, age, selectedAgeLabel, tokens]);
+    };
+  }, [overview, age, selectedAgeLabel]);
+  const ageProfile = useMemo(() => ageSexOption({ ...ageProfileInput, tokens }), [ageProfileInput, tokens]);
 
-  const territories = useMemo(() => {
+  const territoriesInput = useMemo(() => {
     const france = overview?.france_reference.prevalence ?? null;
     const visible = [...(overview?.territories ?? [])]
       .filter((item): item is typeof item & { prevalence: number } => item.code !== "99" && item.prevalence !== null && Number.isFinite(item.prevalence))
@@ -162,9 +166,15 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
       code: item.code, label: item.label, value: item.prevalence,
       patients: item.patients, maskedCells: item.masked_cells, totalCells: item.total_cells,
     }));
-    const height = Math.max(460, Math.min(540, visible.length * 24 + 120));
-    return { option: territoryRankOption({ rows, ownRegion: region, franceValue: france, showMaskedDetails, kind: "percent", tokens }), height };
-  }, [overview, hiddenTerritories, region, showMaskedDetails, tokens]);
+    return {
+      input: { rows, ownRegion: region, franceValue: france, showMaskedDetails, kind: "percent" },
+      height: Math.max(460, Math.min(540, visible.length * 24 + 120)),
+    };
+  }, [overview, hiddenTerritories, region, showMaskedDetails]);
+  const territories = useMemo(() => ({
+    option: territoryRankOption({ ...territoriesInput.input, tokens }),
+    height: territoriesInput.height,
+  }), [territoriesInput, tokens]);
 
   const evolutionTable = useMemo(() => {
     const showFrance = region !== "99" && measure === "prevalence";
@@ -252,6 +262,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
           headerActions={<div className="pathology-toggle"><button className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div>}
           height={390}
           option={evolution}
+          exportOption={(t) => evolutionOption({ ...evolutionInput, tokens: t })}
           loading={loading}
           ariaLabel={`Trajectoire nationale · ${overview.context.label} · ${measure === "patients" ? "patients" : "prévalence"}`}
           tableColumns={evolutionTable.columns}
@@ -270,6 +281,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
             headerActions={<div className="pathology-toggle" aria-label="Vue complémentaire"><button className="active">Profil</button><button onClick={() => setDetailView("territories")}>Territoires</button></div>}
             height={440}
             option={ageProfile}
+            exportOption={(t) => ageSexOption({ ...ageProfileInput, tokens: t })}
             loading={loading}
             ariaLabel={`Prévalence par âge et sexe · ${overview.context.label}`}
             tableColumns={ageProfileTable.columns}
@@ -292,6 +304,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
             </>}
             height={territories.height}
             option={territories.option}
+            exportOption={(t) => territoryRankOption({ ...territoriesInput.input, tokens: t })}
             loading={loading}
             ariaLabel={`Prévalence par territoire · ${overview.context.label}`}
             tableColumns={territoriesTable.columns}
