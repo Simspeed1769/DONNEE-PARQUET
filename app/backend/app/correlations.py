@@ -299,9 +299,20 @@ def _population(repo: QueryRepository, request: CorrelationRequest) -> dict[str,
 
     C'est la seule population disponible par région, âge et sexe dans le jeu de
     données ; elle sert donc de dénominateur commun à toutes les normalisations.
+
+    La table de la Cartographie est départementale **et** porte ses propres
+    agrégats : `dept = '999'` est le total régional, `cla_age_5 = 'tsage'` le
+    tous âges, `sexe = '9'` le tous sexes. Mélanger un agrégat avec les cellules
+    qu'il résume compte la même population deux fois — c'est ce que faisait
+    cette fonction sur l'âge, et l'Île-de-France y pesait 25,3 millions
+    d'habitants au lieu de 12,5.
     """
     dimensions = UNIT_DIMENSIONS[request.unit]
-    clauses = [f"YEAR(annee) BETWEEN {request.start_year} AND {request.end_year}"]
+    clauses = [
+        f"YEAR(annee) BETWEEN {request.start_year} AND {request.end_year}",
+        # Le total régional, jamais additionné aux départements qui le composent.
+        "dept = '999'",
+    ]
     # Quand le sexe est une dimension, la population doit être celle de chaque
     # sexe : le « tous sexes » de la source est un agrégat, pas une cellule.
     if "sex" in dimensions:
@@ -313,20 +324,34 @@ def _population(repo: QueryRepository, request: CorrelationRequest) -> dict[str,
         clauses.append("cla_age_5 <> 'tsage'")
     elif request.age_band:
         clauses.append(f"cla_age_5 IN ({_patho_age_codes(request.age_band)})")
+    else:
+        clauses.append("cla_age_5 = 'tsage'")
     if "region" in dimensions:
         clauses.append(_region_filter("region", cast=True))
 
     selected, grouped = _projection("patho", dimensions)
     outer = ", ".join(f"d{index}" for index in range(len(dimensions)))
 
+    # Deux agrégations imbriquées, chacune pour une raison distincte.
+    #
     # `npop` est répété sur chaque pathologie : on prend le maximum par cellule
-    # âge × sexe avant de sommer, sans quoi la population serait multipliée par
-    # le nombre de pathologies.
+    # avant de sommer, sans quoi la population serait multipliée par le nombre
+    # de pathologies. Le maximum, et non n'importe quelle valeur, parce que les
+    # pathologies propres à un sexe — maternité, cancer de la prostate — portent
+    # la population de leur seul sexe ; c'est bien la population générale qu'on
+    # veut ici.
+    #
+    # L'année entre dans l'agrégation interne même lorsqu'elle n'est pas une
+    # dimension : le numérateur somme alors toutes les années de la période, et
+    # le dénominateur doit couvrir la même période en années-personnes. Sans
+    # cela, quatre ans de dépenses seraient rapportés à une seule année de
+    # population.
     rows = repo.query(
         f"""SELECT {outer}, SUM(cell)::DOUBLE AS population FROM (
-                SELECT {selected}, cla_age_5, sexe, MAX(npop) AS cell
+                SELECT {selected}, YEAR(annee) AS annee_cellule, cla_age_5, sexe,
+                       MAX(npop) AS cell
                 FROM pathologies WHERE {' AND '.join(clauses)}
-                GROUP BY {grouped}, cla_age_5, sexe
+                GROUP BY {grouped}, annee_cellule, cla_age_5, sexe
             ) GROUP BY {outer}"""
     )
     result: dict[str, float] = {}
@@ -361,6 +386,9 @@ def _patho_series(repo: QueryRepository, metric: str, request: CorrelationReques
     clauses = [
         f"YEAR(annee) BETWEEN {request.start_year} AND {request.end_year}",
         "patho_niv1 = ?" if selection else "patho_niv1 IS NOT NULL",
+        # La table est départementale et porte en plus son total régional : les
+        # additionner comptait chaque patient deux fois.
+        "dept = '999'",
     ]
     params: list[Any] = [selection] if selection else []
     if "sex" not in dimensions:
@@ -368,8 +396,11 @@ def _patho_series(repo: QueryRepository, metric: str, request: CorrelationReques
                        else f"sexe = '{_SEX_PATHO[request.sex]}'")
     if "region" in dimensions:
         clauses.append(_region_filter("region", cast=True))
-    if request.age_band and "age" not in dimensions:
-        clauses.append(f"cla_age_5 IN ({_patho_age_codes(request.age_band)})")
+    # Le tous âges est un agrégat des tranches : on prend l'un ou les autres,
+    # jamais les deux.
+    if "age" not in dimensions:
+        clauses.append(f"cla_age_5 IN ({_patho_age_codes(request.age_band)})"
+                       if request.age_band else "cla_age_5 = 'tsage'")
     clauses.extend(_cell_clauses("patho", dimensions))
 
     selected, grouped = _projection("patho", dimensions)

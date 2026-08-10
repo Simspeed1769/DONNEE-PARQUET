@@ -26,6 +26,12 @@ export const PATHOLOGY_READINGS: FormOption[] = [
 
 const MASKING_NOTE = "Cellules inférieures à 10 patients masquées par la Cnam ; une valeur masquée reste masquée, elle n'est jamais remplacée par 0.";
 const RATE_NOTE = "La prévalence est un rapport à la population de référence, pas un cumul : les tranches ne s'additionnent pas et aucune forme qui composerait un tout n'est offerte sur cette mesure.";
+/** Le dénominateur, nommé — sans quoi « % » ne dit pas de quoi.
+ *
+ *  La population de référence est celle que la Cartographie publie avec ses
+ *  effectifs (`npop`), cellule par cellule : région × tranche d'âge × sexe. Ce
+ *  n'est pas la population Insee du territoire, et les deux ne coïncident pas. */
+const DENOMINATOR_NOTE = "Prévalence = 100 × patients pris en charge ÷ population de référence de la Cartographie, sur la même cellule région × âge × sexe. Cette population de référence est celle que publie la Cnam avec ses effectifs, et non la population Insee du territoire.";
 
 export type PathologyInput = {
   overview: PathologyOverview | null;
@@ -45,13 +51,15 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
   const { overview, compared, measure, regionLabel, isFrance, hiddenTerritories, tokens, forms } = input;
   const isRate = measure === "prevalence";
   const kind = isRate ? "percent" : "quantity";
-  const unitLabel = isRate ? "% de la population de référence" : "patients";
+  const unitLabel = isRate ? "% de la population de référence Cnam" : "patients";
   const measureLabel = isRate ? "Prévalence" : "Patients";
   const label = overview?.context.label ?? "";
-  const base = [MASKING_NOTE, ...(isRate ? [RATE_NOTE] : [])];
+  const base = [MASKING_NOTE, ...(isRate ? [DENOMINATOR_NOTE, RATE_NOTE] : [])];
 
-  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[], labels = false) =>
-    buildOption({ form: form as ChartForm, categories, series, kind, unitLabel, tokens, directLabels: labels });
+  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[],
+                 xTitle: string, labels = false) =>
+    buildOption({ form: form as ChartForm, categories, series, kind, unitLabel, tokens,
+                  directLabels: labels, xTitle });
 
   const valueOf = (row: { prevalence: number | null; patients: number | null }) =>
     (isRate ? row.prevalence : row.patients);
@@ -154,6 +162,8 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
           // Ce sont les modalités qu'on met en rang, pas des séries : une seule
           // série porte ici toutes les régions ou tous les sexes.
           rankBy: "category",
+          // Un camembert n'a pas d'axe à nommer.
+          xTitle: pie ? undefined : xTitle,
         })
         : null,
       table: {
@@ -179,7 +189,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       caveats: [...base, ...(showFrance ? ["La courbe France entière sert de repère : elle porte le même indicateur sur l'ensemble du territoire."] : [])],
       forms: evolutionForms,
       form: evolutionForm,
-      option: annual.length ? chart(evolutionForm, annual.map((item) => item.year), evolutionSeries, showFrance) : null,
+      option: annual.length ? chart(evolutionForm, annual.map((item) => item.year), evolutionSeries, "Année", showFrance) : null,
       table: {
         columns: ["Année", ...evolutionSeries.map((item) => item.label)],
         rows: annual.map((item, index) => [String(item.year), ...evolutionSeries.map((serie) => formatValue(serie.values[index], kind))]),
@@ -205,7 +215,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       caveats: base,
       forms: ageForms,
       form: ageForm,
-      option: ageLabels.length ? chart(ageForm, ageLabels, ageSeries, true) : null,
+      option: ageLabels.length ? chart(ageForm, ageLabels, ageSeries, "Tranche d’âge", true) : null,
       table: {
         columns: ["Tranche d’âge", ...ageSeries.map((item) => item.label)],
         rows: ageLabels.map((ageLabel, index) => [ageLabel, ...ageSeries.map((serie) => formatValue(serie.values[index], kind))]),
@@ -230,7 +240,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       forms: compareForms,
       form: compareForm,
       option: compareSeries.length
-        ? chart(compareForm, (overview?.annual ?? []).map((item) => item.year), compareSeries, compareSeries.length <= 6)
+        ? chart(compareForm, (overview?.annual ?? []).map((item) => item.year), compareSeries, "Année", compareSeries.length <= 6)
         : null,
       table: {
         columns: ["Année", ...compareSeries.map((item) => item.label)],

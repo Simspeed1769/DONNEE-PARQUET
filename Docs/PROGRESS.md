@@ -55,3 +55,37 @@
   servis. Preuve que rien n'est embarqué pour rien : le lot Croisements passe de
   41,5 ko à 17,5 ko.
 - **Écarté** : rien n'est supprimé.
+
+## v3 · Phase 5 — Nommer l'axe, nommer le dénominateur
+
+- **Fait** : `buildOption` et les constructeurs de Panorama prennent un titre
+  d'axe, qui suit l'axe des modalités et bascule en ordonnée sur les formes
+  horizontales. Année, Région, Tranche d'âge, Sexe, Cause de décès, Groupe
+  socioprofessionnel, Séries comparées, Sujets comparés.
+- **Fait** : nouvel écran « Ce que compte chaque mesure » dans Données & méthode
+  — numérateur et dénominateur des 31 mesures des cinq surfaces, relevés dans le
+  code du serveur et non de mémoire (`methodology/denominators.ts`).
+- **Corrigé — Mortalité** : le mot « part » recouvrait deux dénominateurs. Sur
+  l'évolution et les causes, une part se rapporte aux décès toutes causes ; sur
+  les profils d'âge et de sexe, aux décès de la seule cause affichée. L'axe et
+  les réserves le disent maintenant, lecture par lecture.
+- **Corrigé — Croisements, défaut de fond** : la table de la Cartographie est
+  départementale **et** porte ses agrégats (`dept = '999'`, `cla_age_5 =
+  'tsage'`, `sexe = '9'`). `correlations.py` sommait les agrégats avec les
+  cellules qu'ils résument : l'Île-de-France pesait 25,3 millions d'habitants au
+  lieu de 12,5, et les patients d'une pathologie y étaient comptés quatre fois
+  (2 779 240 au lieu de 694 790 pour le diabète en 2022). Le dénominateur compte
+  en outre désormais des années-personnes, faute de quoi quatre ans de dépenses
+  étaient rapportés à une seule année de population. Cinq tests verrouillent ces
+  nombres contre la ligne qui fait autorité
+  (`tests/test_correlation_denominators.py`).
+- **Vérifié sur les données, pas supposé** : `population_reference` de la CSP
+  vaut exactement la somme des effectifs des six groupes d'une même cellule ; le
+  `MAX(npop)` de la Cartographie sélectionne bien la population générale, les
+  pathologies propres à un sexe portant celle de leur seul sexe.
+- **Signalé sans le corriger** : le taux de mortalité des Croisements emprunte
+  son dénominateur à la Cartographie, faute d'en trouver un au CépiDc.
+  Numérateur et dénominateur ne viennent donc pas de la même source ; la table
+  des dénominateurs le dit en toutes lettres plutôt que de laisser croire à un
+  taux homogène.
+- **Écarté** : rien.

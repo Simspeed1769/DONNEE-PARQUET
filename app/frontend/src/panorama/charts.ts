@@ -72,6 +72,32 @@ function symmetricBounds(values: Array<number | null>, center: number): [number,
   return [center - half, center + half];
 }
 
+/** Le nom de l'axe des modalités.
+ *
+ *  Un axe dont on ignore la nature se lit de travers, et une image exportée n'a
+ *  personne pour l'expliquer. Horizontal, le titre se pose au milieu sous
+ *  l'axe ; vertical, il se pose en haut — au milieu, il faudrait le coucher, et
+ *  un libellé pivoté se lit mal.
+ */
+const AXIS_NAME_GAP = 30;
+
+function axisName(tokens: ChartTokens, title: string | undefined, vertical = false) {
+  if (!title) return {};
+  return vertical
+    ? {
+      name: title,
+      nameLocation: "end" as const,
+      nameGap: 12,
+      nameTextStyle: { ...axisLabelStyle(tokens, 12), align: "right" as const },
+    }
+    : {
+      name: title,
+      nameLocation: "middle" as const,
+      nameGap: AXIS_NAME_GAP,
+      nameTextStyle: axisLabelStyle(tokens, 12),
+    };
+}
+
 export type ChartRow = {
   key: string;
   label: string;
@@ -260,7 +286,8 @@ export function seriesOption({
       left: 12,
       right: directLabels ? 148 : 24,
       top: columnLabels ? 34 : 20,
-      bottom: 12,
+      // `containLabel` ne tient pas compte du nom de l'axe.
+      bottom: AXIS_NAME_GAP,
       containLabel: true,
     },
     tooltip: categoryTooltip(rows, kind, tokens, asBar ? "shadow" : "line"),
@@ -268,6 +295,7 @@ export function seriesOption({
       type: "category",
       data: years.map(String),
       boundaryGap: asBar,
+      ...axisName(tokens, "Année"),
       axisLine: { lineStyle: { color: tokens.line } },
       axisTick: { show: false },
       axisLabel: { ...axisLabelStyle(tokens, 12), hideOverlap: true },
@@ -448,7 +476,7 @@ export function territoryRankOption({
         `<strong>${labels.get(ranked[params.dataIndex]?.[0]) ?? params.name}</strong><br>`
         + show(params.value),
     },
-    grid: { left: 12, right: 96, top: 8, bottom: 8, containLabel: true },
+    grid: { left: 12, right: 96, top: 24, bottom: 8, containLabel: true },
     xAxis: {
       type: "value",
       show: false,
@@ -458,6 +486,7 @@ export function territoryRankOption({
       type: "category",
       data: ranked.map(([key]) => labels.get(key) ?? key),
       inverse: true,
+      ...axisName(tokens, "Région", true),
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },
@@ -599,6 +628,7 @@ export function ageOption({ order, rows, tokens, kind, form }: AgeInput): EChart
   const categoryAxis = {
     type: "category" as const,
     data: horizontal ? [...categories].reverse() : categories,
+    ...axisName(tokens, "Tranche d’âge", horizontal),
     axisLine: { lineStyle: { color: tokens.line } },
     axisTick: { show: false },
     axisLabel: { ...axisLabelStyle(tokens, 12), interval: 0, hideOverlap: true },
@@ -613,8 +643,8 @@ export function ageOption({ order, rows, tokens, kind, form }: AgeInput): EChart
     animationDuration: 420,
     backgroundColor: "transparent",
     grid: horizontal
-      ? { left: 12, right: single ? 84 : 24, top: 12, bottom: 12, containLabel: true }
-      : { left: 12, right: 20, top: 30, bottom: 12, containLabel: true },
+      ? { left: 12, right: single ? 84 : 24, top: 24, bottom: 12, containLabel: true }
+      : { left: 12, right: 20, top: 30, bottom: AXIS_NAME_GAP, containLabel: true },
     tooltip: categoryTooltip(rowsForTooltip, kind, tokens, asLine ? "line" : "shadow"),
     xAxis: horizontal ? valueAxis : categoryAxis,
     yAxis: horizontal ? categoryAxis : valueAxis,
@@ -631,14 +661,15 @@ export function ageOption({ order, rows, tokens, kind, form }: AgeInput): EChart
  *  classement répond mieux qu'une pile.
  */
 export function sexCompareOption({
-  rows, tokens, modalityLabel,
-}: { rows: ChartRow[]; tokens: ChartTokens; modalityLabel: string }): EChartsOption {
+  rows, tokens, modalityLabel, axisTitle,
+}: { rows: ChartRow[]; tokens: ChartTokens; modalityLabel: string;
+     axisTitle: string }): EChartsOption {
   const ranked = [...rows].sort((left, right) => (right.values[0] ?? 0) - (left.values[0] ?? 0));
 
   return {
     animationDuration: 420,
     backgroundColor: "transparent",
-    grid: { left: 12, right: 72, top: 16, bottom: 12, containLabel: true },
+    grid: { left: 12, right: 72, top: 26, bottom: 12, containLabel: true },
     tooltip: {
       trigger: "item",
       ...baseTooltip(tokens),
@@ -658,6 +689,7 @@ export function sexCompareOption({
       type: "category",
       data: ranked.map((row) => row.label),
       inverse: true,
+      ...axisName(tokens, axisTitle, true),
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { show: false },

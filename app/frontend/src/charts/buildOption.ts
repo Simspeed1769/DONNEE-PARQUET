@@ -30,7 +30,42 @@ export type ChartInput = {
    *  `category` classe les catégories d'une série unique : les régions, les
    *  tranches d'âge, les causes. Sans mention, on garde `series`. */
   rankBy?: "series" | "category";
+  /** Ce que portent les catégories : « Année », « Région », « Cause de décès ».
+   *  Un axe dont on ignore la nature se lit de travers — et une image exportée
+   *  n'a personne pour l'expliquer. Le titre suit l'axe des modalités, qui
+   *  bascule en ordonnée sur les formes horizontales. */
+  xTitle?: string;
 };
+
+const AXIS_NAME_GAP = 30;
+
+/** Le même titre, pour un axe de modalités devenu vertical. Écrit en haut de
+ *  l'axe plutôt qu'en son milieu : au milieu, il faudrait le coucher, et un
+ *  libellé pivoté se lit mal. */
+function verticalAxisName(tokens: ChartTokens, title: string | undefined) {
+  return title
+    ? {
+      name: title,
+      nameLocation: "end" as const,
+      nameGap: 12,
+      nameTextStyle: {
+        color: tokens.inkSecondary, fontSize: 12, fontFamily: tokens.font,
+        align: "right" as const,
+      },
+    }
+    : {};
+}
+
+function axisName(tokens: ChartTokens, title: string | undefined) {
+  return title
+    ? {
+      name: title,
+      nameLocation: "middle" as const,
+      nameGap: AXIS_NAME_GAP,
+      nameTextStyle: { color: tokens.inkSecondary, fontSize: 12, fontFamily: tokens.font },
+    }
+    : {};
+}
 
 const MARK_GAP = 2;
 
@@ -163,7 +198,10 @@ export function buildOption(input: ChartInput): EChartsOption {
   return {
     animationDuration: 380,
     grid: {
-      left: 8, right: input.directLabels ? 132 : 16, top: 16, bottom: 8,
+      left: 8, right: input.directLabels ? 132 : 16, top: 16,
+      // `containLabel` ne tient pas compte du nom de l'axe : sans cette marge,
+      // le titre se poserait sous le bord du graphique.
+      bottom: input.xTitle ? AXIS_NAME_GAP : 8,
       containLabel: true,
     },
     tooltip: {
@@ -189,6 +227,7 @@ export function buildOption(input: ChartInput): EChartsOption {
       data: input.categories,
       boundaryGap: asBar,
       ...axisCommon(tokens),
+      ...axisName(tokens, input.xTitle),
       splitLine: { show: false },
     },
     yAxis: {
@@ -325,7 +364,7 @@ function rankOption(input: ChartInput, scale: { label: string },
 
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 56, top: 8, bottom: 8, containLabel: true },
+    grid: { left: 8, right: 56, top: input.xTitle ? 24 : 8, bottom: 8, containLabel: true },
     tooltip: {
       trigger: "item",
       ...tooltipCommon(tokens),
@@ -340,6 +379,7 @@ function rankOption(input: ChartInput, scale: { label: string },
       type: "category",
       data: ranked.map((row) => row.label),
       ...axisCommon(tokens),
+      ...verticalAxisName(tokens, input.xTitle),
       splitLine: { show: false },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
     },
@@ -370,7 +410,7 @@ function slopeOption(input: ChartInput, scale: { label: string },
   const lastIndex = input.categories.length - 1;
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 140, top: 20, bottom: 8, containLabel: true },
+    grid: { left: 8, right: 140, top: 20, bottom: input.xTitle ? AXIS_NAME_GAP : 8, containLabel: true },
     tooltip: {
       trigger: "item",
       ...tooltipCommon(tokens),
@@ -383,6 +423,7 @@ function slopeOption(input: ChartInput, scale: { label: string },
       data: [input.categories[firstIndex], input.categories[lastIndex]],
       boundaryGap: true,
       ...axisCommon(tokens),
+      ...axisName(tokens, input.xTitle),
       splitLine: { show: false },
     },
     yAxis: { type: "value", name: scale.label, nameTextStyle: { color: tokens.inkMuted, fontSize: 11 }, ...axisCommon(tokens) },
@@ -447,6 +488,7 @@ function waterfallOption(input: ChartInput, scale: { label: string },
       data: rows.map((row) => row.label),
       inverse: true,
       ...axisCommon(tokens),
+      ...verticalAxisName(tokens, input.xTitle),
       splitLine: { show: false },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
     },

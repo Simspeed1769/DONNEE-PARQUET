@@ -25,6 +25,18 @@ export const MORTALITY_READINGS: FormOption[] = [
 const SCOPE_NOTE = "Source nationale : ni région, ni taux de mortalité — le CépiDc ne publie pas de population de référence pour ces effectifs. Une lecture territoriale serait inventée, elle n'est donc pas offerte.";
 const ZERO_NOTE = "Les cellules vides restent non disponibles ou non applicables ; elles ne sont jamais interprétées comme un zéro.";
 
+/** Le mot « part » recouvre ici deux dénominateurs, et il faut les distinguer.
+ *
+ *  Sur l'évolution et sur les causes, une part se rapporte au total toutes
+ *  causes de l'année et de la population choisies. Sur les profils d'âge et de
+ *  sexe, elle se rapporte aux décès de la seule cause affichée, répartis entre
+ *  ses modalités. Les deux valent 100 % une fois sommées, mais sur des ensembles
+ *  différents : les confondre ferait lire « 38 % des décès » là où il faut lire
+ *  « 38 % des décès de cette cause ».
+ */
+const ALL_CAUSES_DENOMINATOR = "décès toutes causes";
+const SAME_CAUSE_DENOMINATOR = "décès de cette cause";
+
 export type MortalityInput = {
   overview: MortalityOverview | null;
   /** `deaths` (effectif) ou `share` (part parmi les décès publiés). */
@@ -44,21 +56,30 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
   const { overview, measure, populationLabel, tokens, forms } = input;
   const isShare = measure === "share";
   const kind = isShare ? "percent" : "quantity";
-  const unitLabel = isShare ? "% des décès publiés" : "décès";
-  const measureLabel = isShare ? "Part parmi les décès publiés" : "Décès publiés";
   const year = overview?.context.year ?? "";
   const cause = overview?.context.cause_label ?? "";
   const base = [SCOPE_NOTE, ZERO_NOTE];
 
-  const table = (head: string, rows: Array<[string, number | null]>) => ({
-    columns: [head, measureLabel],
+  /* — Le dénominateur, écrit sur l'axe et rappelé en réserve — */
+
+  const unitOf = (denominator: string) => (isShare ? `% des ${denominator}` : "décès");
+  const measureOf = (denominator: string) =>
+    (isShare ? `Part des ${denominator}` : "Décès publiés");
+  const denominatorNote = (denominator: string) =>
+    (isShare
+      ? [`Le dénominateur de cette part est le nombre de ${denominator}, sur la même année et la même population : c'est lui qui vaut 100 %.`]
+      : []);
+
+  const table = (head: string, denominator: string, rows: Array<[string, number | null]>) => ({
+    columns: [head, measureOf(denominator)],
     rows: rows.map(([label, value]) => [label, formatValue(value, kind)]),
   });
 
-  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[]) =>
+  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[],
+                 xTitle: string, denominator: string) =>
     buildOption({
-      form: form as ChartForm, categories, series, kind, unitLabel, tokens,
-      directLabels: false,
+      form: form as ChartForm, categories, series, kind, unitLabel: unitOf(denominator), tokens,
+      directLabels: false, xTitle,
     });
 
   /* — Évolution — */
@@ -100,6 +121,7 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
 
   const categorical = (
     key: MortalityReadingKey, nav: string, title: string, question: string, xTitle: string,
+    denominator: string,
     rows: Array<{ label: string; value: number | null }>, offered: FormOption[], form: string,
     extraCaveats: string[] = [],
   ): Reading => {
@@ -108,22 +130,24 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
     const asPie = form === "pie";
     const series: ChartSeries[] = asPie
       ? rows.map((row, index) => ({ key: row.label, label: row.label, isOther: false, colorIndex: index, values: [row.value] }))
-      : [seriesOf(key, measureLabel, rows.map((row) => row.value))];
+      : [seriesOf(key, measureOf(denominator), rows.map((row) => row.value))];
     return {
       key, nav, title, question,
-      caveats: [...base, ...extraCaveats],
+      caveats: [...base, ...denominatorNote(denominator), ...extraCaveats],
       forms: offered, form,
       option: rows.length
         ? buildOption({
           form: form as ChartForm,
           categories: asPie ? [title] : rows.map((row) => row.label),
-          series, kind, unitLabel, tokens, directLabels: false,
+          series, kind, unitLabel: unitOf(denominator), tokens, directLabels: false,
           // Une seule série porte toutes les modalités : le classement met en
           // rang les tranches, les sexes ou les causes, pas des séries.
           rankBy: "category",
+          // Un camembert n'a pas d'axe à nommer.
+          xTitle: asPie ? undefined : xTitle,
         })
         : null,
-      table: table(xTitle, rows.map((row) => [row.label, row.value] as [string, number | null])),
+      table: table(xTitle, denominator, rows.map((row) => [row.label, row.value] as [string, number | null])),
       ariaLabel: `${title} · ${cause}`,
       // Un classement a besoin d'une ligne par modalité.
       height: form === "rank" ? Math.max(CHART_HEIGHT, 80 + rows.length * 26) : CHART_HEIGHT,
@@ -136,32 +160,36 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
     {
       key: "evolution",
       nav: "Évolution",
-      title: `${measureLabel}, ${annual[0]?.year ?? ""}–${annual.at(-1)?.year ?? ""}`,
+      title: `${measureOf(ALL_CAUSES_DENOMINATOR)}, ${annual[0]?.year ?? ""}–${annual.at(-1)?.year ?? ""}`,
       question: "Comment cela évolue-t-il dans le temps ?",
-      caveats: base,
+      caveats: [...base, ...denominatorNote(ALL_CAUSES_DENOMINATOR)],
       forms: evolutionForms,
       form: evolutionForm,
       option: annual.length
         ? chart(evolutionForm, annual.map((item) => item.year),
-                [seriesOf("evolution", `${cause} · ${populationLabel}`, evolutionValues)])
+                [seriesOf("evolution", `${cause} · ${populationLabel}`, evolutionValues)],
+                "Année", ALL_CAUSES_DENOMINATOR)
         : null,
-      table: table("Année", annual.map((item, index) => [String(item.year), evolutionValues[index]] as [string, number | null])),
-      ariaLabel: `${measureLabel} par année · ${cause}`,
+      table: table("Année", ALL_CAUSES_DENOMINATOR,
+                   annual.map((item, index) => [String(item.year), evolutionValues[index]] as [string, number | null])),
+      ariaLabel: `${measureOf(ALL_CAUSES_DENOMINATOR)} par année · ${cause}`,
       height: CHART_HEIGHT,
       empty: annual.length ? null : "Aucune année publiée sur ce périmètre.",
       xTitle: "Année",
     },
-    categorical("age", "Âge", `${measureLabel} par tranche d’âge`,
-      "Quelles tranches d’âge pèsent le plus ?", "Tranche d’âge",
+    // Âge et sexe répartissent les décès de la cause affichée entre leurs
+    // modalités : leur dénominateur est cette cause, pas le total toutes causes.
+    categorical("age", "Âge", `${measureOf(SAME_CAUSE_DENOMINATOR)} par tranche d’âge`,
+      "Quelles tranches d’âge pèsent le plus ?", "Tranche d’âge", SAME_CAUSE_DENOMINATOR,
       ageRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       ageForms, ageForm,
       ["Trois tranches larges seulement : la source ne publie pas d’âge fin."]),
-    categorical("sex", "Sexe", `${measureLabel} selon le sexe`,
-      "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe",
+    categorical("sex", "Sexe", `${measureOf(SAME_CAUSE_DENOMINATOR)} selon le sexe`,
+      "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe", SAME_CAUSE_DENOMINATOR,
       sexRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       sexForms, sexForm),
     categorical("causes", "Causes", `Principales causes de décès, ${year}`,
-      "Quelles causes pèsent le plus ?", "Cause de décès",
+      "Quelles causes pèsent le plus ?", "Cause de décès", ALL_CAUSES_DENOMINATOR,
       causeRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       causeForms, causeForm,
       ["Causes de premier niveau uniquement : le détail vit dans le sélecteur de cause."]),

@@ -424,7 +424,9 @@ function sexSlide({ response, measure, tokens, consolidatedThrough, forms }: Sli
       caveats,
       forms: offered,
       form: "rank",
-      option: sexCompareOption({ rows, tokens, modalityLabel: lower(femaleLabel) }),
+      option: sexCompareOption({
+        rows, tokens, modalityLabel: lower(femaleLabel), axisTitle: "Sujets comparés",
+      }),
       table: {
         columns: ["Sujet", `Part de ${lower(femaleLabel)}`],
         rows: ranked.map((row) => [row.label, formatValue(row.values[0], "percent")]),

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getMethodology } from "../api";
+import { DENOMINATORS } from "../methodology/denominators";
 import type { MethodSource, Methodology } from "../types";
 
 type SourceKey = "damir" | "pathologies" | "csp" | "mortality";
@@ -96,6 +97,52 @@ export function MethodologyPage() {
               <div>{(source.badges ?? []).slice(0, 2).map((badge) => <span key={badge}>{badge}</span>)}</div>
               <button type="button" onClick={() => setSelectedKey(source.key as SourceKey)}>Voir le détail →</button>
             </footer>
+          </article>
+        ))}
+      </section>
+
+      {/* Un pourcentage sans dénominateur nommé ne veut rien dire, et deux
+          mesures qui portent le même mot peuvent se rapporter à deux ensembles
+          différents. C'est le seul endroit où la réponse est écrite en entier. */}
+      <section className="method-denominators" aria-labelledby="method-denominators-title">
+        <header>
+          <h2 id="method-denominators-title">Ce que compte chaque mesure</h2>
+          <p>
+            Pour chaque mesure, ce qui est compté au numérateur et ce à quoi
+            c’est rapporté. Un total n’a pas de dénominateur : la table le dit
+            plutôt que de laisser une case vide, qui se lirait comme un oubli.
+          </p>
+        </header>
+
+        {DENOMINATORS.map((group) => (
+          <article className="method-denominator-group" key={group.source}>
+            <h3>{group.source}</h3>
+            <p>{group.intro}</p>
+            <div className="method-denominator-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Mesure</th>
+                    <th scope="col">Numérateur</th>
+                    <th scope="col">Dénominateur</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row) => (
+                    <tr key={row.measure}>
+                      <th scope="row">{row.measure}</th>
+                      <td>{row.numerator}</td>
+                      <td>
+                        {row.denominator
+                          ? row.denominator
+                          : <span className="method-denominator-none">Aucun — c’est un total</span>}
+                        {row.note ? <span className="method-denominator-note">{row.note}</span> : null}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </article>
         ))}
       </section>

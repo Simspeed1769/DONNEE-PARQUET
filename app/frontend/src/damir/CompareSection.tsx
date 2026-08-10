@@ -420,6 +420,9 @@ export function CompareSection({
     return buildOption({
       form: view.form, categories, series: chartSeries, kind, unitLabel, tokens: palette,
       directLabels: view.form === "line" && chartSeries.length > 1 && chartSeries.length <= 6,
+      // Le classement et la cascade tournent l'axe des modalités : il n'y porte
+      // plus des années mais les séries que l'on compare.
+      xTitle: view.form === "rank" || view.form === "waterfall" ? "Séries comparées" : "Année",
     });
   }, [asPie, view, categories, chartSeries, kind, unitLabel, periodLabel]);
 

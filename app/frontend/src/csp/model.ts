@@ -25,6 +25,11 @@ export const CSP_READINGS: FormOption[] = [
 
 const WEIGHTED_NOTE = "Effectifs pondérés par l'Insee, pas des comptages directs.";
 const NOMENCLATURE_NOTE = "La nomenclature des catégories socioprofessionnelles a évolué entre certains millésimes : une rupture de série n'y est pas toujours une évolution réelle.";
+/** Le dénominateur, nommé. Vérifié sur les données : `population_reference`
+ *  vaut exactement la somme des effectifs des six groupes d'une même cellule
+ *  année × région × âge × sexe. La part se lit donc bien parmi les actifs
+ *  occupés, et non parmi l'ensemble de la population. */
+const DENOMINATOR_NOTE = "Part = 100 × effectif pondéré du groupe ÷ actifs ayant un emploi (TACT = 11) du même périmètre. Ni les chômeurs, ni les inactifs, ni les retraités n'entrent dans ce dénominateur.";
 const SHARE_NOTE = "Une part se lit territoire par territoire : les parts régionales ne s'additionnent pas, et aucune forme qui composerait un tout n'est offerte sur cette mesure.";
 
 export type CspInput = {
@@ -50,10 +55,12 @@ export function buildCspReadings(input: CspInput): Reading[] {
   const unitLabel = isShare ? "% des actifs en emploi" : "personnes";
   const measureLabel = isShare ? "Part parmi les actifs en emploi" : "Effectif pondéré (Insee)";
   const cspLabel = overview?.context.csp_label ?? "";
-  const base = [WEIGHTED_NOTE, NOMENCLATURE_NOTE, ...(isShare ? [SHARE_NOTE] : [])];
+  const base = [WEIGHTED_NOTE, NOMENCLATURE_NOTE, ...(isShare ? [DENOMINATOR_NOTE, SHARE_NOTE] : [])];
 
-  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[], labels = false) =>
-    buildOption({ form: form as ChartForm, categories, series, kind, unitLabel, tokens, directLabels: labels });
+  const chart = (form: string, categories: Array<string | number>, series: ChartSeries[],
+                 xTitle: string, labels = false) =>
+    buildOption({ form: form as ChartForm, categories, series, kind, unitLabel, tokens,
+                  directLabels: labels, xTitle });
 
   const one = (key: string, values: Array<number | null>): ChartSeries[] =>
     [{ key, label: measureLabel, isOther: false, colorIndex: 0, values }];
@@ -145,6 +152,8 @@ export function buildCspReadings(input: CspInput): Reading[] {
           // Une seule série porte toutes les modalités : c'est elles qu'on met
           // en rang, pas des séries entre elles.
           rankBy: "category",
+          // Un camembert n'a pas d'axe à nommer.
+          xTitle: pie ? undefined : xTitle,
         })
         : null,
       table: {
@@ -170,7 +179,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
       forms: evolutionForms,
       form: evolutionForm,
       option: annual.length > 1
-        ? chart(evolutionForm, annual.map((item) => item.year), one("evolution", evolutionValues))
+        ? chart(evolutionForm, annual.map((item) => item.year), one("evolution", evolutionValues), "Millésime")
         : null,
       table: table("Millésime", annual.map((item, index) => [String(item.year), evolutionValues[index]] as [string, number | null])),
       ariaLabel: `${measureLabel} par millésime · ${cspLabel}`,
@@ -199,6 +208,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
             categories: territories.map((item) => item.label),
             series: one("territory", territoryValues),
             kind, unitLabel, tokens, directLabels: false, rankBy: "category",
+            xTitle: "Région",
           })
           : null),
       table: table("Territoire", territories.map((item, index) => [item.label, territoryValues[index]] as [string, number | null])),
@@ -215,7 +225,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
       caveats: base,
       forms: ageForms,
       form: ageForm,
-      option: ageLabels.length ? chart(ageForm, ageLabels, ageSeries, true) : null,
+      option: ageLabels.length ? chart(ageForm, ageLabels, ageSeries, "Tranche d’âge", true) : null,
       table: {
         columns: ["Tranche d’âge", ...ageSeries.map((item) => item.label)],
         rows: ageLabels.map((label, index) => [label, ...ageSeries.map((item) => formatValue(item.values[index], kind))]),
