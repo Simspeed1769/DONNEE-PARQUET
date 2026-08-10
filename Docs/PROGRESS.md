@@ -43,3 +43,15 @@
 - **Écarté** : `pathologies/charts.ts` et `mortality/charts.ts`, devenus vides de
   sens une fois les formes tirées de `buildOption` ; `csp/charts.ts` se réduit à
   la carte, seule forme sans équivalent générique.
+
+## v3 · Phase 4 — Croisements : une seule porte d'entrée
+
+- **Décision** : Croisements n'expose plus que le mode Guidé. Choisir entre
+  « Lien », « Modèle » et « Guidé » était déjà une question de spécialiste,
+  posée avant même la question de fond.
+- **Fait** : l'écran avancé part entier dans `correlations/AdvancedCross.tsx`,
+  compilé mais non routé — le rebrancher tient en une ligne de rendu.
+  `RegressionPanel.tsx` et les endpoints de corrélation restent en place et
+  servis. Preuve que rien n'est embarqué pour rien : le lot Croisements passe de
+  41,5 ko à 17,5 ko.
+- **Écarté** : rien n'est supprimé.
