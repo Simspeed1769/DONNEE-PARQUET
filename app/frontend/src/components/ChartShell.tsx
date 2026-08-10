@@ -14,6 +14,7 @@
 import type { ReactNode } from "react";
 import type { ECharts } from "echarts/core";
 import { downloadText } from "../api";
+import type { FormOption } from "../charts/reading";
 import { EChart, type EChartsOption } from "../charts/EChart";
 import type { ChartTokens } from "../charts/tokens";
 import { csvFromRows } from "../utils";
@@ -26,6 +27,18 @@ type Props = {
    *  chaque base garde la main sur les siens plutôt que de les faire rentrer
    *  dans une liste générique de « formes ». */
   headerActions?: ReactNode;
+  /** Les lectures de la base, façon DAMIR : une barre d'onglets dans l'en-tête.
+   *  Absentes, la carte n'en affiche pas — c'est le cas d'un écran à graphique
+   *  unique. */
+  readings?: FormOption[];
+  reading?: string;
+  onReading?: (key: string) => void;
+  /** Les formes licites de la lecture courante, décidées par le modèle. */
+  forms?: FormOption[];
+  form?: string;
+  onForm?: (key: string) => void;
+  /** La question à laquelle la forme répond. */
+  question?: string;
   /** Contenu propre à la base, entre l'en-tête et le graphique — un panneau
    *  de réglage (le masquage Cnam, par exemple) qui n'a pas sa place dans
    *  l'en-tête mais appartient à la même carte que le graphique. */
@@ -62,7 +75,8 @@ type Props = {
 };
 
 export function ChartShell({
-  kicker, title, headerActions, beforeChart, afterChart, height, option, exportOption, empty,
+  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question,
+  beforeChart, afterChart, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
 }: Props) {
@@ -76,8 +90,43 @@ export function ChartShell({
     <article className={`panel pathology-chart ${className ?? ""}`}>
       <header>
         <div><span className="section-kicker">{kicker}</span><h3>{title}</h3></div>
+        {readings && readings.length > 1 ? (
+          <div className="pathology-toggle damir-views" role="tablist" aria-label="Lecture affichée">
+            {readings.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                role="tab"
+                aria-selected={reading === item.key}
+                className={reading === item.key ? "active" : ""}
+                onClick={() => onReading?.(item.key)}
+              >{item.label}</button>
+            ))}
+          </div>
+        ) : null}
         {headerActions}
       </header>
+
+      {/* La question à gauche, le choix de forme à droite : une seule bande,
+          et le graphique reste où il est. C'est la disposition de DAMIR. */}
+      {question || (forms && forms.length > 1) ? (
+        <div className="damir-strip">
+          {question ? <p className="damir-question">{question}</p> : <span />}
+          {forms && forms.length > 1 ? (
+            <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
+              {forms.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  aria-pressed={form === item.key}
+                  className={form === item.key ? "active" : ""}
+                  onClick={() => onForm?.(item.key)}
+                >{item.label}</button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {beforeChart}
 

@@ -481,3 +481,29 @@
 }
 .series-name-input:hover { border-color: var(--line); }
 .series-name-input:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+
+/* Les pathologies mises en regard : un rail d'ajout et des pastilles. */
+.pathology-compare-add { min-width: 220px; }
+.pathology-compare-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pathology-compare-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font-size: .58rem;
+}
+.pathology-compare-chip button {
+  border: 0;
+  padding: 0 2px;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.pathology-compare-chip button:hover:not(:disabled) { color: var(--critical-text); }
+.pathology-compare-chip button:disabled { opacity: .3; cursor: not-allowed; }

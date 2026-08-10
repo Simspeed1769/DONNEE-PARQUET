@@ -4,13 +4,14 @@ import { MultiSelect } from "../components/MultiSelect";
 import { PageHero } from "../components/PageHero";
 import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { useChartTokens } from "../charts/tokens";
-import { ageSexOption, evolutionOption, territoryRankOption } from "../pathologies/charts";
-import { pathologyCaveats } from "../pathologies/model";
-import { formatValue } from "../utils";
+import { PATHOLOGY_READINGS, buildPathologyReadings, type PathologyReadingKey } from "../pathologies/model";
 import type { PathologyMetadata, PathologyOverview } from "../types";
 
 const SOURCE_LINE = "Source · Cartographie des pathologies, Cnam · Traitement Forsides";
+/** Au-delà, la palette catégorielle ne sépare plus les teintes de façon sûre. */
+const MAX_COMPARED = 6;
 
 type Props = {
   routeVersion: number;
@@ -36,9 +37,27 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   const [age, setAge] = useState(initialParams.get("age") ?? "tsage");
   const [sex, setSex] = useState(initialParams.get("sex") ?? "tous sexes");
   const [hiddenTerritories, setHiddenTerritories] = useState<string[]>([]);
-  const [showMaskedDetails, setShowMaskedDetails] = useState(false);
-  const [measure, setMeasure] = useState<"patients" | "prevalence">("prevalence");
-  const [detailView, setDetailView] = useState<"profile" | "territories">("profile");
+  const [measure, setMeasure] = useState<"patients" | "prevalence">(
+    initialParams.get("measure") === "patients" ? "patients" : "prevalence",
+  );
+  const [reading, setReading] = useState<PathologyReadingKey>(() => {
+    const raw = initialParams.get("view");
+    return PATHOLOGY_READINGS.some((item) => item.key === raw) ? raw as PathologyReadingKey : "evolution";
+  });
+  const [forms, setForms] = useState<Partial<Record<PathologyReadingKey, string>>>(() => {
+    const next: Partial<Record<PathologyReadingKey, string>> = {};
+    PATHOLOGY_READINGS.forEach((item) => {
+      const raw = initialParams.get(`form_${item.key}`);
+      if (raw) next[item.key as PathologyReadingKey] = raw;
+    });
+    return next;
+  });
+  /** Les autres pathologies mises en regard sur la lecture « Pathologies ». */
+  const [comparedCodes, setComparedCodes] = useState<string[]>(() => {
+    const raw = initialParams.get("compare");
+    return raw ? raw.split("~").filter(Boolean) : [];
+  });
+  const [compared, setCompared] = useState<Array<{ code: string; label: string; overview: PathologyOverview }>>([]);
   const [overview, setOverview] = useState<PathologyOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,21 +78,14 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         const selected = flattened.find((item) => item.code === top)
           ?? flattened.find((item) => item.label.toLocaleLowerCase("fr").includes("diab"))
           ?? flattened[0];
-        if (selected) {
-          setFamily(selected.family);
-          setGroupKey(selected.group);
-          setTop(selected.code);
-        }
+        if (selected) { setFamily(selected.family); setGroupKey(selected.group); setTop(selected.code); }
         if (!year || !next.years.includes(year)) setYear(next.default_year);
         if (!next.regions.some((item) => item.code === region)) setRegion("99");
         if (!next.ages.some((item) => item.code === age)) setAge("tsage");
         if (!next.sexes.some((item) => item.code === sex)) setSex("tous sexes");
       })
       .catch((reason: Error) => {
-        if (reason.name !== "AbortError") {
-          setError(reason.message);
-          setLoading(false);
-        }
+        if (reason.name !== "AbortError") { setError(reason.message); setLoading(false); }
       });
     return () => controller.abort();
   }, []);
@@ -90,6 +102,15 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   ] : [{ code: selectedFamily.code, label: selectedFamily.label }]) : [];
   const selectedAgeLabel = metadata?.ages.find((item) => item.code === age)?.label;
 
+  /** Le catalogue plat, pour choisir une pathologie à comparer. */
+  const catalogue = useMemo(() => (metadata?.families ?? []).flatMap((familyItem) => [
+    { code: familyItem.code, label: familyItem.label },
+    ...familyItem.groups.flatMap((group) => [
+      { code: group.code, label: group.label },
+      ...group.pathologies.map((item) => ({ code: item.code, label: item.label })),
+    ]),
+  ]), [metadata]);
+
   useEffect(() => {
     if (!top || !year) return;
     const controller = new AbortController();
@@ -102,108 +123,64 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         .catch((reason: Error) => { if (active && reason.name !== "AbortError") setError(reason.message); })
         .finally(() => { if (active) setLoading(false); });
     }, 250);
-    const params = new URLSearchParams({ page: "pathologies", top, year: String(year), region, age, sex });
-    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
-    return () => {
-      active = false;
-      window.clearTimeout(timer);
-      controller.abort();
-    };
+    return () => { active = false; window.clearTimeout(timer); controller.abort(); };
   }, [top, year, region, age, sex]);
+
+  /* — Les pathologies comparées : une requête chacune, en parallèle —
+     Le serveur ne sait renvoyer qu'une fiche à la fois ; les mettre en regard
+     est donc un assemblage côté écran, comme le fait déjà Comparer sur DAMIR. */
+  useEffect(() => {
+    if (!year || !comparedCodes.length) { setCompared([]); return; }
+    const controller = new AbortController();
+    let active = true;
+    Promise.all(comparedCodes.map((code) =>
+      getPathologyOverview(code, year, { region, age, sex }, controller.signal)
+        .then((next) => ({
+          code,
+          label: catalogue.find((item) => item.code === code)?.label ?? next.context.label,
+          overview: next,
+        }))))
+      .then((rows) => { if (active) setCompared(rows); })
+      .catch((reason: Error) => { if (active && reason.name !== "AbortError") setCompared([]); });
+    return () => { active = false; controller.abort(); };
+  }, [comparedCodes, year, region, age, sex, catalogue]);
+
+  // La pathologie de la fiche ouvre toujours la comparaison : sans elle, on
+  // comparerait des voisines sans le sujet.
+  useEffect(() => {
+    if (reading !== "compare" || !top) return;
+    setComparedCodes((current) => (current.includes(top) ? current : [top, ...current].slice(0, MAX_COMPARED)));
+  }, [reading, top]);
+
+  useEffect(() => {
+    if (!top || !year) return;
+    const params = new URLSearchParams({
+      page: "pathologies", top, year: String(year), region, age, sex, measure, view: reading,
+    });
+    if (comparedCodes.length) params.set("compare", comparedCodes.join("~"));
+    Object.entries(forms).forEach(([key, value]) => { if (value) params.set(`form_${key}`, value); });
+    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  }, [top, year, region, age, sex, measure, reading, forms, comparedCodes]);
 
   const chooseFamily = (nextFamily: string) => {
     setFamily(nextFamily);
     const selected = metadata?.families.find((item) => item.label === nextFamily);
-    if (selected) {
-      setGroupKey("__family__");
-      setTop(selected.code);
-    }
+    if (selected) { setGroupKey("__family__"); setTop(selected.code); }
   };
-
   const chooseGroup = (nextGroup: string) => {
     setGroupKey(nextGroup);
     const selected = groupOptions.find((item) => item.code === nextGroup);
     if (selected) setTop(selected.top);
   };
 
-  const kind = measure === "patients" ? "quantity" : "percent";
-  const currentRegionLabel = metadata?.regions.find((item) => item.code === region)?.label ?? "Périmètre sélectionné";
+  const regionLabel = metadata?.regions.find((item) => item.code === region)?.label ?? region;
+  const sexLabel = metadata?.sexes.find((item) => item.code === sex)?.label ?? sex;
 
-  /* Chaque lecture garde ses arguments à part de la palette : l'écran les
-     assemble avec le thème courant, l'export les réassemble avec le thème
-     clair. Une seule description, deux rendus. */
-  const evolutionInput = useMemo(() => ({
-    years: overview?.annual.map((item) => item.year) ?? [],
-    values: overview?.annual.map((item) => (measure === "patients" ? item.patients : item.prevalence)) ?? [],
-    regionLabel: currentRegionLabel,
-    franceYears: region !== "99" && measure === "prevalence" ? overview?.france_annual.map((item) => item.year) : undefined,
-    franceValues: region !== "99" && measure === "prevalence" ? overview?.france_annual.map((item) => item.prevalence) : undefined,
-    filled: region === "99",
-    kind,
-  }), [overview, measure, region, currentRegionLabel, kind]);
-  const evolution = useMemo(() => evolutionOption({ ...evolutionInput, tokens }), [evolutionInput, tokens]);
-
-  const ageProfileInput = useMemo(() => {
-    const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
-    const valuesFor = (sex: string) => ages.map((ageLabel) =>
-      overview?.age_sex.find((item) => item.age === ageLabel && item.sex === sex)?.prevalence ?? null);
-    return {
-      ages,
-      femmes: valuesFor("femmes"),
-      hommes: valuesFor("hommes"),
-      highlightLabel: age === "tsage" ? null : (selectedAgeLabel ?? null),
-      kind: "percent",
-    };
-  }, [overview, age, selectedAgeLabel]);
-  const ageProfile = useMemo(() => ageSexOption({ ...ageProfileInput, tokens }), [ageProfileInput, tokens]);
-
-  const territoriesInput = useMemo(() => {
-    const france = overview?.france_reference.prevalence ?? null;
-    const visible = [...(overview?.territories ?? [])]
-      .filter((item): item is typeof item & { prevalence: number } => item.code !== "99" && item.prevalence !== null && Number.isFinite(item.prevalence))
-      .filter((item) => !hiddenTerritories.includes(item.code));
-    const rows = visible.map((item) => ({
-      code: item.code, label: item.label, value: item.prevalence,
-      patients: item.patients, maskedCells: item.masked_cells, totalCells: item.total_cells,
-    }));
-    return {
-      input: { rows, ownRegion: region, franceValue: france, showMaskedDetails, kind: "percent" },
-      height: Math.max(460, Math.min(540, visible.length * 24 + 120)),
-    };
-  }, [overview, hiddenTerritories, region, showMaskedDetails]);
-  const territories = useMemo(() => ({
-    option: territoryRankOption({ ...territoriesInput.input, tokens }),
-    height: territoriesInput.height,
-  }), [territoriesInput, tokens]);
-
-  const evolutionTable = useMemo(() => {
-    const showFrance = region !== "99" && measure === "prevalence";
-    const columns = ["Année", currentRegionLabel, ...(showFrance ? ["France entière"] : [])];
-    const rows = (overview?.annual ?? []).map((item) => {
-      const value = measure === "patients" ? item.patients : item.prevalence;
-      const franceValue = overview?.france_annual.find((france) => france.year === item.year)?.prevalence ?? null;
-      return [String(item.year), formatValue(value, kind), ...(showFrance ? [formatValue(franceValue, kind)] : [])];
-    });
-    return { columns, rows };
-  }, [overview, region, measure, currentRegionLabel, kind]);
-
-  const ageProfileTable = useMemo(() => {
-    const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
-    const valueAt = (ageLabel: string, sex: string) =>
-      overview?.age_sex.find((item) => item.age === ageLabel && item.sex === sex)?.prevalence ?? null;
-    return {
-      columns: ["Tranche d’âge", "Femmes", "Hommes"],
-      rows: ages.map((ageLabel) => [ageLabel, formatValue(valueAt(ageLabel, "femmes"), "percent"), formatValue(valueAt(ageLabel, "hommes"), "percent")]),
-    };
-  }, [overview]);
-
-  const territoriesTable = useMemo(() => ({
-    columns: ["Territoire", "Prévalence", "Patients"],
-    rows: [...(overview?.territories ?? [])]
-      .filter((item) => item.code !== "99" && !hiddenTerritories.includes(item.code))
-      .sort((left, right) => (right.prevalence ?? 0) - (left.prevalence ?? 0))
-      .map((item) => [item.label, formatValue(item.prevalence, "percent"), item.patients === null ? "—" : new Intl.NumberFormat("fr-FR").format(item.patients)]),
-  }), [overview, hiddenTerritories]);
+  const readingInput = useMemo(() => ({
+    overview, compared, measure, regionLabel, isFrance: region === "99", hiddenTerritories, forms,
+  }), [overview, compared, measure, regionLabel, region, hiddenTerritories, forms]);
+  const readings = useMemo(() => buildPathologyReadings({ ...readingInput, tokens }), [readingInput, tokens]);
+  const current = readings.find((item) => item.key === reading) ?? readings[0];
 
   const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
     key: kpi.key,
@@ -213,14 +190,12 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     sentence: kpi.key === "sex_ratio",
   }));
 
-  const openExtraction = () => {
-    const params = new URLSearchParams({ page: "extraction", source: "pathologies", top,
-      start_year: String(metadata?.years[0] ?? 2015), end_year: String(year) });
-    onOpenExtraction(params);
-  };
   const territoryOptions = overview?.territories.map((item) => ({ value: item.code, label: item.label })) ?? [];
-  const regionLabel = metadata?.regions.find((item) => item.code === region)?.label ?? region;
-  const sexLabel = metadata?.sexes.find((item) => item.code === sex)?.label ?? sex;
+  const openExtraction = () => onOpenExtraction(new URLSearchParams({
+    page: "extraction", source: "pathologies", top,
+    start_year: String(metadata?.years[0] ?? 2015), end_year: String(year),
+  }));
+  const scope = `${overview?.context.label ?? ""} · ${regionLabel} · ${selectedAgeLabel} · ${sexLabel} · millésime ${year}`;
 
   if (!metadata && loading) return <div className="content-wrap pathology-page"><div className="page-loader"><div className="skeleton" /></div></div>;
 
@@ -251,73 +226,75 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
 
     {error ? <div className="analysis-error"><strong>La fiche n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
-    {overview ? <>
+    {overview && current ? <>
       <section className="pathology-title-line"><div><span>{overview.context.family}</span><h2>{overview.context.label}</h2><small>{regionLabel} · {selectedAgeLabel} · {sexLabel}</small></div><button type="button" onClick={openExtraction}>Extraire les données →</button></section>
       <KpiStrip items={kpiItems} />
 
-      <section className="pathology-grid">
-        <ChartShell
-          kicker="Évolution"
-          title="Trajectoire nationale"
-          headerActions={<div className="pathology-toggle"><button className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div>}
-          height={390}
-          option={evolution}
-          exportOption={(t) => evolutionOption({ ...evolutionInput, tokens: t })}
-          loading={loading}
-          ariaLabel={`Trajectoire nationale · ${overview.context.label} · ${measure === "patients" ? "patients" : "prévalence"}`}
-          tableColumns={evolutionTable.columns}
-          tableRows={evolutionTable.rows}
-          caveats={pathologyCaveats("evolution", { maskedCells: 0, unavailableTerritories: 0 })}
-          sourceLine={SOURCE_LINE}
-          filenamePrefix="pathologies"
-          scope={`${overview.context.label} · ${regionLabel} · ${selectedAgeLabel} · ${sexLabel}`}
-          onExtract={openExtraction}
-          className="pathology-evolution"
-        />
-        {detailView === "profile" ? (
-          <ChartShell
-            kicker="Vue complémentaire"
-            title="Prévalence par âge et sexe"
-            headerActions={<div className="pathology-toggle" aria-label="Vue complémentaire"><button className="active">Profil</button><button onClick={() => setDetailView("territories")}>Territoires</button></div>}
-            height={440}
-            option={ageProfile}
-            exportOption={(t) => ageSexOption({ ...ageProfileInput, tokens: t })}
-            loading={loading}
-            ariaLabel={`Prévalence par âge et sexe · ${overview.context.label}`}
-            tableColumns={ageProfileTable.columns}
-            tableRows={ageProfileTable.rows}
-            caveats={pathologyCaveats("ageSex", { maskedCells: 0, unavailableTerritories: 0 })}
-            sourceLine={SOURCE_LINE}
-            filenamePrefix="pathologies"
-            scope={`${overview.context.label} · profil âge et sexe · ${regionLabel}`}
-            onExtract={openExtraction}
-            className="pathology-detail-view"
-          />
-        ) : (
-          <ChartShell
-            kicker="Vue complémentaire"
-            title="Prévalence par territoire"
-            headerActions={<div className="pathology-toggle" aria-label="Vue complémentaire"><button onClick={() => setDetailView("profile")}>Profil</button><button className="active">Territoires</button></div>}
-            beforeChart={<>
-              <div className="pathology-detail-toolbar"><span className="quality-badge">Valeurs observées</span><div className="masking-control"><button type="button" className={`masked-details-toggle ${showMaskedDetails ? "active" : ""}`} aria-pressed={showMaskedDetails} onClick={() => setShowMaskedDetails((value) => !value)}>{showMaskedDetails ? "Masquage affiché" : "Afficher le masquage"}</button><button type="button" className="masking-help" aria-label="Pourquoi certaines données sont-elles masquées ?" data-tooltip="Masquage appliqué par la source Cnam : pour protéger la confidentialité, les effectifs strictement inférieurs à 10 patients ne sont pas publiés.">?</button></div><MultiSelect label="Territoires retirés" emptyLabel="Aucun" options={territoryOptions} value={hiddenTerritories} onChange={setHiddenTerritories} /></div>
-              {showMaskedDetails ? <div className="territory-quality-line"><strong>{overview.quality.masked_cells ? `${overview.quality.masked_cells} cellules masquées par la source Cnam` : "Aucune cellule masquée par la source Cnam"}</strong><span>Effectifs strictement inférieurs à 10 non publiés par la Cnam.</span><span>Une prévalence absente reste absente et n’est jamais remplacée par 0.</span>{overview.quality.unavailable_territories ? <span>{overview.quality.unavailable_territories} territoire(s) sans prévalence sont exclus.</span> : null}</div> : null}
-            </>}
-            height={territories.height}
-            option={territories.option}
-            exportOption={(t) => territoryRankOption({ ...territoriesInput.input, tokens: t })}
-            loading={loading}
-            ariaLabel={`Prévalence par territoire · ${overview.context.label}`}
-            tableColumns={territoriesTable.columns}
-            tableRows={territoriesTable.rows}
-            caveats={pathologyCaveats("territory", { maskedCells: overview.quality.masked_cells, unavailableTerritories: overview.quality.unavailable_territories })}
-            sourceLine={SOURCE_LINE}
-            filenamePrefix="pathologies"
-            scope={`${overview.context.label} · classement territorial · ${selectedAgeLabel} · ${sexLabel}`}
-            onExtract={openExtraction}
-            className="pathology-detail-view"
-          />
-        )}
-      </section>
+      <ChartShell
+        kicker={`Pathologies · ${overview.context.label}`}
+        title={current.title}
+        readings={PATHOLOGY_READINGS}
+        reading={reading}
+        onReading={(key) => setReading(key as PathologyReadingKey)}
+        forms={current.forms}
+        form={current.form}
+        onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
+        question={current.question}
+        headerActions={<div className="pathology-toggle" aria-label="Mesure"><button type="button" className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button type="button" className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div>}
+        beforeChart={
+          current.key === "territory" ? (
+            <div className="pathology-detail-toolbar">
+              <span className="quality-badge">
+                {overview.quality.masked_cells
+                  ? `${overview.quality.masked_cells} cellules masquées par la Cnam`
+                  : "Aucune cellule masquée par la Cnam"}
+              </span>
+              <button type="button" className="masking-help" aria-label="Pourquoi certaines données sont-elles masquées ?" data-tooltip="Masquage appliqué par la source Cnam : pour protéger la confidentialité, les effectifs strictement inférieurs à 10 patients ne sont pas publiés.">?</button>
+              <MultiSelect label="Territoires retirés" emptyLabel="Aucun" options={territoryOptions} value={hiddenTerritories} onChange={setHiddenTerritories} />
+            </div>
+          ) : current.key === "compare" ? (
+            <div className="pathology-detail-toolbar">
+              <span className="quality-badge">{compared.length} pathologie{compared.length > 1 ? "s" : ""} comparée{compared.length > 1 ? "s" : ""}</span>
+              <div className="pathology-compare-add">
+                <SearchableCauseSelect
+                  options={catalogue.filter((item) => !comparedCodes.includes(item.code))}
+                  value=""
+                  onChange={(code) => setComparedCodes((codes) => (codes.length >= MAX_COMPARED ? codes : [...codes, code]))}
+                  groupedDetails={false}
+                  searchPlaceholder="Ajouter une pathologie…"
+                  searchLabel="Ajouter une pathologie à comparer"
+                  selectLabel="Ajouter une pathologie"
+                  itemLabel="pathologies disponibles"
+                />
+              </div>
+              <div className="pathology-compare-chips" role="list">
+                {compared.map((item) => (
+                  <span key={item.code} className="pathology-compare-chip" role="listitem">
+                    {item.label}
+                    <button type="button" onClick={() => setComparedCodes((codes) => codes.filter((code) => code !== item.code))} aria-label={`Retirer ${item.label}`} disabled={compared.length <= 1}>✕</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null
+        }
+        height={current.height}
+        option={current.option}
+        exportOption={(t) => buildPathologyReadings({ ...readingInput, tokens: t })
+          .find((item) => item.key === current.key)?.option ?? current.option!}
+        empty={current.empty}
+        loading={loading}
+        ariaLabel={current.ariaLabel}
+        tableColumns={current.table.columns}
+        tableRows={current.table.rows}
+        caveats={current.caveats}
+        sourceLine={SOURCE_LINE}
+        filenamePrefix="pathologies"
+        scope={scope}
+        onExtract={openExtraction}
+        className="pathology-stage"
+      />
+
       <footer className="pathology-footer"><span>{SOURCE_LINE}</span><button type="button" onClick={openExtraction}>Extraire</button></footer>
     </> : null}
   </div>;

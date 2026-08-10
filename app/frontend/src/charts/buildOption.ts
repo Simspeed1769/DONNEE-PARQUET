@@ -25,6 +25,11 @@ export type ChartInput = {
   /** Étiquette directe en bout de courbe : elle évite que la couleur porte
    *  seule l'identité, et compense le contraste faible de certaines teintes. */
   directLabels: boolean;
+  /** Ce que le classement met en rang. `series` compare des séries entre elles
+   *  sur leur dernière valeur connue — c'est la lecture de DAMIR Comparer.
+   *  `category` classe les catégories d'une série unique : les régions, les
+   *  tranches d'âge, les causes. Sans mention, on garde `series`. */
+  rankBy?: "series" | "category";
 };
 
 const MARK_GAP = 2;
@@ -280,16 +285,41 @@ export function pieOption({ slices, tokens, kind, centerLabel }: PieInput): ECha
   } as EChartsOption;
 }
 
+type RankRow = { label: string; note: string; value: number | null; color: string };
+
 function rankOption(input: ChartInput, scale: { label: string },
                     scaled: (value: number | null) => number | null): EChartsOption {
   const { tokens } = input;
-  // Dernière valeur non nulle de chaque modalité, triée croissante pour que la
-  // plus grande se lise en haut.
-  const rows = input.series
-    .map((item) => {
+
+  // Deux classements très différents partagent la même forme. Comparer met des
+  // séries en rang sur leur dernière valeur connue ; une fiche met en rang les
+  // catégories d'une série unique — régions, tranches d'âge, causes. Le second
+  // encode une magnitude et non des identités : toutes ses barres portent donc
+  // la même teinte, la longueur seule fait la différence.
+  const byCategory = input.rankBy === "category";
+  const rows: RankRow[] = byCategory
+    ? (() => {
+      const serie = input.series[0];
+      const color = paletteColor(tokens, serie?.colorIndex ?? 0, 1, serie?.isOther ?? false);
+      return input.categories.map((category, index) => ({
+        label: String(category),
+        note: serie?.label ?? "",
+        value: serie?.values[index] ?? null,
+        color,
+      }));
+    })()
+    : input.series.map((item) => {
       const index = item.values.reduce<number>((last, value, position) => (value !== null ? position : last), -1);
-      return { item, value: index >= 0 ? item.values[index] : null, category: input.categories[index] };
-    })
+      return {
+        label: item.label,
+        note: String(input.categories[index] ?? ""),
+        value: index >= 0 ? item.values[index] : null,
+        color: paletteColor(tokens, item.colorIndex, input.series.length, item.isOther),
+      };
+    });
+
+  // Croissant : la plus grande valeur se lit en haut.
+  const ranked = rows
     .filter((row) => row.value !== null)
     .sort((left, right) => (left.value ?? 0) - (right.value ?? 0));
 
@@ -300,15 +330,15 @@ function rankOption(input: ChartInput, scale: { label: string },
       trigger: "item",
       ...tooltipCommon(tokens),
       formatter: (params: any) => {
-        const row = rows[params.dataIndex];
-        return `<div style="font-weight:650;margin-bottom:4px">${row.item.label}</div>
-          <div style="color:${tokens.inkSecondary}">${row.category} · <b style="color:${tokens.ink}">${readable(row.value, input.kind)}</b></div>`;
+        const row = ranked[params.dataIndex];
+        return `<div style="font-weight:650;margin-bottom:4px">${row.label}</div>
+          <div style="color:${tokens.inkSecondary}">${row.note} · <b style="color:${tokens.ink}">${readable(row.value, input.kind)}</b></div>`;
       },
     },
     xAxis: { type: "value", name: scale.label, nameTextStyle: { color: tokens.inkMuted, fontSize: 11 }, ...axisCommon(tokens) },
     yAxis: {
       type: "category",
-      data: rows.map((row) => row.item.label),
+      data: ranked.map((row) => row.label),
       ...axisCommon(tokens),
       splitLine: { show: false },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
@@ -316,10 +346,10 @@ function rankOption(input: ChartInput, scale: { label: string },
     series: [{
       id: "rank",
       type: "bar",
-      data: rows.map((row) => ({
+      data: ranked.map((row) => ({
         value: scaled(row.value),
         itemStyle: {
-          color: paletteColor(tokens, row.item.colorIndex, rows.length, row.item.isOther),
+          color: row.color,
           borderRadius: [0, 4, 4, 0] as [number, number, number, number],
         },
       })),
@@ -327,7 +357,7 @@ function rankOption(input: ChartInput, scale: { label: string },
       label: {
         show: true, position: "right", distance: 8,
         color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font,
-        formatter: (params: any) => readable(rows[params.dataIndex].value, input.kind),
+        formatter: (params: any) => readable(ranked[params.dataIndex].value, input.kind),
       },
     }],
   };
