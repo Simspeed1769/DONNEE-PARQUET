@@ -528,7 +528,6 @@
 .guided-sentences li {
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink-secondary);
