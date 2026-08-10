@@ -36,7 +36,52 @@ export type ScopeBarProps = {
   loading?: boolean;
 };
 
+/** Le temps qu'on laisse à la main de se poser avant d'interroger le cube. */
+const FILTER_DEBOUNCE_MS = 250;
+
 export function ScopeBar({ metadata, value, onChange, children, hidden = [], loading = false }: ScopeBarProps) {
+  /* — Le brouillon —
+     Cocher trois territoires d'affilée lançait trois agrégations, dont deux
+     que personne n'attendait. La barre tient donc un brouillon : il suit la
+     main immédiatement — les cases se cochent sans délai — et ne remonte à
+     l'écran que lorsque la main s'arrête. La requête part une fois. */
+  const [draft, setDraft] = useState<AdvancedFilters>(value);
+  const emitted = useRef(value);
+  const timer = useRef<number | null>(null);
+
+  // Un changement venu d'ailleurs — un clic sur la carte, une réinitialisation
+  // — l'emporte sur le brouillon en cours, et annule ce qui n'est pas parti :
+  // sinon un filtre en attente écraserait la sélection qu'on vient de faire.
+  useEffect(() => {
+    if (value === emitted.current) return;
+    if (timer.current !== null) { window.clearTimeout(timer.current); timer.current = null; }
+    emitted.current = value;
+    setDraft(value);
+  }, [value]);
+
+  useEffect(() => () => {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+  }, []);
+
+  const commit = (next: AdvancedFilters) => {
+    setDraft(next);
+    if (timer.current !== null) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      timer.current = null;
+      emitted.current = next;
+      onChange(next);
+    }, FILTER_DEBOUNCE_MS);
+  };
+
+  /** La réinitialisation ne se tempère pas : c'est un geste franc, et attendre
+   *  un quart de seconde après lui n'a aucun sens. */
+  const commitNow = (next: AdvancedFilters) => {
+    if (timer.current !== null) { window.clearTimeout(timer.current); timer.current = null; }
+    setDraft(next);
+    emitted.current = next;
+    onChange(next);
+  };
+
   const [options, setOptions] = useState<HierarchyOptions>(EMPTY_OPTIONS);
   const [optionsLoading, setOptionsLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -47,12 +92,12 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
   useEffect(() => {
     const controller = new AbortController();
     setOptionsLoading(true);
-    getHierarchy(value.grand_post, value.post, value.sub_post, controller.signal)
+    getHierarchy(draft.grand_post, draft.post, draft.sub_post, controller.signal)
       .then(setOptions)
       .catch((reason: Error) => { if (reason.name !== "AbortError") setOptions(EMPTY_OPTIONS); })
       .finally(() => setOptionsLoading(false));
     return () => controller.abort();
-  }, [value.grand_post, value.post, value.sub_post]);
+  }, [draft.grand_post, draft.post, draft.sub_post]);
 
   // Un tiroir qui reste ouvert derrière un clic ailleurs est un tiroir qu'on
   // oublie : il se referme sur le premier geste extérieur, comme les listes.
@@ -79,13 +124,13 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
     };
   }, [drawerOpen]);
 
-  const patch = (partial: Partial<AdvancedFilters>) => onChange({ ...value, ...partial });
+  const patch = (partial: Partial<AdvancedFilters>) => commit({ ...draft, ...partial });
 
-  const extraCount = (value.insurances.length ? 1 : 0)
-    + (value.envelopes.length ? 1 : 0)
-    + (value.ald === null ? 0 : 1);
+  const extraCount = (draft.insurances.length ? 1 : 0)
+    + (draft.envelopes.length ? 1 : 0)
+    + (draft.ald === null ? 0 : 1);
 
-  const dirty = JSON.stringify(value) !== JSON.stringify(defaultFilters(metadata));
+  const dirty = JSON.stringify(draft) !== JSON.stringify(defaultFilters(metadata));
 
   return (
     <section className="panel scope-bar" aria-label="Portée de l’analyse">
@@ -93,7 +138,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
         <label>
           <span>Grand poste</span>
           <select
-            value={value.grand_post ?? ""}
+            value={draft.grand_post ?? ""}
             onChange={(event) => patch({ grand_post: event.target.value || null, post: null, sub_post: null, service_codes: [] })}
           >
             <option value="">Tous les grands postes</option>
@@ -104,8 +149,8 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
         <label>
           <span>Poste</span>
           <select
-            disabled={!value.grand_post || optionsLoading}
-            value={value.post ?? ""}
+            disabled={!draft.grand_post || optionsLoading}
+            value={draft.post ?? ""}
             onChange={(event) => patch({ post: event.target.value || null, sub_post: null, service_codes: [] })}
           >
             <option value="">Tout le grand poste</option>
@@ -116,8 +161,8 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
         <label>
           <span>Sous-poste</span>
           <select
-            disabled={!value.post || optionsLoading}
-            value={value.sub_post ?? ""}
+            disabled={!draft.post || optionsLoading}
+            value={draft.sub_post ?? ""}
             onChange={(event) => patch({ sub_post: event.target.value || null, service_codes: [] })}
           >
             <option value="">Tout le poste</option>
@@ -132,7 +177,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
               label="Prestation"
               emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"}
               options={options.services.map((service) => ({ value: service.code, label: `${service.code} · ${service.label}` }))}
-              value={value.service_codes}
+              value={draft.service_codes}
               onChange={(service_codes) => patch({ service_codes })}
             />
           </div>
@@ -146,19 +191,19 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
           <span>Période</span>
           <div className="scope-bar-period-pair">
             <select
-              value={value.start_year}
+              value={draft.start_year}
               aria-label="Première année"
               onChange={(event) => patch({ start_year: Number(event.target.value) })}
             >
-              {metadata.years.filter((year) => year <= value.end_year).map((year) => <option key={year} value={year}>{year}</option>)}
+              {metadata.years.filter((year) => year <= draft.end_year).map((year) => <option key={year} value={year}>{year}</option>)}
             </select>
             <i aria-hidden="true">→</i>
             <select
-              value={value.end_year}
+              value={draft.end_year}
               aria-label="Dernière année"
               onChange={(event) => patch({ end_year: Number(event.target.value) })}
             >
-              {metadata.years.filter((year) => year >= value.start_year).map((year) => <option key={year} value={year}>{year}</option>)}
+              {metadata.years.filter((year) => year >= draft.start_year).map((year) => <option key={year} value={year}>{year}</option>)}
             </select>
           </div>
         </div>
@@ -170,7 +215,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
               label="Territoire"
               emptyLabel="France entière"
               options={metadata.regions.map((item) => ({ value: item.code, label: item.label }))}
-              value={value.regions}
+              value={draft.regions}
               onChange={(regions) => patch({ regions })}
             />
           </div>
@@ -183,7 +228,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
               label="Âge"
               emptyLabel="Tous âges"
               options={metadata.ages.map((item) => ({ value: item.code, label: item.label }))}
-              value={value.ages}
+              value={draft.ages}
               onChange={(ages) => patch({ ages })}
             />
           </div>
@@ -196,7 +241,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
               label="Sexe"
               emptyLabel="Femmes et hommes"
               options={metadata.sexes.map((item) => ({ value: item.code, label: item.label }))}
-              value={value.sexes}
+              value={draft.sexes}
               onChange={(sexes) => patch({ sexes })}
             />
           </div>
@@ -221,20 +266,20 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
                   label="Nature d’assurance"
                   emptyLabel="Toutes"
                   options={metadata.insurances.map((item) => ({ value: item.code, label: item.label }))}
-                  value={value.insurances}
+                  value={draft.insurances}
                   onChange={(insurances) => patch({ insurances })}
                 />
                 <MultiSelect
                   label="Enveloppe"
                   emptyLabel="Toutes"
                   options={metadata.envelopes.map((item) => ({ value: item.code, label: item.label }))}
-                  value={value.envelopes}
+                  value={draft.envelopes}
                   onChange={(envelopes) => patch({ envelopes })}
                 />
                 <label className="scope-bar-drawer-field">
                   <span>Motif d’exonération</span>
                   <select
-                    value={value.ald === null ? "" : String(value.ald)}
+                    value={draft.ald === null ? "" : String(draft.ald)}
                     onChange={(event) => patch({ ald: event.target.value === "" ? null : Number(event.target.value) })}
                   >
                     <option value="">Tous les motifs</option>
@@ -247,7 +292,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
           </div>
 
           {dirty ? (
-            <button type="button" className="scope-bar-reset" onClick={() => onChange(defaultFilters(metadata))}>
+            <button type="button" className="scope-bar-reset" onClick={() => commitNow(defaultFilters(metadata))}>
               Réinitialiser
             </button>
           ) : null}
