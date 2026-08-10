@@ -565,11 +565,6 @@ export function AdvancedCross({ onOpenMethodology }: Props) {
                 <ExportPngButton
                   defaultTitle={question ? question.charAt(0).toUpperCase() + question.slice(1) : "Croisement"}
                   scope={scope}
-                  caveats={[
-                    ...(result?.warnings ?? []).map((warning) => warning.text),
-                    ...(answer?.fix ? [answer.fix] : []),
-                  ]}
-                  reading={answer ? `${answer.verdict}. ${answer.why}` : null}
                   sourceLine={CROSS_SOURCE_LINE}
                   filenamePrefix="croisement"
                   buildOption={buildScatter}

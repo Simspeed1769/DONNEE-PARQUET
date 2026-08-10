@@ -20,10 +20,8 @@ type Props = {
   /** Titre calculé de la lecture : ce que le champ propose d'emblée. */
   defaultTitle: string;
   scope: string;
-  caveats: string[];
   sourceLine: string;
   filenamePrefix: string;
-  reading?: string | null;
   /** Fabrique d'options plutôt qu'option toute faite : l'image est re-rendue
    *  avec la palette claire, quel que soit le thème à l'écran. */
   buildOption: (tokens: ChartTokens) => EChartsOption;
@@ -31,7 +29,7 @@ type Props = {
 };
 
 export function ExportPngButton({
-  defaultTitle, scope, caveats, sourceLine, filenamePrefix, reading, buildOption, disabled,
+  defaultTitle, scope, sourceLine, filenamePrefix, buildOption, disabled,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(defaultTitle);
@@ -71,9 +69,7 @@ export function ExportPngButton({
     setBusy(true);
     setNotice(null);
     try {
-      const blob = await renderSlide(buildOption, {
-        title: chosen, scope, caveats, sourceLine, reading: reading ?? null,
-      });
+      const blob = await renderSlide(buildOption, { title: chosen, scope, sourceLine });
       download(blob, chosen, filenamePrefix);
       setOpen(false);
       setNotice("Image enregistrée.");
@@ -103,7 +99,7 @@ export function ExportPngButton({
               onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void save(); } }}
             />
           </label>
-          <p>Image 16:9, fond clair, avec le périmètre, les réserves, la source et la date.</p>
+          <p>Image 16:9, fond clair : le périmètre, le titre, le graphique, la source et la date. Les réserves restent dans l’outil.</p>
           <div className="export-png-actions">
             <button type="button" className="link-button" onClick={() => setOpen(false)}>Annuler</button>
             <button type="button" onClick={() => void save()} disabled={busy}>

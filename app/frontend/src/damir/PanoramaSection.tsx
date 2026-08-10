@@ -443,7 +443,6 @@ export function PanoramaSection({
               <ExportPngButton
                 defaultTitle={slide.title}
                 scope={scope}
-                caveats={[...slide.caveats, ...(response?.warnings ?? [])]}
                 sourceLine={SOURCE_LINE}
                 filenamePrefix="damir"
                 buildOption={(t) => {

@@ -149,7 +149,6 @@ export function ChartShell({
             <ExportPngButton
               defaultTitle={title}
               scope={scope}
-              caveats={caveats}
               sourceLine={sourceLine}
               filenamePrefix={filenamePrefix}
               buildOption={exportOption}

@@ -522,13 +522,32 @@
   flex: 0 0 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-  padding: var(--space-3);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background: var(--surface);
+  gap: var(--space-4);
+  margin: var(--space-3) 0 var(--space-2);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  /* Le tiroir se déplie au lieu d'apparaître : le regard suit la liste qui
+     s'écarte, plutôt que de rechercher ce qui vient de surgir. */
+  animation: scope-editor-open .18s var(--ease) both;
 }
+
+@keyframes scope-editor-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scope-editor { animation: none; }
+}
+
+/* Les sections du panneau de filtres respirent : elles sont ici le contenu
+   principal du tiroir, plus une colonne latérale tassée. */
+.scope-editor .advanced-filter-panel { gap: var(--space-4); }
+.scope-editor .filter-section { gap: var(--space-3); }
+.scope-editor .filter-section-title { margin-bottom: var(--space-1); }
+.scope-editor .stacked-field { margin-top: var(--space-1); }
 /* Le panneau de filtres est ici un contenu, pas un encadré : il perd son
    cadre propre pour ne pas doubler celui du tiroir. */
 .scope-editor .advanced-filter-panel {

@@ -442,7 +442,6 @@ export function GuidedPanel({ catalogue }: Props) {
               <ExportPngButton
                 defaultTitle={`Ce qui explique ${yLabel.toLowerCase()}`}
                 scope={guidedScope}
-                caveats={guidedCaveats}
                 sourceLine={CROSS_SOURCE_LINE}
                 filenamePrefix="croisement-guide"
                 buildOption={(t) => effectsOption(xTerms, t, xTerms[0]?.effect_kind ?? "absolute")}
@@ -469,7 +468,6 @@ export function GuidedPanel({ catalogue }: Props) {
                   <ExportPngButton
                     defaultTitle={`${yLabel} et ${primaryTerm.label.toLowerCase()}`}
                     scope={guidedScope}
-                    caveats={guidedCaveats}
                     sourceLine={CROSS_SOURCE_LINE}
                     filenamePrefix="croisement-guide"
                     buildOption={(t) => scatterOption(result.points, primaryTerm, yLabel, t, null)}

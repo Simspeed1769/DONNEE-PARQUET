@@ -52,10 +52,13 @@ function verticalAxisName(tokens: ChartTokens, title: string | undefined, invers
     ? {
       name: title,
       nameLocation: (inverse ? "start" : "end") as "start" | "end",
-      nameGap: 12,
+      nameGap: 14,
       nameTextStyle: {
         color: tokens.inkSecondary, fontSize: 12, fontFamily: tokens.font,
-        align: "right" as const,
+        // Le texte s'étend vers la **droite**, dans l'aire du tracé. Aligné à
+        // droite il partait vers la gauche depuis l'axe, c'est-à-dire dans la
+        // gouttière des libellés puis hors du cadre : on n'en lisait que la fin.
+        align: "left" as const,
       },
     }
     : {};

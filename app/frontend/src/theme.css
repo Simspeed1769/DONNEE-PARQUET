@@ -256,3 +256,106 @@
   --shadow: 0 4px 16px rgba(0, 0, 0, .45);
   --shadow-lg: 0 18px 44px rgba(0, 0, 0, .6);
 }
+
+/* ── Deux palettes, un seul commutateur ──────────────────────────────────────
+ *
+ * L'outil est rouge : c'est sa couleur de marque, et une carte ou une carte de
+ * chaleur bleue au milieu d'une interface rouge se lit comme une pièce
+ * rapportée. La rampe séquentielle est donc rouge par défaut, et `data-palette`
+ * la bascule en bleu — plus calme, pour qui projette longtemps ou imprime.
+ *
+ * **La bascule ne touche que la couleur qui code une grandeur.** Là où la
+ * couleur code une *identité* — plusieurs séries sur un même graphique — la
+ * palette catégorielle reste multi-teintes, parce qu'une famille unique n'y
+ * suffit pas : mesuré à la méthode dataviz, cinq nuances de rouge tombent à
+ * ΔE 11,7 entre deux voisines pour un plancher de 15, c'est-à-dire deux courbes
+ * qu'un œil normal ne distingue plus. Ce qui bascule en revanche, c'est l'ordre
+ * des teintes : la palette rouge mène par le rouge, la bleue par le bleu.
+ */
+
+:root {
+  /* Rampe séquentielle rouge — clarté strictement décroissante. */
+  --ramp-1: #fde3e1;
+  --ramp-2: #f9bcb9;
+  --ramp-3: #f2918e;
+  --ramp-4: #e66663;
+  --ramp-5: #d8383c;
+  --ramp-6: #b92c31;
+  --ramp-7: #8f2126;
+  --ramp-8: #63161a;
+}
+
+:root[data-palette="blue"] {
+  /* La rampe bleue d'origine, volontairement peu saturée. */
+  --ramp-1: #cde2fb;
+  --ramp-2: #9ec5f4;
+  --ramp-3: #6da7ec;
+  --ramp-4: #3987e5;
+  --ramp-5: #2a78d6;
+  --ramp-6: #256abf;
+  --ramp-7: #184f95;
+  --ramp-8: #0d366b;
+
+  /* Le bleu mène : la première série, celle qui est seule au graphique le plus
+     souvent, prend le bleu et le rouge passe en second. */
+  --series-1: #2a78d6;
+  --series-2: #e34948;
+  --accent-chart: #2a78d6;
+}
+
+/* La teinte d'une série seule au graphique. Elle suit la palette choisie, et
+   c'est elle qui donne à l'outil sa dominante. */
+:root { --accent-chart: #d8383c; }
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    --ramp-1: #63161a;
+    --ramp-2: #8f2126;
+    --ramp-3: #b92c31;
+    --ramp-4: #d8383c;
+    --ramp-5: #e66663;
+    --ramp-6: #f2918e;
+    --ramp-7: #f9bcb9;
+    --ramp-8: #fde3e1;
+    --accent-chart: #e66767;
+  }
+  :root:where(:not([data-theme="light"]))[data-palette="blue"] {
+    --ramp-1: #0d366b;
+    --ramp-2: #184f95;
+    --ramp-3: #256abf;
+    --ramp-4: #2a78d6;
+    --ramp-5: #3987e5;
+    --ramp-6: #6da7ec;
+    --ramp-7: #9ec5f4;
+    --ramp-8: #cde2fb;
+    --series-1: #3987e5;
+    --series-2: #e66767;
+    --accent-chart: #3987e5;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ramp-1: #63161a;
+  --ramp-2: #8f2126;
+  --ramp-3: #b92c31;
+  --ramp-4: #d8383c;
+  --ramp-5: #e66663;
+  --ramp-6: #f2918e;
+  --ramp-7: #f9bcb9;
+  --ramp-8: #fde3e1;
+  --accent-chart: #e66767;
+}
+
+:root[data-theme="dark"][data-palette="blue"] {
+  --ramp-1: #0d366b;
+  --ramp-2: #184f95;
+  --ramp-3: #256abf;
+  --ramp-4: #2a78d6;
+  --ramp-5: #3987e5;
+  --ramp-6: #6da7ec;
+  --ramp-7: #9ec5f4;
+  --ramp-8: #cde2fb;
+  --series-1: #3987e5;
+  --series-2: #e66767;
+  --accent-chart: #3987e5;
+}

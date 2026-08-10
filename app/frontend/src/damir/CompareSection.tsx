@@ -151,6 +151,10 @@ export function CompareSection({
   const [showOther, setShowOther] = useState(params.get("other") === "1");
 
   const [sharedResponse, setSharedResponse] = useState<ExploreResponse | null>(null);
+  /** La requête qui a produit la réponse en main. Tant qu'elle ne correspond
+   *  pas à la requête courante, la réponse décrit l'ancien périmètre : re-classer
+   *  les séries dessus les remettrait telles quelles. */
+  const [responseKey, setResponseKey] = useState<string | null>(null);
   const [overrideResults, setOverrideResults] = useState<Record<string, ExploreResponse>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -178,7 +182,7 @@ export function CompareSection({
     setLoading(true);
     setError(null);
     runExplore(sharedRequest, controller.signal)
-      .then((next) => { if (live) setSharedResponse(next); })
+      .then((next) => { if (live) { setSharedResponse(next); setResponseKey(sharedFetchKey); } })
       .catch((reason: Error) => { if (live && reason.name !== "AbortError") setError(reason.message); })
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; controller.abort(); };
@@ -195,12 +199,34 @@ export function CompareSection({
     setScopes({});
   }, [breakdown]);
 
+  /* — Le périmètre commun commande aussi *ce* qu'on compare — */
+
+  /** Les séries que l'utilisateur a composées lui-même : elles traversent un
+   *  changement de filtre, là où les modalités se re-classent. */
+  const composed = useRef<string[]>([]);
+  const filterKey = useMemo(() => JSON.stringify(filters), [filters]);
+  const knownFilters = useRef(filterKey);
+
+  // Restreindre le périmètre commun — un grand poste, une région, une tranche
+  // d'âge — change quelles modalités pèsent le plus, et parfois lesquelles
+  // existent encore. La liste comparée doit donc se refaire sur le nouveau
+  // périmètre : la laisser figée affichait des séries vides sans rien dire.
+  useEffect(() => {
+    if (knownFilters.current === filterKey) return;
+    knownFilters.current = filterKey;
+    if (!pickable) return;
+    composed.current = (selection ?? []).filter((key) => isFree(key) || scopes[key]);
+    setSelection(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey, pickable]);
+
   const measure: ExploreMeasure | null = useMemo(
     () => sharedResponse?.measures.find((item) => item.key === measureKey) ?? sharedResponse?.measures[0] ?? null,
     [sharedResponse, measureKey],
   );
   const additive = measure?.additive ?? true;
-  const responseIsCurrent = sharedResponse?.breakdown === (activeBreakdown.field ?? "none");
+  const responseIsCurrent = sharedResponse?.breakdown === (activeBreakdown.field ?? "none")
+    && responseKey === sharedFetchKey;
 
   const eligibleKeys = useMemo(
     () => (sharedResponse && measure && pickable ? rankedKeys(sharedResponse, measure) : []),
@@ -211,7 +237,12 @@ export function CompareSection({
     if (!responseIsCurrent) return;
     if (pickable) {
       if (!sharedResponse || !measure || selection !== null) return;
-      setSelection(eligibleKeys.slice(0, seriesCount));
+      // Les modalités de tête sur le périmètre courant, suivies des séries que
+      // l'utilisateur avait composées : re-classer ne doit pas défaire ce
+      // qu'il a construit à la main.
+      const kept = composed.current.filter((key) => !eligibleKeys.includes(key));
+      composed.current = [];
+      setSelection([...eligibleKeys.slice(0, seriesCount), ...kept]);
       return;
     }
     // « Année » n'a pas de modalité à classer : on part d'une série unique
@@ -222,6 +253,7 @@ export function CompareSection({
       setSelection([key]);
       setScopes((current) => ({ ...current, [key]: { ...filters } }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sharedResponse, measure, selection, responseIsCurrent, seriesCount, eligibleKeys, pickable]);
 
@@ -672,10 +704,6 @@ export function CompareSection({
             <ExportPngButton
               defaultTitle={`${measure?.label ?? "Comparaison"} — ${activeBreakdown.label.toLowerCase()}`}
               scope={compareScope}
-              caveats={[
-                ...(sharedResponse?.warnings ?? []),
-                ...(mixedPopulations ? ["Une ou plusieurs séries portent leur propre périmètre : les courbes ne décrivent pas forcément la même population et ne s’additionnent pas."] : []),
-              ]}
               sourceLine={SOURCE_LINE}
               filenamePrefix="damir-comparer"
               buildOption={buildChart}

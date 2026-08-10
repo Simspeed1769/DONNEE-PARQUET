@@ -68,22 +68,22 @@ function withMorphing(option: EChartsOption): EChartsOption {
     ...option,
     series: series.map((item: any) => (
       item && typeof item === "object" && !NO_MORPH.has(item.type)
-        ? { ...item, universalTransition: { enabled: true, seriesKey: item.id ?? item.name } }
+        ? {
+          ...item,
+          universalTransition: {
+            enabled: true,
+            seriesKey: item.id ?? item.name,
+            // Quand rien ne s'apparie — on change de lecture, pas seulement de
+            // forme — les marques se divisent et se recombinent au lieu de
+            // disparaître d'un bloc. C'est ce qui donne le même enchaînement
+            // entre Évolution, Territoire et Sexe qu'entre deux formes d'une
+            // même lecture.
+            divideShape: "clone" as const,
+          },
+        }
         : item
     )),
   } as EChartsOption;
-}
-
-/** Les types de séries présents dans une option, pour savoir si deux états
- *  successifs peuvent se rejoindre par morphing. */
-function shapeSignature(option: EChartsOption): string {
-  const series = (option as { series?: unknown }).series;
-  if (!Array.isArray(series)) return "";
-  return series
-    .map((item: any) => (item && typeof item === "object" ? String(item.type) : ""))
-    .filter((type) => NO_MORPH.has(type))
-    .sort()
-    .join(",");
 }
 
 type Props = {
@@ -96,18 +96,13 @@ type Props = {
   onInstance?: (instance: echarts.ECharts | null) => void;
 };
 
-/** Le fondu qui remplace un morphing impossible. Court : c'est un raccord,
- *  pas un effet. */
+/** La durée du seul fondu qui reste : celui qui signale un tracé périmé
+ *  pendant qu'une requête est en vol. */
 const FADE_MS = 130;
-
-function reducedMotion(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 export function EChart({ option, height, stale = false, ariaLabel, onInstance }: Props) {
   const container = useRef<HTMLDivElement | null>(null);
   const instance = useRef<echarts.ECharts | null>(null);
-  const previousShape = useRef<string | null>(null);
   const notify = useRef(onInstance);
   notify.current = onInstance;
 
@@ -130,37 +125,22 @@ export function EChart({ option, height, stale = false, ariaLabel, onInstance }:
     const chart = instance.current;
     if (!chart) return;
 
-    // Une carte ne peut pas devenir des barres : sa géométrie *est* le fond de
-    // carte, et il n'y a aucune marque à rattacher. Le passage vers ou depuis
-    // une telle forme se fait donc par un fondu court — le seul geste honnête
-    // quand le morphing n'a rien à quoi s'accrocher — au lieu du remplacement
-    // sec qu'on voyait jusqu'ici.
-    const signature = shapeSignature(option);
-    const abrupt = signature !== previousShape.current;
-    previousShape.current = signature;
-
-    const apply = () => {
-      // `notMerge` : les séries changent de nombre et de type d'une lecture à
-      // l'autre ; une fusion laisserait traîner celles de la vue précédente.
-      //
-      // Mais `notMerge` seul fait basculer d'une forme à l'autre d'un coup sec.
-      // La transition universelle rattache les marques d'une forme à celles de
-      // la suivante par leur identité : une barre devient sa part de camembert,
-      // une colonne devient son point de courbe. C'est ce qui rend le
-      // changement de forme lisible — on **voit** que c'est la même donnée sous
-      // un autre angle, au lieu de deux images sans rapport.
-      chart.setOption(withMorphing(option), { notMerge: true, lazyUpdate: true });
-    };
-
-    const node = container.current;
-    if (!abrupt || !node || reducedMotion()) { apply(); return; }
-
-    node.style.opacity = "0";
-    const timer = window.setTimeout(() => {
-      apply();
-      node.style.opacity = stale ? "0.5" : "1";
-    }, FADE_MS);
-    return () => window.clearTimeout(timer);
+    // `notMerge` : les séries changent de nombre et de type d'une lecture à
+    // l'autre ; une fusion laisserait traîner celles de la vue précédente.
+    //
+    // Mais `notMerge` seul fait basculer d'une forme à l'autre d'un coup sec.
+    // La transition universelle rattache les marques d'une forme à celles de la
+    // suivante : une barre devient sa part de camembert, une colonne devient
+    // son point de courbe. C'est ce qui rend le changement lisible — on **voit**
+    // que c'est la même donnée sous un autre angle.
+    //
+    // Un fondu manuel encadrait auparavant les passages vers ou depuis une
+    // carte. Il partait d'une bonne intention et produisait l'inverse : le
+    // conteneur passait à l'opacité zéro *avant* qu'ECharts commence à dessiner
+    // le fond de carte, si bien qu'on regardait un rectangle vide pendant tout
+    // le temps du rendu. Le blanc n'était pas la transition, c'était l'attente.
+    // ECharts enchaîne très bien seul ; on le laisse faire.
+    chart.setOption(withMorphing(option), { notMerge: true, lazyUpdate: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [option]);
 

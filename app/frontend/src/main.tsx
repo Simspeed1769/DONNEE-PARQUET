@@ -9,6 +9,7 @@ import "./correlations.css";
 import "./methodology.css";
 import "./components/copyLinkButton.css";
 import "./components/exportPngButton.css";
+import "./components/paletteToggle.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

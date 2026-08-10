@@ -11,6 +11,10 @@ export type ChartTokens = {
   line: string;
   grid: string;
   accent: string;
+  /** La teinte d'une série seule au graphique : elle suit la palette choisie
+   *  (rouge par défaut, bleue au besoin) là où l'accent de marque, lui, ne
+   *  bouge jamais. */
+  accentChart: string;
   good: string;
   critical: string;
   series: string[];
@@ -46,6 +50,7 @@ export function readTokens(): ChartTokens {
     line: read(styles, "--line", "#e4e2db"),
     grid: read(styles, "--grid", "#eceae3"),
     accent: read(styles, "--accent", "#d8383c"),
+    accentChart: read(styles, "--accent-chart", "#d8383c"),
     good: read(styles, "--good-text", "#006300"),
     critical: read(styles, "--critical-text", "#a32020"),
     series: Array.from({ length: SERIES_SLOTS }, (_, index) =>
@@ -97,7 +102,9 @@ export function useChartTokens(): ChartTokens {
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     media.addEventListener("change", refresh);
     const observer = new MutationObserver(refresh);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    observer.observe(document.documentElement, {
+      attributes: true, attributeFilter: ["data-theme", "data-palette"],
+    });
     return () => {
       media.removeEventListener("change", refresh);
       observer.disconnect();
@@ -124,7 +131,7 @@ export function seriesColor(tokens: ChartTokens, index: number, isOther = false)
  *  main : là, la couleur doit distinguer, pas décorer.
  */
 export function soloColor(tokens: ChartTokens): string {
-  return tokens.accent;
+  return tokens.accentChart;
 }
 
 /** La teinte d'une série selon qu'elle est seule ou en compagnie. */

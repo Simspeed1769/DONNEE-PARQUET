@@ -1,12 +1,13 @@
-/** Sortir une image de l'outil sans qu'elle perde ce qui la rend lisible.
+/** Sortir une image de l'outil : un graphique de présentation, rien de plus.
  *
- *  Copier le seul canevas du graphique produirait une image muette : ni titre,
- *  ni périmètre, ni source. Projetée dans une réunion, elle demanderait à celui
- *  qui la montre de refaire de mémoire le travail que l'écran avait déjà fait.
- *  On recompose donc l'image complète — périmètre, titre, réserves, source,
- *  date — autour du tracé.
+ *  Copier le seul canevas produirait une image muette — ni titre, ni périmètre,
+ *  ni source. On recompose donc une diapositive, mais **sobre** : le périmètre
+ *  en surtitre, le titre, le tracé en grand, la source et la date en pied. Les
+ *  réserves méthodologiques et la phrase de lecture restent à l'écran, dans
+ *  leur tiroir, et ne partent plus dans l'image : celle-ci va dans une
+ *  présentation, où un pavé de texte sous le graphique fait perdre le graphique.
  *
- *  Trois règles, valables pour **tous** les écrans :
+ *  Deux règles, valables pour **tous** les écrans :
  *
  *  1. **Un format unique, 16:9.** 1600 × 900 logiques, deux fois la densité :
  *     l'image se pose dans une diapositive sans être recadrée, et reste nette
@@ -16,8 +17,6 @@
  *     claire plutôt que capturé à l'écran : un export lancé en thème sombre
  *     produit exactement la même image qu'en thème clair. C'est pour cela que
  *     ce module reçoit une *fabrique* d'options et non une instance vivante.
- *  3. **Les réserves voyagent.** Ce que l'écran range dans un tiroir, l'image
- *     l'écrit : hors de l'outil, personne n'est là pour le rappeler.
  */
 
 import { echarts, type EChartsOption } from "../charts/EChart";
@@ -31,12 +30,7 @@ const PIXEL_RATIO = 2;
 
 const PADDING = 56;
 const TITLE_SIZE = 38;
-const READING_SIZE = 21;
 const FOOT_SIZE = 17;
-const CAVEAT_SIZE = 16;
-/** En deçà, le tracé n'est plus lisible : ce sont les réserves qui cèdent la
- *  place, jamais le graphique. */
-const MIN_CHART_HEIGHT = 300;
 
 export const SOURCE_LINE = "Source · Open DAMIR, Assurance Maladie · Traitement Forsides";
 
@@ -44,11 +38,6 @@ export type SlideExport = {
   title: string;
   /** Le périmètre en une ligne : sans lui l'image ne dit pas de quoi elle parle. */
   scope: string;
-  caveats: string[];
-  /** Une phrase de lecture, quand l'écran en produit une (la conclusion d'un
-   *  croisement, par exemple). Les écrans dont le graphique parle seul n'en
-   *  passent pas. */
-  reading?: string | null;
   /** Mention de source : chaque base porte la sienne. */
   sourceLine?: string;
 };
@@ -123,37 +112,16 @@ export async function renderSlide(
 
   meter.font = bold(TITLE_SIZE);
   const titleLines = wrap(meter, slide.title, inner);
-  meter.font = plain(READING_SIZE);
-  const readingLines = slide.reading ? wrap(meter, slide.reading, inner) : [];
-  meter.font = plain(CAVEAT_SIZE);
-  const allCaveatLines = slide.caveats.flatMap((caveat) => wrap(meter, `— ${caveat}`, inner));
 
   const headHeight = PADDING
     + FOOT_SIZE * 1.4 + 12
     + titleLines.length * (TITLE_SIZE * 1.25)
-    + (readingLines.length ? 18 + readingLines.length * (READING_SIZE * 1.45) : 0)
     + 26;
+  const footHeight = 26 + FOOT_SIZE * 1.5 + PADDING;
 
-  const footFor = (lineCount: number) =>
-    26 + (lineCount ? lineCount * (CAVEAT_SIZE * 1.5) + 18 : 0) + FOOT_SIZE * 1.5 + PADDING;
-
-  // Les réserves cèdent la place au tracé, jamais l'inverse — mais ce qui est
-  // retiré est annoncé plutôt que tu.
-  let caveatLines = allCaveatLines;
-  let truncated = 0;
-  while (caveatLines.length
-         && HEIGHT - headHeight - footFor(caveatLines.length + 1) < MIN_CHART_HEIGHT) {
-    caveatLines = caveatLines.slice(0, -1);
-    truncated += 1;
-  }
-  if (truncated > 0) {
-    meter.font = plain(CAVEAT_SIZE);
-    caveatLines = [...caveatLines,
-      ...wrap(meter, `— ${truncated} autre${truncated > 1 ? "s" : ""} réserve${truncated > 1 ? "s" : ""}, à lire dans l’outil.`, inner)];
-  }
-
-  const footHeight = footFor(caveatLines.length);
-  const chartHeight = Math.max(MIN_CHART_HEIGHT, HEIGHT - headHeight - footHeight);
+  // Tout ce qui reste entre l'en-tête et le pied revient au tracé : c'est lui
+  // qu'on est venu chercher.
+  const chartHeight = HEIGHT - headHeight - footHeight;
   const chart = await renderChart(buildOption, tokens, inner, chartHeight);
 
   const canvas = document.createElement("canvas");
@@ -182,34 +150,8 @@ export async function renderSlide(
     cursor += TITLE_SIZE * 1.25;
   });
 
-  if (readingLines.length) {
-    cursor += 18;
-    context.fillStyle = tokens.inkSecondary;
-    context.font = plain(READING_SIZE);
-    readingLines.forEach((line) => {
-      context.fillText(line, PADDING, cursor);
-      cursor += READING_SIZE * 1.45;
-    });
-  }
-
   context.drawImage(chart, PADDING, headHeight, inner, chartHeight);
   cursor = headHeight + chartHeight + 26;
-
-  if (caveatLines.length) {
-    context.strokeStyle = tokens.line;
-    context.lineWidth = 1;
-    context.beginPath();
-    context.moveTo(PADDING, cursor - 12);
-    context.lineTo(WIDTH - PADDING, cursor - 12);
-    context.stroke();
-    context.fillStyle = tokens.inkMuted;
-    context.font = plain(CAVEAT_SIZE);
-    caveatLines.forEach((line) => {
-      context.fillText(line, PADDING, cursor);
-      cursor += CAVEAT_SIZE * 1.5;
-    });
-    cursor += 18;
-  }
 
   // La source et la date d'export, sur la même ligne : d'où vient l'image, et
   // de quand elle date — une donnée consolidée depuis n'aurait pas les mêmes
