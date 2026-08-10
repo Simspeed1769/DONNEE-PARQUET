@@ -48,6 +48,12 @@ type Props = {
    *  rend la comparaison sûre, et proposer un périmètre par série y sèmerait le
    *  doute sur ce qui varie. */
   allowScopes?: boolean;
+  /** Nom écrit à la main, par série. Absent, la série porte le nom que lui
+   *  vaut ce qui la distingue — c'est l'appelant qui le calcule. */
+  names?: Record<string, string>;
+  onNameChange?: (key: string, name: string) => void;
+  /** Le nom affiché d'une série composée, calculé par l'appelant. */
+  displayName?: (key: string) => string;
 };
 
 const SEARCH_DEBOUNCE_MS = 180;
@@ -123,7 +129,7 @@ export function SeriesPicker({
   showOther, otherCount, maxSelected, count, counts, onCountChange,
   onChange, onToggleOther, onResetToTop,
   metadata, base, scopes, onScopeChange, onAddFree, pickable = true,
-  otherLabel, allowScopes = true,
+  otherLabel, allowScopes = true, names = {}, onNameChange, displayName,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -244,16 +250,32 @@ export function SeriesPicker({
             const free = isFree(key);
             const seriesScope = scopes[key];
             const chips = scopeChips(seriesScope, base, metadata);
-            const name = free
-              ? (chips.length ? chips.map((chip) => chip.text).join(" · ") : "Périmètre commun")
+            const composed = free || Boolean(seriesScope);
+            const name = composed
+              ? (displayName?.(key)
+                 ?? (chips.length ? chips.map((chip) => chip.text).join(" · ") : "Périmètre commun"))
               : (labels.get(key) ?? key);
             return (
               <li key={key} className={chips.length || free ? "has-scope" : ""}>
                 <span className="series-swatch" style={{ background: seriesColor(tokens, slots.get(key) ?? index) }} />
-                <span className="series-name" title={name}>
-                  {free ? <em className="series-free-tag">Libre</em> : null}
-                  {name}
-                </span>
+                {composed && onNameChange ? (
+                  <span className="series-name">
+                    {free ? <em className="series-free-tag">Libre</em> : null}
+                    <input
+                      type="text"
+                      className="series-name-input"
+                      value={names[key] ?? ""}
+                      placeholder={name}
+                      aria-label={`Nom de la série · ${name}`}
+                      onChange={(event) => onNameChange(key, event.target.value)}
+                    />
+                  </span>
+                ) : (
+                  <span className="series-name" title={name}>
+                    {free ? <em className="series-free-tag">Libre</em> : null}
+                    {name}
+                  </span>
+                )}
                 <span className="series-value">{formatValue(values.get(key) ?? null, kind)}</span>
                 <span className="series-tools">
                   {allowScopes ? <button

@@ -386,3 +386,98 @@
 @media (prefers-reduced-motion: reduce) {
   .damir-stage-chart { animation: none; }
 }
+
+/* — Ce que je compare, au-dessus du graphique —
+   Le premier geste doit être le premier élément. Le rail tient sur une ligne
+   et son édition s'ouvre en position absolue : le graphique ne descend jamais
+   d'un pixel quand on l'ouvre. */
+
+.compare-rail { position: relative; margin: 0 0 var(--space-3); }
+
+.compare-rail-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+.compare-rail-label {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.compare-rail-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.compare-rail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font-size: .6rem;
+  white-space: nowrap;
+}
+.compare-rail-chip.empty { color: var(--ink-muted); font-style: italic; }
+.compare-rail-chip i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 2px; }
+
+.compare-rail-toggle {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: .6rem;
+  font-weight: 640;
+  cursor: pointer;
+}
+.compare-rail-toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+.compare-rail-toggle.open { color: var(--accent-ink); border-color: var(--accent); background: var(--accent); }
+
+.compare-rail-panel {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  max-height: 62vh;
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  overflow-y: auto;
+}
+
+/* Le nom d'une série composée s'écrit sur place : le champ ne se distingue de
+   son libellé que lorsqu'on le survole ou qu'on y entre. */
+.series-name-input {
+  width: 100%;
+  min-width: 0;
+  padding: 3px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: .66rem;
+}
+.series-name-input:hover { border-color: var(--line); }
+.series-name-input:focus { border-color: var(--accent); background: var(--surface); outline: none; }

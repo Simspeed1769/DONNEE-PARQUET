@@ -63,6 +63,9 @@ type View = {
   form: ChartForm;
   reading: Reading;
   needsAdditive?: boolean;
+  /** Forme qui compose un tout à partir des séries : elle ment dès qu'elles ne
+   *  portent pas sur la même population. */
+  cumulative?: boolean;
   question: string;
 };
 
@@ -75,7 +78,7 @@ const VIEWS: View[] = [
   { key: "rank", label: "Classement", form: "rank", reading: "value", question: "Laquelle pèse le plus ?" },
   { key: "index", label: "Base 100", form: "line", reading: "index", question: "Laquelle progresse le plus vite, quelle que soit sa taille ?" },
   { key: "change", label: "Variation", form: "bar", reading: "change", question: "De combien chacune varie-t-elle d'une année sur l'autre ?" },
-  { key: "pie", label: "Camembert", form: "pie", reading: "value", needsAdditive: true, question: "Comment le total se partage-t-il ?" },
+  { key: "pie", label: "Camembert", form: "pie", reading: "value", needsAdditive: true, cumulative: true, question: "Comment le total se partage-t-il ?" },
 ];
 
 const MAX_SERIES = 8;
@@ -85,6 +88,17 @@ const CHART_HEIGHT = 452;
 function breakdownFromParams(params: URLSearchParams): BreakdownKey {
   const raw = params.get("compare_by");
   return BREAKDOWNS.some((item) => item.key === raw) ? raw as BreakdownKey : "grand_post";
+}
+
+function namesFromParams(params: URLSearchParams): Record<string, string> {
+  const raw = params.get("series_names");
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw) as Record<string, string>;
+    return typeof parsed === "object" && parsed ? parsed : {};
+  } catch {
+    return {};
+  }
 }
 
 function scopesFromParams(params: URLSearchParams): Record<string, SeriesScope> {
@@ -114,6 +128,11 @@ export function CompareSection({
     return raw ? raw.split("~").filter(Boolean) : null;
   });
   const [scopes, setScopes] = useState<Record<string, SeriesScope>>(() => scopesFromParams(params));
+  /** Nom donné à la main. Vide, la série prend le nom que lui vaut ce qui la
+   *  distingue des autres. */
+  const [names, setNames] = useState<Record<string, string>>(() => namesFromParams(params));
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const [seriesCount, setSeriesCount] = useState(5);
   const [showOther, setShowOther] = useState(params.get("other") === "1");
 
@@ -239,25 +258,68 @@ export function CompareSection({
     else next.delete("series");
     if (Object.keys(scopes).length) next.set("series_scopes", JSON.stringify(scopes));
     else next.delete("series_scopes");
+    const written = Object.fromEntries(Object.entries(names).filter(([, value]) => value.trim()));
+    if (Object.keys(written).length) next.set("series_names", JSON.stringify(written));
+    else next.delete("series_names");
     next.set("other", showOther ? "1" : "0");
     window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
-  }, [breakdown, viewKey, active, scopes, showOther]);
+  }, [breakdown, viewKey, active, scopes, names, showOther]);
 
   // Une vue devenue impossible retombe sur les courbes, toujours valides.
   const view = useMemo(() => {
     const chosen = VIEWS.find((item) => item.key === viewKey) ?? VIEWS[0];
     return chosen.needsAdditive && !additive ? VIEWS[0] : chosen;
   }, [viewKey, additive]);
-  const availableViews = useMemo(() => VIEWS.filter((item) => !item.needsAdditive || additive), [additive]);
+  /** Une forme cumulative — un camembert, une pile — suppose que les parts
+   *  s'additionnent en un tout. Dès que deux séries ne décrivent pas la même
+   *  population, ce tout n'existe pas : la forme est **retirée**, jamais
+   *  proposée grisée. */
+  /** Deux séries qui ne portent pas sur la même population. */
+  const mixedPopulations = active.some((key) => isFree(key) || scopes[key]);
+
+  const availableViews = useMemo(
+    () => VIEWS.filter((item) => (!item.needsAdditive || additive) && !(item.cumulative && mixedPopulations)),
+    [additive, mixedPopulations],
+  );
 
   const slots = useMemo(() => assignColorSlots(active, slotMemory.current, MAX_SERIES), [active]);
 
-  /** Le nom d'une série libre : le sien s'il est écrit — mais `SeriesPicker`
-   *  ne collecte pas de nom éditable pour l'instant, donc ses filtres, ou
-   *  « Périmètre commun » si elle ne s'en distingue pas. */
+  /** Le nom d'une série composée.
+   *
+   *  Celui que l'utilisateur a écrit s'il y en a un. Sinon, **ce qui la
+   *  distingue des autres** — et non la liste complète de ses filtres : entre
+   *  « hommes de 60-69 ans » et « femmes de 20-29 ans », seuls le sexe et
+   *  l'âge varient, les nommer suffit et tout le reste serait du bruit répété
+   *  sur chaque légende.
+   */
+  const varyingFields = useMemo(() => {
+    const keys = active.filter((key) => isFree(key) || scopes[key]);
+    if (keys.length < 2) return null;
+    const seen = new Map<string, Set<string>>();
+    keys.forEach((key) => {
+      const chips = scopeChips(scopes[key], filters, metadata);
+      const byField = new Map(chips.map((chip) => [chip.field, chip.text]));
+      // Un champ compte comme variable dès que deux séries n'y disent pas la
+      // même chose — une série qui ne le restreint pas dit « tout », ce qui
+      // est déjà une différence.
+      new Set([...byField.keys(), ...[...seen.keys()]]).forEach((field) => {
+        const bucket = seen.get(field) ?? new Set<string>();
+        bucket.add(byField.get(field) ?? "—");
+        seen.set(field, bucket);
+      });
+    });
+    const varying = new Set<string>();
+    seen.forEach((values, field) => { if (values.size > 1) varying.add(field); });
+    return varying;
+  }, [active, scopes, filters, metadata]);
+
   const nameOf = (key: string): string => {
+    const written = names[key]?.trim();
+    if (written) return written;
     const scope = scopes[key];
     const chips = scope ? scopeChips(scope, filters, metadata) : [];
+    const kept = varyingFields ? chips.filter((chip) => varyingFields.has(chip.field)) : chips;
+    if (kept.length) return kept.map((chip) => chip.text).join(" · ");
     return chips.length ? chips.map((chip) => chip.text).join(" · ") : "Périmètre commun";
   };
 
@@ -423,7 +485,6 @@ export function CompareSection({
     setScopes((current) => ({ ...current, [key]: { ...previousScope } }));
   };
 
-  const hasFreeOrScoped = active.some((key) => isFree(key) || scopes[key]);
 
   return (
     <>
@@ -472,6 +533,67 @@ export function CompareSection({
           </div>
         </header>
 
+        {/* Ce que je compare, **avant** le graphique : c'est le premier geste,
+            il doit être le premier élément. Le rail reste compact — un résumé
+            sur une ligne — et son édition s'ouvre en position absolue, par
+            dessus le graphique, qui ne descend donc jamais d'un pixel. */}
+        <div className="compare-rail" ref={railRef}>
+          <div className="compare-rail-summary">
+            <span className="compare-rail-label">Ce que je compare</span>
+            <div className="compare-rail-chips" role="list">
+              {chartSeries.map((item) => (
+                <span key={item.key} className="compare-rail-chip" role="listitem">
+                  <i style={{ background: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther) }} />
+                  {item.label}
+                </span>
+              ))}
+              {!chartSeries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}
+            </div>
+            <button
+              type="button"
+              className={`compare-rail-toggle ${pickerOpen ? "open" : ""}`}
+              aria-expanded={pickerOpen}
+              onClick={() => setPickerOpen((open) => !open)}
+            >{pickerOpen ? "Fermer" : "Modifier les séries"}</button>
+          </div>
+
+          {pickerOpen && measure ? (
+            <div className="compare-rail-panel" role="dialog" aria-label="Séries comparées">
+              <SeriesPicker
+            breakdown={activeBreakdown.field ?? "none"}
+            breakdownLabel={pickable ? activeBreakdown.label : "Aucune décomposition automatique : composez avec des séries libres"}
+            scope={{ ...filters, breakdown: activeBreakdown.field ?? "none", rank_by: measureKey }}
+            selection={active}
+            labels={labelMap}
+            values={valueMap}
+            slots={slots}
+            tokens={tokens}
+            kind={measure.kind}
+            showOther={showOther}
+            otherCount={otherCount}
+            otherLabel={`Reste du périmètre · ${otherCount} ${breakdownLabelLower}`}
+            maxSelected={MAX_SERIES}
+            count={seriesCount}
+            counts={SERIES_COUNTS}
+            onCountChange={(count) => { setSeriesCount(count); if (pickable) setSelection(eligibleKeys.slice(0, count)); }}
+            onChange={setSelection}
+            onToggleOther={setShowOther}
+            onResetToTop={() => (pickable ? setSelection(eligibleKeys.slice(0, seriesCount)) : onAddFree())}
+            metadata={metadata}
+            base={filters}
+            scopes={scopes}
+            onScopeChange={onScopeChange}
+            onAddFree={onAddFree}
+            pickable={pickable}
+            allowScopes
+            names={names}
+            onNameChange={(key, name) => setNames((current) => ({ ...current, [key]: name }))}
+            displayName={nameOf}
+          />
+            </div>
+          ) : null}
+        </div>
+
         <div className="damir-strip">
           <p className="damir-question">{view.question}</p>
           <div className="pathology-toggle damir-forms" role="group" aria-label="Vue">
@@ -504,7 +626,7 @@ export function CompareSection({
           </div>
         ) : null}
 
-        {hasFreeOrScoped ? (
+        {mixedPopulations ? (
           <p className="damir-note">
             Une ou plusieurs séries portent leur propre périmètre : les courbes ne décrivent pas
             forcément la même population et ne s’additionnent pas.
@@ -519,7 +641,7 @@ export function CompareSection({
               scope={compareScope}
               caveats={[
                 ...(sharedResponse?.warnings ?? []),
-                ...(hasFreeOrScoped ? ["Une ou plusieurs séries portent leur propre périmètre : les courbes ne décrivent pas forcément la même population et ne s’additionnent pas."] : []),
+                ...(mixedPopulations ? ["Une ou plusieurs séries portent leur propre périmètre : les courbes ne décrivent pas forcément la même population et ne s’additionnent pas."] : []),
               ]}
               sourceLine={SOURCE_LINE}
               filenamePrefix="damir-comparer"
@@ -564,40 +686,6 @@ export function CompareSection({
         </div>
       </article>
 
-      {/* Le choix des séries vit sous le graphique : on regarde d'abord, on
-          ajuste ensuite. */}
-      <section className="panel damir-picker">
-        {measure ? (
-          <SeriesPicker
-            breakdown={activeBreakdown.field ?? "none"}
-            breakdownLabel={pickable ? activeBreakdown.label : "Aucune décomposition automatique : composez avec des séries libres"}
-            scope={{ ...filters, breakdown: activeBreakdown.field ?? "none", rank_by: measureKey }}
-            selection={active}
-            labels={labelMap}
-            values={valueMap}
-            slots={slots}
-            tokens={tokens}
-            kind={measure.kind}
-            showOther={showOther}
-            otherCount={otherCount}
-            otherLabel={`Reste du périmètre · ${otherCount} ${breakdownLabelLower}`}
-            maxSelected={MAX_SERIES}
-            count={seriesCount}
-            counts={SERIES_COUNTS}
-            onCountChange={(count) => { setSeriesCount(count); if (pickable) setSelection(eligibleKeys.slice(0, count)); }}
-            onChange={setSelection}
-            onToggleOther={setShowOther}
-            onResetToTop={() => (pickable ? setSelection(eligibleKeys.slice(0, seriesCount)) : onAddFree())}
-            metadata={metadata}
-            base={filters}
-            scopes={scopes}
-            onScopeChange={onScopeChange}
-            onAddFree={onAddFree}
-            pickable={pickable}
-            allowScopes
-          />
-        ) : null}
-      </section>
     </>
   );
 }
