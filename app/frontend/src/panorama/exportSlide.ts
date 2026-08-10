@@ -30,6 +30,9 @@ export type SlideExport = {
   caveats: string[];
   /** Le périmètre en une ligne : sans lui l'image ne dit pas de quoi elle parle. */
   scope: string;
+  /** Mention de source : chaque base porte la sienne. `SOURCE_LINE` reste le
+   *  réglage par défaut de DAMIR, seul appelant à ne pas le préciser. */
+  sourceLine?: string;
 };
 
 function wrap(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
@@ -157,7 +160,7 @@ export async function renderSlide(
 
   context.fillStyle = tokens.inkMuted;
   context.font = plain(FOOT_SIZE);
-  context.fillText(SOURCE_LINE, PADDING, cursor);
+  context.fillText(slide.sourceLine ?? SOURCE_LINE, PADDING, cursor);
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -167,12 +170,12 @@ export async function renderSlide(
   });
 }
 
-function fileName(title: string): string {
+function fileName(title: string, prefix: string): string {
   const slug = title
     .normalize("NFD").replace(/[̀-ͯ]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
     .slice(0, 72);
-  return `damir-${slug || "graphique"}.png`;
+  return `${prefix}-${slug || "graphique"}.png`;
 }
 
 /** L'unique sortie image.
@@ -183,11 +186,11 @@ function fileName(title: string): string {
  *  et obligeait l'interface à annoncer laquelle des deux issues avait eu lieu.
  *  Un fichier PNG se glisse dans n'importe quelle présentation, partout.
  */
-export function download(blob: Blob, title: string): void {
+export function download(blob: Blob, title: string, prefix = "damir"): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = fileName(title);
+  anchor.download = fileName(title, prefix);
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();

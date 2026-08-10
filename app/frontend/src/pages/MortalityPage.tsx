@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { getMortalityMetadata, getMortalityOverview } from "../api";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
-import { EChart } from "../charts/EChart";
+import { PageHero } from "../components/PageHero";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { ageProfileOption, evolutionOption, sexProfileOption, topCausesOption } from "../mortality/charts";
+import { mortalityCaveats } from "../mortality/model";
+import { formatValue } from "../utils";
 import type { MortalityMetadata, MortalityOverview } from "../types";
 
 type EvolutionMeasure = "deaths" | "share";
@@ -130,14 +134,39 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   }, [overview]);
 
   const complementary = complementaryView === "causes"
-    ? { title: "Principales causes de décès", note: `${overview?.context.year ?? ""} · ${selectedPopulationLabel} · causes principales`, chart: topChart, height: topCausesHeight }
+    ? { title: "Principales causes de décès", note: `${overview?.context.year ?? ""} · ${selectedPopulationLabel} · causes principales`, chart: topChart, height: topCausesHeight, readingKey: "causes" as const }
     : complementaryView === "sex"
-      ? { title: "Femmes / hommes", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.sex, height: 290 }
-      : { title: "Tranches d’âge", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.age, height: 310 };
+      ? { title: "Femmes / hommes", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.sex, height: 290, readingKey: "sex" as const }
+      : { title: "Tranches d’âge", note: `${overview?.context.cause_label ?? ""} · ${overview?.context.year ?? ""} · effectifs publiés`, chart: profileCharts.age, height: 310, readingKey: "age" as const };
+
+  const evolutionTable = useMemo(() => ({
+    columns: ["Année", evolutionMeasure === "share" ? "Part" : "Décès"],
+    rows: (overview?.annual ?? []).map((item) => [String(item.year), formatValue(evolutionMeasure === "share" ? item.share : item.deaths, evolutionMeasure === "share" ? "percent" : "quantity")]),
+  }), [overview, evolutionMeasure]);
+
+  const complementaryTable = useMemo(() => {
+    const rows = complementaryView === "causes" ? (overview?.top_causes ?? []).map((item) => [item.label, formatValue(item.deaths, "quantity")])
+      : complementaryView === "sex" ? (overview?.profiles.sex ?? []).map((item) => [item.label, formatValue(item.deaths, "quantity")])
+        : (overview?.profiles.age ?? []).map((item) => [item.label, formatValue(item.deaths, "quantity")]);
+    return { columns: [complementaryView === "causes" ? "Cause" : complementaryView === "sex" ? "Sexe" : "Tranche d’âge", "Décès"], rows };
+  }, [overview, complementaryView]);
+
+  const kpiItems: KpiItem[] = visibleKpis.map((kpi) => ({
+    key: kpi.key, label: kpi.label, value: formatKpi(kpi.value, kpi.kind), detail: kpi.detail,
+  }));
+
+  const sourceLine = `Source · ${metadata?.source} · ${metadata?.scope}`;
 
   if (!metadata && loading) return <div className="content-wrap mortality-page"><div className="page-loader"><div className="skeleton" /></div></div>;
   return <div className="content-wrap mortality-page">
-    <section className="hero mortality-hero"><div><div className="eyebrow"><span>CépiDc · Inserm</span> Source nationale</div><h1>Mortalité</h1><p>Lire les décès publiés par cause, dans le temps et selon les grands profils de population.</p></div><span className="semantic-badge">France · Métropole et DROM</span></section>
+    <PageHero
+      variant="mortality-hero"
+      eyebrowLabel="CépiDc · Inserm"
+      eyebrowDetail="Source nationale"
+      title="Mortalité"
+      mission="Lire les décès publiés par cause, dans le temps et selon les grands profils de population."
+      action={<span className="semantic-badge">France · Métropole et DROM</span>}
+    />
     <section className="panel mortality-context">
       <div className="mortality-filter-grid">
         <label className="mortality-cause-filter"><span>Cause de décès</span><SearchableCauseSelect options={metadata?.causes ?? []} value={cause} onChange={setCause} /></label>
@@ -149,16 +178,45 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     {error ? <div className="analysis-error"><strong>La fiche Mortalité n’a pas pu être calculée</strong><span>{error}</span></div> : null}
     {overview ? <>
       <section className="mortality-title-line"><div><span>LECTURE NATIONALE</span><h2>{overview.context.cause_label}</h2><small>{selectedPopulationLabel} · {overview.context.year}</small></div><div className="mortality-title-actions"><span className="mortality-scope-chip">Effectifs bruts · sans taux</span><button type="button" onClick={openExtraction}>Extraire</button><button type="button" onClick={onOpenMethodology}>Voir les limites →</button></div></section>
-      <section className="pathology-kpis mortality-kpis">{visibleKpis.map((kpi) => <article className="panel" key={kpi.key}><span>{kpi.label}</span><strong>{formatKpi(kpi.value, kpi.kind)}</strong><small>{kpi.detail}</small></article>)}</section>
+      <KpiStrip items={kpiItems} className="mortality-kpis" />
       <section className="mortality-chart-stack">
-        <article className="panel pathology-chart mortality-evolution-card"><header><div><span className="section-kicker">ÉVOLUTION</span><h3>{evolutionMeasure === "share" ? "Part de la cause parmi les décès" : "Nombre de décès"}</h3><p>{overview.context.cause_label} · {selectedPopulationLabel} · effectifs bruts, sans taux de mortalité</p></div><div className="pathology-toggle"><button type="button" className={evolutionMeasure === "deaths" ? "active" : ""} onClick={() => setEvolutionMeasure("deaths")}>Nombre</button><button type="button" className={evolutionMeasure === "share" ? "active" : ""} onClick={() => setEvolutionMeasure("share")}>Part</button></div></header><EChart option={evolution} height={365} stale={loading} ariaLabel={`${evolutionMeasure === "share" ? "Part de la cause parmi les décès" : "Nombre de décès"} · ${overview.context.cause_label}`} /></article>
-        <article className="panel pathology-chart mortality-complement-card">
-          <header><div><span className="section-kicker">AUTRE LECTURE</span><h3>{complementary.title}</h3><p>{complementary.note}</p></div><div className="mortality-view-choice" aria-label="Vue complémentaire"><button type="button" className={complementaryView === "causes" ? "active" : ""} onClick={() => setComplementaryView("causes")}>Causes</button><button type="button" className={complementaryView === "sex" ? "active" : ""} onClick={() => setComplementaryView("sex")}>Sexe</button><button type="button" className={complementaryView === "age" ? "active" : ""} onClick={() => setComplementaryView("age")}>Âge</button></div></header>
-          <EChart option={complementary.chart} height={complementary.height} stale={loading} ariaLabel={complementary.title} />
-        </article>
+        <ChartShell
+          kicker="ÉVOLUTION"
+          title={evolutionMeasure === "share" ? "Part de la cause parmi les décès" : "Nombre de décès"}
+          headerActions={<div className="pathology-toggle"><button type="button" className={evolutionMeasure === "deaths" ? "active" : ""} onClick={() => setEvolutionMeasure("deaths")}>Nombre</button><button type="button" className={evolutionMeasure === "share" ? "active" : ""} onClick={() => setEvolutionMeasure("share")}>Part</button></div>}
+          height={365}
+          option={evolution}
+          loading={loading}
+          ariaLabel={`${evolutionMeasure === "share" ? "Part de la cause parmi les décès" : "Nombre de décès"} · ${overview.context.cause_label}`}
+          tableColumns={evolutionTable.columns}
+          tableRows={evolutionTable.rows}
+          caveats={mortalityCaveats("evolution")}
+          sourceLine={sourceLine}
+          filenamePrefix="mortalite"
+          scope={`${overview.context.cause_label} · ${selectedPopulationLabel} · effectifs bruts, sans taux de mortalité`}
+          onExtract={openExtraction}
+          className="mortality-evolution-card"
+        />
+        <ChartShell
+          kicker="AUTRE LECTURE"
+          title={complementary.title}
+          headerActions={<div className="mortality-view-choice" aria-label="Vue complémentaire"><button type="button" className={complementaryView === "causes" ? "active" : ""} onClick={() => setComplementaryView("causes")}>Causes</button><button type="button" className={complementaryView === "sex" ? "active" : ""} onClick={() => setComplementaryView("sex")}>Sexe</button><button type="button" className={complementaryView === "age" ? "active" : ""} onClick={() => setComplementaryView("age")}>Âge</button></div>}
+          height={complementary.height}
+          option={complementary.chart}
+          loading={loading}
+          ariaLabel={complementary.title}
+          tableColumns={complementaryTable.columns}
+          tableRows={complementaryTable.rows}
+          caveats={mortalityCaveats(complementary.readingKey)}
+          sourceLine={sourceLine}
+          filenamePrefix="mortalite"
+          scope={complementary.note}
+          onExtract={openExtraction}
+          className="mortality-complement-card"
+        />
       </section>
       <div className="mortality-quality-note"><strong>À garder en tête</strong><span>Source nationale sans région ni âge fin. Les cellules vides restent non disponibles ou non applicables ; elles ne sont pas interprétées comme zéro.</span><button type="button" onClick={onOpenMethodology}>Méthode →</button></div>
-      <footer className="pathology-footer csp-footer"><span>Source · {metadata?.source} · {metadata?.scope}</span></footer>
+      <footer className="pathology-footer csp-footer"><span>{sourceLine}</span></footer>
     </> : null}
   </div>;
 }

@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { getPathologyMetadata, getPathologyOverview } from "../api";
 import { MultiSelect } from "../components/MultiSelect";
-import { EChart } from "../charts/EChart";
+import { PageHero } from "../components/PageHero";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { ageSexOption, evolutionOption, territoryRankOption } from "../pathologies/charts";
+import { pathologyCaveats } from "../pathologies/model";
+import { formatValue } from "../utils";
 import type { PathologyMetadata, PathologyOverview } from "../types";
+
+const SOURCE_LINE = "Source · Cartographie des pathologies, Cnam · Traitement Forsides";
 
 type Props = {
   routeVersion: number;
@@ -160,6 +166,43 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     return { option: territoryRankOption({ rows, ownRegion: region, franceValue: france, showMaskedDetails, kind: "percent", tokens }), height };
   }, [overview, hiddenTerritories, region, showMaskedDetails, tokens]);
 
+  const evolutionTable = useMemo(() => {
+    const showFrance = region !== "99" && measure === "prevalence";
+    const columns = ["Année", currentRegionLabel, ...(showFrance ? ["France entière"] : [])];
+    const rows = (overview?.annual ?? []).map((item) => {
+      const value = measure === "patients" ? item.patients : item.prevalence;
+      const franceValue = overview?.france_annual.find((france) => france.year === item.year)?.prevalence ?? null;
+      return [String(item.year), formatValue(value, kind), ...(showFrance ? [formatValue(franceValue, kind)] : [])];
+    });
+    return { columns, rows };
+  }, [overview, region, measure, currentRegionLabel, kind]);
+
+  const ageProfileTable = useMemo(() => {
+    const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
+    const valueAt = (ageLabel: string, sex: string) =>
+      overview?.age_sex.find((item) => item.age === ageLabel && item.sex === sex)?.prevalence ?? null;
+    return {
+      columns: ["Tranche d’âge", "Femmes", "Hommes"],
+      rows: ages.map((ageLabel) => [ageLabel, formatValue(valueAt(ageLabel, "femmes"), "percent"), formatValue(valueAt(ageLabel, "hommes"), "percent")]),
+    };
+  }, [overview]);
+
+  const territoriesTable = useMemo(() => ({
+    columns: ["Territoire", "Prévalence", "Patients"],
+    rows: [...(overview?.territories ?? [])]
+      .filter((item) => item.code !== "99" && !hiddenTerritories.includes(item.code))
+      .sort((left, right) => (right.prevalence ?? 0) - (left.prevalence ?? 0))
+      .map((item) => [item.label, formatValue(item.prevalence, "percent"), item.patients === null ? "—" : new Intl.NumberFormat("fr-FR").format(item.patients)]),
+  }), [overview, hiddenTerritories]);
+
+  const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
+    key: kpi.key,
+    label: kpi.label,
+    value: kpi.key === "sex_ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind),
+    detail: kpi.detail,
+    sentence: kpi.key === "sex_ratio",
+  }));
+
   const openExtraction = () => {
     const params = new URLSearchParams({ page: "extraction", source: "pathologies", top,
       start_year: String(metadata?.years[0] ?? 2015), end_year: String(year) });
@@ -172,7 +215,14 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   if (!metadata && loading) return <div className="content-wrap pathology-page"><div className="page-loader"><div className="skeleton" /></div></div>;
 
   return <div className="content-wrap pathology-page">
-    <section className="hero pathology-hero"><div><div className="eyebrow"><span>Cartographie Cnam</span> Populations</div><h1>Pathologies</h1><p>Une fiche chiffrée pour situer une pathologie dans le temps, les âges et les territoires.</p></div><button type="button" className="method-link" onClick={onOpenMethodology}>Données & méthode →</button></section>
+    <PageHero
+      variant="pathology-hero"
+      eyebrowLabel="Cartographie Cnam"
+      eyebrowDetail="Populations"
+      title="Pathologies"
+      mission="Une fiche chiffrée pour situer une pathologie dans le temps, les âges et les territoires."
+      action={<button type="button" className="method-link" onClick={onOpenMethodology}>Données & méthode →</button>}
+    />
 
     <section className="panel pathology-context">
       <div className="pathology-hierarchy-row">
@@ -193,20 +243,69 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
 
     {overview ? <>
       <section className="pathology-title-line"><div><span>{overview.context.family}</span><h2>{overview.context.label}</h2><small>{regionLabel} · {selectedAgeLabel} · {sexLabel}</small></div><button type="button" onClick={openExtraction}>Extraire les données →</button></section>
-      <section className="pathology-kpis">{overview.kpis.map((kpi) => <article className="panel" key={kpi.key}><span>{kpi.label}</span><strong className={kpi.key === "sex_ratio" ? "ratio-sentence" : ""}>{kpi.key === "sex_ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind)}</strong>{kpi.key !== "sex_ratio" ? <small>{kpi.detail}</small> : null}</article>)}</section>
+      <KpiStrip items={kpiItems} />
 
       <section className="pathology-grid">
-        <article className="panel pathology-chart pathology-evolution"><header><div><span className="section-kicker">Évolution</span><h3>Trajectoire nationale</h3></div><div className="pathology-toggle"><button className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div></header><EChart option={evolution} height={390} stale={loading} ariaLabel={`Trajectoire nationale · ${overview.context.label} · ${measure === "patients" ? "patients" : "prévalence"}`} /></article>
-        <article className="panel pathology-chart pathology-detail-view">
-          <header><div><span className="section-kicker">Vue complémentaire</span><h3>{detailView === "profile" ? "Prévalence par âge et sexe" : "Prévalence par territoire"}</h3></div><div className="pathology-toggle" aria-label="Vue complémentaire"><button className={detailView === "profile" ? "active" : ""} onClick={() => setDetailView("profile")}>Profil</button><button className={detailView === "territories" ? "active" : ""} onClick={() => setDetailView("territories")}>Territoires</button></div></header>
-          {detailView === "profile" ? <EChart option={ageProfile} height={440} stale={loading} ariaLabel={`Prévalence par âge et sexe · ${overview.context.label}`} /> : <>
-            <div className="pathology-detail-toolbar"><span className="quality-badge">Valeurs observées</span><div className="masking-control"><button type="button" className={`masked-details-toggle ${showMaskedDetails ? "active" : ""}`} aria-pressed={showMaskedDetails} onClick={() => setShowMaskedDetails((value) => !value)}>{showMaskedDetails ? "Masquage affiché" : "Afficher le masquage"}</button><button type="button" className="masking-help" aria-label="Pourquoi certaines données sont-elles masquées ?" data-tooltip="Masquage appliqué par la source Cnam : pour protéger la confidentialité, les effectifs strictement inférieurs à 10 patients ne sont pas publiés.">?</button></div><MultiSelect label="Territoires retirés" emptyLabel="Aucun" options={territoryOptions} value={hiddenTerritories} onChange={setHiddenTerritories} /></div>
-            {showMaskedDetails ? <div className="territory-quality-line"><strong>{overview.quality.masked_cells ? `${overview.quality.masked_cells} cellules masquées par la source Cnam` : "Aucune cellule masquée par la source Cnam"}</strong><span>Effectifs strictement inférieurs à 10 non publiés par la Cnam.</span><span>Une prévalence absente reste absente et n’est jamais remplacée par 0.</span>{overview.quality.unavailable_territories ? <span>{overview.quality.unavailable_territories} territoire(s) sans prévalence sont exclus.</span> : null}</div> : null}
-            <EChart option={territories.option} height={territories.height} stale={loading} ariaLabel={`Prévalence par territoire · ${overview.context.label}`} />
-          </>}
-        </article>
+        <ChartShell
+          kicker="Évolution"
+          title="Trajectoire nationale"
+          headerActions={<div className="pathology-toggle"><button className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div>}
+          height={390}
+          option={evolution}
+          loading={loading}
+          ariaLabel={`Trajectoire nationale · ${overview.context.label} · ${measure === "patients" ? "patients" : "prévalence"}`}
+          tableColumns={evolutionTable.columns}
+          tableRows={evolutionTable.rows}
+          caveats={pathologyCaveats("evolution", { maskedCells: 0, unavailableTerritories: 0 })}
+          sourceLine={SOURCE_LINE}
+          filenamePrefix="pathologies"
+          scope={`${overview.context.label} · ${regionLabel} · ${selectedAgeLabel} · ${sexLabel}`}
+          onExtract={openExtraction}
+          className="pathology-evolution"
+        />
+        {detailView === "profile" ? (
+          <ChartShell
+            kicker="Vue complémentaire"
+            title="Prévalence par âge et sexe"
+            headerActions={<div className="pathology-toggle" aria-label="Vue complémentaire"><button className="active">Profil</button><button onClick={() => setDetailView("territories")}>Territoires</button></div>}
+            height={440}
+            option={ageProfile}
+            loading={loading}
+            ariaLabel={`Prévalence par âge et sexe · ${overview.context.label}`}
+            tableColumns={ageProfileTable.columns}
+            tableRows={ageProfileTable.rows}
+            caveats={pathologyCaveats("ageSex", { maskedCells: 0, unavailableTerritories: 0 })}
+            sourceLine={SOURCE_LINE}
+            filenamePrefix="pathologies"
+            scope={`${overview.context.label} · profil âge et sexe · ${regionLabel}`}
+            onExtract={openExtraction}
+            className="pathology-detail-view"
+          />
+        ) : (
+          <ChartShell
+            kicker="Vue complémentaire"
+            title="Prévalence par territoire"
+            headerActions={<div className="pathology-toggle" aria-label="Vue complémentaire"><button onClick={() => setDetailView("profile")}>Profil</button><button className="active">Territoires</button></div>}
+            beforeChart={<>
+              <div className="pathology-detail-toolbar"><span className="quality-badge">Valeurs observées</span><div className="masking-control"><button type="button" className={`masked-details-toggle ${showMaskedDetails ? "active" : ""}`} aria-pressed={showMaskedDetails} onClick={() => setShowMaskedDetails((value) => !value)}>{showMaskedDetails ? "Masquage affiché" : "Afficher le masquage"}</button><button type="button" className="masking-help" aria-label="Pourquoi certaines données sont-elles masquées ?" data-tooltip="Masquage appliqué par la source Cnam : pour protéger la confidentialité, les effectifs strictement inférieurs à 10 patients ne sont pas publiés.">?</button></div><MultiSelect label="Territoires retirés" emptyLabel="Aucun" options={territoryOptions} value={hiddenTerritories} onChange={setHiddenTerritories} /></div>
+              {showMaskedDetails ? <div className="territory-quality-line"><strong>{overview.quality.masked_cells ? `${overview.quality.masked_cells} cellules masquées par la source Cnam` : "Aucune cellule masquée par la source Cnam"}</strong><span>Effectifs strictement inférieurs à 10 non publiés par la Cnam.</span><span>Une prévalence absente reste absente et n’est jamais remplacée par 0.</span>{overview.quality.unavailable_territories ? <span>{overview.quality.unavailable_territories} territoire(s) sans prévalence sont exclus.</span> : null}</div> : null}
+            </>}
+            height={territories.height}
+            option={territories.option}
+            loading={loading}
+            ariaLabel={`Prévalence par territoire · ${overview.context.label}`}
+            tableColumns={territoriesTable.columns}
+            tableRows={territoriesTable.rows}
+            caveats={pathologyCaveats("territory", { maskedCells: overview.quality.masked_cells, unavailableTerritories: overview.quality.unavailable_territories })}
+            sourceLine={SOURCE_LINE}
+            filenamePrefix="pathologies"
+            scope={`${overview.context.label} · classement territorial · ${selectedAgeLabel} · ${sexLabel}`}
+            onExtract={openExtraction}
+            className="pathology-detail-view"
+          />
+        )}
       </section>
-      <footer className="pathology-footer"><span>Source · Cartographie des pathologies, Cnam · Traitement Forsides</span><button type="button" onClick={openExtraction}>Extraire</button></footer>
+      <footer className="pathology-footer"><span>{SOURCE_LINE}</span><button type="button" onClick={openExtraction}>Extraire</button></footer>
     </> : null}
   </div>;
 }

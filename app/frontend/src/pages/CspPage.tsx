@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getCspMetadata, getCspOverview } from "../api";
-import { EChart } from "../charts/EChart";
+import { PageHero } from "../components/PageHero";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
 import { ageSexOption, compositionOption, evolutionOption, mapOption } from "../csp/charts";
+import { cspCaveats } from "../csp/model";
+import { formatValue } from "../utils";
 import type { CspMetadata, CspOverview } from "../types";
+
+const SOURCE_LINE_BASE = "Champ : actifs ayant un emploi · Effectifs pondérés";
 
 type Props = { routeVersion: number; onOpenExtraction: (params: URLSearchParams) => void; onOpenMethodology: () => void };
 type MapMeasure = "share" | "effectif";
@@ -155,6 +161,49 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
     return { option, height };
   }, [overview, cspCode, tokens]);
 
+  const evolutionTable = useMemo(() => ({
+    columns: ["Millésime", trendMeasure === "share" ? "Part" : "Effectif"],
+    rows: annual.map((item) => [String(item.year), formatValue(trendMeasure === "share" ? item.share : item.effectif, trendMeasure === "share" ? "percent" : "quantity")]),
+  }), [annual, trendMeasure]);
+
+  const mapTable = useMemo(() => ({
+    columns: ["Territoire", mapMeasure === "share" ? "Part" : "Effectif"],
+    rows: [...(overview?.territories ?? [])]
+      .sort((left, right) => (mapMeasure === "share" ? right.share - left.share : right.effectif - left.effectif))
+      .map((item) => [item.label, formatValue(mapMeasure === "share" ? item.share : item.effectif, mapMeasure === "share" ? "percent" : "quantity")]),
+  }), [overview, mapMeasure]);
+
+  const ageSexTable = useMemo(() => {
+    const ages = [...new Set(overview?.age_sex.map((item) => item.age) ?? [])];
+    const visibleSexes = sex === 0 ? [2, 1] : [sex];
+    return {
+      columns: ["Tranche d’âge", ...visibleSexes.map((code) => (code === 2 ? "Femmes" : "Hommes"))],
+      rows: ages.map((ageLabel) => [
+        ageLabel,
+        ...visibleSexes.map((code) => formatValue(overview?.age_sex.find((item) => item.age === ageLabel && item.sex_code === code)?.share ?? null, "percent")),
+      ]),
+    };
+  }, [overview, sex]);
+
+  const compositionTable = useMemo(() => {
+    const contextual = overview?.context.region !== "FR";
+    return {
+      columns: ["Modalité", overview?.context.region_label ?? "Périmètre", ...(contextual ? ["France entière"] : [])],
+      rows: (overview?.composition ?? []).map((item) => [
+        item.label, formatValue(item.share, "percent"), ...(contextual ? [formatValue(item.france_share, "percent")] : []),
+      ]),
+    };
+  }, [overview]);
+
+  const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
+    key: kpi.key,
+    label: kpi.label,
+    value: kpi.kind === "ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind),
+    detail: kpi.detail,
+    sentence: kpi.kind === "ratio",
+  }));
+
+  const sourceLine = `Source · ${metadata?.source ?? `Recensement de la population ${overview?.context.year ?? year}, Insee`} · ${SOURCE_LINE_BASE}`;
   const ranking = overview?.territories ?? [];
   const rankingMax = Math.max(...ranking.map((item) => mapMeasure === "share" ? item.share : item.effectif), 1);
   const overseas = ranking.filter((item) => Number(item.code) < 11);
@@ -165,10 +214,14 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
   if (!metadata && loading) return <div className="content-wrap csp-page"><div className="page-loader"><div className="skeleton" /></div></div>;
 
   return <div className="content-wrap csp-page">
-    <section className="hero csp-hero">
-      <div><div className="eyebrow"><span>Recensement Insee</span> Populations</div><h1>CSP</h1><p>Professions et catégories socioprofessionnelles des actifs ayant un emploi.</p></div>
-      <button type="button" className="method-link" onClick={onOpenMethodology}>Données & méthode →</button>
-    </section>
+    <PageHero
+      variant="csp-hero"
+      eyebrowLabel="Recensement Insee"
+      eyebrowDetail="Populations"
+      title="CSP"
+      mission="Professions et catégories socioprofessionnelles des actifs ayant un emploi."
+      action={<button type="button" className="method-link" onClick={onOpenMethodology}>Données & méthode →</button>}
+    />
 
     <section className="panel csp-context">
       <div className="csp-primary-filters">
@@ -189,20 +242,54 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
 
     {overview ? <>
       <section className="pathology-title-line csp-title-line"><div><span>{overview.context.level_label}</span><h2>{overview.context.csp_label}</h2><small>{overview.context.region_label} · {overview.context.age_label} · {overview.context.sex_label}</small></div><div className="csp-title-actions"><div className="csp-title-chips"><span>Millésime {overview.context.year}</span><span>Pondéré Insee</span></div><button type="button" onClick={openExtraction}>Extraire les données →</button></div></section>
-      <section className="pathology-kpis csp-kpis">{overview.kpis.map((kpi) => <article className="panel" key={kpi.key}><span>{kpi.label}</span><strong className={kpi.kind === "ratio" ? "ratio-sentence" : ""}>{kpi.kind === "ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind)}</strong>{kpi.kind !== "ratio" ? <small>{kpi.detail}</small> : null}</article>)}</section>
+      <KpiStrip items={kpiItems} className="csp-kpis" />
 
       <section className="csp-dashboard-grid">
-        <article className="panel pathology-chart csp-evolution-card"><header><div><span className="section-kicker">Évolution</span><h3>{evolutionMinYear === evolutionMaxYear ? `Millésime ${evolutionMinYear}` : `Évolution ${evolutionMinYear}–${evolutionMaxYear}`}</h3><p>{overview.context.csp_label} · {overview.context.region_label} · {overview.context.age_label} · {overview.context.sex_label}</p>{overview.evolution_note ? <p className="csp-evolution-note">{overview.evolution_note}</p> : null}</div><div className="pathology-toggle" aria-label="Mesure de l'évolution"><button className={trendMeasure === "share" ? "active" : ""} onClick={() => setTrendMeasure("share")}>Part</button><button className={trendMeasure === "effectif" ? "active" : ""} onClick={() => setTrendMeasure("effectif")}>Effectif</button></div></header>{annual.length > 1 ? <EChart option={evolution} height={365} stale={loading} ariaLabel={`Évolution de la CSP · ${overview.context.csp_label}`} /> : <div className="csp-evolution-empty">L'évolution sera disponible dès qu'un second millésime sera chargé.</div>}</article>
-        <article className="panel csp-map-card">
-          <header><div><span className="section-kicker">Territoires</span><h3>Répartition régionale</h3><p>{overview.context.csp_label}</p></div><div className="pathology-toggle"><button className={mapMeasure === "share" ? "active" : ""} onClick={() => setMapMeasure("share")}>Part</button><button className={mapMeasure === "effectif" ? "active" : ""} onClick={() => setMapMeasure("effectif")}>Effectif</button></div></header>
-          {franceMap.ready ? <EChart option={map} height={520} stale={loading} ariaLabel={`Répartition régionale · ${overview.context.csp_label}`} onInstance={setMapInstance} /> : franceMap.error ? <div className="csp-map-loading"><span>{franceMap.error}</span></div> : <div className="csp-map-loading"><div className="skeleton" /></div>}
-          <div className="csp-overseas-insets"><span>DROM</span>{overseas.map((item) => {
-            const value = mapMeasure === "share" ? item.share : item.effectif;
-            const intensity = .12 + .76 * value / overseasMax;
-            return <button type="button" key={item.code} className={item.code === region ? "selected" : ""} style={{ backgroundColor: `rgba(236,76,83,${intensity})` }} onClick={() => setRegion(item.code === region ? "FR" : item.code)}><strong>{item.label}</strong><small>{mapMeasure === "share" ? `${formatNumber(value, 2)} %` : formatNumber(value)}</small></button>;
-          })}</div>
-          <div className="csp-map-foot"><span>France · {formatNumber(overview.france_reference.share, 2)} %</span><span>Cliquer une région pour l’ouvrir</span></div>
-        </article>
+        <ChartShell
+          kicker="Évolution"
+          title={evolutionMinYear === evolutionMaxYear ? `Millésime ${evolutionMinYear}` : `Évolution ${evolutionMinYear}–${evolutionMaxYear}`}
+          headerActions={<div className="pathology-toggle" aria-label="Mesure de l'évolution"><button className={trendMeasure === "share" ? "active" : ""} onClick={() => setTrendMeasure("share")}>Part</button><button className={trendMeasure === "effectif" ? "active" : ""} onClick={() => setTrendMeasure("effectif")}>Effectif</button></div>}
+          height={365}
+          option={annual.length > 1 ? evolution : null}
+          empty={annual.length > 1 ? undefined : "L'évolution sera disponible dès qu'un second millésime sera chargé."}
+          loading={loading}
+          ariaLabel={`Évolution de la CSP · ${overview.context.csp_label}`}
+          tableColumns={evolutionTable.columns}
+          tableRows={evolutionTable.rows}
+          caveats={cspCaveats("evolution", { evolutionNote: overview.evolution_note ?? null })}
+          sourceLine={sourceLine}
+          filenamePrefix="csp"
+          scope={`${overview.context.csp_label} · ${overview.context.region_label} · ${overview.context.age_label} · ${overview.context.sex_label}`}
+          onExtract={openExtraction}
+          className="csp-evolution-card"
+        />
+        <ChartShell
+          kicker="Territoires"
+          title="Répartition régionale"
+          headerActions={<div className="pathology-toggle"><button className={mapMeasure === "share" ? "active" : ""} onClick={() => setMapMeasure("share")}>Part</button><button className={mapMeasure === "effectif" ? "active" : ""} onClick={() => setMapMeasure("effectif")}>Effectif</button></div>}
+          height={520}
+          option={franceMap.ready ? map : null}
+          empty={franceMap.error ?? undefined}
+          loading={loading}
+          ariaLabel={`Répartition régionale · ${overview.context.csp_label}`}
+          onInstance={setMapInstance}
+          afterChart={<>
+            <div className="csp-overseas-insets"><span>DROM</span>{overseas.map((item) => {
+              const value = mapMeasure === "share" ? item.share : item.effectif;
+              const intensity = .12 + .76 * value / overseasMax;
+              return <button type="button" key={item.code} className={item.code === region ? "selected" : ""} style={{ backgroundColor: `rgba(236,76,83,${intensity})` }} onClick={() => setRegion(item.code === region ? "FR" : item.code)}><strong>{item.label}</strong><small>{mapMeasure === "share" ? `${formatNumber(value, 2)} %` : formatNumber(value)}</small></button>;
+            })}</div>
+            <div className="csp-map-foot"><span>France · {formatNumber(overview.france_reference.share, 2)} %</span><span>Cliquer une région pour l’ouvrir</span></div>
+          </>}
+          tableColumns={mapTable.columns}
+          tableRows={mapTable.rows}
+          caveats={cspCaveats("map", { evolutionNote: null })}
+          sourceLine={sourceLine}
+          filenamePrefix="csp"
+          scope={`${overview.context.csp_label} · répartition régionale · millésime ${overview.context.year}`}
+          onExtract={openExtraction}
+          className="csp-map-card"
+        />
 
         <article className="panel csp-ranking-card">
           <header><div><span className="section-kicker">Classement</span><h3>17 régions</h3></div><button type="button" className={region === "FR" ? "active" : ""} onClick={() => setRegion("FR")}>France</button></header>
@@ -212,11 +299,43 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
           })}</div>
         </article>
 
-        <article className="panel pathology-chart csp-age-card"><header><div><span className="section-kicker">Âge & sexe</span><h3>Profil de la CSP</h3></div><span className="quality-badge">Part dans chaque population</span></header><EChart option={ageSex} height={430} stale={loading} ariaLabel={`Profil âge et sexe · ${overview.context.csp_label}`} /></article>
+        <ChartShell
+          kicker="Âge & sexe"
+          title="Profil de la CSP"
+          headerActions={<span className="quality-badge">Part dans chaque population</span>}
+          height={430}
+          option={ageSex}
+          loading={loading}
+          ariaLabel={`Profil âge et sexe · ${overview.context.csp_label}`}
+          tableColumns={ageSexTable.columns}
+          tableRows={ageSexTable.rows}
+          caveats={cspCaveats("ageSex", { evolutionNote: null })}
+          sourceLine={sourceLine}
+          filenamePrefix="csp"
+          scope={`${overview.context.csp_label} · profil âge et sexe · ${overview.context.region_label}`}
+          onExtract={openExtraction}
+          className="csp-age-card"
+        />
 
-        <article className="panel pathology-chart csp-composition-card"><header><div><span className="section-kicker">Structure</span><h3>{level === "groupe_6" ? "Composition en 6 groupes" : "Composition en 29 catégories"}</h3></div>{region !== "FR" ? <span className="quality-badge">Comparaison France</span> : <span className="quality-badge">France entière</span>}</header><EChart option={composition.option} height={composition.height} stale={loading} ariaLabel={`Composition · ${overview.context.region_label}`} /></article>
+        <ChartShell
+          kicker="Structure"
+          title={level === "groupe_6" ? "Composition en 6 groupes" : "Composition en 29 catégories"}
+          headerActions={region !== "FR" ? <span className="quality-badge">Comparaison France</span> : <span className="quality-badge">France entière</span>}
+          height={composition.height}
+          option={composition.option}
+          loading={loading}
+          ariaLabel={`Composition · ${overview.context.region_label}`}
+          tableColumns={compositionTable.columns}
+          tableRows={compositionTable.rows}
+          caveats={cspCaveats("composition", { evolutionNote: null })}
+          sourceLine={sourceLine}
+          filenamePrefix="csp"
+          scope={`Composition · ${overview.context.region_label} · millésime ${overview.context.year}`}
+          onExtract={openExtraction}
+          className="csp-composition-card"
+        />
       </section>
-      <footer className="pathology-footer csp-footer"><span>Source · {metadata?.source ?? `Recensement de la population ${overview.context.year}, Insee`} · Champ : actifs ayant un emploi · Effectifs pondérés</span><div><span>Parquet optimisé · {coreSize}</span><button type="button" onClick={openExtraction}>Extraire</button></div></footer>
+      <footer className="pathology-footer csp-footer"><span>Source · {metadata?.source ?? `Recensement de la population ${overview.context.year}, Insee`} · {SOURCE_LINE_BASE}</span><div><span>Parquet optimisé · {coreSize}</span><button type="button" onClick={openExtraction}>Extraire</button></div></footer>
     </> : null}
   </div>;
 }
