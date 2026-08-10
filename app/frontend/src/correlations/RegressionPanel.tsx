@@ -42,7 +42,7 @@ type SortKey = "label" | "effect" | "p_value";
 
 const CHART_HEIGHT = 260;
 
-function formatEffect(value: number | null | undefined, kind: "percent" | "absolute"): string {
+export function formatEffect(value: number | null | undefined, kind: "percent" | "absolute"): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
   const number = new Intl.NumberFormat("fr-FR", {
     maximumFractionDigits: kind === "percent" ? 1 : 2,
@@ -64,7 +64,7 @@ function formatP(value: number | null): string {
  *  dont l'intervalle traverse zéro ne distingue rien, et cela se voit sans
  *  lire une p-value.
  */
-function effectsOption(terms: RegressionTerm[], tokens: ChartTokens,
+export function effectsOption(terms: RegressionTerm[], tokens: ChartTokens,
                        kind: "percent" | "absolute"): EChartsOption {
   const labels = terms.map((term) => term.label);
   const suffix = kind === "percent" ? " %" : "";

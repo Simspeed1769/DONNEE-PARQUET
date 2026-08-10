@@ -200,13 +200,20 @@ export type RegressionResult = {
     dispersion: number;
     deviance: number;
   };
-  points: Array<{ key: string; label: string; observed: number; fitted: number }>;
+  points: Array<{
+    key: string; label: string; observed: number; fitted: number;
+    region: string | null; age: string | null; sex: string | null;
+    /** Valeur brute de chaque variable explicative pour cette cellule, indexée
+     *  par la même clé que `RegressionTerm.key`. */
+    predictors: Record<string, number>;
+  }>;
   warnings: Array<{ level: string; text: string }>;
 };
 
 export type RegressionRequest = {
   unit: string;
   response: string;
+  response_selection?: string | null;
   predictors: Array<{ source: string; metric: string; selection: string | null }>;
   factors: string[];
   start_year: number;

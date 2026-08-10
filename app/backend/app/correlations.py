@@ -650,7 +650,7 @@ def correlate(repo: QueryRepository, request: CorrelationRequest) -> dict[str, A
 
 # Ce qui peut tenir lieu de réponse : une mesure de remboursement, et elle seule.
 RESPONSE_METRICS = ("damir.spend_per_capita", "damir.average_reimbursed",
-                    "damir.coverage", "damir.spend_total")
+                    "damir.coverage", "damir.spend_total", "patho.prevalence")
 
 FAMILY_LABELS: dict[str, str] = {
     "gaussian": "Effet en euros (loi gaussienne)",
@@ -697,6 +697,9 @@ def available_factors(unit: Unit) -> list[str]:
 class RegressionRequest(BaseModel):
     unit: Unit = "region_age_sex"
     response: str = "damir.spend_per_capita"
+    # Modalité de la mesure expliquée, quand elle en exige une — la prévalence
+    # d'une pathologie précise, par exemple. Sans objet pour une mesure DAMIR.
+    response_selection: str | None = None
     predictors: list[IndicatorRef] = []
     # Dimensions de l'observation mises dans le modèle comme variables
     # catégorielles, avec un niveau de référence.
@@ -782,8 +785,11 @@ def regression(repo: QueryRepository, request: RegressionRequest) -> dict[str, A
             sex=request.sex, age_band=request.age_band, detrend=False,
         )
 
-    response_series = _series(repo, IndicatorRef(source="damir", metric=request.response),
-                              scope_for(IndicatorRef(source="damir", metric=request.response)))
+    response_reference = IndicatorRef(
+        source=response_definition["source"], metric=request.response,
+        selection=request.response_selection,
+    )
+    response_series = _series(repo, response_reference, scope_for(response_reference))
 
     predictor_series: list[dict[str, float]] = []
     definitions: list[dict[str, Any]] = []
@@ -942,7 +948,15 @@ def regression(repo: QueryRepository, request: RegressionRequest) -> dict[str, A
         described = _describe_cell(key, request.unit)
         points.append({
             "key": key, "label": described["label"],
+            "region": described["region"], "age": described["age"], "sex": described["sex"],
             "observed": observed[position], "fitted": fitted[position],
+            # Valeur brute de chaque variable explicative pour cette cellule,
+            # déjà calculée ci-dessus pour l'ajustement : le nuage du mode
+            # guidé la lit directement au lieu de refaire la requête.
+            "predictors": {
+                f"{reference.metric}::{reference.selection or ''}": series[key]
+                for reference, series in zip(request.predictors, predictor_series)
+            },
         })
 
     warnings: list[dict[str, str]] = [{

@@ -27,16 +27,21 @@ import {
 } from "../api";
 import { EChart, type EChartsOption } from "../charts/EChart";
 import { useChartTokens } from "../charts/tokens";
+import { GuidedPanel } from "../correlations/GuidedPanel";
 import { RegressionPanel } from "../correlations/RegressionPanel";
 import { download, renderSlide, SOURCE_LINE } from "../panorama/exportSlide";
 
 type Props = { onOpenMethodology: () => void };
 
 type Side = "x" | "y";
-/** Deux questions, deux écrans : « est-ce que ceci va avec cela ? » et « une
- *  fois le reste tenu constant, que pèse chaque variable ? ». Elles partagent
- *  le périmètre — même unité, même période, même population — et rien d'autre. */
-type Mode = "link" | "model";
+/** Trois questions, trois écrans. Guidé (par défaut) parcourt une question
+ *  précise en trois temps sans exiger de connaître le catalogue ; Lien et
+ *  Modèle, inchangés, restent le mode avancé — l'un répond à « est-ce que
+ *  ceci va avec cela ? », l'autre à « une fois le reste tenu constant, que
+ *  pèse chaque variable ? ». Lien et Modèle partagent le périmètre — même
+ *  unité, même période, même population ; Guidé compose le sien, propre à
+ *  la question posée. */
+type Mode = "guided" | "link" | "model";
 
 const CHART_HEIGHT = 440;
 
@@ -78,7 +83,7 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
   const tokens = useChartTokens();
 
   const [catalogue, setCatalogue] = useState<CorrelationCatalogue | null>(null);
-  const [mode, setMode] = useState<Mode>("link");
+  const [mode, setMode] = useState<Mode>("guided");
   const [unit, setUnit] = useState("region");
   const [startYear, setStartYear] = useState(2019);
   const [endYear, setEndYear] = useState(2022);
@@ -442,15 +447,21 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
       <header className="explore-head">
         <div>
           <span className="explore-eyebrow">Croisements entre sources</span>
-          <h1>{mode === "link" ? "Croiser deux indicateurs" : "Mesurer le poids d’une variable"}</h1>
+          <h1>
+            {mode === "guided" ? "Expliquer un indicateur"
+              : mode === "link" ? "Croiser deux indicateurs" : "Mesurer le poids d’une variable"}
+          </h1>
           <p>
-            {mode === "link"
-              ? "Est-ce que l’un va avec l’autre — et le lien tient-il ?"
+            {mode === "guided" ? "Ce que vous voulez expliquer, par quoi, à quoi comparable — en trois temps."
+              : mode === "link" ? "Est-ce que l’un va avec l’autre — et le lien tient-il ?"
               : "Ce que chaque variable pèse sur la mesure, les autres tenues constantes."}
           </p>
         </div>
         <div className="explore-head-side">
           <div className="segmented" role="tablist" aria-label="Question posée">
+            <button type="button" role="tab" aria-selected={mode === "guided"}
+              className={mode === "guided" ? "active" : ""}
+              onClick={() => setMode("guided")}>Guidé</button>
             <button type="button" role="tab" aria-selected={mode === "link"}
               className={mode === "link" ? "active" : ""}
               onClick={() => setMode("link")}>Lien</button>
@@ -462,6 +473,11 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
         </div>
       </header>
 
+      {mode === "guided" ? (
+        <main className="explore-canvas explore-canvas-solo">
+          <GuidedPanel catalogue={catalogue} />
+        </main>
+      ) : (
       <div className="explore-body">
         <aside className="explore-rail" aria-label="Paramètres du croisement">
           {mode === "link" ? (
@@ -649,6 +665,7 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
           </>}
         </main>
       </div>
+      )}
     </div>
   );
 }
