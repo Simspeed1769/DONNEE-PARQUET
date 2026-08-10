@@ -298,9 +298,12 @@ function territorySlide({ response, measure, tokens, highlightedRegion, forms }:
       ]),
     },
     ariaLabel: `${measure.label} par région`,
-    // Le classement se dimensionne sur son nombre de barres ; la carte veut un
-    // carré, sans quoi la France s'étire à la largeur du panneau.
-    height: form === "rank" ? Math.max(340, 60 + onMap.length * 30) : 520,
+    // Une hauteur par **lecture**, jamais par forme : la faire varier d'une
+    // forme à l'autre redimensionnait le conteneur au milieu de la transition,
+    // ce qui produisait à la fois un saut de mise en page et un morphing
+    // interrompu. La carte veut un carré (520) ; le classement s'en accommode
+    // et respire.
+    height: 520,
     empty,
   };
 }
@@ -374,7 +377,8 @@ function ageSlide({ response, measure, tokens, forms }: SlideInput): Slide {
       ]),
     },
     ariaLabel: `Profil par tranche d'âge, ${measure.label}`,
-    height: form === "hbar" ? Math.max(380, 60 + order.length * 38) : 430,
+    // Constante d'une forme à l'autre, pour la même raison qu'en territoire.
+    height: 430,
     empty: order.length ? null : "Aucune tranche d'âge renseignée sur ce périmètre.",
   };
 }

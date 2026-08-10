@@ -387,6 +387,7 @@ export function territoryOption({
       inRange: { color: palette },
     },
     series: [{
+      id: "territory",
       type: "map" as const,
       map: FRENCH_MAP,
       roam: false,
@@ -468,6 +469,10 @@ export function territoryRankOption({
       },
     },
     series: [{
+      // `id` stable : c'est la clé que `withMorphing` donne à
+      // `universalTransition`. Sans elle, ECharts rapproche les séries par
+      // position et la transition depuis une autre forme part de travers.
+      id: "territory",
       type: "bar" as const,
       data: ranked.map(([key, value]) => ({
         value,
@@ -659,6 +664,7 @@ export function sexCompareOption({
       axisLabel: { ...axisLabelStyle(tokens, 12), color: tokens.inkSecondary, width: 200, overflow: "truncate" },
     },
     series: [{
+      id: "sex-compare",
       type: "bar" as const,
       data: ranked.map((row) => ({
         value: row.values[0],

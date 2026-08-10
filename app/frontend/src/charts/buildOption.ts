@@ -240,6 +240,7 @@ export function pieOption({ slices, tokens, kind, centerLabel }: PieInput): ECha
     },
     legend: HTML_LEGEND,
     series: [{
+      id: "pie",
       type: "pie",
       radius: ["42%", "68%"],
       center: ["50%", "50%"],
@@ -313,6 +314,7 @@ function rankOption(input: ChartInput, scale: { label: string },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
     },
     series: [{
+      id: "rank",
       type: "bar",
       data: rows.map((row) => ({
         value: scaled(row.value),
@@ -419,6 +421,7 @@ function waterfallOption(input: ChartInput, scale: { label: string },
       axisLabel: { color: tokens.inkSecondary, fontSize: 11, fontFamily: tokens.font, width: 190, overflow: "truncate" },
     },
     series: [{
+      id: "waterfall",
       type: "bar",
       data: rows.map((row) => {
         const positive = (row.delta ?? 0) >= 0;
