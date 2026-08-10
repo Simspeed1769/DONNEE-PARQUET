@@ -1,17 +1,17 @@
 /* ────────────────────────────────────────────────────────────────────────────
-   THESIS: DAMIR est **un** écran, pas deux. « Comparer » vivait à côté de
-   « Panorama » en répétant l'essentiel de ses fonctions — même barre de
-   portée, mêmes mesures, mêmes formes — et forçait à choisir sa page avant de
-   savoir ce qu'on cherchait. Les trois sections d'ici sont trois profondeurs
-   d'une même exploration : regarder une prestation, en comparer plusieurs,
-   puis composer soi-même la comparaison qu'aucune dimension ne produit.
+   THESIS: DAMIR est **un** écran, pas deux. « Comparer les prestations » et
+   « Comparaison libre » vivaient côte à côte en répétant l'essentiel de leurs
+   fonctions — même barre de portée, mêmes mesures, mêmes formes — et
+   forçaient à choisir son outil avant de savoir ce qu'on cherchait. Les deux
+   sections d'ici sont deux profondeurs d'une même exploration : regarder une
+   prestation, puis comparer ce qu'on veut, selon ce qu'on veut.
    OWN-WORLD: le monde DAMIR hérité — papier chaud, encre presque noire,
    accent rouge Forsides désormais en tête de la palette de séries.
    STORY: on arrive sur le Panorama, on y lit une prestation sous quatre
-   angles ; on passe aux prestations comparées quand la question devient
-   « laquelle pèse le plus » ; on va en comparaison libre quand la question
-   n'entre dans aucune case.
-   FIRST VIEWPORT: le titre, les trois sections, la barre de portée, le
+   angles ; on passe à Comparer quand la question devient une mise en regard —
+   choisir selon quoi comparer, ou composer sans dimension avec des séries
+   libres quand la question n'entre dans aucune case.
+   FIRST VIEWPORT: le titre, les deux sections, la barre de portée, le
    graphique. Rien entre les sections et le graphique.
    FORM: fiche d'analyse à sections, la forme des écrans Pathologies / CSP.
    FINISH: unreviewed and undocumented is unfinished; this build ends with the
@@ -19,11 +19,24 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 import { useEffect, useMemo, useState } from "react";
-import { FreeSection } from "../damir/FreeSection";
+import { CompareSection } from "../damir/CompareSection";
 import { PanoramaSection } from "../damir/PanoramaSection";
-import { ServicesSection } from "../damir/ServicesSection";
+import { hasLegacyCompareParams, redirectLegacyCompareParams } from "../damir/legacyCompare";
 import type { AdvancedFilters, Metadata } from "../types";
 import { filtersFromSearch, writeFilters } from "../utils";
+
+/** Réécrit l'adresse une fois, avant que quoi que ce soit — ici ou dans les
+ *  sections filles, qui relisent chacune `window.location` de leur côté —
+ *  n'ait lu les anciens paramètres. Un lien vers l'ancienne comparaison des
+ *  prestations ou l'ancienne comparaison libre doit rouvrir Comparer dans le
+ *  même état, pas une page vide le temps qu'un effet se déclenche. */
+function normalizedParams(): URLSearchParams {
+  const current = new URLSearchParams(window.location.search);
+  if (!hasLegacyCompareParams(current)) return current;
+  const next = redirectLegacyCompareParams(current);
+  window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
+  return next;
+}
 
 type Props = {
   metadata: Metadata;
@@ -32,21 +45,21 @@ type Props = {
   onOpenMethodology: () => void;
 };
 
-export type DamirSection = "panorama" | "services" | "free";
+export type DamirSection = "panorama" | "compare";
 
 const SECTIONS: Array<{ key: DamirSection; label: string; hint: string }> = [
   { key: "panorama", label: "Panorama", hint: "Une prestation, quatre angles" },
-  { key: "services", label: "Comparer les prestations", hint: "Laquelle pèse le plus" },
-  { key: "free", label: "Comparaison libre", hint: "Le graphique que vous composez" },
+  { key: "compare", label: "Comparer", hint: "Ce que vous voulez mettre en regard" },
 ];
 
 function sectionFromParams(params: URLSearchParams): DamirSection {
   const raw = params.get("section");
+  if (raw === "services" || raw === "free") return "compare";
   return SECTIONS.some((item) => item.key === raw) ? raw as DamirSection : "panorama";
 }
 
 export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMethodology }: Props) {
-  const params = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
+  const params = useMemo(() => normalizedParams(), [routeVersion]);
 
   const [section, setSection] = useState<DamirSection>(() => sectionFromParams(params));
   /** Le périmètre commun suit l'utilisateur d'une section à l'autre : changer
@@ -89,7 +102,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
         </div>
       </section>
 
-      {/* Trois profondeurs d'une même exploration, et non trois outils. */}
+      {/* Deux profondeurs d'une même exploration, et non deux outils. */}
       <nav className="damir-sections" role="tablist" aria-label="Sections DAMIR">
         {SECTIONS.map((item) => (
           <button
@@ -107,8 +120,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
       </nav>
 
       {section === "panorama" ? <PanoramaSection {...shared} /> : null}
-      {section === "services" ? <ServicesSection {...shared} /> : null}
-      {section === "free" ? <FreeSection {...shared} /> : null}
+      {section === "compare" ? <CompareSection {...shared} /> : null}
     </div>
   );
 }

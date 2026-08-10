@@ -34,6 +34,14 @@ export function isFree(key: string): boolean {
   return key.startsWith(FREE_PREFIX);
 }
 
+let freeCounter = 0;
+
+/** Une clé de série libre, fraîche à chaque appel. */
+export function newFreeKey(): string {
+  freeCounter += 1;
+  return `${FREE_PREFIX}${Date.now().toString(36)}${freeCounter}`;
+}
+
 /** La dimension découpée ne peut pas être redéfinie par une série : restreindre
  *  le sexe d'une série alors qu'on compare les sexes ne veut rien dire. */
 const BREAKDOWN_FIELD: Record<string, keyof AdvancedFilters> = {
@@ -59,7 +67,7 @@ const ARRAY_FIELDS = [
   "service_codes", "sexes", "ages", "regions", "insurances", "envelopes",
 ] as const;
 
-export type ScopeChip = { field: string; text: string };
+type ScopeChip = { field: string; text: string };
 
 function named(codes: number[], options: CodeOption[],
                plural: (count: number) => string, limit = 2): string {
@@ -165,9 +173,4 @@ export function scopeChips(scope: SeriesScope | undefined, base: AdvancedFilters
   }
 
   return chips;
-}
-
-/** Clé de cache d'un périmètre, pour ne relancer que ce qui a changé. */
-export function scopeKey(scope: SeriesScope | undefined): string {
-  return scope ? JSON.stringify(scope) : "";
 }
