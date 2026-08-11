@@ -19,6 +19,7 @@ import { EChart, type EChartsOption } from "../charts/EChart";
 import type { ChartTokens } from "../charts/tokens";
 import { csvFromRows } from "../utils";
 import { ExportPngButton } from "./ExportPngButton";
+import { PaletteChoice } from "./PaletteChoice";
 import type { KpiItem } from "./KpiStrip";
 
 type Props = {
@@ -66,6 +67,9 @@ type Props = {
   onInstance?: (instance: ECharts | null) => void;
   tableColumns: string[];
   tableRows: string[][];
+  /** Un repère qui ne tient pas sur la bande — le ratio femmes / hommes, une
+   *  phrase entière — descend ici plutôt que de faire déborder la ligne. */
+  tableNote?: string;
   /** Réserves propres à cette lecture : masquage Cnam, millésime CSP, portée
    *  nationale de la mortalité… Le modèle de la base les fournit. */
   caveats: string[];
@@ -84,7 +88,7 @@ export function ChartShell({
   kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question, highlights,
   beforeChart, afterChart, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
-  tableColumns, tableRows, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
+  tableColumns, tableRows, tableNote, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
 }: Props) {
   const exportCsv = () => {
     const columns = tableColumns.map((column, index) => ({ key: String(index), label: column }));
@@ -115,8 +119,7 @@ export function ChartShell({
 
       {/* Les repères à gauche, le choix de forme à droite : une seule bande,
           et le graphique reste où il est. C'est la disposition de DAMIR. */}
-      {(highlights && highlights.length) || (forms && forms.length > 1) ? (
-        <div className="damir-strip">
+      <div className="damir-strip">
           {highlights && highlights.length ? (
             <div className="damir-highlights">
               {highlights.map((item) => (
@@ -127,21 +130,26 @@ export function ChartShell({
               ))}
             </div>
           ) : <span />}
-          {forms && forms.length > 1 ? (
-            <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
-              {forms.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  aria-pressed={form === item.key}
-                  className={form === item.key ? "active" : ""}
-                  onClick={() => onForm?.(item.key)}
-                >{item.label}</button>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+          {/* Les contrôles du graphique en fin de rangée : la forme d'abord,
+              puis la couleur — un réglage d'apparence pèse moins que le choix
+              de ce qu'on montre. */}
+          <div className="damir-strip-controls">
+            {forms && forms.length > 1 ? (
+              <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
+                {forms.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    aria-pressed={form === item.key}
+                    className={form === item.key ? "active" : ""}
+                    onClick={() => onForm?.(item.key)}
+                  >{item.label}</button>
+                ))}
+              </div>
+            ) : null}
+            <PaletteChoice />
+          </div>
+      </div>
 
       {/* La question sous la bande plutôt que dedans : à trois éléments, la
           ligne débordait sur les écrans étroits. */}
@@ -182,6 +190,7 @@ export function ChartShell({
       <div className="damir-drawers">
         <details className="damir-details">
           <summary>Voir les valeurs ({tableRows.length} lignes)</summary>
+          {tableNote ? <p className="damir-table-note">{tableNote}</p> : null}
           <div className="damir-table-scroll" tabIndex={0} role="group" aria-label={`Valeurs · ${title}`}>
             <table>
               <thead><tr>{tableColumns.map((column) => <th key={column} scope="col">{column}</th>)}</tr></thead>

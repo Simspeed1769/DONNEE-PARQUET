@@ -135,6 +135,31 @@
   bande de KPI est construite pour se replier (`flex-wrap`), mais ce
   comportement reste à contrôler sur un vrai écran étroit.
 
+## v4 · Phase 2 — Le choix de palette descend au niveau du graphique
+
+- **Fait** : le contrôle rouge / bleu quitte l'en-tête de l'application pour la
+  bande du graphique, en fin de rangée, après le choix de forme. Même traitement
+  segmenté que les autres contrôles (`.pathology-toggle`), sur les quatre bases :
+  `ChartShell` le porte pour Pathologies, CSP et Mortalité, les deux sections de
+  DAMIR l'ont dans leur propre bande.
+- **Fait** : l'état vit dans l'adresse (`palette=blue`), doublé d'une mémoire
+  locale. Les trois fiches réécrivent leur URL de bout en bout : elles reportent
+  le paramètre explicitement, sans quoi elles l'effaceraient. DAMIR fusionne
+  déjà dans les paramètres existants et n'a rien demandé.
+- **Piège corrigé** : le contrôle est un **enfant** de la carte-graphique, et
+  React exécute les effets des enfants avant ceux de leurs parents. Poser
+  l'attribut depuis un effet le posait donc après que `useChartTokens` a lu ses
+  couleurs et avant qu'il ait installé son observateur : la mutation passait
+  entre les deux, et le premier tracé sortait en rouge malgré un choix bleu
+  mémorisé. La palette est désormais appliquée dans `main.tsx`, avant le premier
+  rendu.
+- **Décision** : le ratio femmes / hommes de Pathologies descend dans le tiroir
+  « Valeurs ». C'est une phrase entière, et sur la bande elle poussait les
+  contrôles du graphique à la ligne — le cas que la phase 1 avait prévu.
+- **Écarté** : rien. Le changement de palette ne déclenche aucune requête, ne
+  remonte pas l'instance ECharts, et l'export PNG le suit puisque `readLightTokens`
+  ne force que le thème, jamais la palette.
+
 ## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
 
 Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de

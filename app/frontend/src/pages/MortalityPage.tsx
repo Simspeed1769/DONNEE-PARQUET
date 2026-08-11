@@ -4,6 +4,7 @@ import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { PageHero } from "../components/PageHero";
 import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { paletteParams, readPalette } from "../charts/palette";
 import { formatKpi } from "../utils";
 import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { MORTALITY_READINGS, buildMortalityReadings, type MortalityReadingKey } from "../mortality/model";
@@ -81,6 +82,7 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     if (!cause || !year) return;
     const params = new URLSearchParams({
       page: "mortality", cause, population, year: String(year), measure, view: reading,
+      ...paletteParams(readPalette()),
     });
     Object.entries(forms).forEach(([key, value]) => { if (value) params.set(`form_${key}`, value); });
     window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);

@@ -4,6 +4,7 @@ import { getCspMetadata, getCspOverview } from "../api";
 import { PageHero } from "../components/PageHero";
 import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { paletteParams, readPalette } from "../charts/palette";
 import { formatKpi } from "../utils";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
@@ -97,6 +98,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
     const params = new URLSearchParams({
       page: "csp", year: String(year), level, csp: cspCode, region, age, sex: String(sex),
       measure, view: reading,
+      ...paletteParams(readPalette()),
     });
     Object.entries(forms).forEach(([key, value]) => { if (value) params.set(`form_${key}`, value); });
     window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);

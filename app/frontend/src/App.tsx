@@ -3,7 +3,6 @@ import type { ComponentType, ErrorInfo, LazyExoticComponent, ReactNode } from "r
 import { getMetadata } from "./api";
 import { CopyLinkButton } from "./components/CopyLinkButton";
 import { ThemeToggle } from "./components/ThemeToggle";
-import { PaletteToggle } from "./components/PaletteToggle";
 import type { Metadata, PageKey } from "./types";
 
 const CHUNK_RELOAD_KEY = "damir-chunk-reload";
@@ -240,7 +239,6 @@ function App() {
           <div className="topbar-actions">
             <span className="source-chip">{sourceLabel}</span>
             <CopyLinkButton />
-            <PaletteToggle />
             <ThemeToggle />
             <div className="avatar" title="Espace local">FS</div>
           </div>

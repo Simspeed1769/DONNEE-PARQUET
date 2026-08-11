@@ -507,3 +507,25 @@
 }
 .pathology-compare-chip button:hover:not(:disabled) { color: var(--critical-text); }
 .pathology-compare-chip button:disabled { opacity: .3; cursor: not-allowed; }
+
+/* Les contrôles du graphique, en fin de bande : la forme d'abord, la couleur
+   ensuite. Ils se replient ensemble sur un écran étroit plutôt que de pousser
+   les repères hors du cadre. */
+.damir-strip-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  /* Repliée sur sa propre ligne, la rangée reste à droite : sans cette marge
+     automatique elle repartirait à gauche et se lirait comme un second départ. */
+  margin-left: auto;
+}
+
+/* La note du tiroir « Valeurs » : un repère qui ne tenait pas sur la bande. */
+.damir-table-note {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+}

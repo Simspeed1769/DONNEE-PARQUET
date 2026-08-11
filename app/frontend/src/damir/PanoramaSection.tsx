@@ -28,6 +28,7 @@ import { OFF_MAP_REGIONS, useFrenchMap } from "../charts/frenchMap";
 import { buildSlides, type FormKey, type Slide, type SlideKey } from "../panorama/slides";
 import { SOURCE_LINE } from "../panorama/exportSlide";
 import { ExportPngButton } from "../components/ExportPngButton";
+import { PaletteChoice } from "../components/PaletteChoice";
 import { downloadText } from "../api";
 import { periodValue, yearValues, type PanoramaResponse } from "../panorama/model";
 import type { ExploreMeasure } from "../explore/model";
@@ -390,6 +391,7 @@ export function PanoramaSection({
             ))}
           </div>
 
+          <div className="damir-strip-controls">
           {slide && slide.forms.length > 1 ? (
             <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
               {slide.forms.map((item) => (
@@ -403,6 +405,8 @@ export function PanoramaSection({
               ))}
             </div>
           ) : null}
+            <PaletteChoice />
+          </div>
         </div>
 
         {/* Pas de `key` sur ce conteneur : la remonter à chaque changement de

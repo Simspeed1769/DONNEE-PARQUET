@@ -4,6 +4,7 @@ import { MultiSelect } from "../components/MultiSelect";
 import { PageHero } from "../components/PageHero";
 import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { paletteParams, readPalette } from "../charts/palette";
 import { formatKpi } from "../utils";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { useChartTokens } from "../charts/tokens";
@@ -150,6 +151,10 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     if (!top || !year) return;
     const params = new URLSearchParams({
       page: "pathologies", top, year: String(year), region, age, sex, measure, view: reading,
+      // Cet écran réécrit son adresse de bout en bout : sans ce report, il
+      // effacerait le choix de couleur et « Copier le lien » ne le restituerait
+      // pas.
+      ...paletteParams(readPalette()),
     });
     if (comparedCodes.length) params.set("compare", comparedCodes.join("~"));
     Object.entries(forms).forEach(([key, value]) => { if (value) params.set(`form_${key}`, value); });
@@ -176,7 +181,12 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   const readings = useMemo(() => buildPathologyReadings({ ...readingInput, tokens }), [readingInput, tokens]);
   const current = readings.find((item) => item.key === reading) ?? readings[0];
 
-  const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
+  /** Le ratio femmes / hommes est une phrase, pas un nombre : sur la bande il
+   *  poussait les contrôles du graphique à la ligne. Il descend donc dans le
+   *  tiroir « Valeurs », où une phrase a sa place. */
+  const sexRatio = (overview?.kpis ?? []).find((kpi) => kpi.key === "sex_ratio")?.detail ?? null;
+
+  const kpiItems: KpiItem[] = (overview?.kpis ?? []).filter((kpi) => kpi.key !== "sex_ratio").map((kpi) => ({
     key: kpi.key,
     label: kpi.label,
     // Seule l'évolution est une variation : elle seule porte un signe.
@@ -280,6 +290,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         empty={current.empty}
         loading={loading}
         ariaLabel={current.ariaLabel}
+        tableNote={sexRatio ? `Ratio femmes / hommes : ${sexRatio}.` : undefined}
         tableColumns={current.table.columns}
         tableRows={current.table.rows}
         caveats={current.caveats}

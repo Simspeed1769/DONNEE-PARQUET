@@ -36,6 +36,7 @@ import {
 import { isFree, newFreeKey, scopeChips, type SeriesScope } from "../explore/seriesScope";
 import { csvFromRows, formatValue, writeFilters } from "../utils";
 import { ExportPngButton } from "../components/ExportPngButton";
+import { PaletteChoice } from "../components/PaletteChoice";
 import { SOURCE_LINE } from "../panorama/exportSlide";
 import type { SectionProps } from "./PanoramaSection";
 
@@ -662,6 +663,7 @@ export function CompareSection({
 
         <div className="damir-strip">
           <p className="damir-question">{view.question}</p>
+          <div className="damir-strip-controls">
           <div className="pathology-toggle damir-forms" role="group" aria-label="Vue">
             {availableViews.map((item) => (
               <button
@@ -672,6 +674,8 @@ export function CompareSection({
                 onClick={() => setViewKey(item.key)}
               >{item.label}</button>
             ))}
+          </div>
+            <PaletteChoice />
           </div>
         </div>
 
