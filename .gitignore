@@ -35,6 +35,11 @@ dist/
 # spécifique à la machine, ne doit pas être partagée entre postes.
 .claude/
 
+# Originaux Word des documents de mission : le Markdown de `docs/` fait foi et
+# se lit dans un diff, ces binaires ne s'y prêtent pas. Ils restent sur le poste
+# dans `docs/sources/` sans encombrer l'historique.
+docs/sources/*.docx
+
 # Fichiers locaux et secrets
 .env
 .env.*

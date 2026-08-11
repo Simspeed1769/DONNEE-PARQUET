@@ -1,7 +1,17 @@
 # CLAUDE.md
 
-Instructions pour Claude Code sur ce dépôt. Voir `MISSION.md` pour la feuille de
-route en cours et `docs/ETAT_DES_LIEUX.md` pour la photo du code au 9 août 2026.
+Instructions pour Claude Code sur ce dépôt.
+
+## Où se trouve quoi
+
+- `MISSION_V4.md` — la feuille de route **en cours**, à la racine. Les missions
+  achevées sont archivées dans `docs/missions/`.
+- `docs/PROGRESS.md` — le journal des phases livrées : fait / écarté / décisions.
+- `docs/ETAT_DES_LIEUX.md` — la photo du code au 9 août 2026.
+- `DESIGN.md`, `PRODUCT.md` — fichiers de convention lus par l'outillage de
+  design ; ils restent à la racine pour cette raison.
+- `app/` — le produit (`backend/`, `frontend/`). `data/` — les cubes.
+  `tools/` — les scripts de fabrication des données, hors runtime.
 
 ## Principes non négociables
 
