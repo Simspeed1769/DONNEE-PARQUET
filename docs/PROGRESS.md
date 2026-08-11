@@ -191,6 +191,27 @@
   comparées partagent le périmètre de la coquille ; la réserve le dit. Cette
   capacité n'existait pas auparavant sur Pathologies, rien n'est donc perdu.
 
+## v4 · Phase 4 — CSP : Composition devient Comparer
+
+- **Fait** : même coquille à deux sections que DAMIR et Pathologies. Millésime,
+  territoire, âge, sexe et mesure vivent dans la coquille ; le panorama garde le
+  niveau de nomenclature et la CSP observée, la comparaison garde sa liste.
+- **Décision** : « Composition » disparaît comme lecture. Elle répondait à une
+  question d'une autre nature que les trois autres — une comparaison déguisée en
+  lecture. La composition d'un territoire s'obtient dans Comparer sous forme de
+  vue (aires empilées sur les effectifs), au lieu d'un écran à part.
+- **Fait** : la carte reste cliquable et change le territoire **commun**, que la
+  comparaison suit ; les encarts DROM sont conservés.
+- **Fait** : les deux niveaux de nomenclature cohabitent dans le sélecteur — on
+  compare un grand groupe à une catégorie fine si la question l'exige, chaque
+  entrée portant son niveau.
+- **Réserve tenue** : une part n'est pas additive entre régions. Sur la mesure
+  « Part », les formes cumulatives — aires empilées, empilé, camembert — ne sont
+  pas offertes ; elles n'apparaissent que sur les effectifs. Vérifié à l'écran.
+- **Fait** : `PathologyPicker` devient `components/EntityPicker`, partagé par
+  Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
+  le seuil que se fixe le projet pour extraire un composant.
+
 ## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
 
 Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de

@@ -13,14 +13,13 @@ import { formatValue } from "../utils";
 import { mapOption } from "./charts";
 import type { CspOverview } from "../types";
 
-export type CspReadingKey = "evolution" | "territory" | "age" | "sex" | "composition";
+export type CspReadingKey = "evolution" | "territory" | "age" | "sex";
 
 export const CSP_READINGS: FormOption[] = [
   { key: "evolution", label: "Évolution" },
   { key: "territory", label: "Territoire" },
   { key: "age", label: "Âge" },
   { key: "sex", label: "Sexe" },
-  { key: "composition", label: "Composition" },
 ];
 
 const WEIGHTED_NOTE = "Effectifs pondérés par l'Insee, pas des comptages directs.";
@@ -122,17 +121,6 @@ export function buildCspReadings(input: CspInput): Reading[] {
     ...(!isShare ? [{ key: "pie", label: "Camembert" }] : []),
   ];
   const sexForm = resolveForm(sexForms, forms.sex);
-
-  /* — Composition — */
-  const composition = overview?.composition ?? [];
-  const compositionForms: FormOption[] = [
-    { key: "rank", label: "Classement" },
-    { key: "bar", label: "Barres" },
-    ...(!isShare ? [{ key: "pie", label: "Camembert" }] : []),
-  ];
-  const compositionForm = resolveForm(compositionForms, forms.composition);
-  // La composition ne connaît que la part : c'est ce que l'API renvoie.
-  const compositionValues = composition.map((item) => item.share);
 
   const asPie = (form: string) => form === "pie";
 
@@ -250,13 +238,138 @@ export function buildCspReadings(input: CspInput): Reading[] {
     categorical("sex", "Sexe", `${measureLabel} selon le sexe`,
       "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe",
       sexRows, sexForms, sexForm),
-    categorical("composition", "Composition",
-      overview?.context.level === "groupe_6" ? "Composition en 6 groupes" : "Composition en 29 catégories",
-      "Comment se répartit la population active ?", "Groupe socioprofessionnel",
-      composition.map((item, index) => ({ label: item.label, value: compositionValues[index] })),
-      [{ key: "rank", label: "Classement" }, { key: "bar", label: "Barres" }, { key: "pie", label: "Camembert" }],
-      resolveForm([{ key: "rank", label: "Classement" }, { key: "bar", label: "Barres" }, { key: "pie", label: "Camembert" }], forms.composition ?? compositionForm),
-      ["La composition est toujours lue en part de la population active du périmètre, quelle que soit la mesure choisie ailleurs."],
-      "percent"),
   ];
+}
+
+/* ── Comparer plusieurs catégories socioprofessionnelles ────────────────────
+ *
+ * Remplace l'ancienne lecture « Composition », qui répondait à une question
+ * différente des trois autres : non plus « où en est ce groupe ? » mais
+ * « comment se répartit la population active ? ». C'était une comparaison
+ * déguisée en lecture ; elle redevient ce qu'elle est, et la composition d'un
+ * territoire s'obtient ici comme une **vue** — les parts empilées sur les
+ * effectifs — plutôt que comme un écran à part.
+ *
+ * **Une part n'est pas additive entre régions.** La somme des parts régionales
+ * n'a aucun sens, et aucune forme qui composerait un tout n'est offerte sur
+ * cette mesure : ce sont les effectifs qui les ouvrent.
+ */
+
+export type CspCompareView = {
+  key: string;
+  label: string;
+  form: ChartForm;
+  question: string;
+  needsAdditive?: boolean;
+  needsYears?: number;
+};
+
+export const CSP_COMPARE_VIEWS: CspCompareView[] = [
+  { key: "line", label: "Courbes", form: "line", question: "Comment leurs trajectoires se comparent-elles ?" },
+  { key: "bar", label: "Barres", form: "bar", question: "Combien, millésime par millésime ?" },
+  { key: "rank", label: "Classement", form: "rank", question: "Laquelle pèse le plus ?" },
+  { key: "diverging", label: "Écarts", form: "diverging", needsYears: 2,
+    question: "Laquelle progresse, laquelle recule sur la période ?" },
+  { key: "shareArea", label: "Aires empilées", form: "shareArea", needsAdditive: true, needsYears: 2,
+    question: "Comment la composition de la population active se déforme-t-elle ?" },
+  { key: "stack", label: "Empilé", form: "stack", needsAdditive: true,
+    question: "Combien pèsent-elles ensemble, et qui apporte quoi ?" },
+  { key: "pie", label: "Camembert", form: "pie", needsAdditive: true,
+    question: "Comment la population active se partage-t-elle ?" },
+];
+
+export type CspCompareInput = {
+  compared: Array<{
+    code: string;
+    label: string;
+    annual: Array<{ year: number; effectif: number | null; share: number | null }>;
+  }>;
+  measure: "share" | "effectif";
+  scopeLabel: string;
+  tokens: ChartTokens;
+  view: string;
+};
+
+export function buildCspCompare(input: CspCompareInput): Reading {
+  const { compared, measure, scopeLabel, tokens, view } = input;
+  const isShare = measure === "share";
+  const kind = isShare ? "percent" : "quantity";
+  const unitLabel = isShare ? "% des actifs en emploi" : "personnes";
+  const measureLabel = isShare ? "Part parmi les actifs en emploi" : "Effectif pondéré (Insee)";
+
+  // Les millésimes communs à toutes les séries : comparer sur un axe où l'une
+  // manque ferait passer une absence pour une chute.
+  const years = compared.length
+    ? compared
+      .map((item) => item.annual.map((row) => row.year))
+      .reduce((shared, next) => shared.filter((year) => next.includes(year)))
+    : [];
+
+  const series: ChartSeries[] = compared.map((item, index) => ({
+    key: item.code,
+    label: item.label,
+    isOther: false,
+    colorIndex: index,
+    values: years.map((year) => {
+      const row = item.annual.find((candidate) => candidate.year === year);
+      if (!row) return null;
+      return isShare ? row.share : row.effectif;
+    }),
+  }));
+
+  const offered = CSP_COMPARE_VIEWS.filter((item) =>
+    (!item.needsAdditive || !isShare) && years.length >= (item.needsYears ?? 0));
+  const chosen = offered.find((item) => item.key === view) ?? offered[0];
+  const form = chosen?.form ?? "line";
+  const asPie = form === "pie";
+
+  const pieSeries: ChartSeries[] = series.map((item) => ({
+    ...item,
+    values: [item.values.reduce<number | null>(
+      (total, value) => (value === null ? total : (total ?? 0) + value), null)],
+  }));
+
+  const enough = compared.length >= 2;
+
+  return {
+    key: "compare",
+    nav: "Comparer",
+    title: enough
+      ? `${measureLabel} · ${compared.length} catégories comparées`
+      : "Comparer des catégories socioprofessionnelles",
+    question: chosen?.question ?? "",
+    caveats: [
+      WEIGHTED_NOTE,
+      NOMENCLATURE_NOTE,
+      ...(isShare ? [DENOMINATOR_NOTE, SHARE_NOTE] : []),
+      `Toutes les catégories comparées partagent le même périmètre : ${scopeLabel}.`,
+    ],
+    forms: offered.map((item) => ({ key: item.key, label: item.label })),
+    form: chosen?.key ?? "line",
+    option: enough && years.length
+      ? buildOption({
+        form,
+        categories: asPie ? [scopeLabel] : years,
+        series: asPie ? pieSeries : series,
+        kind, unitLabel, tokens,
+        directLabels: form === "line" && series.length <= 6,
+        xTitle: asPie ? undefined
+          : (form === "rank" || form === "diverging" ? "Groupes comparés" : "Millésime"),
+      })
+      : null,
+    table: {
+      columns: ["Millésime", ...series.map((item) => item.label)],
+      rows: years.map((year, index) => [
+        String(year), ...series.map((item) => formatValue(item.values[index], kind)),
+      ]),
+    },
+    ariaLabel: `${measureLabel}, ${compared.length} catégories comparées`,
+    height: form === "rank" || form === "diverging"
+      ? Math.max(CHART_HEIGHT, 80 + series.length * 26)
+      : CHART_HEIGHT,
+    empty: !enough
+      ? "Ajoutez une deuxième catégorie : une comparaison à un seul élément n’en est pas une."
+      : (years.length ? null : "Aucun millésime commun aux catégories retenues."),
+    xTitle: "Millésime",
+  };
 }

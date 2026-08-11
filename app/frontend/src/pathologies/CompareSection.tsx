@@ -13,7 +13,8 @@ import { useEffect, useMemo, useState } from "react";
 import { getPathologyOverview } from "../api";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
-import { PathologyPicker, pathologyCatalogue } from "./PathologyPicker";
+import { EntityPicker } from "../components/EntityPicker";
+import { pathologyCatalogue } from "./catalogue";
 import { buildPathologyCompare } from "./model";
 import { MAX_COMPARED, SOURCE_LINE, scopeLabel, type PathologySectionProps } from "./section";
 import type { PathologyOverview } from "../types";
@@ -105,11 +106,13 @@ export function CompareSection({
         pense — je fixe le périmètre, je vois ce que je mets en regard, puis je
         choisis la forme. */}
     <section className="panel pathology-context patho-compare-rail">
-      <PathologyPicker
+      <EntityPicker
         catalogue={catalogue}
         selection={codes}
         onChange={setCodes}
         maximum={MAX_COMPARED}
+        noun="pathologie"
+        nounPlural="pathologies"
       />
       <div className={`pathology-loading-track ${loading ? "active" : ""}`}><span /></div>
     </section>
