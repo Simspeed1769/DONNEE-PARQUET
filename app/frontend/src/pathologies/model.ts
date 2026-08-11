@@ -14,14 +14,13 @@ import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
 import type { PathologyOverview } from "../types";
 
-export type PathologyReadingKey = "evolution" | "territory" | "age" | "sex" | "compare";
+export type PathologyReadingKey = "evolution" | "territory" | "age" | "sex";
 
 export const PATHOLOGY_READINGS: FormOption[] = [
   { key: "evolution", label: "Évolution" },
   { key: "territory", label: "Territoire" },
   { key: "age", label: "Âge" },
   { key: "sex", label: "Sexe" },
-  { key: "compare", label: "Pathologies" },
 ];
 
 const MASKING_NOTE = "Cellules inférieures à 10 patients masquées par la Cnam ; une valeur masquée reste masquée, elle n'est jamais remplacée par 0.";
@@ -35,8 +34,6 @@ const DENOMINATOR_NOTE = "Prévalence = 100 × patients pris en charge ÷ popula
 
 export type PathologyInput = {
   overview: PathologyOverview | null;
-  /** Les autres pathologies mises en regard, quand la lecture le demande. */
-  compared: Array<{ code: string; label: string; overview: PathologyOverview }>;
   measure: "prevalence" | "patients";
   regionLabel: string;
   isFrance: boolean;
@@ -48,7 +45,7 @@ export type PathologyInput = {
 const CHART_HEIGHT = 430;
 
 export function buildPathologyReadings(input: PathologyInput): Reading[] {
-  const { overview, compared, measure, regionLabel, isFrance, hiddenTerritories, tokens, forms } = input;
+  const { overview, measure, regionLabel, isFrance, hiddenTerritories, tokens, forms } = input;
   const isRate = measure === "prevalence";
   const kind = isRate ? "percent" : "quantity";
   const unitLabel = isRate ? "% de la population de référence Cnam" : "patients";
@@ -129,24 +126,6 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
     ...(!isRate ? [{ key: "pie", label: "Camembert" }] : []),
   ];
   const sexForm = resolveForm(sexForms, forms.sex);
-
-  /* — Pathologies comparées — */
-  const compareRows = compared.map((item) => ({
-    label: item.label,
-    values: (overview?.annual ?? []).map((year) => {
-      const row = item.overview.annual.find((candidate) => candidate.year === year.year);
-      return row ? valueOf(row) : null;
-    }),
-  }));
-  const compareSeries: ChartSeries[] = compareRows.map((row, index) => ({
-    key: row.label, label: row.label, isOther: false, colorIndex: index, values: row.values,
-  }));
-  const compareForms: FormOption[] = [
-    { key: "line", label: "Courbes" },
-    { key: "bar", label: "Barres" },
-    { key: "rank", label: "Classement" },
-  ];
-  const compareForm = resolveForm(compareForms, forms.compare);
 
   const categorical = (
     key: PathologyReadingKey, nav: string, title: string, question: string, xTitle: string,
@@ -241,29 +220,142 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe",
       sexRows, sexForms, sexForm,
       isRate ? ["La prévalence par sexe est reconstruite sur les effectifs et leur population de référence, jamais moyennée sur les tranches d'âge."] : []),
-    {
-      key: "compare",
-      nav: "Pathologies",
-      title: compareSeries.length
-        ? `${measureLabel} · ${compareSeries.length} pathologie${compareSeries.length > 1 ? "s" : ""} comparée${compareSeries.length > 1 ? "s" : ""}`
-        : `${measureLabel} · comparer des pathologies`,
-      question: "Laquelle pèse le plus, et comment leurs trajectoires se comparent-elles ?",
-      caveats: [...base, "Toutes les pathologies comparées partagent le périmètre de la fiche : même territoire, même âge, même sexe."],
-      forms: compareForms,
-      form: compareForm,
-      option: compareSeries.length
-        ? chart(compareForm, (overview?.annual ?? []).map((item) => item.year), compareSeries, "Année", compareSeries.length <= 6)
-        : null,
-      table: {
-        columns: ["Année", ...compareSeries.map((item) => item.label)],
-        rows: (overview?.annual ?? []).map((item, index) => [
-          String(item.year), ...compareSeries.map((serie) => formatValue(serie.values[index], kind)),
-        ]),
-      },
-      ariaLabel: `${measureLabel}, pathologies comparées`,
-      height: CHART_HEIGHT,
-      empty: compareSeries.length ? null : "Ajoutez au moins une pathologie à comparer.",
-      xTitle: "Année",
-    },
   ];
+}
+
+/* ── Comparer plusieurs pathologies ──────────────────────────────────────────
+ *
+ * La section Comparer répond à une autre question que le panorama : non plus
+ * « où en est cette pathologie ? » mais « laquelle pèse le plus, et laquelle
+ * progresse ? ». Elle reprend donc les vues de DAMIR Comparer, nommées par la
+ * question à laquelle elles répondent.
+ *
+ * **Le modèle décide, pas un bouton grisé.** Une prévalence est un rapport à
+ * une population de référence : deux prévalences ne s'additionnent pas, et
+ * aucune forme qui composerait un tout — camembert, aires empilées — n'est
+ * offerte sur cette mesure. Les effectifs de patients, eux, se cumulent et les
+ * ouvrent.
+ */
+
+export type PathologyCompareView = {
+  key: string;
+  label: string;
+  form: ChartForm;
+  question: string;
+  /** Forme qui compose un tout : elle ment sur une mesure non additive. */
+  needsAdditive?: boolean;
+  /** Nombre d'années sous lequel la forme n'a rien à montrer. */
+  needsYears?: number;
+};
+
+export const PATHOLOGY_COMPARE_VIEWS: PathologyCompareView[] = [
+  { key: "line", label: "Courbes", form: "line", question: "Comment leurs trajectoires se comparent-elles ?" },
+  { key: "bar", label: "Barres", form: "bar", question: "Combien, année par année ?" },
+  { key: "rank", label: "Classement", form: "rank", question: "Laquelle pèse le plus ?" },
+  { key: "diverging", label: "Écarts", form: "diverging", needsYears: 2,
+    question: "Laquelle progresse, laquelle recule sur la période ?" },
+  { key: "heatmap", label: "Carte de chaleur", form: "heatmap", needsYears: 2,
+    question: "Où et quand est-ce le plus fort ?" },
+  { key: "stack", label: "Empilé", form: "stack", needsAdditive: true,
+    question: "Combien pèsent-elles ensemble, et qui apporte quoi ?" },
+  { key: "pie", label: "Camembert", form: "pie", needsAdditive: true,
+    question: "Comment le total se partage-t-il ?" },
+];
+
+export type PathologyCompareInput = {
+  compared: Array<{ code: string; label: string; overview: PathologyOverview }>;
+  measure: "prevalence" | "patients";
+  scopeLabel: string;
+  tokens: ChartTokens;
+  view: string;
+};
+
+export function buildPathologyCompare(input: PathologyCompareInput): Reading {
+  const { compared, measure, scopeLabel, tokens, view } = input;
+  const isRate = measure === "prevalence";
+  const kind = isRate ? "percent" : "quantity";
+  const unitLabel = isRate ? "% de la population de référence Cnam" : "patients";
+  const measureLabel = isRate ? "Prévalence" : "Patients";
+
+  // Les années communes à toutes les séries : comparer sur un axe où l'une
+  // manque ferait passer une absence pour une chute.
+  const years = compared.length
+    ? compared
+      .map((item) => item.overview.annual.map((row) => row.year))
+      .reduce((shared, next) => shared.filter((year) => next.includes(year)))
+    : [];
+
+  const valueOf = (row: { prevalence: number | null; patients: number | null }) =>
+    (isRate ? row.prevalence : row.patients);
+
+  const series: ChartSeries[] = compared.map((item, index) => ({
+    key: item.code,
+    label: item.label,
+    isOther: false,
+    colorIndex: index,
+    values: years.map((year) => {
+      const row = item.overview.annual.find((candidate) => candidate.year === year);
+      return row ? valueOf(row) : null;
+    }),
+  }));
+
+  const offered = PATHOLOGY_COMPARE_VIEWS.filter((item) =>
+    (!item.needsAdditive || !isRate) && years.length >= (item.needsYears ?? 0));
+  const chosen = offered.find((item) => item.key === view) ?? offered[0];
+  const form = chosen?.form ?? "line";
+
+  // Un camembert ne prend pas une suite d'années mais un cumul par modalité.
+  const asPie = form === "pie";
+  const pieSeries: ChartSeries[] = series.map((item) => ({
+    ...item,
+    values: [item.values.reduce<number | null>(
+      (total, value) => (value === null ? total : (total ?? 0) + value), null)],
+  }));
+
+  // Une comparaison à un élément n'en est pas une : l'écran invite à en
+  // ajouter une seconde au lieu d'afficher un graphique intitulé comme une
+  // mise en regard.
+  const enough = compared.length >= 2;
+
+  return {
+    key: "compare",
+    nav: "Comparer",
+    title: enough
+      ? `${measureLabel} · ${compared.length} pathologies comparées`
+      : "Comparer des pathologies",
+    question: chosen?.question ?? "",
+    caveats: [
+      MASKING_NOTE,
+      ...(isRate ? [DENOMINATOR_NOTE, RATE_NOTE] : []),
+      `Toutes les pathologies comparées partagent le même périmètre : ${scopeLabel}.`,
+      ...(years.length ? [] : ["Aucune année n’est commune aux pathologies retenues."]),
+    ],
+    forms: offered.map((item) => ({ key: item.key, label: item.label })),
+    form: chosen?.key ?? "line",
+    option: enough && years.length
+      ? buildOption({
+        form,
+        categories: asPie ? [scopeLabel] : years,
+        series: asPie ? pieSeries : series,
+        kind, unitLabel, tokens,
+        directLabels: form === "line" && series.length <= 6,
+        xTitle: asPie ? undefined
+          : (form === "rank" || form === "diverging" ? "Pathologies comparées" : "Année"),
+      })
+      : null,
+    table: {
+      columns: ["Année", ...series.map((item) => item.label)],
+      rows: years.map((year, index) => [
+        String(year), ...series.map((item) => formatValue(item.values[index], kind)),
+      ]),
+    },
+    ariaLabel: `${measureLabel}, ${compared.length} pathologies comparées`,
+    height: form === "rank" || form === "diverging"
+      ? Math.max(430, 80 + series.length * 26)
+      : 430,
+    empty: !enough
+      ? "Ajoutez une deuxième pathologie : une comparaison à un seul élément n’en est pas une."
+      : (years.length ? null : "Aucune année commune aux pathologies retenues."),
+    xTitle: "Année",
+  };
 }

@@ -1,0 +1,171 @@
+/* Le sélecteur de pathologies comparées.
+ *
+ *  Il reprend la logique du rail de DAMIR : un résumé sur une ligne, et une
+ *  liste qui s'ouvre **dans le flux**, sous le résumé. Rien ne flotte par
+ *  dessus le champ, rien n'est rogné par un parent qui défile.
+ *
+ *  Aucune couleur en dur : tout vient des jetons de theme.css, si bien que le
+ *  panneau suit le thème clair comme le sombre sans être décrit deux fois.
+ */
+
+.patho-compare-rail { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.patho-picker { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.patho-picker-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.patho-picker-label {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* Les puces s'alignent dans leur rangée, jamais par-dessus le champ. */
+.patho-picker-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.patho-picker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font-size: .66rem;
+}
+
+.patho-picker-chip.empty { color: var(--ink-muted); font-style: italic; }
+
+.patho-picker-chip button {
+  padding: 0 2px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.patho-picker-chip button:hover:not(:disabled) { color: var(--ink); }
+.patho-picker-chip button:disabled { opacity: .35; cursor: not-allowed; }
+
+.patho-picker-toggle {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: .66rem;
+  font-weight: 640;
+  cursor: pointer;
+}
+
+.patho-picker-toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+.patho-picker-toggle.open { color: var(--accent-ink); border-color: var(--accent); background: var(--accent); }
+
+/* Le panneau vit dans le flux : il pousse la page au lieu de la recouvrir. */
+.patho-picker-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+  animation: patho-picker-open .18s var(--ease) both;
+}
+
+@keyframes patho-picker-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patho-picker-panel { animation: none; }
+}
+
+.patho-picker-search { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+
+.patho-picker-search input {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+}
+
+.patho-picker-search small { color: var(--ink-muted); font-size: var(--text-2xs); }
+
+.patho-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 320px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.patho-picker-list label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.patho-picker-list label:hover { background: var(--surface-hover); }
+.patho-picker-list label.chosen { background: var(--surface); }
+
+.patho-picker-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+}
+
+.patho-picker-list label.chosen .patho-picker-name { color: var(--ink); font-weight: 620; }
+
+.patho-picker-family {
+  flex: 0 0 auto;
+  max-width: 40%;
+  overflow: hidden;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patho-picker-empty, .patho-picker-note {
+  margin: 0;
+  padding: 6px 8px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+}

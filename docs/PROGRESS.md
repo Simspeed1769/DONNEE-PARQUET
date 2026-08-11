@@ -160,6 +160,37 @@
   remonte pas l'instance ECharts, et l'export PNG le suit puisque `readLightTokens`
   ne force que le thème, jamais la palette.
 
+## v4 · Phase 3 — Pathologies : Panorama + Comparer
+
+- **Fait** : la page devient une coquille à deux sections, comme DAMIR. Le
+  périmètre de population et la mesure vivent dans la coquille et suivent d'une
+  section à l'autre ; chaque section garde ce qui n'appartient qu'à elle — la
+  pathologie affichée pour Panorama, la liste comparée pour l'autre.
+- **Fait** : Panorama garde ses quatre lectures et ses réserves (masquage Cnam
+  affiché et chiffré, repère France, prévalence absente qui reste absente). La
+  lecture « Pathologies » quitte le panorama : elle *était* la comparaison.
+- **Fait** : un **seul** sélecteur (`PathologyPicker`), sur le modèle de
+  `SeriesPicker` — un résumé sur une ligne, une liste qui s'ouvre dans le flux,
+  une recherche, huit pathologies au plus. Les deux champs empilés disparaissent,
+  la liste déroulante native avec eux ; les puces s'alignent dans leur rangée au
+  lieu de flotter sur le champ ; le décompte du catalogue descend dans le
+  sélecteur, où il renseigne au lieu de déboguer.
+- **Fait (serveur)** : les métadonnées portent le poids de chaque « top » sur le
+  dernier millésime. Proposer 118 pathologies dans l'ordre de la nomenclature
+  demande de connaître la nomenclature ; classées par nombre de patients, les
+  plus courantes se présentent d'elles-mêmes.
+- **Décision** : à une seule pathologie retenue, la section affiche une invite
+  et non un graphique intitulé comme une comparaison. Les formes cumulatives —
+  empilé, camembert — n'apparaissent que sur les effectifs : une prévalence est
+  un rapport, deux prévalences ne s'additionnent pas.
+- **Corrigé au passage** : l'axe d'une quantité s'intitulait « M unités ».
+  L'appelant sait ce qu'il compte — patients, décès, personnes — c'est son mot
+  qui est repris, précédé du seul multiplicateur.
+- **Non fait, à signaler** : les séries sur mesure avec leur propre périmètre de
+  population, que la mission mentionne pour Comparer. Toutes les pathologies
+  comparées partagent le périmètre de la coquille ; la réserve le dit. Cette
+  capacité n'existait pas auparavant sur Pathologies, rien n'est donc perdu.
+
 ## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
 
 Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de

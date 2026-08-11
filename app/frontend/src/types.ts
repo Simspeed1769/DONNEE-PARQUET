@@ -170,10 +170,15 @@ export type PathologyMetadata = {
   families: Array<{
     label: string;
     code: string;
+    /** Patients sur le dernier millésime, France entière : sert à **classer**
+     *  les pathologies dans le sélecteur de comparaison, jamais à afficher un
+     *  chiffre. `null` quand la source n'en publie pas. */
+    patients?: number | null;
     groups: Array<{
       label: string;
       code: string;
-      pathologies: Array<{ code: string; label: string }>;
+      patients?: number | null;
+      pathologies: Array<{ code: string; label: string; patients?: number | null }>;
     }>;
   }>;
   regions: Array<{ code: string; label: string }>;

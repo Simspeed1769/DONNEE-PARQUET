@@ -110,10 +110,15 @@ function scaleOf(input: ChartInput) {
   const flat = input.series.flatMap((series) => series.values.filter((value): value is number => value !== null));
   if (input.kind === "percent" || input.kind === "index") return { divisor: 1, label: input.unitLabel };
   const scale = scaleFor(flat, input.kind);
-  return {
-    divisor: scale.divisor,
-    label: input.unitLabel.includes("/") ? `${scale.label}/unité` : scale.label,
-  };
+  if (input.unitLabel.includes("/")) return { divisor: scale.divisor, label: `${scale.label}/unité` };
+  // « M unités » ne dit pas ce qu'on compte. L'appelant sait de quoi il s'agit
+  // — des patients, des décès, des personnes — et c'est son mot qu'on garde,
+  // précédé du seul multiplicateur.
+  if (input.kind === "quantity" && input.unitLabel) {
+    const multiplier = scale.label.replace(/\s*unités$/, "").trim();
+    return { divisor: scale.divisor, label: multiplier ? `${multiplier} ${input.unitLabel}` : input.unitLabel };
+  }
+  return { divisor: scale.divisor, label: scale.label };
 }
 
 /** Une valeur formatée telle qu'elle se lit, indépendamment de l'échelle de l'axe. */

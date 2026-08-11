@@ -96,6 +96,25 @@ def pathology_metadata(repo: PathologyRepository) -> dict[str, Any]:
             group["seen"].add(code)
             group["pathologies"].append({"code": code, "label": level3})
 
+    # Le poids national de chaque « top » sur le dernier millésime. Il ne sert
+    # pas à afficher un chiffre mais à **classer** : un sélecteur qui propose
+    # 118 pathologies dans l'ordre de la nomenclature demande de connaître la
+    # nomenclature ; classées par nombre de patients, les plus courantes se
+    # présentent d'elles-mêmes.
+    weights = {
+        str(row["top"]): float(row["patients"] or 0)
+        for row in repo.query(
+            """SELECT top, MAX(ntop) AS patients FROM pathologies
+               WHERE dept = '999' AND region = '99' AND cla_age_5 = 'tsage'
+                 AND libelle_sexe = 'tous sexes' AND year(annee) = ?
+               GROUP BY top""",
+            [max(years)],
+        )
+    }
+
+    def _weighted(code: str, label: str) -> dict[str, Any]:
+        return {"code": code, "label": label, "patients": weights.get(code)}
+
     hierarchy: list[dict[str, Any]] = []
     for family in families.values():
         groups = []
@@ -103,11 +122,16 @@ def pathology_metadata(repo: PathologyRepository) -> dict[str, Any]:
             group_code = group["code"] or (group["pathologies"][0]["code"] if group["pathologies"] else None)
             if group_code is None:
                 continue
-            groups.append({"label": group["label"], "code": group_code,
-                           "pathologies": group["pathologies"]})
+            groups.append({
+                "label": group["label"], "code": group_code,
+                "patients": weights.get(group_code),
+                "pathologies": [_weighted(item["code"], item["label"])
+                                for item in group["pathologies"]],
+            })
         family_code = family["code"] or (groups[0]["code"] if groups else None)
         if family_code is not None:
-            hierarchy.append({"label": family["label"], "code": family_code, "groups": groups})
+            hierarchy.append({"label": family["label"], "code": family_code,
+                              "patients": weights.get(family_code), "groups": groups})
 
     ages = repo.query(
         f"""SELECT DISTINCT cla_age_5 AS code FROM pathologies
