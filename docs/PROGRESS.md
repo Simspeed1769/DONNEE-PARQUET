@@ -212,6 +212,46 @@
   Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
   le seuil que se fixe le projet pour extraire un composant.
 
+## v4 · Phase 5 — Mortalité : Comparer les causes
+
+- **Fait** : même coquille à deux sections. Millésime, population et mesure
+  vivent dans la coquille ; le sélecteur hiérarchique de cause reste au
+  panorama, la comparaison a sa propre liste.
+- **Décision** : « Causes » disparaît comme lecture. Elle classait les douze
+  premières les unes contre les autres — une comparaison présentée comme une
+  lecture. Rien n'est perdu : le catalogue du sélecteur est classé par nombre de
+  décès, retenir les premières reproduit l'ancien classement.
+- **Dérogation assumée, documentée** : pas de lecture Territoire. Le CépiDc
+  publie des effectifs nationaux, sans découpage régional ni population de
+  référence. La réserve `SCOPE_NOTE` en donne la raison sur chaque graphique.
+- **Fait** : les décès étant additifs, empilé, aires empilées et camembert sont
+  licites ici sur la mesure « Nombre » — c'est la base où ils ont le plus de
+  sens. Sur la « Part », déjà rapportée au total toutes causes, ils disparaissent.
+- **Réserve ajoutée** : les causes de la nomenclature s'emboîtent ; additionner
+  une cause et l'un de ses sous-ensembles compterait deux fois les mêmes décès.
+- **Économie** : la coquille charge la fiche de la cause courante une seule fois
+  et la sert deux fois — au panorama pour l'afficher, à la comparaison pour
+  classer son catalogue.
+
+## v4 · Phase 6 — Transitions homogènes sur les quatre bases
+
+- **Diagnostic (mesuré, pas supposé)** : le piège classique — une `key` React
+  sur le conteneur, qui détruit l'instance et rend toute transition impossible —
+  est **absent** du dépôt. Depuis la phase 3 de v3, les quatre bases passent par
+  le même `ChartShell` → `EChart` que DAMIR : le chemin de rendu était déjà
+  unifié, `notMerge` + `lazyUpdate` + `withMorphing` compris.
+- **Corrigé** : `prefers-reduced-motion` n'était plus respecté. Je l'avais perdu
+  en retirant le fondu manuel qui bloquait le passage vers la carte. Sous ce
+  réglage, l'animation ECharts et la transition universelle sont maintenant
+  coupées à la source — un mouvement bref reste un mouvement.
+- **Rappel de ce qui a été réglé plus tôt** : le fondu manuel autour des cartes
+  passait le conteneur à l'opacité zéro *avant* le rendu du fond de carte ; le
+  blanc n'était pas la transition mais l'attente. ECharts enchaîne seul, et
+  `divideShape: "clone"` étend l'enchaînement au changement de **lecture**, pas
+  seulement de forme.
+- **Écarté** : rien. `stale` garde l'opacité réduite plutôt qu'un squelette, et
+  aucun module ECharts nouveau n'était nécessaire.
+
 ## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
 
 Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de

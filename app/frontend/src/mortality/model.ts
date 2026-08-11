@@ -13,13 +13,12 @@ import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
 import type { MortalityOverview } from "../types";
 
-export type MortalityReadingKey = "evolution" | "age" | "sex" | "causes";
+export type MortalityReadingKey = "evolution" | "age" | "sex";
 
 export const MORTALITY_READINGS: FormOption[] = [
   { key: "evolution", label: "Évolution" },
   { key: "age", label: "Âge" },
   { key: "sex", label: "Sexe" },
-  { key: "causes", label: "Causes" },
 ];
 
 const SCOPE_NOTE = "Source nationale : ni région, ni taux de mortalité — le CépiDc ne publie pas de population de référence pour ces effectifs. Une lecture territoriale serait inventée, elle n'est donc pas offerte.";
@@ -110,15 +109,6 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
   ];
   const sexForm = resolveForm(sexForms, forms.sex);
 
-  /* — Causes — */
-  const causeRows = overview?.top_causes ?? [];
-  const causeForms: FormOption[] = [
-    { key: "rank", label: "Classement" },
-    { key: "bar", label: "Barres" },
-    ...(!isShare ? [{ key: "pie", label: "Camembert" }] : []),
-  ];
-  const causeForm = resolveForm(causeForms, forms.causes);
-
   const categorical = (
     key: MortalityReadingKey, nav: string, title: string, question: string, xTitle: string,
     denominator: string,
@@ -188,10 +178,138 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
       "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe", SAME_CAUSE_DENOMINATOR,
       sexRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       sexForms, sexForm),
-    categorical("causes", "Causes", `Principales causes de décès, ${year}`,
-      "Quelles causes pèsent le plus ?", "Cause de décès", ALL_CAUSES_DENOMINATOR,
-      causeRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
-      causeForms, causeForm,
-      ["Causes de premier niveau uniquement : le détail vit dans le sélecteur de cause."]),
   ];
+}
+
+/* ── Comparer plusieurs causes de décès ─────────────────────────────────────
+ *
+ * Remplace l'ancienne lecture « Causes », qui classait les douze premières :
+ * c'était une comparaison, présentée comme une lecture. On choisit désormais
+ * les causes qu'on met en regard, et le catalogue est classé par nombre de
+ * décès, si bien que retenir les premières reproduit exactement l'ancien
+ * classement.
+ *
+ * **C'est la base où les formes cumulatives ont le plus de sens** : les décès
+ * s'additionnent, et la somme de plusieurs causes est un nombre de décès qui
+ * existe. Empilé, camembert et aires empilées y sont donc licites sur les
+ * effectifs. Sur la part, non : elle est déjà rapportée au total toutes causes,
+ * et la redécomposer reviendrait à composer un tout avec des morceaux du tout.
+ */
+
+export type MortalityCompareView = {
+  key: string;
+  label: string;
+  form: ChartForm;
+  question: string;
+  needsAdditive?: boolean;
+  needsYears?: number;
+};
+
+export const MORTALITY_COMPARE_VIEWS: MortalityCompareView[] = [
+  { key: "line", label: "Courbes", form: "line", question: "Comment leurs trajectoires se comparent-elles ?" },
+  { key: "bar", label: "Barres", form: "bar", question: "Combien, année par année ?" },
+  { key: "rank", label: "Classement", form: "rank", question: "Quelles causes pèsent le plus ?" },
+  { key: "diverging", label: "Écarts", form: "diverging", needsYears: 2,
+    question: "Laquelle progresse, laquelle recule sur la période ?" },
+  { key: "heatmap", label: "Carte de chaleur", form: "heatmap", needsYears: 2,
+    question: "Où et quand est-ce le plus fort ?" },
+  { key: "stack", label: "Empilé", form: "stack", needsAdditive: true,
+    question: "Combien pèsent-elles ensemble, et qui apporte quoi ?" },
+  { key: "shareArea", label: "Aires empilées", form: "shareArea", needsAdditive: true, needsYears: 2,
+    question: "Comment leur partage se déforme-t-il d’une année à l’autre ?" },
+  { key: "pie", label: "Camembert", form: "pie", needsAdditive: true,
+    question: "Comment ces causes se partagent-elles ?" },
+];
+
+export type MortalityCompareInput = {
+  compared: Array<{ code: string; label: string; overview: MortalityOverview }>;
+  measure: "deaths" | "share";
+  populationLabel: string;
+  tokens: ChartTokens;
+  view: string;
+};
+
+export function buildMortalityCompare(input: MortalityCompareInput): Reading {
+  const { compared, measure, populationLabel, tokens, view } = input;
+  const isShare = measure === "share";
+  const kind = isShare ? "percent" : "quantity";
+  const unitLabel = isShare ? `% des ${ALL_CAUSES_DENOMINATOR}` : "décès";
+  const measureLabel = isShare ? `Part des ${ALL_CAUSES_DENOMINATOR}` : "Décès publiés";
+
+  const years = compared.length
+    ? compared
+      .map((item) => item.overview.annual.map((row) => row.year))
+      .reduce((shared, next) => shared.filter((year) => next.includes(year)))
+    : [];
+
+  const series: ChartSeries[] = compared.map((item, index) => ({
+    key: item.code,
+    label: item.label,
+    isOther: false,
+    colorIndex: index,
+    values: years.map((year) => {
+      const row = item.overview.annual.find((candidate) => candidate.year === year);
+      if (!row) return null;
+      return isShare ? row.share : row.deaths;
+    }),
+  }));
+
+  const offered = MORTALITY_COMPARE_VIEWS.filter((item) =>
+    (!item.needsAdditive || !isShare) && years.length >= (item.needsYears ?? 0));
+  const chosen = offered.find((item) => item.key === view) ?? offered[0];
+  const form = chosen?.form ?? "line";
+  const asPie = form === "pie";
+
+  const pieSeries: ChartSeries[] = series.map((item) => ({
+    ...item,
+    values: [item.values.reduce<number | null>(
+      (total, value) => (value === null ? total : (total ?? 0) + value), null)],
+  }));
+
+  const enough = compared.length >= 2;
+
+  return {
+    key: "compare",
+    nav: "Comparer",
+    title: enough
+      ? `${measureLabel} · ${compared.length} causes comparées`
+      : "Comparer des causes de décès",
+    question: chosen?.question ?? "",
+    caveats: [
+      SCOPE_NOTE,
+      ZERO_NOTE,
+      ...(isShare
+        ? [`Le dénominateur de ces parts est le nombre de ${ALL_CAUSES_DENOMINATOR}, sur la même année et la même population : c'est lui qui vaut 100 %.`]
+        : []),
+      `Toutes les causes comparées partagent la même population : ${populationLabel}.`,
+      "Les causes de la nomenclature s'emboîtent : additionner une cause et l'un de ses sous-ensembles compterait deux fois les mêmes décès.",
+    ],
+    forms: offered.map((item) => ({ key: item.key, label: item.label })),
+    form: chosen?.key ?? "line",
+    option: enough && years.length
+      ? buildOption({
+        form,
+        categories: asPie ? [populationLabel] : years,
+        series: asPie ? pieSeries : series,
+        kind, unitLabel, tokens,
+        directLabels: form === "line" && series.length <= 6,
+        xTitle: asPie ? undefined
+          : (form === "rank" || form === "diverging" ? "Causes comparées" : "Année"),
+      })
+      : null,
+    table: {
+      columns: ["Année", ...series.map((item) => item.label)],
+      rows: years.map((year, index) => [
+        String(year), ...series.map((item) => formatValue(item.values[index], kind)),
+      ]),
+    },
+    ariaLabel: `${measureLabel}, ${compared.length} causes comparées`,
+    height: form === "rank" || form === "diverging"
+      ? Math.max(CHART_HEIGHT, 80 + series.length * 26)
+      : CHART_HEIGHT,
+    empty: !enough
+      ? "Ajoutez une deuxième cause : une comparaison à un seul élément n’en est pas une."
+      : (years.length ? null : "Aucune année commune aux causes retenues."),
+    xTitle: "Année",
+  };
 }

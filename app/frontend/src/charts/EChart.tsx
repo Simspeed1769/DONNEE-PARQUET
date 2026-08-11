@@ -61,9 +61,27 @@ const NO_MORPH = new Set(["map", "custom"]);
  *  changer de forme après avoir retiré une série ferait glisser les marques les
  *  unes dans les autres.
  */
+/** Le réglage système « réduire les animations ».
+ *
+ *  Une transition morphée est précisément ce qu'il demande d'éteindre : elle
+ *  déplace des marques sur tout l'écran. On la coupe donc à la source plutôt
+ *  que de la laisser jouer plus vite — un mouvement bref reste un mouvement. */
+function reducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function withMorphing(option: EChartsOption): EChartsOption {
   const series = (option as { series?: unknown }).series;
   if (!Array.isArray(series)) return option;
+  if (reducedMotion()) {
+    return {
+      ...option,
+      animation: false,
+      series: series.map((item: any) => (
+        item && typeof item === "object" ? { ...item, universalTransition: { enabled: false } } : item
+      )),
+    } as EChartsOption;
+  }
   return {
     ...option,
     series: series.map((item: any) => (
