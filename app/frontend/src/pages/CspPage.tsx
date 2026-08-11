@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getCspMetadata, getCspOverview } from "../api";
 import { PageHero } from "../components/PageHero";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { formatKpi } from "../utils";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
 import { CSP_READINGS, buildCspReadings, type CspReadingKey } from "../csp/model";
@@ -17,11 +18,6 @@ type Measure = "share" | "effectif";
 function formatNumber(value: number | null | undefined, maximumFractionDigits = 0): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits }).format(value);
-}
-
-function formatKpi(value: number | null, kind: string): string {
-  if (kind === "percent") return `${formatNumber(value, 1)} %`;
-  return formatNumber(value, 0);
 }
 
 export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: Props) {
@@ -140,7 +136,8 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
   const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
     key: kpi.key,
     label: kpi.label,
-    value: kpi.kind === "ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind),
+    // Seule l'évolution est une variation : elle seule porte un signe.
+    value: kpi.kind === "ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind, kpi.key === "evolution"),
     detail: kpi.detail,
     sentence: kpi.kind === "ratio",
   }));
@@ -183,7 +180,6 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
 
     {overview && current ? <>
       <section className="pathology-title-line csp-title-line"><div><span>{overview.context.level_label}</span><h2>{overview.context.csp_label}</h2><small>{overview.context.region_label} · {overview.context.age_label} · {overview.context.sex_label}</small></div><div className="csp-title-actions"><div className="csp-title-chips"><span>Millésime {overview.context.year}</span><span>Pondéré Insee</span></div><button type="button" onClick={openExtraction}>Extraire les données →</button></div></section>
-      <KpiStrip items={kpiItems} className="csp-kpis" />
 
       <ChartShell
         kicker={`CSP · ${overview.context.csp_label}`}
@@ -195,6 +191,7 @@ export function CspPage({ routeVersion, onOpenExtraction, onOpenMethodology }: P
         form={current.form}
         onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
         question={current.question}
+        highlights={kpiItems}
         headerActions={<div className="pathology-toggle" aria-label="Mesure"><button type="button" className={measure === "share" ? "active" : ""} onClick={() => setMeasure("share")}>Part</button><button type="button" className={measure === "effectif" ? "active" : ""} onClick={() => setMeasure("effectif")}>Effectif</button></div>}
         height={current.height}
         option={current.option}

@@ -40,6 +40,15 @@ export type ChartInput = {
 
 const AXIS_NAME_GAP = 30;
 
+/** La place qu'il faut au-dessus du tracé pour le nom de l'axe des valeurs.
+ *
+ *  ECharts écrit ce nom **au-dessus** de la grille, sans l'inclure dans le
+ *  calcul de `containLabel`. Avec 16 px de marge haute, « % de la population de
+ *  référence Cnam » était coupé horizontalement en deux : on ne lisait que le
+ *  bas des lettres. Il faut l'écart au sommet de l'axe plus la hauteur d'une
+ *  ligne. */
+const VALUE_NAME_TOP = 30;
+
 /** Le même titre, pour un axe de modalités devenu vertical. Écrit en haut de
  *  l'axe plutôt qu'en son milieu : au milieu, il faudrait le coucher, et un
  *  libellé pivoté se lit mal.
@@ -212,7 +221,7 @@ export function buildOption(input: ChartInput): EChartsOption {
   return {
     animationDuration: 380,
     grid: {
-      left: 8, right: input.directLabels ? 132 : 16, top: 16,
+      left: 8, right: input.directLabels ? 132 : 16, top: VALUE_NAME_TOP,
       // `containLabel` ne tient pas compte du nom de l'axe : sans cette marge,
       // le titre se poserait sous le bord du graphique.
       bottom: input.xTitle ? AXIS_NAME_GAP : 8,
@@ -625,7 +634,13 @@ function pyramidOption(input: ChartInput, scale: { label: string },
 
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 16, top: 8, bottom: input.xTitle ? AXIS_NAME_GAP : 8, containLabel: true },
+    grid: {
+      left: 8, right: 16, top: 8,
+      // L'axe des valeurs de la pyramide est horizontal : son nom se pose en
+      // bas, avec le titre des modalités.
+      bottom: input.xTitle ? AXIS_NAME_GAP + 18 : AXIS_NAME_GAP,
+      containLabel: true,
+    },
     tooltip: {
       trigger: "axis",
       ...tooltipCommon(tokens),

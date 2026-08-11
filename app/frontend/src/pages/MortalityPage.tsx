@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { getMortalityMetadata, getMortalityOverview } from "../api";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { PageHero } from "../components/PageHero";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { formatKpi } from "../utils";
 import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { MORTALITY_READINGS, buildMortalityReadings, type MortalityReadingKey } from "../mortality/model";
 import type { MortalityMetadata, MortalityOverview } from "../types";
@@ -20,10 +21,6 @@ function formatPercent(value: number | null, digits = 1): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
   if (value !== 0 && Math.abs(value) < 0.1) return "<0,1 %";
   return `${formatNumber(value, digits)} %`;
-}
-
-function formatKpi(value: number | null, kind: string): string {
-  return kind === "quantity" ? formatNumber(value) : formatPercent(value, 1);
 }
 
 export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodology }: Props) {
@@ -114,7 +111,9 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   }, [overview]);
 
   const kpiItems: KpiItem[] = visibleKpis.map((kpi) => ({
-    key: kpi.key, label: kpi.label, value: formatKpi(kpi.value, kpi.kind), detail: kpi.detail,
+    key: kpi.key, label: kpi.label, detail: kpi.detail,
+    // Seule l'évolution est une variation : elle seule porte un signe.
+    value: formatKpi(kpi.value, kpi.kind, kpi.key === "evolution"),
   }));
 
   const sourceLine = `Source · ${metadata?.source} · ${metadata?.scope}`;
@@ -142,7 +141,6 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     {error ? <div className="analysis-error"><strong>La fiche Mortalité n’a pas pu être calculée</strong><span>{error}</span></div> : null}
     {overview && current ? <>
       <section className="mortality-title-line"><div><span>LECTURE NATIONALE</span><h2>{overview.context.cause_label}</h2><small>{populationLabel} · {overview.context.year}</small></div><div className="mortality-title-actions"><span className="mortality-scope-chip">Effectifs bruts · sans taux</span><button type="button" onClick={openExtraction}>Extraire</button><button type="button" onClick={onOpenMethodology}>Voir les limites →</button></div></section>
-      <KpiStrip items={kpiItems} className="mortality-kpis" />
 
       <ChartShell
         kicker={`Mortalité · ${populationLabel.toLowerCase()}`}
@@ -154,6 +152,7 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         form={current.form}
         onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
         question={current.question}
+        highlights={kpiItems}
         headerActions={<div className="pathology-toggle" aria-label="Mesure"><button type="button" className={measure === "deaths" ? "active" : ""} onClick={() => setMeasure("deaths")}>Nombre</button><button type="button" className={measure === "share" ? "active" : ""} onClick={() => setMeasure("share")}>Part</button></div>}
         height={current.height}
         option={current.option}

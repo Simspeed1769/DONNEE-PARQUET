@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { getPathologyMetadata, getPathologyOverview } from "../api";
 import { MultiSelect } from "../components/MultiSelect";
 import { PageHero } from "../components/PageHero";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
+import { formatKpi } from "../utils";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { useChartTokens } from "../charts/tokens";
 import { PATHOLOGY_READINGS, buildPathologyReadings, type PathologyReadingKey } from "../pathologies/model";
@@ -18,13 +19,6 @@ type Props = {
   onOpenExtraction: (params: URLSearchParams) => void;
   onOpenMethodology: () => void;
 };
-
-function formatKpi(value: number | null, kind: string): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
-  if (kind === "quantity") return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(value);
-  if (kind === "percent") return `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1, signDisplay: "exceptZero" }).format(value)} %`;
-  return `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value)} ×`;
-}
 
 export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodology }: Props) {
   const initialParams = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
@@ -185,7 +179,8 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   const kpiItems: KpiItem[] = (overview?.kpis ?? []).map((kpi) => ({
     key: kpi.key,
     label: kpi.label,
-    value: kpi.key === "sex_ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind),
+    // Seule l'évolution est une variation : elle seule porte un signe.
+    value: kpi.key === "sex_ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind, kpi.key === "evolution"),
     detail: kpi.detail,
     sentence: kpi.key === "sex_ratio",
   }));
@@ -228,7 +223,6 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
 
     {overview && current ? <>
       <section className="pathology-title-line"><div><span>{overview.context.family}</span><h2>{overview.context.label}</h2><small>{regionLabel} · {selectedAgeLabel} · {sexLabel}</small></div><button type="button" onClick={openExtraction}>Extraire les données →</button></section>
-      <KpiStrip items={kpiItems} />
 
       <ChartShell
         kicker={`Pathologies · ${overview.context.label}`}
@@ -240,6 +234,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         form={current.form}
         onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
         question={current.question}
+        highlights={kpiItems}
         headerActions={<div className="pathology-toggle" aria-label="Mesure"><button type="button" className={measure === "prevalence" ? "active" : ""} onClick={() => setMeasure("prevalence")}>Prévalence</button><button type="button" className={measure === "patients" ? "active" : ""} onClick={() => setMeasure("patients")}>Patients</button></div>}
         beforeChart={
           current.key === "territory" ? (

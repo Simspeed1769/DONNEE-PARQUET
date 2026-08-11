@@ -285,7 +285,9 @@ export function seriesOption({
     grid: {
       left: 12,
       right: directLabels ? 148 : 24,
-      top: columnLabels ? 34 : 20,
+      // Le nom de l'axe des valeurs s'écrit au-dessus de la grille sans entrer
+      // dans `containLabel` : sans cette marge, il est coupé en deux.
+      top: columnLabels ? 44 : 30,
       // `containLabel` ne tient pas compte du nom de l'axe.
       bottom: AXIS_NAME_GAP,
       containLabel: true,
@@ -643,8 +645,8 @@ export function ageOption({ order, rows, tokens, kind, form }: AgeInput): EChart
     animationDuration: 420,
     backgroundColor: "transparent",
     grid: horizontal
-      ? { left: 12, right: single ? 84 : 24, top: 24, bottom: 12, containLabel: true }
-      : { left: 12, right: 20, top: 30, bottom: AXIS_NAME_GAP, containLabel: true },
+      ? { left: 12, right: single ? 84 : 24, top: 30, bottom: 12, containLabel: true }
+      : { left: 12, right: 20, top: 34, bottom: AXIS_NAME_GAP, containLabel: true },
     tooltip: categoryTooltip(rowsForTooltip, kind, tokens, asLine ? "line" : "shadow"),
     xAxis: horizontal ? valueAxis : categoryAxis,
     yAxis: horizontal ? categoryAxis : valueAxis,

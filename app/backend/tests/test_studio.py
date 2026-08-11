@@ -278,7 +278,7 @@ class StudioTests(unittest.TestCase):
         self.assertGreater(len(overview["age_sex"]), 1)
         self.assertGreater(len(overview["territories"]), 1)
         self.assertGreater(overview["kpis"][0]["value"], 0)
-        self.assertIn("femme touchée pour 1 homme", overview["kpis"][3]["detail"])
+        self.assertIn("femme pour 1 homme", overview["kpis"][3]["detail"])
         self.assertNotIn(",0 femme", overview["kpis"][3]["detail"])
         self.assertEqual(metadata["levels"], 3)
         self.assertTrue(any(group["pathologies"] for family in metadata["families"] for group in family["groups"]))

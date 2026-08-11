@@ -1,5 +1,50 @@
 import type { AdvancedFilters, Metadata, MetricKind } from "./types";
 
+/** L'échelle courte du métier, et rien au-dessus du milliard.
+ *
+ *  La notation compacte d'`Intl` monte au-delà : au millier de milliards elle
+ *  écrit « 1,25 Bn € ». C'est du français correct — en français, un billion
+ *  vaut mille milliards — mais personne ne le lit ainsi dans un service de
+ *  l'Assurance Maladie, où `Bn` évoque l'anglais *billion*, c'est-à-dire un
+ *  milliard. Le même signe portait donc deux valeurs à mille près selon le
+ *  lecteur. On s'arrête au milliard : 1 250 Md €, une seule unité, celle que
+ *  le métier emploie. */
+const COMPACT_STEPS = [
+  { from: 1e9, divisor: 1e9, unit: "Md" },
+  { from: 1e6, divisor: 1e6, unit: "M" },
+  { from: 1e3, divisor: 1e3, unit: "k" },
+] as const;
+
+function compact(value: number, suffix: string): string {
+  const magnitude = Math.abs(value);
+  const step = COMPACT_STEPS.find((candidate) => magnitude >= candidate.from);
+  const scaled = step ? value / step.divisor : value;
+  // Deux décimales tant qu'on reste sous le millier d'unités ; au-delà, le
+  // nombre est déjà long et les centièmes n'apprennent plus rien.
+  const digits = Math.abs(scaled) >= 1000 ? 0 : 2;
+  const number = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: digits }).format(scaled);
+  return [number, step?.unit, suffix].filter(Boolean).join(" ");
+}
+
+/** Un repère chiffré. Un **niveau** s'écrit nu ; seule une **variation** porte
+ *  son signe. « +6,6 % » de prévalence laisserait croire à une hausse alors
+ *  qu'il s'agit de la valeur elle-même. */
+export function formatKpi(value: number | null | undefined, kind: string,
+                          signed = false): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (kind === "quantity") {
+    return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(value);
+  }
+  if (kind === "percent") {
+    return `${new Intl.NumberFormat("fr-FR", {
+      maximumFractionDigits: 1,
+      signDisplay: signed ? "exceptZero" : "auto",
+    }).format(value)} %`;
+  }
+  if (kind === "money") return compact(value, "€");
+  return `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value)} ×`;
+}
+
 export function formatValue(value: number | null | undefined, kind: MetricKind | string, signed = false): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "—";
   const prefix = signed && value > 0 ? "+" : "";
@@ -14,18 +59,8 @@ export function formatValue(value: number | null | undefined, kind: MetricKind |
   if (kind === "base100") {
     return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(value);
   }
-  if (kind === "money") {
-    return `${prefix}${new Intl.NumberFormat("fr-FR", {
-      style: "currency",
-      currency: "EUR",
-      notation: "compact",
-      maximumFractionDigits: 2,
-    }).format(value)}`;
-  }
-  return `${prefix}${new Intl.NumberFormat("fr-FR", {
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(value)}`;
+  if (kind === "money") return `${prefix}${compact(value, "€")}`;
+  return `${prefix}${compact(value, "")}`;
 }
 
 export function scaleFor(values: number[], kind: string): { divisor: number; label: string } {

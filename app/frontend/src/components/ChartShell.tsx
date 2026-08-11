@@ -19,6 +19,7 @@ import { EChart, type EChartsOption } from "../charts/EChart";
 import type { ChartTokens } from "../charts/tokens";
 import { csvFromRows } from "../utils";
 import { ExportPngButton } from "./ExportPngButton";
+import type { KpiItem } from "./KpiStrip";
 
 type Props = {
   kicker: string;
@@ -39,6 +40,11 @@ type Props = {
   onForm?: (key: string) => void;
   /** La question à laquelle la forme répond. */
   question?: string;
+  /** Les repères chiffrés de la base, **au format DAMIR** : une ligne, valeur
+   *  en gras et libellé discret, sur la même bande que le choix de forme. Les
+   *  cartes encadrées qu'employaient Pathologies et CSP prenaient une bande
+   *  entière et repoussaient le graphique hors de l'écran. */
+  highlights?: KpiItem[];
   /** Contenu propre à la base, entre l'en-tête et le graphique — un panneau
    *  de réglage (le masquage Cnam, par exemple) qui n'a pas sa place dans
    *  l'en-tête mais appartient à la même carte que le graphique. */
@@ -75,7 +81,7 @@ type Props = {
 };
 
 export function ChartShell({
-  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question,
+  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question, highlights,
   beforeChart, afterChart, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
@@ -107,11 +113,20 @@ export function ChartShell({
         {headerActions}
       </header>
 
-      {/* La question à gauche, le choix de forme à droite : une seule bande,
+      {/* Les repères à gauche, le choix de forme à droite : une seule bande,
           et le graphique reste où il est. C'est la disposition de DAMIR. */}
-      {question || (forms && forms.length > 1) ? (
+      {(highlights && highlights.length) || (forms && forms.length > 1) ? (
         <div className="damir-strip">
-          {question ? <p className="damir-question">{question}</p> : <span />}
+          {highlights && highlights.length ? (
+            <div className="damir-highlights">
+              {highlights.map((item) => (
+                <span key={item.key} className="damir-highlight">
+                  <strong>{item.value}</strong>
+                  <small>{item.label}</small>
+                </span>
+              ))}
+            </div>
+          ) : <span />}
           {forms && forms.length > 1 ? (
             <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
               {forms.map((item) => (
@@ -127,6 +142,10 @@ export function ChartShell({
           ) : null}
         </div>
       ) : null}
+
+      {/* La question sous la bande plutôt que dedans : à trois éléments, la
+          ligne débordait sur les écrans étroits. */}
+      {question ? <p className="damir-question chart-shell-question">{question}</p> : null}
 
       {beforeChart}
 

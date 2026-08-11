@@ -141,6 +141,19 @@ def _age_order(expression: str = "cla_age_5") -> str:
             f"TRY_CAST(replace({expression}, 'et+', '') AS INTEGER), 999)")
 
 
+def _points(delta: float | None) -> str:
+    """Un écart en points de pourcentage, écrit en français.
+
+    Virgule décimale, signe explicite parce qu'il s'agit bien d'une variation,
+    et accord au pluriel plutôt qu'un « point(s) » entre parenthèses — une
+    interface qui hésite sur le nombre se lit comme un brouillon.
+    """
+    if delta is None:
+        return "—"
+    number = f"{delta:+.2f}".replace(".", ",")
+    return f"{number} point" if abs(delta) < 2 else f"{number} points"
+
+
 def _age_label(value: Any) -> str:
     text = str(value)
     if text == "tsage":
@@ -264,7 +277,7 @@ def pathology_overview(repo: PathologyRepository, payload: PathologyOverviewRequ
     point_delta = (current["prevalence"] - first["prevalence"]
                    if current["prevalence"] is not None and first["prevalence"] is not None else None)
     rounded_ratio = round(ratio, 1) if ratio is not None else None
-    ratio_detail = ((f"{rounded_ratio:g}".replace(".", ",") + " femme touchée pour 1 homme")
+    ratio_detail = ((f"{rounded_ratio:g}".replace(".", ",") + " femme pour 1 homme")
                     if rounded_ratio is not None else "Prévalence non disponible")
     return {
         "context": {"top": payload.top, "label": str(identity[0]["label"]),
@@ -278,7 +291,7 @@ def pathology_overview(repo: PathologyRepository, payload: PathologyOverviewRequ
             {"key": "evolution", "label": f"Évolution depuis {first['year']}",
              "value": (100 * (current["patients"] / first["patients"] - 1)
                        if current["patients"] is not None and first["patients"] not in (None, 0) else None),
-             "kind": "percent", "detail": f"{point_delta:+.2f} point(s)" if point_delta is not None else "—"},
+             "kind": "percent", "detail": _points(point_delta)},
             {"key": "sex_ratio", "label": "Ratio femmes / hommes", "value": ratio, "kind": "ratio",
              "detail": ratio_detail},
         ],

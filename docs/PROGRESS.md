@@ -112,6 +112,29 @@
   correction demanderait de reprendre `styles.css`.
 - **Écarté** : rien.
 
+## v4 · Phase 1 + 1 bis — Un seul format de KPI, un axe entier, des nombres français
+
+- **Fait (1.A)** : les cartes encadrées de Pathologies, CSP et Mortalité
+  disparaissent. Les repères passent au format DAMIR — une ligne, valeur en gras
+  et libellé discret — sur la même bande que le choix de forme, dans
+  `ChartShell`. La question descend sous la bande : à trois éléments, la ligne
+  débordait sur les écrans étroits.
+- **Fait (1.B)** : le nom de l'axe des valeurs est écrit par ECharts **au-dessus**
+  de la grille et n'entre pas dans `containLabel`. Avec 16 px de marge haute,
+  « % de la population de référence Cnam » était coupé en deux dans la hauteur.
+  La marge passe à 30 px, ici et dans les constructeurs de Panorama.
+- **Fait (1 bis)** : `Bn` disparaît des formateurs — au-delà du milliard on
+  écrit `1 250 Md €`, une seule unité. Un **niveau** ne porte plus de signe
+  (`6,6 %` et non `+6,6 %`), le signe restant aux variations. `+1.03 point(s)`
+  devient `+1,03 point`, virgule française et accord au pluriel, via un
+  formateur nommé côté serveur. « 0,8 femme touchée pour 1 homme » devient
+  « 0,8 femme pour 1 homme ».
+- **Non vérifié** : la revue aux largeurs 1400 / 1240 / 860 / 720 / 620 px
+  exigée par la mission n'a pas pu être faite — l'outil de navigation de cette
+  session ne réduit pas le viewport capturé, il rend toujours en 1568 px. La
+  bande de KPI est construite pour se replier (`flex-wrap`), mais ce
+  comportement reste à contrôler sur un vrai écran étroit.
+
 ## v3 · Après-coup — le périmètre par série, enfin atteignable et juste
 
 Deux défauts signalés à l'usage sur « Ce que je compare ». Les filtres de
