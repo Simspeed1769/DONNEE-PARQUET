@@ -164,9 +164,17 @@ export function EChart({ option, height, stale = false, ariaLabel, onInstance }:
     const chart = echarts.init(container.current, undefined, { renderer: "canvas" });
     instance.current = chart;
     notify.current?.(chart);
-    const observer = new ResizeObserver(() => chart.resize());
+    // Redimensionner depuis l'observateur qui mesure ce qu'on redimensionne
+    // boucle : ECharts change la taille de son canevas, l'observateur se
+    // redéclenche. On repousse d'une frame, ce qui casse le cycle.
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => chart.resize());
+    });
     observer.observe(container.current);
     return () => {
+      window.cancelAnimationFrame(frame);
       observer.disconnect();
       notify.current?.(null);
       chart.dispose();

@@ -9,6 +9,7 @@ import "./panorama.css";
 import "./correlations.css";
 import "./methodology.css";
 import "./components/copyLinkButton.css";
+import "./components/seriesDrawer.css";
 import "./components/exportPngButton.css";
 
 // Avant le premier rendu : voir `applyStoredPalette`.

@@ -1,0 +1,348 @@
+/* Le tiroir des séries, et ce qu'il contient.
+ *
+ * Tout vient des jetons de theme.css : le tiroir suit le thème clair comme le
+ * sombre sans être décrit deux fois.
+ */
+
+.series-drawer {
+  position: fixed;
+  z-index: 60;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: series-drawer-in .18s var(--ease) both;
+}
+
+@keyframes series-drawer-in {
+  from { transform: translateX(12px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .series-drawer { animation: none; }
+}
+
+/* La page se pousse au lieu d'être recouverte : le graphique reste visible à
+   gauche pendant qu'on modifie les séries. Sous 900 px de large il n'y a plus
+   de place pour les deux, et le tiroir reprend toute la largeur. */
+:root[data-drawer="open"] .main-content { padding-right: 420px; }
+
+@media (max-width: 900px) {
+  .series-drawer { width: 100vw; border-left: 0; }
+  :root[data-drawer="open"] .main-content { padding-right: 0; }
+}
+
+.series-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.series-drawer-head > div { flex: 1; min-width: 0; }
+.series-drawer-head strong { display: block; color: var(--ink); font-size: var(--text-sm); font-weight: 650; }
+.series-drawer-head small { display: block; margin-top: 3px; color: var(--ink-muted); font-size: var(--text-2xs); line-height: 1.45; }
+
+.series-drawer-close {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  margin: -6px -6px 0 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: .85rem;
+  cursor: pointer;
+}
+.series-drawer-close:hover { color: var(--ink); background: var(--surface-hover); }
+
+/* Le seul défilement de l'écran quand le tiroir est ouvert. */
+.series-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-5);
+  scrollbar-width: thin;
+}
+
+.series-drawer-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--line);
+  background: var(--surface-sunken);
+}
+.series-drawer-count { margin-left: auto; color: var(--ink-muted); font-size: var(--text-2xs); }
+.series-drawer-actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* ── Une ligne de série ──────────────────────────────────────────────────── */
+
+.drawer-series { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+
+.drawer-series > li {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+  border-radius: var(--radius-sm);
+}
+.drawer-series > li.editing { background: var(--surface-sunken); }
+
+.drawer-series-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 4px;
+}
+
+.drawer-swatch { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 3px; }
+
+.drawer-name {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+}
+.drawer-name:hover { border-color: var(--line); }
+.drawer-name:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+
+.drawer-value {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Les commandes de la ligne. Elles restent visibles : une croix qui n'apparaît
+   qu'au survol n'existe pas pour qui ne survole pas. */
+.drawer-tools { display: inline-flex; align-items: center; gap: 2px; flex: 0 0 auto; }
+
+.drawer-tools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.drawer-tools button:hover:not(:disabled) { color: var(--ink); border-color: var(--line); background: var(--surface-hover); }
+.drawer-tools button:disabled { opacity: .35; cursor: not-allowed; }
+.drawer-tools .on { color: var(--accent); border-color: var(--accent-line); }
+
+/* La croix de suppression : une zone de 44 px, la cible tactile minimale, et un
+   dessin discret à l'intérieur. */
+.drawer-remove { width: 44px; height: 44px; font-size: .82rem; }
+.drawer-remove:hover:not(:disabled) { color: var(--accent); }
+
+.drawer-handle { cursor: grab; }
+.drawer-handle:active { cursor: grabbing; }
+.drawer-series > li.dragging { opacity: .5; }
+.drawer-series > li.drop-target { box-shadow: inset 0 2px 0 0 var(--accent); }
+
+/* Les filtres propres à la série, sous son nom. */
+.drawer-chips {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 0 4px 4px 22px;
+}
+.drawer-chips em {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-style: normal;
+}
+.drawer-chips button {
+  padding: 1px 5px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.drawer-chips button:hover { color: var(--ink); background: var(--surface-hover); }
+
+/* L'accordéon de périmètre, sous sa propre ligne. */
+.drawer-scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 2px 4px 6px;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.drawer-scope > p { margin: 0; color: var(--ink-muted); font-size: var(--text-2xs); line-height: 1.45; }
+.drawer-scope .advanced-filter-panel { gap: var(--space-3); border: 0; padding: 0; background: transparent; box-shadow: none; }
+.drawer-scope .advanced-filter-heading { display: none; }
+
+.drawer-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 620;
+  cursor: pointer;
+}
+.drawer-add:hover:not(:disabled) { color: var(--ink); border-color: var(--line-strong); }
+.drawer-add:disabled { opacity: .45; cursor: not-allowed; }
+
+/* La recherche du catalogue, dans le flux du tiroir. */
+.drawer-search { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-4); }
+.drawer-search input {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+}
+.drawer-search input:focus-visible { outline: 2px solid var(--accent-line); outline-offset: -2px; }
+.drawer-search small { color: var(--ink-muted); font-size: var(--text-2xs); }
+
+.drawer-results { display: flex; flex-direction: column; gap: 1px; margin: 0; padding: 0; list-style: none; }
+.drawer-results button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-xs);
+  text-align: left;
+  cursor: pointer;
+}
+.drawer-results button:hover:not(:disabled) { background: var(--surface-hover); color: var(--ink); }
+.drawer-results button:disabled { opacity: .4; cursor: not-allowed; }
+.drawer-results .mark { flex: 0 0 auto; width: 14px; color: var(--accent); }
+/* Une ligne, jamais quatre : un libellé de pathologie fait trois lignes dans
+   420 px, et la liste devenait un mur. Il est coupé par un « … » et le titre
+   complet reste à l'infobulle. */
+.drawer-results .name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drawer-results .group { flex: 0 0 auto; max-width: 40%; overflow: hidden; color: var(--ink-muted); font-size: var(--text-2xs); text-overflow: ellipsis; white-space: nowrap; }
+.drawer-results .weight { flex: 0 0 auto; color: var(--ink-muted); font-size: var(--text-2xs); font-variant-numeric: tabular-nums; }
+
+.drawer-section-title {
+  margin: var(--space-4) 0 var(--space-2);
+  color: var(--ink-muted);
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.drawer-note { margin: var(--space-2) 0 0; color: var(--ink-muted); font-size: var(--text-2xs); line-height: 1.5; }
+
+/* ── Le choix unique maison ──────────────────────────────────────────────── */
+
+.choice-select {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.choice-select[open] { border-color: var(--accent-line); }
+.choice-select.is-disabled { opacity: .5; }
+.choice-select summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 10px;
+  list-style: none;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.choice-select summary::-webkit-details-marker { display: none; }
+.choice-select summary::after { content: "⌄"; margin-left: 4px; color: var(--ink-muted); }
+.choice-select[open] summary::after { transform: rotate(180deg); }
+.choice-select summary strong {
+  max-width: 62%;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: var(--text-2xs);
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.choice-popover {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 5px;
+  border-top: 1px solid var(--line);
+  scrollbar-width: thin;
+}
+.choice-popover button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 7px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  text-align: left;
+  cursor: pointer;
+}
+.choice-popover button:hover { background: var(--surface-hover); color: var(--ink); }
+.choice-popover button.chosen { color: var(--ink); font-weight: 620; }
+.choice-popover i { flex: 0 0 auto; width: 12px; color: var(--accent); font-style: normal; }
+.choice-empty { margin: 0; padding: 6px 7px; color: var(--ink-muted); font-size: var(--text-2xs); }
+
+.drawer-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-3); }
+.drawer-fields > label > span,
+.drawer-scope .filter-section-title strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 620;
+}

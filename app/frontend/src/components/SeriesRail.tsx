@@ -1,15 +1,10 @@
-/** « Ce que je compare » — le rail de séries des bases à objets.
+/** « Ce que je compare » — le bandeau, et le tiroir qu'il ouvre.
  *
- *  C'est le portage du geste de `damir/CompareSection.tsx` sur Pathologies, CSP
- *  et Mortalité : un résumé d'une ligne posé sur le fond de la page, au-dessus
- *  du panneau du graphique, et une liste qui s'ouvre en dessous où **chaque
- *  série porte son propre périmètre**. Comparer « le diabète en Île-de-France »
- *  à « le diabète en Bretagne » ne demande alors plus deux écrans ni deux liens.
- *
- *  Il réemploie les classes de DAMIR — `compare-rail*`, `series-*`,
- *  `scope-editor*` — plutôt que d'en inventer de voisines : la consigne est que
- *  les quatre bases s'utilisent à l'identique, et deux feuilles de style
- *  parallèles divergent toujours.
+ *  Le bandeau reste ce qu'il était : une rangée de puces sur le fond de la
+ *  page, au-dessus du panneau du graphique. C'est ce qu'il ouvre qui change.
+ *  Le panneau se posait par-dessus la page, masquait les filtres qu'il
+ *  prolonge et le graphique qu'on modifiait, et défilait dans son coin ; il
+ *  devient un tiroir ancré à droite qui pousse la page — voir `SeriesDrawer`.
  *
  *  Trois règles tiennent la souplesse honnête, les mêmes que sur DAMIR :
  *
@@ -20,15 +15,15 @@
  *     filtres qui la distinguent du périmètre commun. Sans cela, deux courbes
  *     semblables laisseraient croire à une comparaison toutes choses égales par
  *     ailleurs — et l'appelant retire les formes cumulatives, qui mentiraient.
- *  3. **Aucune liste déroulante native pour choisir les séries.** Le catalogue
- *     s'atteint par une recherche et une liste classée par poids, comme le
- *     `SeriesPicker` de DAMIR. Le réglage du périmètre, lui, emploie les mêmes
- *     champs que DAMIR dans son tiroir : `.scope-editor-field`, adossé aux
- *     jetons.
+ *  3. **Aucune liste déroulante native.** Ni pour choisir les séries — une
+ *     recherche et une liste classée par poids — ni pour régler leur périmètre,
+ *     qui emploie `ChoiceSelect`.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatValue } from "../utils";
+import { ChoiceSelect } from "./ChoiceSelect";
+import { SeriesDrawer } from "./SeriesDrawer";
 
 /** Une entrée du catalogue comparable, classée par poids par l'appelant. */
 export type RailOption = {
@@ -71,13 +66,13 @@ type Props = {
   nounPlural: string;
   fields: ScopeField[];
   base: SeriesScope;
-  /** Le périmètre commun en une ligne, rappelé sous l'en-tête du panneau. */
+  /** Le périmètre commun en une ligne, rappelé sous le titre du tiroir. */
   baseLabel: string;
   /** La couleur de chaque série, pour que le rail et le graphique s'accordent. */
   colorOf: (index: number) => string;
   /** Le poids affiché en regard d'une série retenue, déjà lu dans les données. */
   valueOf?: (entry: SeriesEntry, index: number) => number | null;
-  /** La nature des poids, pour les mettre en forme : `quantity`, `money`. */
+  /** La nature des poids, pour les mettre en forme. */
   kind: string;
   /** Le repli, quand le modèle de la base le juge licite. Absent, aucune ligne
    *  n'est offerte : un « reste » qui compterait deux fois les mêmes personnes
@@ -120,73 +115,15 @@ export function hasMixedPopulations(entries: SeriesEntry[], base: SeriesScope,
   return entries.some((entry) => scopeChips(entry.scope, base, fields).length > 0);
 }
 
-/** Le tiroir de périmètre d'une seule série.
- *
- *  Il vit **dans le flux**, sous sa ligne : posé en absolu au-dessus d'une liste
- *  qui défile déjà, il serait rogné par son parent et deux zones de défilement
- *  imbriquées se disputeraient la molette — la leçon de la v3 sur DAMIR. */
-function ScopeEditor({ label, scope, fields, onChange }: {
-  label: string;
-  scope: SeriesScope;
-  fields: ScopeField[];
-  onChange: (scope: SeriesScope) => void;
-}) {
-  return (
-    <div className="scope-editor" role="group" aria-label={`Périmètre · ${label}`}>
-      <header>
-        <strong>Périmètre de « {label} »</strong>
-        <small>S’applique à cette série seule.</small>
-      </header>
-
-      <div className="scope-editor-fields">
-        {fields.map((field) => (
-          <label className="scope-editor-field" key={field.key}>
-            <span>{field.label}</span>
-            <select
-              value={scope[field.key] ?? ""}
-              onChange={(event) => onChange({ ...scope, [field.key]: event.target.value })}
-            >
-              {field.options.map((option) => (
-                <option value={option.value} key={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </label>
-        ))}
-      </div>
-
-      <footer>
-        <p>La période reste commune : deux axes du temps différents ne se comparent pas.</p>
-      </footer>
-    </div>
-  );
-}
-
 export function SeriesRail({
   catalogue, entries, onChange, maximum, noun, nounPlural, fields, base, baseLabel,
   colorOf, valueOf, kind, other, count, counts, onCountChange,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState(false);
   const [editing, setEditing] = useState<number | null>(null);
   const [query, setQuery] = useState("");
-  const popover = useRef<HTMLDivElement | null>(null);
-  const input = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (!search) return;
-    input.current?.focus();
-    const onPointerDown = (event: PointerEvent) => {
-      if (!popover.current?.contains(event.target as Node)) setSearch(false);
-    };
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setSearch(false); };
-    const frame = window.requestAnimationFrame(() => document.addEventListener("pointerdown", onPointerDown));
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [search]);
+  const [dragged, setDragged] = useState<number | null>(null);
+  const [over, setOver] = useState<number | null>(null);
 
   const labelOf = useMemo(
     () => new Map(catalogue.map((item) => [item.code, item.label])),
@@ -214,11 +151,11 @@ export function SeriesRail({
     setEditing(null);
   };
 
-  const move = (index: number, direction: -1 | 1) => {
-    const target = index + direction;
-    if (target < 0 || target >= entries.length) return;
+  const moveTo = (from: number, to: number) => {
+    if (to < 0 || to >= entries.length || from === to) return;
     const next = [...entries];
-    [next[index], next[target]] = [next[target], next[index]];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
     onChange(next);
     setEditing(null);
   };
@@ -242,17 +179,13 @@ export function SeriesRail({
   };
 
   /** Le même objet, une seconde fois, pour le régler sur un autre périmètre.
-   *  C'est l'équivalent de la « série libre » de DAMIR : sans elle, un code ne
-   *  pouvant figurer qu'une fois, on ne comparerait jamais une pathologie à
-   *  elle-même sur deux territoires. */
+   *  Sans elle, un code ne pouvant figurer qu'une fois, on ne comparerait jamais
+   *  une pathologie à elle-même sur deux territoires. */
   const duplicate = (index: number) => {
     if (full) return;
     const source = entries[index];
     const next = [...entries];
-    next.splice(index + 1, 0, {
-      code: source.code,
-      scope: { ...(source.scope ?? base) },
-    });
+    next.splice(index + 1, 0, { code: source.code, scope: { ...(source.scope ?? base) } });
     onChange(next);
     setEditing(index + 1);
   };
@@ -284,179 +217,177 @@ export function SeriesRail({
         >{open ? "Fermer" : "Modifier les séries"}</button>
       </div>
 
-      {open ? (
-        <div className="compare-rail-panel" role="dialog" aria-label={`Séries comparées · ${nounPlural}`}>
-          <div className="series-picker">
-            <div className="series-picker-head">
-              <div>
-                <strong>Ce que je compare</strong>
-                <small>Périmètre commun · {baseLabel}</small>
-              </div>
-              <div className="series-add-group">
-                <button
-                  type="button"
-                  className="series-add"
-                  onClick={() => setSearch((value) => !value)}
-                  aria-expanded={search}
-                  disabled={full}
-                  title={full
-                    ? `${maximum} séries au maximum : retirez-en une pour en ajouter`
-                    : `Ajouter une ${noun}`}
-                >+ {noun.charAt(0).toLocaleUpperCase("fr-FR")}{noun.slice(1)}</button>
-              </div>
-            </div>
-
-            <div className="series-count">
-              <span id="series-count-label">Combien</span>
-              <div className="segmented" role="group" aria-labelledby="series-count-label">
-                {counts.map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={count === value && entries.length === value ? "active" : ""}
-                    aria-pressed={count === value && entries.length === value}
-                    onClick={() => onCountChange(value)}
-                  >{value}</button>
-                ))}
-              </div>
-              <span className="series-count-state">
-                {entries.length} affichée{entries.length > 1 ? "s" : ""}
-                {full ? " · maximum" : ""}
-              </span>
-            </div>
-
-            {entries.length ? (
-              <ul className="series-list">
-                {entries.map((entry, index) => {
-                  const chips = scopeChips(entry.scope, base, fields);
-                  const label = labelOf.get(entry.code) ?? entry.code;
-                  return (
-                    <li key={`${index}-${entry.code}`} className={chips.length ? "has-scope" : ""}>
-                      <span className="series-swatch" style={{ background: colorOf(index) }} />
-                      <span className="series-name">
-                        <input
-                          type="text"
-                          className="series-name-input"
-                          value={entry.name ?? ""}
-                          placeholder={seriesName({ ...entry, name: undefined }, catalogue, base, fields)}
-                          aria-label={`Nom de la série · ${label}`}
-                          onChange={(event) => patch(index, { name: event.target.value })}
-                        />
-                      </span>
-                      <span className="series-value">{formatValue(valueOf?.(entry, index) ?? null, kind)}</span>
-                      <span className="series-tools">
-                        <button
-                          type="button"
-                          className={`series-scope-toggle ${chips.length ? "on" : ""}`}
-                          aria-expanded={editing === index}
-                          title="Régler le périmètre de cette série"
-                          onClick={() => {
-                            // Ouvrir le périmètre part du commun : on règle un
-                            // écart, on ne repart pas d'une feuille blanche.
-                            if (!entry.scope) patch(index, { scope: { ...base } });
-                            setEditing((current) => (current === index ? null : index));
-                          }}
-                        >
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-                        </button>
-                        <button type="button" onClick={() => duplicate(index)} disabled={full}
-                          title={`Comparer cette ${noun} à elle-même sur un autre périmètre`}
-                          aria-label={`Dupliquer ${label}`}>⧉</button>
-                        <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Monter">↑</button>
-                        <button type="button" onClick={() => move(index, 1)} disabled={index === entries.length - 1} aria-label="Descendre">↓</button>
-                        <button type="button" onClick={() => remove(index)} disabled={entries.length <= 1} aria-label={`Retirer ${label}`}>✕</button>
-                      </span>
-
-                      {/* Les filtres propres à la série, écrits en gris sous son
-                          nom : le graphique les porte dans sa légende, le rail
-                          doit les porter aussi, sans quoi on compare sans
-                          savoir quoi. */}
-                      {chips.length ? (
-                        <span className="series-scope-note">
-                          {chips.map((chip) => <em key={chip}>{chip}</em>)}
-                          <button type="button" onClick={() => patch(index, { scope: undefined })}
-                            aria-label="Revenir au périmètre commun">✕</button>
-                        </span>
-                      ) : null}
-
-                      {editing === index ? (
-                        <ScopeEditor
-                          label={label}
-                          scope={entry.scope ?? { ...base }}
-                          fields={fields}
-                          onChange={(next) => patch(index, { scope: next })}
-                        />
-                      ) : null}
-                    </li>
-                  );
-                })}
-
-                {other ? (
-                  <li className={`series-other ${other.on ? "" : "off"}`}>
-                    <span className="series-swatch" style={{ background: other.color }} />
-                    <span className="series-name">{other.label}</span>
-                    <span className="series-value" />
-                    <span className="series-tools">
-                      <button
-                        type="button"
-                        onClick={() => other.onToggle(!other.on)}
-                        aria-pressed={other.on}
-                        title={other.on ? "Masquer le reste" : "Afficher le reste"}
-                      >{other.on ? "✕" : "+"}</button>
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            ) : (
-              <p className="series-empty">
-                Aucune série affichée. Ajoutez une {noun}, ou <button type="button" className="link-button" onClick={() => onCountChange(count)}>reprenez les plus importantes</button>.
-              </p>
-            )}
-
-            {search ? (
-              <div className="series-popover" ref={popover} role="dialog" aria-label={`Ajouter · ${nounPlural}`}>
-                <input
-                  ref={input}
-                  type="search"
-                  value={query}
-                  placeholder={`Rechercher parmi ${catalogue.length} ${nounPlural}…`}
-                  aria-label={`Rechercher une ${noun}`}
-                  onChange={(event) => setQuery(event.target.value)}
-                />
-                <div className="series-results">
-                  {!matches.length ? <p className="series-hint">Aucun résultat pour « {query} ».</p> : null}
-                  {matches.slice(0, 120).map((item) => {
-                    const already = chosen.has(item.code);
-                    return (
-                      <button
-                        key={item.code}
-                        type="button"
-                        className={`series-result ${already ? "chosen" : ""}`}
-                        onClick={() => toggle(item.code)}
-                        disabled={!already && full}
-                        title={item.group}
-                      >
-                        <span className="series-result-mark">{already ? "✓" : "+"}</span>
-                        <span className="series-result-label">{item.label}</span>
-                        <span className="series-result-value">{formatValue(item.weight ?? null, kind)}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <footer className="series-popover-foot">
-                  <span>
-                    {query ? `${matches.length} sur ${catalogue.length}` : `${catalogue.length} au total`}
-                    {" · classées par poids"}
+      <SeriesDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Ce que je compare"
+        subtitle={`Périmètre commun · ${baseLabel}`}
+        count={`${entries.length} série${entries.length > 1 ? "s" : ""} sur ${maximum}`}
+      >
+        <ul className="drawer-series">
+          {entries.map((entry, index) => {
+            const chips = scopeChips(entry.scope, base, fields);
+            const label = labelOf.get(entry.code) ?? entry.code;
+            const scope = entry.scope ?? base;
+            return (
+              <li
+                key={`${index}-${entry.code}`}
+                className={[editing === index ? "editing" : "", dragged === index ? "dragging" : "",
+                  over === index && dragged !== null && dragged !== index ? "drop-target" : ""]
+                  .filter(Boolean).join(" ")}
+                onDragOver={(event) => { event.preventDefault(); setOver(index); }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  if (dragged !== null) moveTo(dragged, index);
+                  setDragged(null); setOver(null);
+                }}
+              >
+                <div className="drawer-series-row">
+                  <i className="drawer-swatch" style={{ background: colorOf(index) }} />
+                  <input
+                    type="text"
+                    className="drawer-name"
+                    value={entry.name ?? ""}
+                    placeholder={seriesName({ ...entry, name: undefined }, catalogue, base, fields)}
+                    aria-label={`Nom de la série · ${label}`}
+                    onChange={(event) => patch(index, { name: event.target.value })}
+                  />
+                  <span className="drawer-value">{formatValue(valueOf?.(entry, index) ?? null, kind)}</span>
+                  <span className="drawer-tools">
+                    <button
+                      type="button"
+                      className={chips.length ? "on" : ""}
+                      aria-expanded={editing === index}
+                      title={`Régler le périmètre de « ${label} »`}
+                      onClick={() => {
+                        if (!entry.scope) patch(index, { scope: { ...base } });
+                        setEditing((current) => (current === index ? null : index));
+                      }}
+                    >Filtrer</button>
+                    <button
+                      type="button"
+                      className="drawer-handle"
+                      draggable
+                      onDragStart={() => setDragged(index)}
+                      onDragEnd={() => { setDragged(null); setOver(null); }}
+                      onKeyDown={(event) => {
+                        if (event.key === "ArrowUp") { event.preventDefault(); moveTo(index, index - 1); }
+                        if (event.key === "ArrowDown") { event.preventDefault(); moveTo(index, index + 1); }
+                      }}
+                      title="Déplacer cette série · flèches haut et bas au clavier"
+                      aria-label={`Déplacer ${label}`}
+                    >⠿</button>
+                    <button
+                      type="button"
+                      onClick={() => duplicate(index)}
+                      disabled={full}
+                      title={`Comparer cette ${noun} à elle-même sur un autre périmètre`}
+                      aria-label={`Dupliquer ${label}`}
+                    >⧉</button>
+                    <button
+                      type="button"
+                      className="drawer-remove"
+                      onClick={() => remove(index)}
+                      disabled={entries.length <= 1}
+                      title="Retirer cette série"
+                      aria-label={`Retirer ${label}`}
+                    >✕</button>
                   </span>
-                  <button type="button" className="link-button" onClick={() => { onCountChange(count); setSearch(false); }}>
-                    Reprendre les plus importantes
-                  </button>
-                </footer>
+                </div>
+
+                {chips.length ? (
+                  <span className="drawer-chips">
+                    {chips.map((chip) => <em key={chip}>{chip}</em>)}
+                    <button type="button" onClick={() => patch(index, { scope: undefined })}
+                      title="Revenir au périmètre commun">Réinitialiser</button>
+                  </span>
+                ) : null}
+
+                {editing === index ? (
+                  <div className="drawer-scope">
+                    <div className="drawer-fields">
+                      {fields.map((field) => (
+                        <ChoiceSelect
+                          key={field.key}
+                          label={field.label}
+                          options={field.options}
+                          value={scope[field.key] ?? ""}
+                          onChange={(next) => patch(index, { scope: { ...scope, [field.key]: next } })}
+                        />
+                      ))}
+                    </div>
+                    <p>La période reste commune : deux axes du temps différents ne se comparent pas.</p>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+
+          {other ? (
+            <li>
+              <div className="drawer-series-row">
+                <i className="drawer-swatch" style={{ background: other.color }} />
+                <span className="drawer-name" style={{ color: "var(--ink-muted)", fontStyle: "italic" }}>
+                  {other.label}
+                </span>
+                <span className="drawer-tools">
+                  <button type="button" onClick={() => other.onToggle(!other.on)} aria-pressed={other.on}
+                    title={other.on ? "Masquer le reste du périmètre" : "Afficher le reste du périmètre"}
+                  >{other.on ? "Masquer" : "Afficher"}</button>
+                </span>
               </div>
-            ) : null}
-          </div>
+            </li>
+          ) : null}
+        </ul>
+
+        <p className="drawer-section-title">Ajouter une {noun}</p>
+        <div className="drawer-search">
+          <input
+            type="search"
+            value={query}
+            placeholder={`Rechercher parmi ${catalogue.length} ${nounPlural}…`}
+            aria-label={`Rechercher une ${noun}`}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <small>
+            {query ? `${matches.length} sur ${catalogue.length}` : `${catalogue.length} au total`}
+            {" · classées par poids"}
+          </small>
         </div>
-      ) : null}
+        <ul className="drawer-results">
+          {matches.slice(0, 120).map((item) => {
+            const already = chosen.has(item.code);
+            return (
+              <li key={item.code}>
+                <button type="button" onClick={() => toggle(item.code)} disabled={!already && full}>
+                  <span className="mark">{already ? "✓" : "+"}</span>
+                  <span className="name" title={item.label}>{item.label}</span>
+                  <span className="group" title={item.group}>{item.group}</span>
+                  <span className="weight">{formatValue(item.weight ?? null, kind)}</span>
+                </button>
+              </li>
+            );
+          })}
+          {!matches.length ? <li className="drawer-note">Aucune {noun} ne correspond.</li> : null}
+        </ul>
+        <p className="drawer-section-title">Reprendre les plus importantes</p>
+        <div className="series-drawer-actions">
+          {counts.map((value) => (
+            <button key={value} type="button"
+              className={`drawer-add ${count === value && entries.length === value ? "on" : ""}`}
+              onClick={() => onCountChange(value)}
+              title={`Reprendre les ${value} ${nounPlural} les plus lourdes`}
+            >Top {value}</button>
+          ))}
+        </div>
+
+        {full ? (
+          <p className="drawer-note">
+            {maximum} séries au maximum : au-delà, deux teintes de la palette ne se
+            distinguent plus de façon sûre.
+          </p>
+        ) : null}
+      </SeriesDrawer>
     </div>
   );
 }

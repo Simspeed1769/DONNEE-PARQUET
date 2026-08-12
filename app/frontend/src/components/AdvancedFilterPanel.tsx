@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getHierarchy } from "../api";
 import type { AdvancedFilters, HierarchyOptions, Metadata } from "../types";
 import { yearStatusLabel } from "../utils";
+import { ChoiceSelect } from "./ChoiceSelect";
 import { MultiSelect } from "./MultiSelect";
 
 type Props = {
@@ -77,16 +78,16 @@ export function AdvancedFilterPanel({ metadata, value, onChange, hiddenFields = 
       {!hidden.has("start_year") || !hidden.has("end_year") ? <section className="filter-section">
         <div className="filter-section-title"><strong>Période</strong></div>
         <div className="period-grid">
-          {!hidden.has("start_year") ? <label><span>De</span><select value={value.start_year} onChange={(event) => patch({ start_year: Number(event.target.value) })}>{metadata.years.filter((year) => year <= value.end_year).map((year) => <option key={year} value={year}>{yearStatusLabel(metadata, year)}</option>)}</select></label> : null}
-          {!hidden.has("end_year") ? <label><span>À</span><select value={value.end_year} onChange={(event) => patch({ end_year: Number(event.target.value) })}>{metadata.years.filter((year) => year >= value.start_year).map((year) => <option key={year} value={year}>{yearStatusLabel(metadata, year)}</option>)}</select></label> : null}
+          {!hidden.has("start_year") ? <ChoiceSelect label="De" value={value.start_year} onChange={(start_year) => patch({ start_year })} options={metadata.years.filter((year) => year <= value.end_year).map((year) => ({ value: year, label: yearStatusLabel(metadata, year) }))} /> : null}
+          {!hidden.has("end_year") ? <ChoiceSelect label="À" value={value.end_year} onChange={(end_year) => patch({ end_year })} options={metadata.years.filter((year) => year >= value.start_year).map((year) => ({ value: year, label: yearStatusLabel(metadata, year) }))} /> : null}
         </div>
       </section> : null}
 
       {!hidden.has("grand_post") || !hidden.has("post") || !hidden.has("sub_post") || !hidden.has("service_codes") ? <section className="filter-section">
         <div className="filter-section-title"><strong>Prestations</strong></div>
-        {!hidden.has("grand_post") ? <label className="stacked-field"><span>Grand poste</span><select disabled={disabled.has("grand_post")} value={value.grand_post ?? ""} onChange={(event) => patch({ grand_post: event.target.value || null, post: null, sub_post: null, service_codes: [] })}><option value="">Tous les grands postes</option>{metadata.grand_posts.map((item) => <option key={item}>{item}</option>)}</select></label> : null}
-        {!hidden.has("post") ? <label className="stacked-field"><span>Poste</span><select disabled={disabled.has("post") || !value.grand_post || optionsLoading} value={value.post ?? ""} onChange={(event) => patch({ post: event.target.value || null, sub_post: null, service_codes: [] })}><option value="">Tout le grand poste</option>{options.posts.map((item) => <option key={item}>{item}</option>)}</select></label> : null}
-        {!hidden.has("sub_post") ? <label className="stacked-field"><span>Sous-poste</span><select disabled={disabled.has("sub_post") || !value.post || optionsLoading} value={value.sub_post ?? ""} onChange={(event) => patch({ sub_post: event.target.value || null, service_codes: [] })}><option value="">Tout le poste</option>{options.sub_posts.map((item) => <option key={item}>{item}</option>)}</select></label> : null}
+        {!hidden.has("grand_post") ? <ChoiceSelect label="Grand poste" disabled={disabled.has("grand_post")} value={value.grand_post ?? ""} onChange={(next) => patch({ grand_post: next || null, post: null, sub_post: null, service_codes: [] })} options={[{ value: "", label: "Tous les grands postes" }, ...metadata.grand_posts.map((item) => ({ value: item, label: item }))]} /> : null}
+        {!hidden.has("post") ? <ChoiceSelect label="Poste" disabled={disabled.has("post") || !value.grand_post || optionsLoading} value={value.post ?? ""} onChange={(next) => patch({ post: next || null, sub_post: null, service_codes: [] })} options={[{ value: "", label: "Tout le grand poste" }, ...options.posts.map((item) => ({ value: item, label: item }))]} /> : null}
+        {!hidden.has("sub_post") ? <ChoiceSelect label="Sous-poste" disabled={disabled.has("sub_post") || !value.post || optionsLoading} value={value.sub_post ?? ""} onChange={(next) => patch({ sub_post: next || null, service_codes: [] })} options={[{ value: "", label: "Tout le poste" }, ...options.sub_posts.map((item) => ({ value: item, label: item }))]} /> : null}
         {!hidden.has("service_codes") ? <MultiSelect
           label="Prestations précises"
           emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"}
@@ -104,7 +105,7 @@ export function AdvancedFilterPanel({ metadata, value, onChange, hiddenFields = 
         {!hidden.has("regions") ? <MultiSelect label="Territoire" options={metadata.regions.map((item) => ({ value: item.code, label: item.label }))} value={value.regions} onChange={(regions) => patch({ regions })} disabled={disabled.has("regions")} /> : null}
         {!hidden.has("insurances") ? <MultiSelect label="Nature d’assurance" options={metadata.insurances.map((item) => ({ value: item.code, label: item.label }))} value={value.insurances} onChange={(insurances) => patch({ insurances })} disabled={disabled.has("insurances")} /> : null}
         {!hidden.has("envelopes") ? <MultiSelect label="Enveloppe" options={metadata.envelopes.map((item) => ({ value: item.code, label: item.label }))} value={value.envelopes} onChange={(envelopes) => patch({ envelopes })} disabled={disabled.has("envelopes")} /> : null}
-        {!hidden.has("ald") ? <label className="stacked-field"><span>Motif d’exonération</span><select disabled={disabled.has("ald")} value={value.ald === null ? "" : String(value.ald)} onChange={(event) => patch({ ald: event.target.value === "" ? null : Number(event.target.value) })}><option value="">Tous les motifs</option><option value="1">ALD</option><option value="0">Hors ALD</option></select></label> : null}
+        {!hidden.has("ald") ? <ChoiceSelect label="Motif d’exonération" disabled={disabled.has("ald")} value={value.ald === null ? "" : String(value.ald)} onChange={(next) => patch({ ald: next === "" ? null : Number(next) })} options={[{ value: "", label: "Tous les motifs" }, { value: "1", label: "ALD" }, { value: "0", label: "Hors ALD" }]} /> : null}
       </section> : null}
     </aside>
   );
