@@ -948,6 +948,18 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
         f"{min(mortality_years)}–{max(mortality_years)}"
         if mortality_years else "Période disponible"
     )
+    population_available = bool(getattr(repo, "has_population", False))
+    population_years: list[int] = []
+    if population_available:
+        try:
+            from .population import population_metadata
+            population_years = [int(year) for year in population_metadata(repo).get("years", [])]
+        except Exception:
+            pass
+    population_period = (
+        f"{min(population_years)}–{max(population_years)}"
+        if population_years else "Période disponible"
+    )
     measures = [{
         "key": metric.key,
         "label": metric.label,
@@ -1037,6 +1049,27 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
             ],
             "status": "Disponible" if mortality_available else "Indisponible",
         },
+        "population_source": {
+            "key": "population",
+            "name": "Estimations de population",
+            "producer": "Insee",
+            "description": "Population résidente par région, sexe et tranche d’âge quinquennale, au 1er janvier. Cinquième base consultable, et dénominateur de référence des mesures par habitant des autres bases.",
+            "granularity": "Année, région, sexe et tranche d’âge quinquennale.",
+            "period": population_period,
+            "dimensions": ["Temps", "Territoire", "Âge", "Sexe"],
+            "measures_count": 2,
+            "badges": ["Au 1er janvier", "Rétropolée depuis 1975"],
+            "limitations": [
+                "Population au 1er janvier : ce n’est pas une population moyenne annuelle. Les taux des autres bases se rapportent à la moyenne des 1er janvier N et N+1 ; la dernière année disponible, faute de N+1, compte son 1er janvier seul.",
+                "1975 à 1989 : métropole seule, la source ne publie pas les DROM par sexe et âge.",
+                "Mayotte n’entre dans la série qu’à partir de 2014 ; la Guadeloupe est publiée hors Saint-Martin et Saint-Barthélemy.",
+                "Sur quelques cellules d’outre-mer des années 1990, l’âge n’est pas détaillé au-delà de 90 ans : la tranche « 90–94 ans » y porte tous les 90 ans et plus.",
+                "Les régions sont rétropolées sur les 13 régions actuelles depuis 1975 : aucune rupture de la réforme de 2016 n’apparaît, mais les chiffres anciens sont reconstitués.",
+                "Les derniers millésimes sont provisoires ou précoces et seront révisés.",
+                "Le total « Ensemble » du classeur n’est pas chargé : il est recalculé par somme des hommes et des femmes.",
+            ],
+            "status": "Disponible" if population_available else "Indisponible",
+        },
         "reliability": reliability,
         "measures": measures,
         "dimensions": [{"key": key, "label": label} for key, (label, _) in DIMENSIONS.items()],
@@ -1053,5 +1086,6 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
             {"key": "dc", "label": "DC", "status": "À documenter", "common_dimensions": []},
             {"key": "csp", "label": "CSP", "status": "Disponible" if csp_available else "Indisponible", "common_dimensions": ["time", "territory", "age", "sex"]},
             {"key": "mortality", "label": "Mortalité", "status": "Disponible" if mortality_available else "Indisponible", "common_dimensions": ["time", "age", "sex"]},
+            {"key": "population", "label": "Population", "status": "Disponible" if population_available else "Indisponible", "common_dimensions": ["time", "territory", "age", "sex"]},
         ],
     }

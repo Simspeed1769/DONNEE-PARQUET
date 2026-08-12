@@ -36,6 +36,11 @@ export type ChartInput = {
    *  n'a personne pour l'expliquer. Le titre suit l'axe des modalités, qui
    *  bascule en ordonnée sur les formes horizontales. */
   xTitle?: string;
+  /** Une forme de référence superposée en trait fin, sans remplissage : la
+   *  pyramide d'une autre année posée sur celle qu'on regarde. On voit le
+   *  vieillissement d'un coup d'œil, sans animation ni artifice. Seule la
+   *  pyramide s'en sert ; ailleurs, le champ est ignoré. */
+  overlay?: ChartSeries[];
 };
 
 const AXIS_NAME_GAP = 30;
@@ -740,7 +745,23 @@ function pyramidOption(input: ChartInput, scale: { label: string },
         },
         barMaxWidth: 26,
       };
-    }) as EChartsOption["series"],
+    }).concat(
+      // La silhouette de référence : un trait, pas une barre. Elle ne s'empile
+      // pas avec les deux versants, elle se lit par-dessus — et elle ne réagit
+      // ni au survol ni au clic, pour ne pas prendre la place de la donnée du
+      // moment.
+      (input.overlay ?? []).map((serie, position) => ({
+        id: `silhouette-${serie.key}`,
+        name: serie.label,
+        type: "line" as const,
+        data: mirrored(serie, position === 0 ? -1 : 1),
+        symbol: "none",
+        silent: true,
+        z: 6,
+        lineStyle: { width: 1.4, color: tokens.inkMuted, opacity: 0.75 },
+        itemStyle: { color: tokens.inkMuted },
+      })) as any,
+    ) as EChartsOption["series"],
   };
 }
 

@@ -212,6 +212,61 @@
   Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
   le seuil que se fixe le projet pour extraire un composant.
 
+## v5 · Phase 2 — La population Insee : dénominateur et cinquième base
+
+- **La structure annoncée a été contrôlée, pas supposée.** Les 53 onglets ont la
+  même mise en page — blocs `Ensemble`/`Hommes`/`Femmes` en colonnes B, W et AR,
+  21 colonnes chacun — et `tools/build_population.py` le vérifie avant de lire
+  une seule valeur. Contrairement à ce qu'annonçait la feuille de route, les
+  années 1990-1998 n'ont pas de mise en page différente : elles ont seulement
+  trois lignes vides de plus et l'astérisque de La Réunion.
+- **Le piège des 90 ans et plus était plus large que sa note.** Le classeur
+  prévient que la Guadeloupe, la Guyane et la Martinique n'ont pas d'âge détaillé
+  au-delà de 90 ans entre 1990 et 1998 ; **La Réunion est dans le même cas et la
+  note ne le dit pas**. Le repère se lit donc dans la donnée — « 95 ans et plus »
+  vide alors que « 90 à 94 ans » est renseigné — et la colonne
+  `age_90_plus_agrege` marque les 144 cellules concernées. Une liste écrite à la
+  main en aurait manqué un territoire sur quatre.
+- **Le recalcul de l'« Ensemble » retrouve exactement le total publié** : zéro
+  écart sur les 936 lignes région × année. C'est ce contrôle qui autorise à ne
+  pas charger le troisième bloc.
+- **Écartés et journalisés** : `France métropolitaine` (52 fois), `DOM` (37),
+  `France métropolitaine et DOM` (37) — des agrégats, pas des régions. 33 480
+  lignes produites, 18 régions, 1975→2026, 0,09 Mo.
+- **Le dénominateur emprunté était à un seul endroit.** Le recensement demandé
+  par la feuille de route donne : `analysis.py`, `explore.py` et `csp.py`
+  n'emploient pas `npop` ; `pathologies.py` s'en sert pour la prévalence, qui
+  *est* l'indicateur publié par la Cnam et le reste ; `correlations.py`
+  l'empruntait pour tous ses taux « par habitant », avec un `MAX(npop)` par
+  cellule pour éviter de le multiplier par le nombre de pathologies. C'est ce
+  dernier qui bascule sur l'Insee, moyenné sur l'année.
+- **L'écart, mesuré sur trois mesures témoins (2023, avant → après)** :
+  dépense remboursée par habitant en Île-de-France, 1 525,80 € → 1 488,65 € ;
+  prévalence du diabète en Île-de-France, 5,86 % → 5,72 % ; décès pour 100 000
+  habitants au niveau national, 945,71 → 929,75. Sur les douze régions communes
+  l'écart médian est de −1,8 %, et il va de −5,9 % à +2,6 % : la population
+  résidente n'est pas la population protégée, et le rapport des deux n'est pas
+  le même partout. Rien n'est lissé ; l'écran nomme désormais le dénominateur
+  dans ses réserves, et la table de Méthodologie porte les deux.
+- **Corrigé en route** : le filtre des douze régions communes s'appliquait aussi
+  à l'axe national, où le numérateur couvre la France entière. Le taux de
+  mortalité y était gonflé de 2 %.
+- **La cinquième base** suit le gabarit des autres — filtres dans la coquille,
+  quatre lectures, formes décidées par le modèle — **sans section Comparer**,
+  qui n'aurait rien apporté. La pyramide des âges n'est offerte que sur la
+  lecture Âge, sexe non filtré, sur des effectifs : `buildOption` gagne un
+  `overlay`, deux séries en trait fin, qui porte la silhouette de la première
+  année de la période.
+- **Rupture de champ signalée** : la courbe France entière saute en 1990 (entrée
+  des DROM) et en 2014 (Mayotte). Ce sont des changements de champ, pas des
+  variations de population, et la réserve le dit.
+- **Non fait, et assumé** : la prévalence de la fiche Pathologies garde le
+  dénominateur de la Cnam. C'est l'indicateur que la Cartographie publie ;
+  le diviser par une autre population produirait un chiffre que personne n'a
+  publié. Les deux coexistent, nommés, et la table de Méthodologie donne
+  l'écart. Le dénominateur Insee sert partout où l'outil construit **lui-même**
+  un taux, c'est-à-dire dans les Croisements.
+
 ## v5 · Phase 1.D — Comparer, le même geste sur les quatre bases
 
 - **Un seul gabarit, pas trois copies.** `charts/compareReading.ts` porte

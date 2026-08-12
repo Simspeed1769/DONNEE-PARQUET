@@ -29,18 +29,20 @@ const pageImports = {
   pathologies: () => import("./pages/PathologyPage"),
   csp: () => import("./pages/CspPage"),
   mortality: () => import("./pages/MortalityPage"),
+  population: () => import("./pages/PopulationPage"),
   correlations: () => import("./pages/CorrelationsPage"),
   benchmarks: () => import("./pages/BenchmarksPage"),
   extraction: () => import("./pages/ExtractionPage"),
   methodology: () => import("./pages/MethodologyPage"),
 };
 
-const PAGES: PageKey[] = ["damir", "pathologies", "csp", "mortality", "correlations", "benchmarks", "extraction", "methodology"];
+const PAGES: PageKey[] = ["damir", "pathologies", "csp", "mortality", "population", "correlations", "benchmarks", "extraction", "methodology"];
 
 const DamirPage = lazyPage(() => pageImports.damir().then((module) => ({ default: module.DamirPage })));
 const PathologyPage = lazyPage(() => pageImports.pathologies().then((module) => ({ default: module.PathologyPage })));
 const CspPage = lazyPage(() => pageImports.csp().then((module) => ({ default: module.CspPage })));
 const MortalityPage = lazyPage(() => pageImports.mortality().then((module) => ({ default: module.MortalityPage })));
+const PopulationPage = lazyPage(() => pageImports.population().then((module) => ({ default: module.PopulationPage })));
 const CorrelationsPage = lazyPage(() => pageImports.correlations().then((module) => ({ default: module.CorrelationsPage })));
 const BenchmarksPage = lazyPage(() => pageImports.benchmarks().then((module) => ({ default: module.BenchmarksPage })));
 const ExtractionPage = lazyPage(() => pageImports.extraction().then((module) => ({ default: module.ExtractionPage })));
@@ -70,7 +72,7 @@ class PageErrorBoundary extends Component<{ children: ReactNode }, { message: st
 }
 
 type IconName = "explore" | "map" | "chart" | "grid" | "download" | "book" | "panel" | "link";
-type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality";
+type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality" | "population";
 
 function Icon({ name }: { name: IconName }) {
   const paths: Record<IconName, React.ReactNode> = {
@@ -106,7 +108,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.localStorage.getItem("damir-sidebar-collapsed") === "1");
   const [extractionSource, setExtractionSource] = useState<ExtractionSource>(() => {
     const value = new URLSearchParams(window.location.search).get("source");
-    return value === "pathologies" || value === "csp" || value === "mortality" ? value : "damir";
+    return value === "pathologies" || value === "csp" || value === "mortality" || value === "population" ? value : "damir";
   });
 
   useEffect(() => {
@@ -121,7 +123,7 @@ function App() {
     const onPopState = () => {
       setPage(pageFromLocation());
       const value = new URLSearchParams(window.location.search).get("source");
-      setExtractionSource(value === "pathologies" || value === "csp" || value === "mortality" ? value : "damir");
+      setExtractionSource(value === "pathologies" || value === "csp" || value === "mortality" || value === "population" ? value : "damir");
       setRouteVersion((value) => value + 1);
     };
     window.addEventListener("popstate", onPopState);
@@ -151,7 +153,7 @@ function App() {
       setPage(nextPage);
       if (nextPage === "extraction") {
         const source = params.get("source");
-        setExtractionSource(source === "pathologies" || source === "csp" || source === "mortality" ? source : "damir");
+        setExtractionSource(source === "pathologies" || source === "csp" || source === "mortality" || source === "population" ? source : "damir");
       }
       setRouteVersion((value) => value + 1);
     };
@@ -168,6 +170,7 @@ function App() {
     if (page === "pathologies" || (page === "extraction" && extractionSource === "pathologies")) return "Cartographie Cnam";
     if (page === "csp" || (page === "extraction" && extractionSource === "csp")) return "Recensement Insee · 2015–2023";
     if (page === "mortality" || (page === "extraction" && extractionSource === "mortality")) return "CépiDc · 2015–2024";
+    if (page === "population" || (page === "extraction" && extractionSource === "population")) return "Estimations Insee · 1975–2026";
     if (page === "damir") return "Open DAMIR";
     if (page === "correlations") return "Croisements entre sources";
     if (page === "benchmarks") return "Repères multi-sources";
@@ -179,6 +182,7 @@ function App() {
     if (page === "pathologies" || (page === "extraction" && extractionSource === "pathologies")) return "Pathologies";
     if (page === "csp" || (page === "extraction" && extractionSource === "csp")) return "CSP";
     if (page === "mortality" || (page === "extraction" && extractionSource === "mortality")) return "Mortalité";
+    if (page === "population" || (page === "extraction" && extractionSource === "population")) return "Population";
     if (page === "damir") return "DAMIR";
     if (page === "correlations") return "Croisements";
     if (page === "benchmarks") return "Repères";
@@ -212,6 +216,7 @@ function App() {
             {navButton("pathologies", "chart", "Pathologies")}
             {navButton("csp", "grid", "CSP")}
             {navButton("mortality", "chart", "Mortalité")}
+            {navButton("population", "grid", "Population")}
           </div>
           <div className="nav-section">
             <span className="nav-caption">CROISER</span>
@@ -249,6 +254,7 @@ function App() {
           {page === "pathologies" ? <PathologyPage key={`pathologies-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "csp" ? <CspPage key={`csp-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "mortality" ? <MortalityPage key={`mortality-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "population" ? <PopulationPage key={`population-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "benchmarks" ? <BenchmarksPage key={`benchmarks-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} /> : null}

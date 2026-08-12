@@ -294,11 +294,109 @@ def _damir_series(repo: QueryRepository, metric: str, request: CorrelationReques
     return series
 
 
+INSEE_DENOMINATOR = "population résidente Insee"
+CNAM_DENOMINATOR = "population de référence de la Cartographie Cnam"
+
+_INSEE_DIMENSION_SQL = {
+    "year": "annee",
+    "region": "CAST(region AS INTEGER)",
+    "age": "age_decennal",
+    "sex": "CASE sexe WHEN 'Hommes' THEN 1 ELSE 2 END",
+}
+
+
 def _population(repo: QueryRepository, request: CorrelationRequest) -> dict[str, float]:
+    """Le dénominateur des taux : la population résidente Insee quand elle est
+    chargée, la population de référence de la Cartographie sinon.
+
+    `denominator_label` dit laquelle a servi, et l'appelant l'écrit à l'écran :
+    une dépense « par habitant » ne veut pas dire la même chose selon qu'on
+    divise par les résidents d'un territoire ou par les assurés que la Cnam
+    protège, et le chiffre change de plusieurs pour cent."""
+    if getattr(repo, "has_population", False):
+        return _insee_population(repo, request)
+    return _cartography_population(repo, request)
+
+
+def denominator_label(repo: QueryRepository) -> str:
+    return INSEE_DENOMINATOR if getattr(repo, "has_population", False) else CNAM_DENOMINATOR
+
+
+def _insee_population(repo: QueryRepository, request: CorrelationRequest) -> dict[str, float]:
+    """Années-personnes sur la période, à partir des estimations Insee.
+
+    **La moyenne des deux 1er janvier.** L'Insee publie un état au 1er janvier ;
+    un flux annuel — des remboursements, des décès — se rapporte à la population
+    *moyenne* de l'année, soit la demi-somme des 1er janvier N et N+1. La
+    dernière année disponible n'a pas de N+1 : son 1er janvier sert seul, et la
+    réserve le dit.
+
+    Le numérateur somme toutes les années de la période dès que l'année n'est
+    pas une dimension ; le dénominateur cumule donc les moyennes annuelles, en
+    années-personnes, pour que quatre ans de dépenses ne soient pas rapportés à
+    une seule année de population.
+    """
+    dimensions = UNIT_DIMENSIONS[request.unit]
+    clauses: list[str] = []
+    # Les douze régions communes ne s'imposent que lorsque la région est une
+    # dimension de l'observation. Sur l'axe national — le seul ouvert à la
+    # mortalité — le numérateur couvre la France entière, DROM compris : y
+    # opposer douze régions métropolitaines gonflerait le taux de 2 %.
+    if "region" in dimensions:
+        clauses.append(_region_filter("region", cast=True))
+    if "sex" in dimensions:
+        pass  # les deux sexes sont des cellules, rien à écarter
+    elif request.sex != "all":
+        clauses.append(f"sexe = '{'Hommes' if request.sex == 'men' else 'Femmes'}'")
+    if "age" not in dimensions and request.age_band:
+        clauses.append(f"age_decennal = {int(request.age_band)}")
+
+    cell_dimensions = [name for name in dimensions if name != "year"]
+    cell_columns = [f"{_INSEE_DIMENSION_SQL[name]} AS c{index}"
+                    for index, name in enumerate(cell_dimensions)]
+    cell_names = [f"c{index}" for index in range(len(cell_dimensions))]
+    partition = f"PARTITION BY {', '.join(cell_names)} " if cell_names else ""
+    projected = ", ".join(
+        f"{('annee' if name == 'year' else cell_names[cell_dimensions.index(name)])} AS d{index}"
+        for index, name in enumerate(dimensions))
+    grouped = ", ".join(str(index + 1) for index in range(len(dimensions)))
+    selection = ", ".join(["annee", *cell_columns])
+
+    rows = repo.query(
+        f"""WITH cellules AS (
+                SELECT {selection}, SUM(population)::DOUBLE AS effectif
+                FROM population
+                WHERE annee BETWEEN {request.start_year} AND {request.end_year + 1}
+                  {''.join(f' AND {clause}' for clause in clauses)}
+                GROUP BY {', '.join(['annee', *cell_names])}
+            ), moyennes AS (
+                SELECT annee, {', '.join(cell_names) + ',' if cell_names else ''}
+                       COALESCE(
+                           (effectif + LEAD(effectif) OVER ({partition}ORDER BY annee)) / 2,
+                           effectif) AS effectif
+                FROM cellules
+            )
+            SELECT {projected}, SUM(effectif)::DOUBLE AS population
+            FROM moyennes
+            WHERE annee BETWEEN {request.start_year} AND {request.end_year}
+            GROUP BY {grouped}"""
+    )
+    result: dict[str, float] = {}
+    for row in rows:
+        key = _cell_key(row, dimensions)
+        value = float(row["population"] or 0)
+        if key is not None and value:
+            result[key] = value
+    return result
+
+
+def _cartography_population(repo: QueryRepository, request: CorrelationRequest) -> dict[str, float]:
     """Population de référence, tirée du dénominateur de la Cartographie.
 
-    C'est la seule population disponible par région, âge et sexe dans le jeu de
-    données ; elle sert donc de dénominateur commun à toutes les normalisations.
+    Le recours quand la population Insee n'est pas chargée. C'est un
+    dénominateur détourné de sa source : la Cartographie le publie pour
+    rapporter ses propres effectifs, cellule par cellule, et il compte les
+    assurés protégés par l'Assurance Maladie, non les résidents d'un territoire.
 
     La table de la Cartographie est départementale **et** porte ses propres
     agrégats : `dept = '999'` est le total régional, `cla_age_5 = 'tsage'` le
@@ -560,10 +658,24 @@ def _detrended(pairs: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _warnings(request: CorrelationRequest, x_definition: dict[str, Any],
-              y_definition: dict[str, Any], report: dict[str, Any]) -> list[dict[str, str]]:
+              y_definition: dict[str, Any], report: dict[str, Any],
+              denominator: str = INSEE_DENOMINATOR) -> list[dict[str, str]]:
     """Les raisons de se méfier du chiffre qu'on vient d'afficher."""
     notes: list[dict[str, str]] = []
     n = int(report["n"])
+
+    # Un taux ne dit rien sans son dénominateur. Deux populations existent ici
+    # et ne mesurent pas la même chose : les résidents d'un territoire, et les
+    # assurés que l'Assurance Maladie protège. L'écran dit toujours laquelle
+    # divise.
+    if x_definition["rate"] or y_definition["rate"]:
+        averaged = (" La population de l'année est la moyenne des 1er janvier N et N+1 ;"
+                    " sur la dernière année disponible, le 1er janvier sert seul."
+                    if denominator == INSEE_DENOMINATOR else "")
+        notes.append({
+            "level": "info",
+            "text": f"Les taux affichés sont rapportés à la {denominator}.{averaged}",
+        })
 
     if not x_definition["rate"] and not y_definition["rate"] and request.unit != "year":
         notes.append({
@@ -667,7 +779,8 @@ def correlate(repo: QueryRepository, request: CorrelationRequest) -> dict[str, A
         "detrended": request.detrend and request.unit == "region_year",
         "statistics": report,
         "minimum_detectable_r": minimum_detectable_r(int(report["n"])),
-        "warnings": _warnings(request, x_definition, y_definition, report),
+        "warnings": _warnings(request, x_definition, y_definition, report,
+                              denominator_label(repo)),
         "regions_used": len(COMMON_REGIONS),
     }
 

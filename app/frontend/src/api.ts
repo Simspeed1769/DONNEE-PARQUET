@@ -14,6 +14,9 @@ import type {
   MortalityExtractionRequest,
   MortalityMetadata,
   MortalityOverview,
+  PopulationExtractionRequest,
+  PopulationMetadata,
+  PopulationOverview,
   WorkbenchRequest,
   WorkbenchResult,
 } from "./types";
@@ -285,6 +288,45 @@ export function getCspEvolution(
   signal?: AbortSignal,
 ): Promise<CspEvolution> {
   return post<CspEvolution>("/api/csp/evolution", payload, signal);
+}
+
+export function getPopulationMetadata(signal?: AbortSignal): Promise<PopulationMetadata> {
+  return request<PopulationMetadata>("/api/population/meta", signal);
+}
+
+export function getPopulationOverview(
+  payload: {
+    year: number; start_year: number; end_year: number;
+    region: string; age: string; sex: string;
+  },
+  signal?: AbortSignal,
+): Promise<PopulationOverview> {
+  return post<PopulationOverview>("/api/population/overview", payload, signal);
+}
+
+export function getPopulationExtractionPreview(payload: PopulationExtractionRequest, signal?: AbortSignal): Promise<ExtractionPreview> {
+  return post<ExtractionPreview>("/api/population/extraction/preview", payload, signal);
+}
+
+export async function downloadPopulationExtraction(format: "csv" | "xlsx", payload: PopulationExtractionRequest): Promise<void> {
+  const response = await fetch(`/api/population/extraction.${format}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    throw new Error(data?.detail ?? "L’export Population n’a pas pu être généré.");
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `population_extraction.${format}`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 export function getMortalityMetadata(signal?: AbortSignal): Promise<MortalityMetadata> {

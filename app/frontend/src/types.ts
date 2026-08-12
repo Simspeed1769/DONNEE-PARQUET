@@ -1,4 +1,4 @@
-export type PageKey = "damir" | "pathologies" | "csp" | "mortality" | "correlations" | "benchmarks" | "extraction" | "methodology";
+export type PageKey = "damir" | "pathologies" | "csp" | "mortality" | "population" | "correlations" | "benchmarks" | "extraction" | "methodology";
 export type MetricKind = "money" | "quantity" | "percent" | "index" | "raw";
 
 export type Region = { code: number; label: string };
@@ -306,6 +306,62 @@ export type CspExtractionRequest = {
   limit: number;
 };
 
+/** La cinquième base : la population résidente publiée par l'Insee. */
+export type PopulationMetadata = {
+  available: boolean;
+  years: number[];
+  default_year: number;
+  /** `depuis` dit à partir de quel millésime le territoire entre dans la série :
+   *  Mayotte n'y figure qu'à partir de 2014, les DROM qu'à partir de 1990. */
+  regions: Array<{ code: string; label: string; depuis: number }>;
+  ages: Array<{ code: string; label: string; decennal: number | null }>;
+  sexes: Array<{ code: string; label: string }>;
+  dimensions: Array<{ key: string; label: string }>;
+  measures: Array<{ key: string; label: string; kind: "quantity" | "percent" }>;
+  source: string;
+  scope: string;
+  limitations: string[];
+};
+
+export type PopulationCell = {
+  age: string;
+  age_label: string;
+  decennal: number;
+  sex: string;
+  population: number | null;
+  /** Vrai là où « 90 à 94 ans » porte en réalité tous les 90 ans et plus. */
+  lumped: boolean;
+};
+
+export type PopulationOverview = {
+  context: {
+    year: number; start_year: number; end_year: number;
+    region: string; region_label: string;
+    age: string; age_label: string;
+    sex: string; sex_label: string;
+    /** L'année dont la pyramide sert de silhouette de référence. */
+    reference_year: number | null;
+  };
+  kpis: Array<{ key: string; label: string; value: number | null; kind: "quantity" | "percent"; detail: string }>;
+  annual: Array<{ year: number; population: number | null; share: number | null }>;
+  territories: Array<{ code: string; label: string; population: number | null; share: number | null }>;
+  age_sex: PopulationCell[];
+  age_sex_reference: PopulationCell[];
+  sex_profile: Array<{ code: string; label: string; population: number | null; share: number | null }>;
+  quality: { source: string; scope: string; limitations: string[]; lumped_90_plus: boolean };
+};
+
+export type PopulationExtractionRequest = {
+  start_year: number;
+  end_year: number;
+  region: string;
+  age: string;
+  sex: string;
+  dimensions: string[];
+  measures: string[];
+  limit: number;
+};
+
 export type MortalityMetadata = {
   available: boolean;
   years: number[];
@@ -373,6 +429,7 @@ export type Methodology = {
   pathology_source?: MethodSource;
   csp_source?: MethodSource;
   mortality_source?: MethodSource;
+  population_source?: MethodSource;
   reliability: Reliability;
   measures: MeasureOption[];
   dimensions: DimensionOption[];

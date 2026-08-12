@@ -67,6 +67,17 @@ from .mortality import (
     mortality_metadata,
     mortality_overview,
 )
+from .population import (
+    POPULATION_DIMENSIONS,
+    POPULATION_MEASURES,
+    PopulationExtractionRequest,
+    PopulationOverviewRequest,
+    population_extraction_columns,
+    population_extraction_preview,
+    population_extraction_rows,
+    population_metadata,
+    population_overview,
+)
 from .correlations import (
     CorrelationRequest,
     RegressionRequest,
@@ -106,6 +117,14 @@ CSP_DIR = (DATA_DIR / "csp").resolve()
 CSP_PATH = Path(CSP_DATA_ENV).resolve() if CSP_DATA_ENV else (CSP_DIR / "csp_core.parquet").resolve()
 CSP_GEOJSON_PATH = Path(os.environ.get(
     "CSP_GEOJSON_PATH", DATA_DIR / "pathologies" / "regions.geojson"
+)).resolve()
+POPULATION_DIR = (DATA_DIR / "population").resolve()
+# Produit par `tools/build_population.py` à partir du classeur Insee. Optionnel :
+# sans lui, l'application fonctionne — la base Population disparaît et les
+# mesures par habitant retombent sur la population de référence de la Cnam, en
+# le disant.
+POPULATION_PATH = Path(os.environ.get(
+    "POPULATION_DATA_PATH", POPULATION_DIR / "population.parquet"
 )).resolve()
 MORTALITY_DATA_ENV = os.environ.get("MORTALITY_DATA_PATH")
 MORTALITY_DIR = (DATA_DIR / "mortalite").resolve()
@@ -267,6 +286,12 @@ class DamirRepository:
             # added with a slightly different physical column order.
             self._connection.execute(
                 f"CREATE VIEW csp AS SELECT * FROM read_parquet([{paths_sql}], union_by_name = true)"
+            )
+        self.has_population = POPULATION_PATH.exists()
+        self.population_file_size = POPULATION_PATH.stat().st_size if self.has_population else 0
+        if self.has_population:
+            self._connection.execute(
+                f"CREATE VIEW population AS SELECT * FROM read_parquet('{_duckdb_path(POPULATION_PATH)}')"
             )
         self.has_mortality = MORTALITY_PATH.exists()
         self.mortality_file_size = MORTALITY_PATH.stat().st_size if self.has_mortality else 0
@@ -607,6 +632,115 @@ def csp_evolution_view(payload: CspEvolutionRequest) -> dict[str, Any]:
         return csp_evolution(repository, payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.get("/api/population/meta")
+def population_metadata_view() -> dict[str, Any]:
+    try:
+        return population_metadata(repository)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@app.post("/api/population/overview")
+def population_overview_view(payload: PopulationOverviewRequest) -> dict[str, Any]:
+    try:
+        return population_overview(repository, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/population/extraction/preview")
+def population_extraction_preview_view(payload: PopulationExtractionRequest) -> dict[str, Any]:
+    try:
+        return population_extraction_preview(repository, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/population/extraction.csv")
+def population_extraction_csv(payload: PopulationExtractionRequest) -> StreamingResponse:
+    try:
+        rows = population_extraction_rows(repository, payload)
+        columns = population_extraction_columns(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=";")
+    writer.writerow([column["label"] for column in columns])
+    for row in rows:
+        writer.writerow([row.get(column["key"]) for column in columns])
+    headers = {"Content-Disposition": 'attachment; filename="population_extraction.csv"'}
+    return StreamingResponse(iter(["﻿" + output.getvalue()]), media_type="text/csv; charset=utf-8",
+                             headers=headers)
+
+
+@app.post("/api/population/extraction.xlsx")
+def population_extraction_xlsx(payload: PopulationExtractionRequest) -> StreamingResponse:
+    try:
+        rows = population_extraction_rows(repository, payload)
+        columns = population_extraction_columns(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    metadata = population_metadata(repository)
+    workbook = Workbook(write_only=True)
+    sheet = workbook.create_sheet("Données")
+    sheet.freeze_panes = "A2"
+    widths = {"year": 12, "region": 32, "age": 18, "sex": 14, "population": 18, "share": 20}
+    for index, column in enumerate(columns, start=1):
+        sheet.column_dimensions[get_column_letter(index)].width = widths.get(column["key"], 22)
+    header_fill = PatternFill(fill_type="solid", fgColor="18243A")
+    header_cells = []
+    for column in columns:
+        cell = WriteOnlyCell(sheet, value=column["label"])
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = header_fill
+        cell.alignment = Alignment(vertical="center")
+        header_cells.append(cell)
+    sheet.append(header_cells)
+    for row in rows:
+        cells = []
+        for column in columns:
+            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
+            if column["kind"] == "quantity":
+                cell.number_format = "#,##0"
+            elif column["kind"] == "percent":
+                cell.number_format = "0.00"
+            cells.append(cell)
+        sheet.append(cells)
+    metadata_sheet = workbook.create_sheet("Métadonnées")
+    metadata_sheet.freeze_panes = "A2"
+    metadata_sheet.column_dimensions["A"].width = 24
+    metadata_sheet.column_dimensions["B"].width = 110
+    metadata_rows = [
+        ["Élément", "Valeur"],
+        ["Source", metadata["source"]],
+        ["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")],
+        ["Champ", metadata["scope"]],
+        ["Période", f"{payload.start_year}–{payload.end_year}"],
+        ["Dimensions", ", ".join(POPULATION_DIMENSIONS[key][0] for key in payload.dimensions)],
+        ["Mesures", ", ".join(POPULATION_MEASURES[key][0] for key in payload.measures)],
+        ["Précaution", "Population au 1er janvier : ce n’est pas une population moyenne annuelle."],
+        ["Valeurs absentes", "Une cellule non publiée reste vide et n’est jamais remplacée par zéro."],
+    ]
+    for row_index, values in enumerate(metadata_rows):
+        cells = []
+        for value in values:
+            cell = WriteOnlyCell(metadata_sheet, value=value)
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+            if row_index == 0:
+                cell.font = Font(bold=True, color="FFFFFF")
+                cell.fill = header_fill
+            elif len(cells) == 0:
+                cell.font = Font(bold=True, color="18243A")
+            cells.append(cell)
+        metadata_sheet.append(cells)
+    buffer = io.BytesIO()
+    workbook.save(buffer)
+    headers = {"Content-Disposition": 'attachment; filename="population_extraction.xlsx"'}
+    return StreamingResponse(iter([buffer.getvalue()]),
+                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                             headers=headers)
 
 
 @app.get("/api/mortality/meta")

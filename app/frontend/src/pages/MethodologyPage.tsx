@@ -50,6 +50,7 @@ export function MethodologyPage() {
       methodology.pathology_source,
       methodology.csp_source,
       methodology.mortality_source,
+      methodology.population_source,
     ].filter((source): source is MethodSource => Boolean(source));
   }, [methodology]);
   const selected = sources.find((source) => source.key === selectedKey) ?? null;

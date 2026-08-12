@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { downloadCspExtraction, downloadExtraction, downloadMortalityExtraction, downloadPathologyExtraction, getCspExtractionPreview, getCspMetadata, getExtractionPreview, getMortalityExtractionPreview, getMortalityMetadata, getPathologyExtractionPreview, getPathologyMetadata } from "../api";
+import { downloadCspExtraction, downloadExtraction, downloadMortalityExtraction, downloadPathologyExtraction, downloadPopulationExtraction, getCspExtractionPreview, getCspMetadata, getExtractionPreview, getMortalityExtractionPreview, getMortalityMetadata, getPathologyExtractionPreview, getPathologyMetadata, getPopulationExtractionPreview, getPopulationMetadata } from "../api";
 import { AdvancedFilterPanel } from "../components/AdvancedFilterPanel";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
-import type { CspExtractionRequest, CspMetadata, ExtractionPreview, ExtractionRequest, Metadata, MortalityExtractionRequest, MortalityMetadata, PathologyExtractionRequest, PathologyMetadata } from "../types";
+import type { CspExtractionRequest, CspMetadata, ExtractionPreview, ExtractionRequest, Metadata, MortalityExtractionRequest, MortalityMetadata, PathologyExtractionRequest, PathologyMetadata, PopulationExtractionRequest, PopulationMetadata } from "../types";
 import { filtersFromSearch, writeFilters } from "../utils";
 
-type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality";
+type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality" | "population";
 type Props = { metadata: Metadata; routeVersion: number; onSourceChange?: (source: ExtractionSource) => void };
 const PREVIEW_PAGE_SIZE = 40;
 
@@ -21,7 +21,7 @@ function formatCell(value: string | number | null, kind: string): string {
 export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props) {
   const initialParams = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
   const requestedSource = initialParams.get("source");
-  const [source, setSource] = useState<ExtractionSource>(requestedSource === "pathologies" || requestedSource === "csp" || requestedSource === "mortality" ? requestedSource : "damir");
+  const [source, setSource] = useState<ExtractionSource>(requestedSource === "pathologies" || requestedSource === "csp" || requestedSource === "mortality" || requestedSource === "population" ? requestedSource : "damir");
   const [filters, setFilters] = useState(() => filtersFromSearch(metadata, initialParams));
   const [dimensions, setDimensions] = useState(() => initialParams.get("dimensions")?.split(",").filter(Boolean) ?? ["year", "sex", "region"]);
   const [measures, setMeasures] = useState(() => initialParams.get("measures")?.split(",").filter(Boolean) ?? ["reimbursed"]);
@@ -43,6 +43,14 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   const [cspCode, setCspCode] = useState(initialParams.get("csp") ?? "3");
   const [cspDimensions, setCspDimensions] = useState<string[]>(["region", "age", "sex"]);
   const [cspMeasures, setCspMeasures] = useState<string[]>(["effectif", "share"]);
+  const [populationMetadata, setPopulationMetadata] = useState<PopulationMetadata | null>(null);
+  const [populationRegion, setPopulationRegion] = useState(initialParams.get("region") ?? "__all__");
+  const [populationAge, setPopulationAge] = useState(initialParams.get("age") ?? "__all__");
+  const [populationSex, setPopulationSex] = useState(initialParams.get("sex") ?? "__all__");
+  const [populationStartYear, setPopulationStartYear] = useState(Number(initialParams.get("start_year")) || 2015);
+  const [populationEndYear, setPopulationEndYear] = useState(Number(initialParams.get("end_year")) || 2026);
+  const [populationDimensions, setPopulationDimensions] = useState<string[]>(requestedSource === "population" ? initialParams.get("dimensions")?.split(",").filter(Boolean) ?? ["year", "region"] : ["year", "region"]);
+  const [populationMeasures, setPopulationMeasures] = useState<string[]>(requestedSource === "population" ? initialParams.get("measures")?.split(",").filter(Boolean) ?? ["population"] : ["population"]);
   const [mortalityMetadata, setMortalityMetadata] = useState<MortalityMetadata | null>(null);
   const [mortalityCause, setMortalityCause] = useState(initialParams.get("cause") ?? "__all__");
   const [mortalityPopulation, setMortalityPopulation] = useState(initialParams.get("population") ?? "__all__");
@@ -75,6 +83,17 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
     measures: cspMeasures,
     limit: 500,
   }), [cspLevel, cspCode, cspDimensions, cspMeasures]);
+
+  const populationRequest = useMemo<PopulationExtractionRequest>(() => ({
+    start_year: populationStartYear,
+    end_year: populationEndYear,
+    region: populationRegion,
+    age: populationAge,
+    sex: populationSex,
+    dimensions: populationDimensions,
+    measures: populationMeasures,
+    limit: PREVIEW_PAGE_SIZE,
+  }), [populationStartYear, populationEndYear, populationRegion, populationAge, populationSex, populationDimensions, populationMeasures]);
 
   const mortalityRequest = useMemo<MortalityExtractionRequest>(() => ({
     start_year: mortalityStartYear,
@@ -128,6 +147,20 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
 
   useEffect(() => {
     const controller = new AbortController();
+    getPopulationMetadata(controller.signal)
+      .then((next) => {
+        setPopulationMetadata(next);
+        if (!next.years.includes(populationStartYear)) setPopulationStartYear(next.years[0]);
+        if (!next.years.includes(populationEndYear)) setPopulationEndYear(next.default_year);
+      })
+      // La base est optionnelle : sans elle, l'onglet Population reste vide
+      // plutôt que de faire échouer l'écran.
+      .catch(() => null);
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
     getMortalityMetadata(controller.signal)
       .then((next) => {
         setMortalityMetadata(next);
@@ -171,6 +204,16 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   }, [source, cspLevel, cspCode, cspDimensions, cspMeasures]);
 
   useEffect(() => {
+    if (source === "population") {
+      const next = new URLSearchParams({
+        page: "extraction", source: "population",
+        region: populationRegion, age: populationAge, sex: populationSex,
+        start_year: String(populationStartYear), end_year: String(populationEndYear),
+        dimensions: populationDimensions.join(","), measures: populationMeasures.join(","),
+      });
+      window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
+      return;
+    }
     if (source !== "mortality") return;
     const params = new URLSearchParams({
       page: "extraction", source: "mortality", cause: mortalityCause, population: mortalityPopulation,
@@ -255,6 +298,30 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   }, [source, cspRequest, cspCode, cspDimensions.length, cspMeasures.length]);
 
   useEffect(() => {
+    if (source !== "population") return;
+    if (!populationDimensions.length || !populationMeasures.length || populationStartYear > populationEndYear) {
+      setPreview(null);
+      setLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    let active = true;
+    setLoading(true);
+    const timer = window.setTimeout(() => {
+      setError(null);
+      getPopulationExtractionPreview(populationRequest, controller.signal)
+        .then((next) => { if (active) setPreview(next); })
+        .catch((reason: Error) => { if (active && reason.name !== "AbortError") setError(reason.message); })
+        .finally(() => { if (active) setLoading(false); });
+    }, 250);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [source, populationRequest, populationDimensions.length, populationMeasures.length, populationStartYear, populationEndYear]);
+
+  useEffect(() => {
     if (source !== "mortality") return;
     if (!mortalityDimensions.length || !mortalityMeasures.length || mortalityStartYear > mortalityEndYear) {
       setPreview(null);
@@ -295,12 +362,14 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
     if (source === "pathologies" && (!pathologyDimensions.length || !pathologyMeasures.length || !pathologyTop)) return;
     if (source === "csp" && (!cspDimensions.length || !cspMeasures.length || !cspCode)) return;
     if (source === "mortality" && (!mortalityDimensions.length || !mortalityMeasures.length)) return;
+    if (source === "population" && (!populationDimensions.length || !populationMeasures.length)) return;
     setExporting(format);
     setError(null);
     try {
       if (source === "damir") await downloadExtraction(format, damirRequest);
       else if (source === "pathologies") await downloadPathologyExtraction(format, pathologyRequest);
       else if (source === "csp") await downloadCspExtraction(format, cspRequest);
+      else if (source === "population") await downloadPopulationExtraction(format, populationRequest);
       else await downloadMortalityExtraction(format, mortalityRequest);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "L’export n’a pas pu être généré.");
@@ -366,7 +435,7 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   return (
     <div className="content-wrap extraction-page">
       <section className="hero analysis-hero">
-        <div><div className="eyebrow"><span>Base sur mesure</span> Données agrégées</div><h1>Extraire</h1><p>Composez une base propre, estimez son volume et emportez avec Excel les définitions et le périmètre utilisés.</p><div className="extraction-source-switch"><button type="button" className={source === "damir" ? "active" : ""} onClick={() => chooseSource("damir")}>Dépenses DAMIR</button><button type="button" className={source === "pathologies" ? "active" : ""} onClick={() => chooseSource("pathologies")}>Pathologies</button><button type="button" className={source === "csp" ? "active" : ""} onClick={() => chooseSource("csp")}>CSP</button><button type="button" className={source === "mortality" ? "active" : ""} onClick={() => chooseSource("mortality")}>Mortalité</button></div></div>
+        <div><div className="eyebrow"><span>Base sur mesure</span> Données agrégées</div><h1>Extraire</h1><p>Composez une base propre, estimez son volume et emportez avec Excel les définitions et le périmètre utilisés.</p><div className="extraction-source-switch"><button type="button" className={source === "damir" ? "active" : ""} onClick={() => chooseSource("damir")}>Dépenses DAMIR</button><button type="button" className={source === "pathologies" ? "active" : ""} onClick={() => chooseSource("pathologies")}>Pathologies</button><button type="button" className={source === "csp" ? "active" : ""} onClick={() => chooseSource("csp")}>CSP</button><button type="button" className={source === "mortality" ? "active" : ""} onClick={() => chooseSource("mortality")}>Mortalité</button><button type="button" className={source === "population" ? "active" : ""} onClick={() => chooseSource("population")}>Population</button></div></div>
         <div className="extraction-actions"><button type="button" onClick={() => exportData("csv")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "csv" ? "Préparation…" : "Exporter CSV"}</button><button className="primary" type="button" onClick={() => exportData("xlsx")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "xlsx" ? "Préparation…" : "Exporter Excel"}</button></div>
       </section>
       <div className={`extraction-loading-track ${loading ? "active" : ""}`} role="status" aria-label={loading ? "Aperçu en cours d’actualisation" : "Aperçu à jour"}><span /></div>
@@ -427,13 +496,38 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
           {previewPanel}
           <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>Le fichier conserve le champ de population, le niveau de CSP, la pondération et le millésime 2023 dans l’onglet Métadonnées.</span></aside>
         </section>
+      </div> : source === "population" ? <div className="pathology-extraction-workspace csp-extraction-workspace">
+        <aside className="panel pathology-extraction-filters">
+          <div><span className="section-kicker">Source</span><h2>Périmètre Population</h2></div>
+          <label><span>Territoire</span><select value={populationRegion} onChange={(event) => setPopulationRegion(event.target.value)}><option value="__all__">Tous les territoires</option>{populationMetadata?.regions.filter((item) => item.code !== "99").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+          <label><span>Tranche d’âge</span><select value={populationAge} onChange={(event) => setPopulationAge(event.target.value)}><option value="__all__">Toutes les tranches</option>{populationMetadata?.ages.filter((item) => item.code !== "tsage").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+          <label><span>Sexe</span><select value={populationSex} onChange={(event) => setPopulationSex(event.target.value)}><option value="__all__">Les deux</option><option value="femmes">Femmes</option><option value="hommes">Hommes</option></select></label>
+          <div className="pathology-period"><label><span>Début</span><select value={populationStartYear} onChange={(event) => setPopulationStartYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>Fin</span><select value={populationEndYear} onChange={(event) => setPopulationEndYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label></div>
+          <div className="pathology-extraction-quality"><strong>Au 1er janvier</strong><span>Estimations Insee, rétropolées sur les 13 régions actuelles depuis 1975. Le total « Ensemble » est recalculé par somme des hommes et des femmes.</span></div>
+        </aside>
+        <section className="extraction-main">
+          <article className="builder-card panel">
+            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Une ligne correspond à un millésime et aux découpages retenus.</p></div><span className="builder-count">{populationDimensions.length + populationMeasures.length} colonnes</span></div>
+            <div className="builder-groups">
+              <div><strong>Dimensions</strong><span>Comment découper la population</span><div className="choice-grid">{populationMetadata?.dimensions.map((item) => {
+                const selected = populationDimensions.includes(item.key);
+                const required = (item.key === "year" && populationStartYear !== populationEndYear)
+                  || (item.key === "region" && populationRegion === "__all__");
+                return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={required && selected} title={required ? "Dimension nécessaire pour ce périmètre" : undefined} onClick={() => toggle(item.key, populationDimensions, setPopulationDimensions)}><i>{selected ? "✓" : "+"}</i>{item.label}{required ? " · requise" : ""}</button>;
+              })}</div></div>
+              <div><strong>Mesures</strong><span>Quels indicateurs exporter</span><div className="choice-grid measures-grid">{populationMetadata?.measures.map((item) => <button type="button" key={item.key} className={populationMeasures.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, populationMeasures, setPopulationMeasures)}><i>{populationMeasures.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
+            </div>
+          </article>
+          {previewPanel}
+          <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>L’export conserve la source Insee, le champ, la période et l’avertissement « population au 1er janvier, pas une moyenne annuelle ».</span></aside>
+        </section>
       </div> : <div className="pathology-extraction-workspace mortality-extraction-workspace">
         <aside className="panel pathology-extraction-filters">
           <div><span className="section-kicker">Source</span><h2>Périmètre Mortalité</h2></div>
           <label><span>Cause de décès</span><SearchableCauseSelect options={mortalityMetadata?.causes ?? []} value={mortalityCause} onChange={setMortalityCause} allOption={{ code: "__all__", label: "Toutes les causes disponibles" }} /></label>
           <label><span>Population publiée</span><select value={mortalityPopulation} onChange={(event) => setMortalityPopulation(event.target.value)}><option value="__all__">Tous les périmètres publiés</option>{mortalityMetadata?.populations.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
           <div className="pathology-period"><label><span>Début</span><select value={mortalityStartYear} onChange={(event) => setMortalityStartYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>Fin</span><select value={mortalityEndYear} onChange={(event) => setMortalityEndYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label></div>
-          <div className="pathology-extraction-quality mortality-extraction-quality"><strong>Effectifs bruts</strong><span>Aucun taux de mortalité n’est exporté tant que la population de référence Insee n’est pas intégrée.</span></div>
+          <div className="pathology-extraction-quality mortality-extraction-quality"><strong>Effectifs bruts</strong><span>L’export porte les décès publiés, jamais un taux : le CépiDc ne publie pas de population exposée. Les Croisements, eux, rapportent désormais ces décès à la population résidente Insee.</span></div>
         </aside>
         <section className="extraction-main">
           <article className="builder-card panel">
