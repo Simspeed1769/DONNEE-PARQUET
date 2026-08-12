@@ -339,14 +339,11 @@ export type PopulationOverview = {
     region: string; region_label: string;
     age: string; age_label: string;
     sex: string; sex_label: string;
-    /** L'année dont la pyramide sert de silhouette de référence. */
-    reference_year: number | null;
   };
   kpis: Array<{ key: string; label: string; value: number | null; kind: "quantity" | "percent"; detail: string }>;
   annual: Array<{ year: number; population: number | null; share: number | null }>;
   territories: Array<{ code: string; label: string; population: number | null; share: number | null }>;
   age_sex: PopulationCell[];
-  age_sex_reference: PopulationCell[];
   sex_profile: Array<{ code: string; label: string; population: number | null; share: number | null }>;
   quality: { source: string; scope: string; limitations: string[]; lumped_90_plus: boolean };
 };

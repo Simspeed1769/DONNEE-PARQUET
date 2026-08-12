@@ -8,10 +8,13 @@
  *
  *  **La pyramide des âges est la forme signature de cette base.** Elle n'est
  *  offerte que sur la lecture Âge et seulement quand le sexe n'est pas filtré :
- *  une pyramide à un seul versant n'est pas une pyramide. Une silhouette de
- *  référence — la pyramide de la première année de la période — se superpose en
- *  trait fin : le vieillissement se voit alors d'un coup d'œil, sans animation
- *  ni artifice.
+ *  une pyramide à un seul versant n'est pas une pyramide.
+ *
+ *  Une silhouette de référence — la pyramide d'une autre année en trait fin —
+ *  y a été essayée puis retirée : une polyligne qui traverse deux séries
+ *  opposées zigzague en travers des barres et se confond avec les axes. L'idée
+ *  était bonne, l'exécution ne l'était pas ; une comparaison temporelle passera
+ *  par un autre moyen.
  */
 
 import { buildOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
@@ -40,6 +43,15 @@ const LUMPED_NOTE = "Sur quelques cellules d’outre-mer des années 1990, la tr
 const CHART_HEIGHT = 430;
 const MAP_HEIGHT = 520;
 
+/** Les positions à marquer sur une courbe : une année sur cinq, et toujours la
+ *  dernière, même si elle rompt le pas. */
+function markerPositions(years: number[]): Set<number> {
+  const marked = new Set<number>();
+  years.forEach((year, index) => { if (year % 5 === 0) marked.add(index); });
+  if (years.length) marked.add(years.length - 1);
+  return marked;
+}
+
 export type PopulationInput = {
   overview: PopulationOverview | null;
   measure: PopulationMeasure;
@@ -64,8 +76,16 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
   const valueOf = (row: { population: number | null; share: number | null }) =>
     (isShare ? row.share : row.population);
 
-  /* — Évolution : la plus longue série de tout l'outil — */
+  /* — Évolution : la plus longue série de tout l'outil, 1975 à 2026 — */
   const annual = overview?.annual ?? [];
+  /** Une marque toutes les cinq années, plus la dernière quoi qu'il arrive.
+   *
+   *  Cinquante-deux points collés donnaient un pointillé illisible. **Aucune
+   *  valeur n'est retirée** : la courbe passe par toutes les années et
+   *  l'infobulle les donne toutes ; seules les marques et les graduations
+   *  s'espacent. Retenir une année sur cinq aurait masqué les creux — 2020 n'est
+   *  pas un multiple de cinq. */
+  const markers = markerPositions(annual.map((item) => item.year));
   const evolutionForms: FormOption[] = [{ key: "line", label: "Courbe" }, { key: "bar", label: "Barres" }];
   const evolutionForm = resolveForm(evolutionForms, forms.evolution);
   const evolutionSeries: ChartSeries[] = [{
@@ -94,14 +114,6 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
   const ageSeries: ChartSeries[] = ["Hommes", "Femmes"].map((sex, index) => ({
     key: sex, label: sex, isOther: false, colorIndex: index, values: bySex(cells, sex),
   }));
-  const referenceCells = overview?.age_sex_reference ?? [];
-  const referenceYear = context?.reference_year ?? null;
-  const overlay: ChartSeries[] = referenceCells.length
-    ? ["Hommes", "Femmes"].map((sex, index) => ({
-      key: `ref-${sex}`, label: `${sex} · ${referenceYear}`, isOther: true, colorIndex: index,
-      values: bySex(referenceCells, sex),
-    }))
-    : [];
   const ageForms: FormOption[] = [
     // La pyramide adosse deux effectifs au même axe : elle n'existe qu'avec ses
     // deux versants, et seulement sur des personnes comptées, pas sur des parts.
@@ -170,6 +182,7 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
           categories: annual.map((item) => item.year),
           series: evolutionSeries, kind, unitLabel, tokens,
           directLabels: false, xTitle: "Année",
+          markers: annual.length > 20 ? markers : undefined,
         })
         : null,
       table: {
@@ -224,12 +237,9 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
           ? `Pyramide des âges · ${context?.region_label ?? ""} ${context?.year ?? ""}`
           : `${measureLabel} par âge`,
         question: isPyramid
-          ? "Quelle est la forme de cette population, et comment a-t-elle vieilli ?"
+          ? "Quelle est la forme de cette population ?"
           : "Comment la population se répartit-elle par âge ?",
         caveats: [...base,
-          ...(isPyramid && referenceYear
-            ? [`La silhouette en trait fin est la pyramide de ${referenceYear}, première année de la période : elle sert de repère, pas de mesure.`]
-            : []),
           ...(isPyramid
             ? ["Les deux versants portent des effectifs, pas des parts : la largeur se lit comme un nombre de personnes."]
             : []),
@@ -240,8 +250,7 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
           ? buildOption({
             form: (isPyramid ? "pyramid" : ageForm) as ChartForm,
             categories: ageLabels,
-            series: isPyramid || !isShare ? ageSeries : ageSeries,
-            overlay: isPyramid ? overlay : undefined,
+            series: ageSeries,
             kind: "quantity",
             unitLabel: "habitants",
             tokens,
@@ -262,15 +271,10 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
         height: isPyramid ? Math.max(CHART_HEIGHT, 80 + ageLabels.length * 22) : CHART_HEIGHT,
         empty: ageLabels.length ? null : "Aucune tranche d’âge renseignée.",
         xTitle: "Tranche d’âge",
-        legend: [
-          ...ageSeries.map((serie, index) => ({
-            key: serie.key, label: serie.label,
-            color: tokens.series[index % tokens.series.length],
-          })),
-          ...(isPyramid && overlay.length
-            ? [{ key: "silhouette", label: `Silhouette ${referenceYear}`, color: tokens.inkMuted }]
-            : []),
-        ],
+        legend: ageSeries.map((serie, index) => ({
+          key: serie.key, label: serie.label,
+          color: tokens.series[index % tokens.series.length],
+        })),
       };
     })(),
     categorical("sex", "Sexe", `${measureLabel} selon le sexe`,

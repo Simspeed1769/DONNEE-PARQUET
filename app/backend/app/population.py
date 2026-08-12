@@ -251,8 +251,6 @@ def population_overview(repo: PopulationRepository,
                  "lumped": bool(row["lumped"])} for row in rows]
 
     age_sex = pyramid(payload.year)
-    reference_year = payload.start_year if payload.start_year in years and payload.start_year != payload.year else None
-    age_sex_reference = pyramid(reference_year) if reference_year else []
 
     # — Sexe : le profil du périmètre, femmes et hommes.
     sex_clauses, sex_params = _scope_clauses(payload.region, payload.age, ALL_SEXES)
@@ -301,7 +299,6 @@ def population_overview(repo: PopulationRepository,
             "region": payload.region, "region_label": region_label,
             "age": payload.age, "age_label": age_label,
             "sex": payload.sex, "sex_label": SEXES[payload.sex],
-            "reference_year": reference_year,
         },
         "kpis": [
             {"key": "population", "label": "Population", "kind": "quantity",
@@ -315,7 +312,6 @@ def population_overview(repo: PopulationRepository,
         "annual": annual,
         "territories": territories,
         "age_sex": age_sex,
-        "age_sex_reference": age_sex_reference,
         "sex_profile": sex_profile,
         "quality": {
             "source": SOURCE_LABEL,

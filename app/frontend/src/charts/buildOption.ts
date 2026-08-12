@@ -36,11 +36,13 @@ export type ChartInput = {
    *  n'a personne pour l'expliquer. Le titre suit l'axe des modalités, qui
    *  bascule en ordonnée sur les formes horizontales. */
   xTitle?: string;
-  /** Une forme de référence superposée en trait fin, sans remplissage : la
-   *  pyramide d'une autre année posée sur celle qu'on regarde. On voit le
-   *  vieillissement d'un coup d'œil, sans animation ni artifice. Seule la
-   *  pyramide s'en sert ; ailleurs, le champ est ignoré. */
-  overlay?: ChartSeries[];
+  /** Les positions qui portent un marqueur, sur une courbe.
+   *
+   *  Cinquante-deux années de population donnaient cinquante-deux points
+   *  collés : un pointillé, pas une courbe. Le tracé garde **toutes** ses
+   *  valeurs — rien n'est caché — mais ne pose ses marques et ses graduations
+   *  que sur les positions indiquées. Absent, toutes les positions en portent. */
+  markers?: Set<number>;
 };
 
 const AXIS_NAME_GAP = 30;
@@ -236,7 +238,12 @@ export function buildOption(input: ChartInput): EChartsOption {
       type: "line" as const,
       stack: stacked ? "total" : undefined,
       smooth: false,
-      symbol: "circle",
+      // Une marque à chaque point sur cinquante-deux années donnait un
+      // pointillé : les marques s'espacent, la courbe passe toujours par toutes
+      // les valeurs et l'infobulle les donne toutes.
+      symbol: input.markers
+        ? ((_value: unknown, params: any) => (input.markers!.has(params.dataIndex) ? "circle" : "none"))
+        : "circle",
       symbolSize: 8,
       lineStyle: { width: 2, color },
       itemStyle: { color, borderColor: tokens.surface, borderWidth: MARK_GAP },
@@ -293,6 +300,11 @@ export function buildOption(input: ChartInput): EChartsOption {
       data: input.categories,
       boundaryGap: asBar,
       ...axisCommon(tokens),
+      // Les graduations suivent les marqueurs : une année sur cinq quand la
+      // série est longue, toutes sinon.
+      ...(input.markers
+        ? { axisLabel: { ...axisCommon(tokens).axisLabel, interval: (index: number) => input.markers!.has(index) } }
+        : {}),
       ...axisName(tokens, input.xTitle),
       splitLine: { show: false },
     },
@@ -745,23 +757,7 @@ function pyramidOption(input: ChartInput, scale: { label: string },
         },
         barMaxWidth: 26,
       };
-    }).concat(
-      // La silhouette de référence : un trait, pas une barre. Elle ne s'empile
-      // pas avec les deux versants, elle se lit par-dessus — et elle ne réagit
-      // ni au survol ni au clic, pour ne pas prendre la place de la donnée du
-      // moment.
-      (input.overlay ?? []).map((serie, position) => ({
-        id: `silhouette-${serie.key}`,
-        name: serie.label,
-        type: "line" as const,
-        data: mirrored(serie, position === 0 ? -1 : 1),
-        symbol: "none",
-        silent: true,
-        z: 6,
-        lineStyle: { width: 1.4, color: tokens.inkMuted, opacity: 0.75 },
-        itemStyle: { color: tokens.inkMuted },
-      })) as any,
-    ) as EChartsOption["series"],
+    }) as EChartsOption["series"],
   };
 }
 
