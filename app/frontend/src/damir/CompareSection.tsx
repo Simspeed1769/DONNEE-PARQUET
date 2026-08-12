@@ -592,6 +592,19 @@ export function CompareSection({
               <span key={item.key} className="compare-rail-chip" role="listitem">
                 <i style={{ background: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther) }} />
                 {item.label}
+                {/* Retirer une série est le geste le plus fréquent : il se fait
+                    ici, sans passer par le tiroir. Le repli, lui, s'éteint. */}
+                <button
+                  type="button"
+                  onClick={() => (item.isOther
+                    ? setShowOther(false)
+                    : setSelection(active.filter((key) => key !== item.key)))}
+                  disabled={!item.isOther && active.length <= 1}
+                  title={!item.isOther && active.length <= 1
+                    ? "Une comparaison garde au moins une série"
+                    : `Retirer ${item.label}`}
+                  aria-label={`Retirer ${item.label}`}
+                >✕</button>
               </span>
             ))}
             {!chartSeries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}

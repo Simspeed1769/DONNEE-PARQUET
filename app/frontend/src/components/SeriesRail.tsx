@@ -195,16 +195,36 @@ export function SeriesRail({
       <div className="compare-rail-summary">
         <span className="compare-rail-label">Ce que je compare</span>
         <div className="compare-rail-chips" role="list">
-          {entries.map((entry, index) => (
-            <span key={`${index}-${entry.code}`} className="compare-rail-chip" role="listitem">
-              <i style={{ background: colorOf(index) }} />
-              {seriesName(entry, catalogue, base, fields)}
-            </span>
-          ))}
+          {entries.map((entry, index) => {
+            const name = seriesName(entry, catalogue, base, fields);
+            return (
+              <span key={`${index}-${entry.code}`} className="compare-rail-chip" role="listitem">
+                <i style={{ background: colorOf(index) }} />
+                {name}
+                {/* Retirer une série est le geste le plus fréquent : il se fait
+                    ici, sans passer par le tiroir. */}
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  disabled={entries.length <= 1}
+                  title={entries.length <= 1
+                    ? "Une comparaison garde au moins une série"
+                    : `Retirer ${name}`}
+                  aria-label={`Retirer ${name}`}
+                >✕</button>
+              </span>
+            );
+          })}
           {other?.on ? (
             <span className="compare-rail-chip" role="listitem">
               <i style={{ background: other.color }} />
               {other.label}
+              <button
+                type="button"
+                onClick={() => other.onToggle(false)}
+                title="Masquer le reste du périmètre"
+                aria-label="Masquer le reste du périmètre"
+              >✕</button>
             </span>
           ) : null}
           {!entries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}

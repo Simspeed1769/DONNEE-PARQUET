@@ -396,15 +396,19 @@
 
 /* Le bandeau vit sur le fond ivoire de la page, entre les filtres et le
    panneau du graphique. Il le **pilote**, il ne lui appartient pas : le poser
-   dans le panneau blanc en faisait un élément du tracé, et le gris sur blanc
-   pesait lourd. Sur le papier, une rangée de puces suffit — pas de surface
-   propre, juste un filet en dessous pour séparer sans encadrer. */
+   dans le panneau blanc en faisait un élément du tracé.
+   Il ne se contentait que d'un filet en dessous, et se lisait alors comme la
+   dernière ligne de la barre de filtres. Un encadré léger — la même bordure et
+   le même rayon que les autres surfaces, sur le fond creusé — en fait une zone
+   qu'on suit du regard, sans lui donner le poids d'un panneau. */
 .compare-rail-summary {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 2px 2px 10px;
-  border-bottom: 1px solid var(--line);
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
 }
 .compare-rail-label {
   flex: 0 0 auto;
@@ -414,14 +418,17 @@
   letter-spacing: .04em;
   text-transform: uppercase;
 }
+/* Les puces passent à la ligne plutôt que de défiler à l'horizontale. Le
+   défilement coupait la dernière — celle qu'on venait souvent d'ajouter — et
+   demandait un geste pour voir ce qu'on compare, ce qui est précisément ce que
+   ce bandeau doit dire d'un coup d'œil. Une seconde ligne coûte moins. */
 .compare-rail-chips {
   display: flex;
   align-items: center;
   gap: 6px;
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  flex-wrap: wrap;
 }
 .compare-rail-chip {
   display: inline-flex;
@@ -434,10 +441,38 @@
   background: var(--surface);
   color: var(--ink-secondary);
   font-size: .6rem;
+  max-width: 100%;
+  overflow: hidden;
   white-space: nowrap;
 }
 .compare-rail-chip.empty { color: var(--ink-muted); font-style: italic; }
 .compare-rail-chip i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 2px; }
+
+/* La croix de la puce : retirer une série sans ouvrir le tiroir. C'est le geste
+   le plus fréquent, il ne mérite pas un détour. Elle est là en permanence —
+   une croix qui n'apparaît qu'au survol n'existe pas pour qui ne survole pas —
+   et discrète tant qu'on ne la vise pas. */
+.compare-rail-chip button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin: -3px -6px -3px 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: .62rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .14s var(--ease), background .14s var(--ease);
+}
+.compare-rail-chip button:hover:not(:disabled) { color: var(--accent-ink); background: var(--accent); }
+.compare-rail-chip button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.compare-rail-chip button:disabled { opacity: .3; cursor: not-allowed; }
 
 .compare-rail-toggle {
   flex: 0 0 auto;
