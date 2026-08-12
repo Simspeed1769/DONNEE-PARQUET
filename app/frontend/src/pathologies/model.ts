@@ -12,6 +12,7 @@ import { buildOption, type ChartForm, type ChartSeries } from "../charts/buildOp
 import type { ChartTokens } from "../charts/tokens";
 import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
+import { mapOption } from "../charts/mapOption";
 import type { PathologyOverview } from "../types";
 
 export type PathologyReadingKey = "evolution" | "territory" | "age" | "sex";
@@ -38,6 +39,10 @@ export type PathologyInput = {
   regionLabel: string;
   isFrance: boolean;
   hiddenTerritories: string[];
+  /** La carte n'est offerte qu'une fois le fond de carte chargé : sans lui,
+   *  ECharts dessinerait un cadre vide. */
+  mapReady: boolean;
+  mapError: string | null;
   tokens: ChartTokens;
   forms: Partial<Record<PathologyReadingKey, string>>;
 };
@@ -45,7 +50,8 @@ export type PathologyInput = {
 const CHART_HEIGHT = 430;
 
 export function buildPathologyReadings(input: PathologyInput): Reading[] {
-  const { overview, measure, regionLabel, isFrance, hiddenTerritories, tokens, forms } = input;
+  const { overview, measure, regionLabel, isFrance, hiddenTerritories,
+          mapReady, mapError, tokens, forms } = input;
   const isRate = measure === "prevalence";
   const kind = isRate ? "percent" : "quantity";
   const unitLabel = isRate ? "% de la population de référence Cnam" : "patients";
@@ -81,7 +87,11 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
   const territories = (overview?.territories ?? [])
     .filter((item) => item.code !== "99" && !hiddenTerritories.includes(item.code))
     .filter((item) => valueOf(item) !== null);
-  const territoryForms: FormOption[] = [{ key: "rank", label: "Classement" }, { key: "bar", label: "Barres" }];
+  const territoryForms: FormOption[] = [
+    { key: "map", label: "Carte" },
+    { key: "rank", label: "Classement" },
+    { key: "bar", label: "Barres" },
+  ];
   const territoryForm = resolveForm(territoryForms, forms.territory);
 
   /* — Âge × sexe — */
@@ -185,14 +195,59 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       empty: annual.length ? null : "Aucune année renseignée sur ce périmètre.",
       xTitle: "Année",
     },
-    categorical("territory", "Territoire", `${measureLabel} par territoire`,
-      "Quels territoires sont les plus touchés ?", "Région",
-      territories.map((item) => ({ label: item.label, value: valueOf(item) })),
-      territoryForms, territoryForm,
-      [
+    ((): Reading => {
+      const rows = territories.map((item) => ({
+        code: item.code, label: item.label, value: valueOf(item),
+      }));
+      const quality = [
         ...(overview?.quality.masked_cells ? [`${overview.quality.masked_cells} cellule(s) masquée(s) par la source sur ce périmètre.`] : []),
         ...(overview?.quality.unavailable_territories ? [`${overview.quality.unavailable_territories} territoire(s) sans valeur exploitable, exclus du classement.`] : []),
-      ]),
+      ];
+      const onMap = territoryForm === "map";
+      // La carte ne reçoit que les territoires dont la valeur est publiée. Les
+      // autres — masquage Cnam — restent en `--map-void` : une absence n'est
+      // pas une valeur basse, et le bas de rampe la ferait lire comme telle.
+      const mainland = rows.filter((row) => Number(row.code) >= 11 && row.value !== null);
+
+      if (!onMap) {
+        return categorical("territory", "Territoire", `${measureLabel} par territoire`,
+          "Quels territoires sont les plus touchés ?", "Région",
+          rows.map(({ label, value }) => ({ label, value })),
+          territoryForms, territoryForm, quality);
+      }
+
+      return {
+        key: "territory",
+        nav: "Territoire",
+        title: `${measureLabel} par territoire`,
+        question: "Où est-ce le plus fort ?",
+        caveats: [
+          ...base,
+          "Un territoire sans valeur publiée reste en gris : c'est une absence, pas une valeur basse.",
+          "Les DROM sont hors du cadrage métropolitain de la carte ; le classement les porte.",
+          ...quality,
+        ],
+        forms: territoryForms,
+        form: territoryForm,
+        option: mapReady && mainland.length
+          ? mapOption({
+            rows: mainland.map((row) => ({ code: row.code, label: row.label, value: row.value as number })),
+            highlighted: isFrance ? null : null,
+            kind, tokens,
+          })
+          : null,
+        table: {
+          columns: ["Région", measureLabel],
+          rows: rows.map((row) => [row.label, formatValue(row.value, kind)]),
+        },
+        ariaLabel: `${measureLabel} par région · ${label}`,
+        height: 520,
+        empty: mapReady
+          ? (mainland.length ? null : "Aucun territoire métropolitain avec une valeur publiée.")
+          : mapError,
+        xTitle: "Région",
+      };
+    })(),
     {
       key: "age",
       nav: "Âge",

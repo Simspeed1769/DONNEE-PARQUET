@@ -10,7 +10,7 @@ import { buildOption, type ChartForm, type ChartSeries } from "../charts/buildOp
 import type { ChartTokens } from "../charts/tokens";
 import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
-import { mapOption } from "./charts";
+import { mapOption } from "../charts/mapOption";
 import type { CspOverview } from "../types";
 
 export type CspReadingKey = "evolution" | "territory" | "age" | "sex";

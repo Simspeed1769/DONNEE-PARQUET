@@ -33,3 +33,37 @@ export function pathologyCatalogue(metadata: PathologyMetadata | null): EntityOp
     .sort((left, right) => right.patients - left.patients)
     .map(({ code, label, group }) => ({ code, label, group }));
 }
+
+/** La sélection d'ouverture de la comparaison.
+ *
+ *  Trois pathologies lourdes et parlantes plutôt qu'une seule : arriver sur une
+ *  comparaison à un élément n'apprend rien, et choisir soi-même trois entrées
+ *  parmi 118 avant de voir quoi que ce soit décourage. Les libellés sont ceux
+ *  de la nomenclature Cnam ; si l'un manque, on prend la pathologie la plus
+ *  lourde encore libre — le catalogue étant classé par poids, c'est la première
+ *  disponible — et l'appelant le signale en réserve.
+ */
+const OPENING_LABELS = [
+  "Diabète",
+  "Cancers",
+  "Maladies neurologiques ou dégénératives",
+];
+
+export function openingSelection(catalogue: EntityOption[]): {
+  codes: string[];
+  missing: string[];
+} {
+  const codes: string[] = [];
+  const missing: string[] = [];
+  const normalise = (value: string) => value.toLocaleLowerCase("fr-FR").trim();
+
+  OPENING_LABELS.forEach((wanted) => {
+    const found = catalogue.find((item) => normalise(item.label) === normalise(wanted));
+    if (found && !codes.includes(found.code)) { codes.push(found.code); return; }
+    missing.push(wanted);
+    const fallback = catalogue.find((item) => !codes.includes(item.code));
+    if (fallback) codes.push(fallback.code);
+  });
+
+  return { codes, missing };
+}

@@ -91,7 +91,7 @@ export function PathologyPage({ routeVersion, onOpenExtraction, onOpenMethodolog
   }, [section, top, year, region, age, sex, measure]);
 
   const shared = {
-    metadata: metadata!, year, region, age, sex, measure, setMeasure,
+    metadata: metadata!, year, region, setRegion, age, sex, measure, setMeasure,
     onOpenExtraction, routeVersion,
   };
 

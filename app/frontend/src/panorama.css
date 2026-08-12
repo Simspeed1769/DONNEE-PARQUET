@@ -394,14 +394,17 @@
 
 .compare-rail { position: relative; margin: 0 0 var(--space-3); }
 
+/* Le bandeau vit sur le fond ivoire de la page, entre les filtres et le
+   panneau du graphique. Il le **pilote**, il ne lui appartient pas : le poser
+   dans le panneau blanc en faisait un élément du tracé, et le gris sur blanc
+   pesait lourd. Sur le papier, une rangée de puces suffit — pas de surface
+   propre, juste un filet en dessous pour séparer sans encadrer. */
 .compare-rail-summary {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 9px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface-muted);
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid var(--line);
 }
 .compare-rail-label {
   flex: 0 0 auto;

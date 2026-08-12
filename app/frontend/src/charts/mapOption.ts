@@ -1,16 +1,19 @@
-/** La carte de la fiche CSP.
+/** La carte choroplèthe, partagée par les bases qui ont un territoire.
  *
- *  C'est la seule forme que cette base dessine elle-même : les autres viennent
- *  de `charts/buildOption.ts`, partagé avec DAMIR, ce qui leur vaut les mêmes
- *  transitions et les mêmes réglages. Une carte, elle, n'a pas d'équivalent
- *  générique — elle encode une magnitude simple, part ou effectif, donc une
- *  rampe séquentielle et jamais la palette divergente réservée aux indices
- *  centrés sur un pivot.
+ *  Elle encode une magnitude simple — une part, un effectif, une prévalence —
+ *  donc une rampe séquentielle, et jamais la palette divergente réservée aux
+ *  indices centrés sur un pivot.
+ *
+ *  **Un territoire absent de `rows` prend `--map-void`**, la teinte du « pas de
+ *  donnée ». C'est le point qui compte le plus ici : une région dont la valeur
+ *  n'est pas publiée — masquage Cnam sous dix patients — ne doit jamais tomber
+ *  au bas de la rampe, où elle se lirait comme une valeur faible. L'appelant ne
+ *  passe donc que les territoires dont il a la valeur.
  */
 
-import type { EChartsOption } from "../charts/EChart";
-import type { ChartTokens } from "../charts/tokens";
-import { FRENCH_MAP } from "../charts/frenchMap";
+import type { EChartsOption } from "./EChart";
+import type { ChartTokens } from "./tokens";
+import { FRENCH_MAP } from "./frenchMap";
 import { formatValue } from "../utils";
 
 function tooltipCommon(tokens: ChartTokens) {

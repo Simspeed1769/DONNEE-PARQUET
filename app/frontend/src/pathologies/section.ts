@@ -15,6 +15,9 @@ export type PathologySectionProps = {
   metadata: PathologyMetadata;
   year: number;
   region: string;
+  /** La carte du panorama est cliquable : elle change la région commune, qui
+   *  vit dans la coquille. */
+  setRegion: (next: string) => void;
   age: string;
   sex: string;
   measure: PathologyMeasure;

@@ -14,7 +14,7 @@ import { getPathologyOverview } from "../api";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { EntityPicker } from "../components/EntityPicker";
-import { pathologyCatalogue } from "./catalogue";
+import { openingSelection, pathologyCatalogue } from "./catalogue";
 import { buildPathologyCompare } from "./model";
 import { MAX_COMPARED, SOURCE_LINE, scopeLabel, type PathologySectionProps } from "./section";
 import type { PathologyOverview } from "../types";
@@ -34,22 +34,29 @@ export function CompareSection({
   const tokens = useChartTokens();
   const catalogue = useMemo(() => pathologyCatalogue(metadata), [metadata]);
 
+  const opening = useMemo(() => openingSelection(catalogue), [catalogue]);
   const [codes, setCodes] = useState<string[]>(() => {
     const raw = params.get("compare");
     const parsed = raw ? raw.split("~").filter(Boolean) : [];
-    return parsed.length ? parsed.slice(0, MAX_COMPARED) : (top ? [top] : []);
+    return parsed.length ? parsed.slice(0, MAX_COMPARED) : [];
   });
   const [view, setView] = useState(() => params.get("view_compare") ?? "line");
   const [compared, setCompared] = useState<Compared[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Le sujet du panorama entre dans la comparaison la première fois qu'on y
-  // arrive, et jamais de force ensuite : on peut vouloir comparer sans lui.
+  // À l'ouverture, trois pathologies parlantes plutôt qu'une seule : une
+  // comparaison à un élément n'apprend rien. Le sujet du panorama s'y ajoute
+  // s'il n'y figure pas déjà — on est venu de là.
   useEffect(() => {
-    if (!top) return;
-    setCodes((current) => (current.length ? current : [top]));
-  }, [top]);
+    if (!opening.codes.length) return;
+    setCodes((current) => {
+      if (current.length) return current;
+      const seeded = [...opening.codes];
+      if (top && !seeded.includes(top)) seeded.unshift(top);
+      return seeded.slice(0, MAX_COMPARED);
+    });
+  }, [opening, top]);
 
   const fetchKey = useMemo(
     () => JSON.stringify([codes, year, region, age, sex]),
@@ -105,7 +112,7 @@ export function CompareSection({
     {/* Ce que je compare, juste sous les filtres : on lit dans l'ordre où on
         pense — je fixe le périmètre, je vois ce que je mets en regard, puis je
         choisis la forme. */}
-    <section className="panel pathology-context patho-compare-rail">
+    <section className="patho-compare-rail">
       <EntityPicker
         catalogue={catalogue}
         selection={codes}

@@ -212,6 +212,34 @@
   Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
   le seuil que se fixe le projet pour extraire un composant.
 
+## v5 · Phase 1 (partielle) — 1.A, 1.B, 1.C faits ; 1.D en attente
+
+- **1.B — cause commune trouvée et traitée à la source.** Sur les formes
+  horizontales — classement, écarts, cascade — ECharts posait le nom de l'axe
+  des **valeurs** au bout de l'axe, c'est-à-dire en haut à droite du tracé :
+  exactement là où arrive l'étiquette de la plus longue barre. D'où les deux
+  textes superposés. Il passe au milieu, sous l'axe, où la place est libre. Le
+  titre des modalités, lui, était rogné par une marge haute de 24 px pour un
+  écart de 14 px et une ligne de 12 px ; elle passe à 34.
+- **1.A** : le bandeau « Ce que je compare » sort du panneau blanc et se pose
+  sur le fond ivoire, entre les filtres et le graphique. Plus de surface grise :
+  une rangée de puces et un filet en dessous. Les quatre bases sont alignées.
+- **1.C** : Pathologies gagne la carte choroplèthe. `csp/charts.ts` devient
+  `charts/mapOption.ts`, partagé. Un territoire sans valeur publiée — masquage
+  Cnam — reste en `--map-void` : la carte ne reçoit que les territoires dont la
+  valeur existe, une absence n'étant pas une valeur basse. Clic = ouverture de
+  la région, comme sur DAMIR.
+- **Fait aussi** : la comparaison de Pathologies s'ouvre sur Diabète, Cancers et
+  Maladies neurologiques ou dégénératives, avec repli sur la pathologie la plus
+  lourde encore libre si un libellé manque.
+- **Non fait — 1.D.** Le gabarit Comparer de DAMIR n'est pas encore porté à
+  l'identique : il manque les **filtres par série** (`AdvancedFilterPanel` par
+  série, périmètre propre, nom éditable), le complément « Reste du périmètre »,
+  et les sélections par défaut de CSP et Mortalité, qui demandent des poids que
+  leurs catalogues ne portent pas encore. C'est le gros morceau de la phase.
+- **Non vérifié** : la revue aux cinq largeurs dans les deux thèmes, l'outil de
+  navigation de cette session capturant toujours en 1568 px.
+
 ## v4 · Phase 5 — Mortalité : Comparer les causes
 
 - **Fait** : même coquille à deux sections. Millésime, population et mesure

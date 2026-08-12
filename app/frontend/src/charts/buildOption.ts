@@ -49,6 +49,27 @@ const AXIS_NAME_GAP = 30;
  *  ligne. */
 const VALUE_NAME_TOP = 30;
 
+/** Le nom de l'axe des **valeurs** d'une forme horizontale — classement,
+ *  cascade, écarts — se pose au milieu, **sous** l'axe.
+ *
+ *  ECharts le mettrait par défaut au bout de l'axe, c'est-à-dire en haut à
+ *  droite du tracé : exactement là où arrive l'étiquette de la plus longue
+ *  barre. Les deux textes se superposaient et devenaient illisibles tous les
+ *  deux. Sous l'axe, la place est libre. */
+function horizontalValueName(tokens: ChartTokens, label: string) {
+  return {
+    name: label,
+    nameLocation: "middle" as const,
+    nameGap: 26,
+    nameTextStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font },
+  };
+}
+
+/** La hauteur qu'il faut au-dessus d'une forme horizontale pour que le titre
+ *  des modalités ne soit pas rogné par le bord du conteneur : l'écart à l'axe,
+ *  plus une ligne de texte, plus une marge de sécurité. */
+const CATEGORY_NAME_TOP = 34;
+
 /** Le même titre, pour un axe de modalités devenu vertical. Écrit en haut de
  *  l'axe plutôt qu'en son milieu : au milieu, il faudrait le coucher, et un
  *  libellé pivoté se lit mal.
@@ -392,7 +413,12 @@ function rankOption(input: ChartInput, scale: { label: string },
 
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 56, top: input.xTitle ? 24 : 8, bottom: 8, containLabel: true },
+    grid: {
+      left: 8, right: 56,
+      top: input.xTitle ? CATEGORY_NAME_TOP : 8,
+      bottom: 26,
+      containLabel: true,
+    },
     tooltip: {
       trigger: "item",
       ...tooltipCommon(tokens),
@@ -402,7 +428,7 @@ function rankOption(input: ChartInput, scale: { label: string },
           <div style="color:${tokens.inkSecondary}">${row.note} · <b style="color:${tokens.ink}">${readable(row.value, input.kind)}</b></div>`;
       },
     },
-    xAxis: { type: "value", name: scale.label, nameTextStyle: { color: tokens.inkMuted, fontSize: 11 }, ...axisCommon(tokens) },
+    xAxis: { type: "value", ...horizontalValueName(tokens, scale.label), ...axisCommon(tokens) },
     yAxis: {
       type: "category",
       data: ranked.map((row) => row.label),
@@ -478,7 +504,12 @@ function divergingOption(input: ChartInput, scale: { label: string },
 
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 56, top: input.xTitle ? 24 : 8, bottom: 8, containLabel: true },
+    grid: {
+      left: 8, right: 56,
+      top: input.xTitle ? CATEGORY_NAME_TOP : 8,
+      bottom: 26,
+      containLabel: true,
+    },
     tooltip: {
       trigger: "item",
       ...tooltipCommon(tokens),
@@ -488,12 +519,7 @@ function divergingOption(input: ChartInput, scale: { label: string },
           <div style="color:${tokens.inkSecondary}"><b style="color:${tokens.ink}">${formatValue(row.value, input.kind, true)}</b></div>`;
       },
     },
-    xAxis: {
-      type: "value",
-      name: scale.label,
-      nameTextStyle: { color: tokens.inkMuted, fontSize: 11, fontFamily: tokens.font },
-      ...axisCommon(tokens),
-    },
+    xAxis: { type: "value", ...horizontalValueName(tokens, scale.label), ...axisCommon(tokens) },
     yAxis: {
       type: "category",
       data: rows.map((row) => row.label),
@@ -774,7 +800,12 @@ function waterfallOption(input: ChartInput, scale: { label: string },
 
   return {
     animationDuration: 380,
-    grid: { left: 8, right: 64, top: 8, bottom: 8, containLabel: true },
+    grid: {
+      left: 8, right: 64,
+      top: input.xTitle ? CATEGORY_NAME_TOP : 8,
+      bottom: 26,
+      containLabel: true,
+    },
     tooltip: {
       trigger: "item",
       ...tooltipCommon(tokens),
@@ -785,7 +816,7 @@ function waterfallOption(input: ChartInput, scale: { label: string },
           <b style="color:${(row.delta ?? 0) >= 0 ? tokens.good : tokens.critical}">${formatValue(row.delta, input.kind, true)}</b></div>`;
       },
     },
-    xAxis: { type: "value", name: scale.label, nameTextStyle: { color: tokens.inkMuted, fontSize: 11 }, ...axisCommon(tokens) },
+    xAxis: { type: "value", ...horizontalValueName(tokens, scale.label), ...axisCommon(tokens) },
     yAxis: {
       type: "category",
       data: rows.map((row) => row.label),

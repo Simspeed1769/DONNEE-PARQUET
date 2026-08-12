@@ -579,69 +579,69 @@ export function CompareSection({
 
       {error ? <div className="analysis-error"><strong>Le calcul n’a pas abouti</strong><span>{error}</span></div> : null}
 
-      <article className="panel damir-stage">
         {/* Ce que je compare, **juste sous les filtres** : l'enchaînement se
-            lit alors dans l'ordre où il se pense — je restreins le périmètre,
-            je vois aussitôt quelles séries en découlent, puis je choisis la
-            forme et je lis le graphique. Le rail reste compact, un résumé sur
-            une ligne ; son édition s'ouvre en dessous et pousse le reste. */}
-        <div className="compare-rail" ref={railRef}>
-          <div className="compare-rail-summary">
-            <span className="compare-rail-label">Ce que je compare</span>
-            <div className="compare-rail-chips" role="list">
-              {chartSeries.map((item) => (
-                <span key={item.key} className="compare-rail-chip" role="listitem">
-                  <i style={{ background: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther) }} />
-                  {item.label}
-                </span>
-              ))}
-              {!chartSeries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}
-            </div>
-            <button
-              type="button"
-              className={`compare-rail-toggle ${pickerOpen ? "open" : ""}`}
-              aria-expanded={pickerOpen}
-              onClick={() => setPickerOpen((open) => !open)}
-            >{pickerOpen ? "Fermer" : "Modifier les séries"}</button>
+          lit alors dans l'ordre où il se pense — je restreins le périmètre,
+          je vois aussitôt quelles séries en découlent, puis je choisis la
+          forme et je lis le graphique. Le rail reste compact, un résumé sur
+          une ligne ; son édition s'ouvre en dessous et pousse le reste. */}
+      <div className="compare-rail" ref={railRef}>
+        <div className="compare-rail-summary">
+          <span className="compare-rail-label">Ce que je compare</span>
+          <div className="compare-rail-chips" role="list">
+            {chartSeries.map((item) => (
+              <span key={item.key} className="compare-rail-chip" role="listitem">
+                <i style={{ background: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther) }} />
+                {item.label}
+              </span>
+            ))}
+            {!chartSeries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}
           </div>
-
-          {pickerOpen && measure ? (
-            <div className="compare-rail-panel" role="dialog" aria-label="Séries comparées">
-              <SeriesPicker
-            breakdown={activeBreakdown.field ?? "none"}
-            breakdownLabel={pickable ? activeBreakdown.label : "Aucune décomposition automatique : composez avec des séries libres"}
-            scope={{ ...filters, breakdown: activeBreakdown.field ?? "none", rank_by: measureKey }}
-            selection={active}
-            labels={labelMap}
-            values={valueMap}
-            slots={slots}
-            tokens={tokens}
-            kind={measure.kind}
-            showOther={showOther}
-            otherCount={otherCount}
-            otherLabel={`Reste du périmètre · ${otherCount} ${breakdownLabelLower}`}
-            maxSelected={MAX_SERIES}
-            count={seriesCount}
-            counts={SERIES_COUNTS}
-            onCountChange={(count) => { setSeriesCount(count); if (pickable) setSelection(eligibleKeys.slice(0, count)); }}
-            onChange={setSelection}
-            onToggleOther={setShowOther}
-            onResetToTop={() => (pickable ? setSelection(eligibleKeys.slice(0, seriesCount)) : onAddFree())}
-            metadata={metadata}
-            base={filters}
-            scopes={scopes}
-            onScopeChange={onScopeChange}
-            onAddFree={onAddFree}
-            pickable={pickable}
-            allowScopes
-            names={names}
-            onNameChange={(key, name) => setNames((current) => ({ ...current, [key]: name }))}
-            displayName={nameOf}
-          />
-            </div>
-          ) : null}
+          <button
+            type="button"
+            className={`compare-rail-toggle ${pickerOpen ? "open" : ""}`}
+            aria-expanded={pickerOpen}
+            onClick={() => setPickerOpen((open) => !open)}
+          >{pickerOpen ? "Fermer" : "Modifier les séries"}</button>
         </div>
 
+        {pickerOpen && measure ? (
+          <div className="compare-rail-panel" role="dialog" aria-label="Séries comparées">
+            <SeriesPicker
+          breakdown={activeBreakdown.field ?? "none"}
+          breakdownLabel={pickable ? activeBreakdown.label : "Aucune décomposition automatique : composez avec des séries libres"}
+          scope={{ ...filters, breakdown: activeBreakdown.field ?? "none", rank_by: measureKey }}
+          selection={active}
+          labels={labelMap}
+          values={valueMap}
+          slots={slots}
+          tokens={tokens}
+          kind={measure.kind}
+          showOther={showOther}
+          otherCount={otherCount}
+          otherLabel={`Reste du périmètre · ${otherCount} ${breakdownLabelLower}`}
+          maxSelected={MAX_SERIES}
+          count={seriesCount}
+          counts={SERIES_COUNTS}
+          onCountChange={(count) => { setSeriesCount(count); if (pickable) setSelection(eligibleKeys.slice(0, count)); }}
+          onChange={setSelection}
+          onToggleOther={setShowOther}
+          onResetToTop={() => (pickable ? setSelection(eligibleKeys.slice(0, seriesCount)) : onAddFree())}
+          metadata={metadata}
+          base={filters}
+          scopes={scopes}
+          onScopeChange={onScopeChange}
+          onAddFree={onAddFree}
+          pickable={pickable}
+          allowScopes
+          names={names}
+          onNameChange={(key, name) => setNames((current) => ({ ...current, [key]: name }))}
+          displayName={nameOf}
+        />
+          </div>
+        ) : null}
+      </div>
+
+      <article className="panel damir-stage">
         <header className="damir-stage-head">
           <div className="damir-stage-title">
             <span className="section-kicker">Comparer selon · {breakdownLabelLower}</span>

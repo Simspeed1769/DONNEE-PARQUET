@@ -110,7 +110,7 @@ export function CompareSection({
   }));
 
   return <>
-    <section className="panel pathology-context patho-compare-rail">
+    <section className="patho-compare-rail">
       <EntityPicker
         catalogue={catalogue}
         selection={codes}

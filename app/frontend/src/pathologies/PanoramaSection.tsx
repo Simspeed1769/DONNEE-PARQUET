@@ -10,11 +10,13 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import type { ECharts } from "echarts/core";
 import { getPathologyOverview } from "../api";
 import { MultiSelect } from "../components/MultiSelect";
 import type { KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
+import { useFrenchMap } from "../charts/frenchMap";
 import { formatKpi } from "../utils";
 import { PATHOLOGY_READINGS, buildPathologyReadings, type PathologyReadingKey } from "./model";
 import { SOURCE_LINE, scopeLabel, type PathologySectionProps } from "./section";
@@ -28,11 +30,13 @@ type Props = PathologySectionProps & {
 };
 
 export function PanoramaSection({
-  metadata, year, region, age, sex, measure, setMeasure, onOpenExtraction, routeVersion,
+  metadata, year, region, setRegion, age, sex, measure, setMeasure, onOpenExtraction, routeVersion,
   top, setTop,
 }: Props) {
   const params = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
   const tokens = useChartTokens();
+  const franceMap = useFrenchMap();
+  const [mapInstance, setMapInstance] = useState<ECharts | null>(null);
 
   const [family, setFamily] = useState("");
   const [groupKey, setGroupKey] = useState("__family__");
@@ -113,10 +117,23 @@ export function PanoramaSection({
   const scope = `${overview?.context.label ?? ""} · ${scopeLabel(metadata, year, region, age, sex)}`;
 
   const readingInput = useMemo(() => ({
-    overview, measure, regionLabel, isFrance: region === "99", hiddenTerritories, forms,
-  }), [overview, measure, regionLabel, region, hiddenTerritories, forms]);
+    overview, measure, regionLabel, isFrance: region === "99", hiddenTerritories,
+    mapReady: franceMap.ready, mapError: franceMap.error, forms,
+  }), [overview, measure, regionLabel, region, hiddenTerritories,
+       franceMap.ready, franceMap.error, forms]);
   const readings = useMemo(() => buildPathologyReadings({ ...readingInput, tokens }), [readingInput, tokens]);
   const current = readings.find((item) => item.key === reading) ?? readings[0];
+
+  // Le clic-carte ne vaut que sur la lecture Territoire en forme Carte.
+  useEffect(() => {
+    if (!mapInstance) return;
+    const handler = (event: any) => {
+      const code = String(event.name ?? "");
+      if (code) setRegion(code === region ? "99" : code);
+    };
+    mapInstance.on("click", handler);
+    return () => { mapInstance.off("click", handler); };
+  }, [mapInstance, region, setRegion]);
 
   /** Une phrase, pas un nombre : sur la bande elle poussait les contrôles du
    *  graphique à la ligne. */
@@ -217,6 +234,7 @@ export function PanoramaSection({
         empty={current.empty}
         loading={loading}
         ariaLabel={current.ariaLabel}
+        onInstance={current.key === "territory" && current.form === "map" ? setMapInstance : undefined}
         tableNote={sexRatio ? `Ratio femmes / hommes : ${sexRatio}.` : undefined}
         tableColumns={current.table.columns}
         tableRows={current.table.rows}
