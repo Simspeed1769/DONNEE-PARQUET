@@ -70,17 +70,49 @@ function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/** Ce qui identifie l'apparence courante : la palette et le thème.
+ *
+ *  Les deux vivent en attributs sur la racine du document et changent les
+ *  couleurs sans toucher aux données. C'est exactement le cas que la transition
+ *  universelle traite mal — voir `withoutMorphing`. */
+function styleEpoch(): string {
+  const root = document.documentElement;
+  return [
+    root.getAttribute("data-palette") ?? "red",
+    root.getAttribute("data-theme")
+      ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"),
+  ].join(":");
+}
+
+/** La même option, transition universelle éteinte.
+ *
+ *  **Pourquoi il faut l'éteindre quand seules les couleurs changent.** La
+ *  transition universelle apparie les marques de l'ancien tracé à celles du
+ *  nouveau pour les faire morpher. Quand les données sont identiques et que
+ *  seule la palette a bougé, l'appariement est parfait — et ECharts **garde les
+ *  éléments existants avec leur style**. Le tracé restait donc rouge après un
+ *  passage au bleu, l'infobulle reprenait `row.color`, c'est-à-dire la couleur
+ *  périmée, et la surbrillance avec. Le restylage n'arrivait qu'au changement
+ *  suivant de forme ou de donnée.
+ *
+ *  Sans appariement, ECharts refait ses éléments et anime la couleur : c'est la
+ *  bascule douce attendue, sans remonter l'instance. */
+function withoutMorphing(option: EChartsOption): EChartsOption {
+  const series = (option as { series?: unknown }).series;
+  if (!Array.isArray(series)) return option;
+  return {
+    ...option,
+    series: series.map((item: any) => (
+      item && typeof item === "object" ? { ...item, universalTransition: { enabled: false } } : item
+    )),
+  } as EChartsOption;
+}
+
 function withMorphing(option: EChartsOption): EChartsOption {
   const series = (option as { series?: unknown }).series;
   if (!Array.isArray(series)) return option;
   if (reducedMotion()) {
-    return {
-      ...option,
-      animation: false,
-      series: series.map((item: any) => (
-        item && typeof item === "object" ? { ...item, universalTransition: { enabled: false } } : item
-      )),
-    } as EChartsOption;
+    return { ...withoutMorphing(option), animation: false } as EChartsOption;
   }
   return {
     ...option,
@@ -123,6 +155,9 @@ export function EChart({ option, height, stale = false, ariaLabel, onInstance }:
   const instance = useRef<echarts.ECharts | null>(null);
   const notify = useRef(onInstance);
   notify.current = onInstance;
+  /** L'apparence du rendu précédent, pour reconnaître un changement de palette
+   *  ou de thème — le seul cas où le morphing doit se taire. */
+  const epoch = useRef(styleEpoch());
 
   useEffect(() => {
     if (!container.current) return;
@@ -158,7 +193,17 @@ export function EChart({ option, height, stale = false, ariaLabel, onInstance }:
     // le fond de carte, si bien qu'on regardait un rectangle vide pendant tout
     // le temps du rendu. Le blanc n'était pas la transition, c'était l'attente.
     // ECharts enchaîne très bien seul ; on le laisse faire.
-    chart.setOption(withMorphing(option), { notMerge: true, lazyUpdate: true });
+    // Changement de palette ou de thème : on rejoue l'option sans appariement,
+    // sans quoi les marques survivraient avec leurs anciennes couleurs.
+    const current = styleEpoch();
+    const restyled = current !== epoch.current;
+    epoch.current = current;
+    // Une infobulle affichée au moment de la bascule garde son HTML jusqu'au
+    // prochain mouvement de souris : elle montrerait l'ancienne palette une
+    // dernière fois. On la referme, le survol suivant la redessine.
+    if (restyled) chart.dispatchAction({ type: "hideTip" });
+    chart.setOption(restyled ? withoutMorphing(option) : withMorphing(option),
+                    { notMerge: true, lazyUpdate: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [option]);
 

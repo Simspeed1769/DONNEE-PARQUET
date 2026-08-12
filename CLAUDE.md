@@ -4,7 +4,7 @@ Instructions pour Claude Code sur ce dépôt.
 
 ## Où se trouve quoi
 
-- `MISSION_V4.md` — la feuille de route **en cours**, à la racine. Les missions
+- `MISSION_V6.md` — la feuille de route **en cours**, à la racine. Les missions
   achevées sont archivées dans `docs/missions/`.
 - `docs/PROGRESS.md` — le journal des phases livrées : fait / écarté / décisions.
 - `docs/ETAT_DES_LIEUX.md` — la photo du code au 9 août 2026.
