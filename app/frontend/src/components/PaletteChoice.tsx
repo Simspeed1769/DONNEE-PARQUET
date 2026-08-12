@@ -1,33 +1,33 @@
-/** Le choix de palette, au niveau du graphique.
+/** Le choix de palette : une pastille, un clic.
  *
- *  Même traitement que les autres contrôles segmentés de la bande — formes,
- *  mesure : `.pathology-toggle`. Un bouton d'un genre nouveau attirerait l'œil
- *  sur un réglage d'apparence, alors qu'il vaut moins que le choix de forme
- *  posé juste à côté.
+ *  C'était un couple de boutons « Rouge | Bleu », aussi visible que le choix de
+ *  forme posé juste à côté. Un réglage d'apparence ne mérite pas ce poids : il
+ *  se ramène à une pastille ronde de la couleur active, qui bascule au clic et
+ *  ne dit son rôle qu'à l'infobulle.
+ *
+ *  La pastille porte la teinte que la palette donne à une série seule —
+ *  `--accent-chart` — et non une couleur écrite ici : elle change donc en même
+ *  temps que les graphiques, par la même transition.
  */
 
-import { usePalette, type Palette } from "../charts/palette";
+import { usePalette } from "../charts/palette";
 
-const CHOICES: Array<{ key: Palette; label: string; title: string }> = [
-  { key: "red", label: "Rouge", title: "Graphiques dans la teinte de marque" },
-  { key: "blue", label: "Bleu", title: "Graphiques en bleu, plus calme à la projection" },
-];
+const LABEL = {
+  red: "Palette rouge · cliquer pour passer au bleu",
+  blue: "Palette bleue · cliquer pour passer au rouge",
+} as const;
 
 export function PaletteChoice() {
   const [palette, choose] = usePalette();
+  const next = palette === "red" ? "blue" : "red";
 
   return (
-    <div className="pathology-toggle damir-palette" role="group" aria-label="Couleur des graphiques">
-      {CHOICES.map((item) => (
-        <button
-          key={item.key}
-          type="button"
-          aria-pressed={palette === item.key}
-          className={palette === item.key ? "active" : ""}
-          title={item.title}
-          onClick={() => choose(item.key)}
-        >{item.label}</button>
-      ))}
-    </div>
+    <button
+      type="button"
+      className="palette-dot"
+      title={LABEL[palette]}
+      aria-label={LABEL[palette]}
+      onClick={() => choose(next)}
+    ><i /></button>
   );
 }
