@@ -212,6 +212,41 @@
   Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
   le seuil que se fixe le projet pour extraire un composant.
 
+## v6 — Ergonomie de Comparer et finitions
+
+- **Le tiroir remplace la superposition.** « Modifier les séries » ouvre un
+  panneau ancré à droite qui **pousse** la page au lieu de la recouvrir : le
+  graphique reste visible et se met à jour pendant qu'on modifie. Un seul
+  défilement. `SeriesDrawer` porte la coquille pour les quatre bases qui
+  comparent — `Échap`, piège à focus, retour du focus, pied fixe — et la ligne
+  de série est ordonnée : pastille, nom, valeur, « Filtrer » écrit en toutes
+  lettres, poignée, croix toujours visible sur 44 px.
+- **Plus aucun `<select>` natif dans un réglage de périmètre.** `ChoiceSelect`
+  les remplace jusque dans `AdvancedFilterPanel`, ce qui règle du même coup ses
+  champs blancs en thème sombre. Le sélecteur de cause de Mortalité devient un
+  contrôle unique avec recherche intégrée, et les trois filtres tiennent enfin
+  sur une rangée.
+- **Le bug de palette n'était pas dans l'infobulle.** La transition universelle
+  appariait les marques de l'ancien tracé aux nouvelles ; les données étant
+  identiques, ECharts gardait les éléments existants **avec leur style**. Le
+  tracé entier restait rouge après un passage au bleu. `EChart` reconnaît
+  désormais un changement d'apparence et rejoue l'option sans appariement.
+- **Deux boucles capables de figer le rendu, trouvées et corrigées** : un effet
+  du tiroir qui dépendait d'un `onClose` refait à chaque rendu, et le
+  redimensionnement du graphique appelé depuis l'observateur qui mesure ce
+  qu'il redimensionne.
+- **Population** : la courbe 1975-2026 garde toutes ses valeurs mais n'espace
+  ses marques que tous les cinq ans — elle se lisait comme un pointillé. La
+  silhouette de référence de la pyramide est retirée : une polyligne en travers
+  de deux séries opposées ne se lit pas.
+- **Non vérifié** : les largeurs sous 1272 px. La fenêtre du navigateur piloté
+  refuse de descendre plus bas dans cet environnement, et rétrécir la coquille
+  ne déclenche pas les requêtes de média, qui portent sur la fenêtre.
+- **Toujours ouvert, hors périmètre** : `.panel` reste blanc en thème sombre
+  (`styles.css:151`). Le contraste saute désormais aux yeux à côté du tiroir,
+  correctement thémé. Une ligne à passer aux jetons, qui repeint toute
+  l'application — la décision appartient à l'utilisateur.
+
 ## v5 · Phase 2 — La population Insee : dénominateur et cinquième base
 
 - **La structure annoncée a été contrôlée, pas supposée.** Les 53 onglets ont la
