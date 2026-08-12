@@ -346,3 +346,106 @@
   font-size: var(--text-2xs);
   font-weight: 620;
 }
+
+/* ── Le sélecteur de cause de décès ──────────────────────────────────────────
+ *
+ * Un seul contrôle, de la hauteur des filtres voisins, qui porte sa recherche
+ * à l'intérieur : c'était un champ de recherche au-dessus d'une liste
+ * déroulante native, soit deux lignes pour un seul choix et un menu que le
+ * thème n'atteignait pas. */
+
+.cause-select { position: relative; }
+
+.cause-select-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  height: 39px;
+  padding: 0 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: .63rem;
+  text-align: left;
+  cursor: pointer;
+}
+.cause-select-field span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cause-select-field i { flex: 0 0 auto; color: var(--ink-muted); font-style: normal; }
+.cause-select-field:hover { border-color: var(--ink-muted); }
+.cause-select-field.open { border-color: var(--accent); }
+.cause-select-field:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
+
+/* La liste se pose au-dessus du contenu : la barre de filtres garde sa hauteur,
+   et le graphique ne descend pas d'un cran à chaque ouverture. */
+.cause-select-panel {
+  position: absolute;
+  z-index: 45;
+  top: calc(100% + 5px);
+  right: 0;
+  left: 0;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+.cause-select-panel input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+}
+.cause-select-panel input:focus-visible { outline: 2px solid var(--accent-line); outline-offset: -2px; }
+.cause-select-panel > small { color: var(--ink-muted); font-size: var(--text-2xs); }
+
+.cause-select-list { max-height: 300px; overflow-y: auto; scrollbar-width: thin; }
+.cause-group > p {
+  margin: 6px 0 2px;
+  color: var(--ink-muted);
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.cause-option {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-xs);
+  text-align: left;
+  cursor: pointer;
+}
+.cause-option:hover { background: var(--surface-hover); color: var(--ink); }
+.cause-option.chosen { color: var(--ink); font-weight: 620; background: var(--surface-sunken); }
+.cause-empty { margin: 0; padding: 8px; color: var(--ink-muted); font-size: var(--text-2xs); }
+
+/* Les trois filtres de Mortalité sur une rangée, à la mesure de la ScopeBar de
+   DAMIR : la cause d'abord, puis la population et le millésime. */
+.mortality-filter-row {
+  grid-template-columns: minmax(280px, 1.6fr) minmax(160px, .9fr) minmax(120px, .6fr);
+}
+.mortality-filter-row .choice-select { border-color: var(--line-strong); border-radius: var(--radius); }
+.mortality-filter-row .choice-select summary { min-height: 39px; padding: 0 11px; }
+.mortality-filter-row .choice-select summary > span:first-child { display: none; }
+.mortality-filter-row .choice-select summary strong { max-width: none; color: var(--ink-soft); font-size: .63rem; font-weight: 500; }
+
+@media (max-width: 900px) {
+  .mortality-filter-row { grid-template-columns: 1fr; }
+}

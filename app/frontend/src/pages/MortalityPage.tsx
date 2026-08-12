@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getMortalityMetadata, getMortalityOverview } from "../api";
 import { PageHero } from "../components/PageHero";
+import { ChoiceSelect } from "../components/ChoiceSelect";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import { paletteParams, readPalette } from "../charts/palette";
 import { CompareSection } from "../mortality/CompareSection";
@@ -146,22 +147,31 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
       {/* Le périmètre est commun aux deux sections. La cause n'y figure que
           pour le panorama : la comparaison a sa propre liste. */}
       <section className="panel mortality-context">
-        <div className="mortality-filter-grid">
+        {/* Une seule rangée, trois contrôles de même hauteur, libellés sur la
+            même ligne de base : la cause prenait deux lignes — une recherche
+            au-dessus d'une liste — et décalait les deux autres. */}
+        <div className="scope-bar-row mortality-filter-row">
           {section === "panorama" ? (
-            <label className="mortality-cause-filter"><span>Cause de décès</span>
+            <div className="scope-bar-field"><span>Cause de décès</span>
               <SearchableCauseSelect options={metadata.causes} value={cause} onChange={setCause} />
-            </label>
+            </div>
           ) : null}
-          <label className="mortality-population-filter"><span>Population</span>
-            <select value={population} onChange={(event) => setPopulation(event.target.value)}>
-              {metadata.populations.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}
-            </select>
-          </label>
-          <label className="mortality-year-filter"><span>Millésime</span>
-            <select value={year} onChange={(event) => setYear(Number(event.target.value))}>
-              {metadata.years.map((item) => <option value={item} key={item}>{item}</option>)}
-            </select>
-          </label>
+          <div className="scope-bar-field"><span>Population</span>
+            <ChoiceSelect
+              label="Population"
+              value={population}
+              onChange={setPopulation}
+              options={metadata.populations.map((item) => ({ value: item.code, label: item.label }))}
+            />
+          </div>
+          <div className="scope-bar-field"><span>Millésime</span>
+            <ChoiceSelect
+              label="Millésime"
+              value={year}
+              onChange={setYear}
+              options={metadata.years.map((item) => ({ value: item, label: String(item) }))}
+            />
+          </div>
         </div>
         <div className="pathology-loading-track"><span className={loading ? "active" : ""} /></div>
       </section>
