@@ -7,6 +7,7 @@
  *  le panorama, la liste comparée pour l'autre.
  */
 
+import type { ScopeField, SeriesScope } from "../components/SeriesRail";
 import type { PathologyMetadata } from "../types";
 
 export type PathologyMeasure = "prevalence" | "patients";
@@ -31,6 +32,29 @@ export const SOURCE_LINE = "Source · Cartographie des pathologies, Cnam · Trai
 /** Au-delà, deux teintes de la palette catégorielle ne se séparent plus de
  *  façon sûre — la même limite que les séries de DAMIR. */
 export const MAX_COMPARED = 8;
+
+/** Les filtres qu'une série peut porter en propre dans la comparaison.
+ *
+ *  Le millésime n'en est pas : la période reste commune, deux axes du temps
+ *  différents ne se comparent pas. */
+export function pathologyScopeFields(metadata: PathologyMetadata): ScopeField[] {
+  return [
+    { key: "region", label: "Territoire", options: metadata.regions.map((item) => ({ value: item.code, label: item.label })) },
+    { key: "age", label: "Âge", options: metadata.ages.map((item) => ({ value: item.code, label: item.label })) },
+    { key: "sex", label: "Sexe", options: metadata.sexes.map((item) => ({ value: item.code, label: item.label })) },
+  ];
+}
+
+/** Le périmètre d'une requête : celui de la série s'il existe, celui de la
+ *  coquille sinon. */
+export function pathologyScopeOf(scope: SeriesScope | undefined,
+                                 region: string, age: string, sex: string) {
+  return {
+    region: scope?.region ?? region,
+    age: scope?.age ?? age,
+    sex: scope?.sex ?? sex,
+  };
+}
 
 /** Le périmètre en une ligne, pour le titre et pour l'image exportée. */
 export function scopeLabel(metadata: PathologyMetadata, year: number,

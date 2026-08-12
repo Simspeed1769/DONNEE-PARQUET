@@ -8,6 +8,7 @@
  */
 
 import { buildOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
+import { buildCompareReading } from "../charts/compareReading";
 import type { ChartTokens } from "../charts/tokens";
 import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
@@ -196,41 +197,18 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
  * et la redécomposer reviendrait à composer un tout avec des morceaux du tout.
  */
 
-export type MortalityCompareView = {
-  key: string;
-  label: string;
-  form: ChartForm;
-  question: string;
-  needsAdditive?: boolean;
-  needsYears?: number;
-};
-
-export const MORTALITY_COMPARE_VIEWS: MortalityCompareView[] = [
-  { key: "line", label: "Courbes", form: "line", question: "Comment leurs trajectoires se comparent-elles ?" },
-  { key: "bar", label: "Barres", form: "bar", question: "Combien, année par année ?" },
-  { key: "rank", label: "Classement", form: "rank", question: "Quelles causes pèsent le plus ?" },
-  { key: "diverging", label: "Écarts", form: "diverging", needsYears: 2,
-    question: "Laquelle progresse, laquelle recule sur la période ?" },
-  { key: "heatmap", label: "Carte de chaleur", form: "heatmap", needsYears: 2,
-    question: "Où et quand est-ce le plus fort ?" },
-  { key: "stack", label: "Empilé", form: "stack", needsAdditive: true,
-    question: "Combien pèsent-elles ensemble, et qui apporte quoi ?" },
-  { key: "shareArea", label: "Aires empilées", form: "shareArea", needsAdditive: true, needsYears: 2,
-    question: "Comment leur partage se déforme-t-il d’une année à l’autre ?" },
-  { key: "pie", label: "Camembert", form: "pie", needsAdditive: true,
-    question: "Comment ces causes se partagent-elles ?" },
-];
-
 export type MortalityCompareInput = {
-  compared: Array<{ code: string; label: string; overview: MortalityOverview }>;
+  compared: Array<{ label: string; isOther?: boolean; overview: MortalityOverview }>;
   measure: "deaths" | "share";
   populationLabel: string;
   tokens: ChartTokens;
   view: string;
+  /** Vrai dès qu'une série porte sa propre population. */
+  mixed: boolean;
 };
 
 export function buildMortalityCompare(input: MortalityCompareInput): Reading {
-  const { compared, measure, populationLabel, tokens, view } = input;
+  const { compared, measure, populationLabel, tokens, view, mixed } = input;
   const isShare = measure === "share";
   const kind = isShare ? "percent" : "quantity";
   const unitLabel = isShare ? `% des ${ALL_CAUSES_DENOMINATOR}` : "décès";
@@ -243,9 +221,9 @@ export function buildMortalityCompare(input: MortalityCompareInput): Reading {
     : [];
 
   const series: ChartSeries[] = compared.map((item, index) => ({
-    key: item.code,
+    key: `${index}-${item.label}`,
     label: item.label,
-    isOther: false,
+    isOther: Boolean(item.isOther),
     colorIndex: index,
     values: years.map((year) => {
       const row = item.overview.annual.find((candidate) => candidate.year === year);
@@ -254,62 +232,27 @@ export function buildMortalityCompare(input: MortalityCompareInput): Reading {
     }),
   }));
 
-  const offered = MORTALITY_COMPARE_VIEWS.filter((item) =>
-    (!item.needsAdditive || !isShare) && years.length >= (item.needsYears ?? 0));
-  const chosen = offered.find((item) => item.key === view) ?? offered[0];
-  const form = chosen?.form ?? "line";
-  const asPie = form === "pie";
-
-  const pieSeries: ChartSeries[] = series.map((item) => ({
-    ...item,
-    values: [item.values.reduce<number | null>(
-      (total, value) => (value === null ? total : (total ?? 0) + value), null)],
-  }));
-
-  const enough = compared.length >= 2;
-
-  return {
-    key: "compare",
-    nav: "Comparer",
-    title: enough
-      ? `${measureLabel} · ${compared.length} causes comparées`
-      : "Comparer des causes de décès",
-    question: chosen?.question ?? "",
+  return buildCompareReading({
+    periods: years,
+    series,
+    // Les décès s'additionnent : la somme de plusieurs causes est un nombre de
+    // décès qui existe. La part, elle, est déjà rapportée au total toutes
+    // causes ; la redécomposer reviendrait à composer un tout avec des morceaux
+    // du tout.
+    additive: !isShare,
+    mixed,
+    kind, unitLabel, measureLabel, tokens, view,
+    nounPlural: "causes",
+    periodTitle: "Année",
+    seriesTitle: "Causes comparées",
+    scopeLabel: populationLabel,
     caveats: [
       SCOPE_NOTE,
       ZERO_NOTE,
       ...(isShare
         ? [`Le dénominateur de ces parts est le nombre de ${ALL_CAUSES_DENOMINATOR}, sur la même année et la même population : c'est lui qui vaut 100 %.`]
         : []),
-      `Toutes les causes comparées partagent la même population : ${populationLabel}.`,
-      "Les causes de la nomenclature s'emboîtent : additionner une cause et l'un de ses sous-ensembles compterait deux fois les mêmes décès.",
+      "Les causes de la nomenclature s'emboîtent : additionner un chapitre et l'un de ses détails compterait deux fois les mêmes décès. Le reste du périmètre n'est donc offert qu'entre chapitres.",
     ],
-    forms: offered.map((item) => ({ key: item.key, label: item.label })),
-    form: chosen?.key ?? "line",
-    option: enough && years.length
-      ? buildOption({
-        form,
-        categories: asPie ? [populationLabel] : years,
-        series: asPie ? pieSeries : series,
-        kind, unitLabel, tokens,
-        directLabels: form === "line" && series.length <= 6,
-        xTitle: asPie ? undefined
-          : (form === "rank" || form === "diverging" ? "Causes comparées" : "Année"),
-      })
-      : null,
-    table: {
-      columns: ["Année", ...series.map((item) => item.label)],
-      rows: years.map((year, index) => [
-        String(year), ...series.map((item) => formatValue(item.values[index], kind)),
-      ]),
-    },
-    ariaLabel: `${measureLabel}, ${compared.length} causes comparées`,
-    height: form === "rank" || form === "diverging"
-      ? Math.max(CHART_HEIGHT, 80 + series.length * 26)
-      : CHART_HEIGHT,
-    empty: !enough
-      ? "Ajoutez une deuxième cause : une comparaison à un seul élément n’en est pas une."
-      : (years.length ? null : "Aucune année commune aux causes retenues."),
-    xTitle: "Année",
-  };
+  });
 }

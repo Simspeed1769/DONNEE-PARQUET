@@ -228,6 +228,11 @@ export type CspOption = {
   label: string;
   group_code: string;
   group_label: string;
+  /** Effectif du dernier millésime, France entière : sert à **classer** les
+   *  catégories dans le sélecteur de comparaison et à désigner la sélection
+   *  d'ouverture, jamais à afficher un chiffre. `null` quand la source n'en
+   *  publie pas. */
+  effectif?: number | null;
 };
 
 export type CspMetadata = {
@@ -305,7 +310,18 @@ export type MortalityMetadata = {
   available: boolean;
   years: number[];
   default_year: number;
-  causes: Array<{ code: string; label: string }>;
+  causes: Array<{
+    code: string;
+    label: string;
+    /** Vrai pour un détail « dont … », faux pour un chapitre. Deux chapitres
+     *  sont disjoints ; un chapitre et l'un de ses détails ne le sont pas. */
+    detail?: boolean;
+    /** Le chapitre auquel un détail se rattache — lui-même pour un chapitre. */
+    chapter?: string;
+    /** Décès de la dernière année, ensemble de la population : classe le
+     *  sélecteur et désigne la sélection d'ouverture. */
+    deaths?: number | null;
+  }>;
   populations: Array<{ code: string; label: string }>;
   dimensions: Array<{ key: string; label: string }>;
   measures: Array<{ key: string; label: string; kind: "quantity" | "percent" }>;

@@ -212,7 +212,60 @@
   Pathologies et CSP — et par Mortalité à la phase suivante. Trois usages réels,
   le seuil que se fixe le projet pour extraire un composant.
 
-## v5 · Phase 1 (partielle) — 1.A, 1.B, 1.C faits ; 1.D en attente
+## v5 · Phase 1.D — Comparer, le même geste sur les quatre bases
+
+- **Un seul gabarit, pas trois copies.** `charts/compareReading.ts` porte
+  désormais le catalogue de vues et le constructeur de la comparaison ; les
+  trois modèles ne font plus que déclarer ce que leur mesure autorise. Trois
+  listes de vues voisines mais jamais identiques ne restent pas identiques
+  longtemps, et la consigne était l'identité.
+- **Les vues manquantes arrivent** : Base 100 et Variation, que seul DAMIR
+  offrait, sont maintenant partout. **Écart assumé** : « Empilé » figure sur les
+  trois bases et pas sur DAMIR, qui l'a écarté en v4 ; le retirer supprimerait
+  une capacité, il reste.
+- **Le rail de DAMIR, porté tel quel.** `components/SeriesRail.tsx` réemploie
+  ses classes — `compare-rail*`, `series-*`, `scope-editor*` — plutôt que d'en
+  inventer de voisines. Chaque série y porte son périmètre, son nom écrit à la
+  main, ses filtres résumés en gris, et le bouton « dupliquer » remplace la
+  « série libre » de DAMIR : c'est lui qui permet de comparer le diabète en
+  Île-de-France au diabète en Occitanie, deux séries sur le même code.
+- **La période reste commune**, contre la lettre du tableau de la mission qui
+  citait le millésime parmi les filtres par série : la ligne suivante impose une
+  période commune, et deux axes du temps différents ne se comparent pas.
+- **Les poids descendent dans les métadonnées.** `csp_metadata` publie
+  l'effectif du dernier millésime par catégorie, `mortality_metadata` les décès
+  de la dernière année **et la hiérarchie « dont … »** (`detail`, `chapter`),
+  qui dormait dans le cube sans être exposée. C'est ce qui donne le classement
+  par poids réclamé, les sélections d'ouverture, et la seule chose qui rende un
+  « reste » calculable sans mentir.
+- **« Reste du périmètre » : offert là où un tout existe, absent ailleurs.**
+  CSP le calcule exactement (l'endpoint d'évolution renvoie le dénominateur avec
+  l'effectif), à un seul niveau de nomenclature à la fois. Mortalité le calcule
+  entre chapitres, sur « Toutes causes ». **Pathologies ne l'offre pas** : la
+  nomenclature Cnam s'emboîte et une même personne compte dans chacune de ses
+  pathologies — le tout dont on retrancherait la sélection n'existe pas.
+- **Corrigé au passage, deux mensonges de forme.** Le camembert cumulait les
+  périodes : sur un stock de personnes il annonçait 247 millions d'actifs. Il
+  porte maintenant la dernière période, et le dit au centre comme en réserve.
+  Les étiquettes de bout de courbe, elles, débordaient du canevas et se
+  recouvraient ; elles sont bornées, effacées quand elles se chevaucheraient, et
+  `ChartShell` gagne la légende HTML de DAMIR pour porter l'identité des séries.
+- **La sélection d'ouverture de Pathologies, corrigée.** « Maladies
+  neurologiques ou dégénératives » n'existe pas sous ce nom : la Cartographie
+  publie « Maladies neurologiques ». Le repli prenait la plus lourde du
+  catalogue — donc les hospitalisations — au lieu de la plus proche. Il cherche
+  maintenant le libellé le plus proche et **écrit la substitution en réserve**.
+- **Retiré** : `EntityPicker` et `pathologies.css`, entièrement morts une fois
+  le rail partagé en place.
+- **Défaut de thème, hors périmètre, à trancher.** En sombre, `.panel` reste
+  blanc (`styles.css:151`) et tous les champs sont forcés en blanc
+  (`styles.css:2081`, `background-color: #fff !important`). C'est le « défaut de
+  thème déjà signalé » : deux lignes à passer aux jetons, mais qui repeignent
+  toute l'application — la décision appartient à l'utilisateur.
+- **Non vérifié** : les largeurs sous 1272 px. La fenêtre du navigateur pilotée
+  refuse de descendre plus bas dans cet environnement.
+
+## v5 · Phase 1 (partielle) — 1.A, 1.B, 1.C faits ; 1.D fait depuis
 
 - **1.B — cause commune trouvée et traitée à la source.** Sur les formes
   horizontales — classement, écarts, cascade — ECharts posait le nom de l'axe

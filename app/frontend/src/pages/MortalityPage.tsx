@@ -71,9 +71,10 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** La fiche de la cause courante est chargée ici : le panorama l'affiche, et
-   *  la comparaison s'en sert pour classer le catalogue par nombre de décès —
-   *  une seule requête pour deux besoins. */
+  /** La fiche de la cause courante, pour le panorama. La comparaison ne s'en
+   *  sert plus : son catalogue se classe désormais sur les poids que portent
+   *  les métadonnées, ce qui couvre les 86 causes et non les douze que la fiche
+   *  cite. */
   useEffect(() => {
     if (!cause || !year) return;
     const controller = new AbortController();
@@ -171,7 +172,7 @@ export function MortalityPage({ routeVersion, onOpenExtraction, onOpenMethodolog
         <PanoramaSection {...shared} overview={overview} loading={loading} />
       ) : null}
       {section === "compare" ? (
-        <CompareSection {...shared} cause={cause} reference={overview} />
+        <CompareSection {...shared} cause={cause} />
       ) : null}
 
       <div className="mortality-quality-note">

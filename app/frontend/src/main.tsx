@@ -8,7 +8,6 @@ import "./explore.css";
 import "./panorama.css";
 import "./correlations.css";
 import "./methodology.css";
-import "./pathologies.css";
 import "./components/copyLinkButton.css";
 import "./components/exportPngButton.css";
 

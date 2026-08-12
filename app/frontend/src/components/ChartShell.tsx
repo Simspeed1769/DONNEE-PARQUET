@@ -53,6 +53,10 @@ type Props = {
   /** Contenu propre à la base, entre le graphique et le pied — la carte CSP
    *  y pose ses encarts DROM, hors champ de la projection cartographique. */
   afterChart?: ReactNode;
+  /** La clé de lecture des couleurs, sous le graphique. C'est elle qui porte
+   *  l'identité des séries : les étiquettes de bout de courbe s'effacent quand
+   *  elles se recouvriraient, la légende, elle, les nomme toutes. */
+  legend?: Array<{ key: string; label: string; color: string }>;
   height: number;
   /** `null` tant que la réponse n'est pas là ; une chaîne quand la lecture est
    *  impossible pour ce périmètre (fond de carte indisponible, par exemple). */
@@ -86,7 +90,7 @@ type Props = {
 
 export function ChartShell({
   kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question, highlights,
-  beforeChart, afterChart, height, option, exportOption, empty,
+  beforeChart, afterChart, legend, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, tableNote, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
 }: Props) {
@@ -166,6 +170,17 @@ export function ChartShell({
           <div className="damir-placeholder"><div className="skeleton" /></div>
         )}
       </div>
+
+      {legend && legend.length > 1 && option ? (
+        <div className="chart-legend" role="list" aria-label="Séries affichées">
+          {legend.map((item) => (
+            <span key={item.key} className="legend-item" role="listitem">
+              <i style={{ background: item.color }} />
+              <span>{item.label}</span>
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       {afterChart}
 

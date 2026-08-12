@@ -1,22 +1,31 @@
 /** Plusieurs pathologies mises en regard.
  *
- *  Le pendant de `damir/CompareSection.tsx`, avec les mêmes gestes : un résumé
- *  de ce qu'on compare **sous les filtres et au-dessus du graphique**, un
- *  sélecteur unique qui s'ouvre en dessous, et des vues nommées par la question
- *  à laquelle elles répondent.
+ *  Le pendant de `damir/CompareSection.tsx`, avec les mêmes gestes : le rail
+ *  « Ce que je compare » posé **sous les filtres et au-dessus du panneau du
+ *  graphique**, un périmètre réglable série par série, des noms qu'on écrit, et
+ *  des vues nommées par la question à laquelle elles répondent.
  *
  *  Le serveur ne sait renvoyer qu'une fiche à la fois : la mise en regard est
- *  donc un assemblage côté écran, une requête par pathologie, en parallèle.
+ *  donc un assemblage côté écran, une requête par série, en parallèle. Comme
+ *  chaque série peut porter son propre territoire, son âge ou son sexe, c'est
+ *  aussi ce qui rend le périmètre par série possible sans rien changer au
+ *  serveur.
  */
 
 import { useEffect, useMemo, useState } from "react";
 import { getPathologyOverview } from "../api";
 import { ChartShell } from "../components/ChartShell";
-import { useChartTokens } from "../charts/tokens";
-import { EntityPicker } from "../components/EntityPicker";
+import { paletteColor, useChartTokens } from "../charts/tokens";
+import {
+  SeriesRail, hasMixedPopulations, seriesName,
+  type SeriesEntry, type SeriesScope,
+} from "../components/SeriesRail";
 import { openingSelection, pathologyCatalogue } from "./catalogue";
 import { buildPathologyCompare } from "./model";
-import { MAX_COMPARED, SOURCE_LINE, scopeLabel, type PathologySectionProps } from "./section";
+import {
+  MAX_COMPARED, SOURCE_LINE, pathologyScopeFields, pathologyScopeOf, scopeLabel,
+  type PathologySectionProps,
+} from "./section";
 import type { PathologyOverview } from "../types";
 
 type Props = PathologySectionProps & {
@@ -25,7 +34,30 @@ type Props = PathologySectionProps & {
   top: string;
 };
 
-type Compared = { code: string; label: string; overview: PathologyOverview };
+type Compared = { label: string; overview: PathologyOverview };
+
+const SERIES_COUNTS = [2, 5, 8] as const;
+
+/** Les séries écrites dans l'adresse : les codes d'un côté, les noms et les
+ *  périmètres indexés par position de l'autre. Un même code pouvant figurer
+ *  deux fois — la même pathologie sur deux territoires — la position est la
+ *  seule identité stable. */
+function entriesFromParams(params: URLSearchParams): SeriesEntry[] {
+  const codes = (params.get("compare") ?? "").split("~").filter(Boolean);
+  const read = <T,>(key: string): T[] => {
+    try {
+      const parsed = JSON.parse(params.get(key) ?? "[]");
+      return Array.isArray(parsed) ? parsed as T[] : [];
+    } catch { return []; }
+  };
+  const names = read<string | null>("series_names");
+  const scopes = read<SeriesScope | null>("series_scopes");
+  return codes.slice(0, MAX_COMPARED).map((code, index) => ({
+    code,
+    name: names[index] ?? undefined,
+    scope: scopes[index] ?? undefined,
+  }));
+}
 
 export function CompareSection({
   metadata, year, region, age, sex, measure, setMeasure, onOpenExtraction, routeVersion, top,
@@ -33,13 +65,12 @@ export function CompareSection({
   const params = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
   const tokens = useChartTokens();
   const catalogue = useMemo(() => pathologyCatalogue(metadata), [metadata]);
+  const fields = useMemo(() => pathologyScopeFields(metadata), [metadata]);
+  const base = useMemo<SeriesScope>(() => ({ region, age, sex }), [region, age, sex]);
 
   const opening = useMemo(() => openingSelection(catalogue), [catalogue]);
-  const [codes, setCodes] = useState<string[]>(() => {
-    const raw = params.get("compare");
-    const parsed = raw ? raw.split("~").filter(Boolean) : [];
-    return parsed.length ? parsed.slice(0, MAX_COMPARED) : [];
-  });
+  const [entries, setEntries] = useState<SeriesEntry[]>(() => entriesFromParams(params));
+  const [count, setCount] = useState(3);
   const [view, setView] = useState(() => params.get("view_compare") ?? "line");
   const [compared, setCompared] = useState<Compared[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,32 +81,32 @@ export function CompareSection({
   // s'il n'y figure pas déjà — on est venu de là.
   useEffect(() => {
     if (!opening.codes.length) return;
-    setCodes((current) => {
+    setEntries((current) => {
       if (current.length) return current;
       const seeded = [...opening.codes];
       if (top && !seeded.includes(top)) seeded.unshift(top);
-      return seeded.slice(0, MAX_COMPARED);
+      return seeded.slice(0, MAX_COMPARED).map((code) => ({ code }));
     });
   }, [opening, top]);
 
   const fetchKey = useMemo(
-    () => JSON.stringify([codes, year, region, age, sex]),
-    [codes, year, region, age, sex],
+    () => JSON.stringify([entries.map((entry) => [entry.code, entry.scope ?? null]), year, base]),
+    [entries, year, base],
   );
 
   useEffect(() => {
-    if (!year || !codes.length) { setCompared([]); return; }
+    if (!year || !entries.length) { setCompared([]); return; }
     const controller = new AbortController();
     let active = true;
     setLoading(true);
     setError(null);
-    Promise.all(codes.map((code) =>
-      getPathologyOverview(code, year, { region, age, sex }, controller.signal)
-        .then((next) => ({
-          code,
-          label: catalogue.find((item) => item.code === code)?.label ?? next.context.label,
-          overview: next,
-        }))))
+    Promise.all(entries.map((entry) =>
+      getPathologyOverview(
+        entry.code, year, pathologyScopeOf(entry.scope, region, age, sex), controller.signal,
+      ).then((next) => ({
+        label: seriesName(entry, catalogue, base, fields) || next.context.label,
+        overview: next,
+      }))))
       .then((rows) => { if (active) setCompared(rows); })
       .catch((reason: Error) => {
         if (active && reason.name !== "AbortError") { setError(reason.message); setCompared([]); }
@@ -87,24 +118,52 @@ export function CompareSection({
 
   useEffect(() => {
     const next = new URLSearchParams(window.location.search);
-    if (codes.length) next.set("compare", codes.join("~"));
-    else next.delete("compare");
+    if (entries.length) {
+      next.set("compare", entries.map((entry) => entry.code).join("~"));
+      const names = entries.map((entry) => entry.name?.trim() || null);
+      const scopes = entries.map((entry) => entry.scope ?? null);
+      if (names.some(Boolean)) next.set("series_names", JSON.stringify(names));
+      else next.delete("series_names");
+      if (scopes.some(Boolean)) next.set("series_scopes", JSON.stringify(scopes));
+      else next.delete("series_scopes");
+    } else {
+      ["compare", "series_names", "series_scopes"].forEach((key) => next.delete(key));
+    }
     next.set("view_compare", view);
     window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
-  }, [codes, view]);
+  }, [entries, view]);
 
   const scope = scopeLabel(metadata, year, region, age, sex);
+  const mixed = hasMixedPopulations(entries, base, fields);
+  /** Ce que la sélection d'ouverture a dû remplacer : dit en réserve, jamais
+   *  passé sous silence. */
+  const substitutions = useMemo(
+    () => opening.substituted
+      .filter(({ code }) => entries.some((entry) => entry.code === code))
+      .map(({ wanted, taken }) =>
+        `La sélection d’ouverture demandait « ${wanted} », que la nomenclature Cnam ne publie pas sous ce nom : « ${taken} » a été retenue à la place.`),
+    [opening, entries],
+  );
   const compareInput = useMemo(
-    () => ({ compared, measure, scopeLabel: scope, view }),
-    [compared, measure, scope, view],
+    () => ({ compared, measure, scopeLabel: scope, view, mixed, extraCaveats: substitutions }),
+    [compared, measure, scope, view, mixed, substitutions],
   );
   const current = useMemo(
     () => buildPathologyCompare({ ...compareInput, tokens }),
     [compareInput, tokens],
   );
 
+  /** Le poids d'une série dans le rail : sa dernière valeur connue, celle-là
+   *  même que le graphique met en rang. */
+  const valueOf = (_entry: SeriesEntry, index: number) => {
+    const rows = compared[index]?.overview.annual ?? [];
+    const last = [...rows].reverse().find((row) =>
+      (measure === "prevalence" ? row.prevalence : row.patients) !== null);
+    return last ? (measure === "prevalence" ? last.prevalence : last.patients) : null;
+  };
+
   const openExtraction = () => onOpenExtraction(new URLSearchParams({
-    page: "extraction", source: "pathologies", top: codes[0] ?? top,
+    page: "extraction", source: "pathologies", top: entries[0]?.code ?? top,
     start_year: String(metadata.years[0] ?? 2015), end_year: String(year),
   }));
 
@@ -112,17 +171,26 @@ export function CompareSection({
     {/* Ce que je compare, juste sous les filtres : on lit dans l'ordre où on
         pense — je fixe le périmètre, je vois ce que je mets en regard, puis je
         choisis la forme. */}
-    <section className="patho-compare-rail">
-      <EntityPicker
-        catalogue={catalogue}
-        selection={codes}
-        onChange={setCodes}
-        maximum={MAX_COMPARED}
-        noun="pathologie"
-        nounPlural="pathologies"
-      />
-      <div className={`pathology-loading-track ${loading ? "active" : ""}`}><span /></div>
-    </section>
+    <SeriesRail
+      catalogue={catalogue}
+      entries={entries}
+      onChange={setEntries}
+      maximum={MAX_COMPARED}
+      noun="pathologie"
+      nounPlural="pathologies"
+      fields={fields}
+      base={base}
+      baseLabel={scope}
+      colorOf={(index) => paletteColor(tokens, index, entries.length)}
+      valueOf={valueOf}
+      kind={measure === "prevalence" ? "percent" : "quantity"}
+      count={count}
+      counts={SERIES_COUNTS}
+      onCountChange={(next) => {
+        setCount(next);
+        setEntries(catalogue.slice(0, next).map((item) => ({ code: item.code })));
+      }}
+    />
 
     {error ? <div className="analysis-error"><strong>La comparaison n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
@@ -148,6 +216,13 @@ export function CompareSection({
       empty={current.empty}
       loading={loading}
       ariaLabel={current.ariaLabel}
+      legend={current.legend}
+      afterChart={mixed ? (
+        <p className="damir-note">
+          Une ou plusieurs séries portent leur propre périmètre : elles ne décrivent pas
+          la même population et ne s’additionnent pas.
+        </p>
+      ) : null}
       tableColumns={current.table.columns}
       tableRows={current.table.rows}
       caveats={current.caveats}

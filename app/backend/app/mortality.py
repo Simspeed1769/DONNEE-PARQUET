@@ -62,19 +62,45 @@ def _float(value: Any) -> float | None:
 def mortality_metadata(repo: MortalityRepository) -> dict[str, Any]:
     _require_source(repo)
     years = [int(row["year"]) for row in repo.query("SELECT DISTINCT year FROM mortality ORDER BY 1")]
+    last_year = max(years) if years else None
+    # Le rang de chaque cause, son poids et **sa place dans la hiérarchie**.
+    #
+    # Le CépiDc publie des chapitres puis leurs détails, ces derniers préfixés
+    # « dont » ; le cube porte déjà la distinction dans `is_detail`, mais la
+    # fiche seule ne la donnait pas. Le sélecteur de comparaison en a besoin
+    # pour deux raisons : rattacher un détail à son chapitre, et savoir quand un
+    # « reste du périmètre » est licite — additionner un chapitre et l'un de ses
+    # détails compterait deux fois les mêmes décès.
     causes = repo.query(
         """SELECT cause_code AS code, cause_label AS label,
-                  MIN(cause_order) AS cause_order
+                  MIN(cause_order) AS cause_order,
+                  BOOL_OR(COALESCE(is_detail, false)) AS is_detail,
+                  MAX(CASE WHEN year = ? THEN deaths END) AS deaths
            FROM mortality
+           WHERE population_group = 'ensemble'
            GROUP BY cause_code, cause_label
-           ORDER BY cause_order"""
+           ORDER BY cause_order""",
+        [last_year],
     )
+    chapter = ""
+    described: list[dict[str, Any]] = []
+    for row in causes:
+        detail = bool(row["is_detail"])
+        if not detail:
+            chapter = str(row["label"])
+        described.append({
+            "code": str(row["code"]),
+            "label": str(row["label"]),
+            "detail": detail,
+            "chapter": chapter,
+            "deaths": _float(row["deaths"]),
+        })
     groups = [{"code": code, "label": label} for code, label in MORTALITY_GROUPS.items()]
     return {
         "available": True,
         "years": years,
         "default_year": max(years) if years else None,
-        "causes": [{"code": str(row["code"]), "label": str(row["label"])} for row in causes],
+        "causes": described,
         "populations": groups,
         "dimensions": [{"key": key, "label": value[0]} for key, value in MORTALITY_DIMENSIONS.items()],
         "measures": [{"key": key, "label": value[0], "kind": value[1]}

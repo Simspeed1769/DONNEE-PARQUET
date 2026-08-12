@@ -39,6 +39,9 @@ export type ChartInput = {
 };
 
 const AXIS_NAME_GAP = 30;
+/** La largeur réservée à une étiquette de bout de courbe, dans la marge de
+ *  droite du tracé. Au-delà, le nom est tronqué plutôt que débordé. */
+const END_LABEL_WIDTH = 118;
 
 /** La place qu'il faut au-dessus du tracé pour le nom de l'axe des valeurs.
  *
@@ -240,7 +243,16 @@ export function buildOption(input: ChartInput): EChartsOption {
         fontSize: 11,
         fontFamily: tokens.font,
         distance: 8,
+        // L'étiquette tient dans la marge qui lui est réservée, ou elle est
+        // coupée par un « … » qui le dit. Sans cette borne, un libellé long
+        // sortait du canevas — « Cadres et professions intellec ».
+        width: END_LABEL_WIDTH,
+        overflow: "truncate",
       } : { show: false },
+      // Deux courbes qui finissent au même niveau posaient leurs noms l'un sur
+      // l'autre. La légende HTML porte l'identité de toutes les séries ; celle
+      // qui ne peut pas s'écrire sans en recouvrir une autre s'efface.
+      labelLayout: input.directLabels ? { hideOverlap: true } : undefined,
     };
   });
 

@@ -99,7 +99,21 @@ def csp_metadata(repo: CspRepository) -> dict[str, Any]:
              ORDER BY CASE niveau_csp WHEN 'groupe_6' THEN 1 ELSE 2 END,
                       TRY_CAST(code_csp AS INTEGER), code_csp"""
     )
-    by_level: dict[str, list[dict[str, str]]] = {key: [] for key in CSP_LEVELS}
+    # Le poids de chaque catégorie sur le dernier millésime, France entière.
+    # Il ne s'affiche nulle part comme un chiffre : il **classe** le sélecteur de
+    # comparaison et désigne la sélection d'ouverture, exactement comme
+    # `patients` le fait pour les pathologies.
+    weights = {
+        (str(row["level"]), str(row["code"])):
+            (float(row["effectif"]) if row["effectif"] is not None else None)
+        for row in repo.query(
+            """SELECT niveau_csp AS level, code_csp AS code, SUM(effectif)::DOUBLE AS effectif
+                 FROM csp WHERE annee = ?
+                 GROUP BY niveau_csp, code_csp""",
+            [max(years)],
+        )
+    }
+    by_level: dict[str, list[dict[str, Any]]] = {key: [] for key in CSP_LEVELS}
     for row in options:
         level = str(row["level"])
         if level in by_level:
@@ -108,6 +122,7 @@ def csp_metadata(repo: CspRepository) -> dict[str, Any]:
                 "label": str(row["label"]),
                 "group_code": str(row["group_code"]),
                 "group_label": str(row["group_label"]),
+                "effectif": weights.get((level, str(row["code"]))),
             })
     source_label = (
         f"Recensement de la population Insee · {min(years)}–{max(years)}"

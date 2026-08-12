@@ -560,6 +560,16 @@
 .scope-editor > header strong { display: block; color: var(--ink); font-size: var(--text-xs); font-weight: 640; }
 .scope-editor > header small { display: block; margin-top: 2px; color: var(--ink-muted); font-size: var(--text-2xs); }
 .scope-editor .multi-select { margin-top: 0; }
+/* Les bases à objets — Pathologies, CSP, Mortalité — n'ont pas les dimensions
+   du cube DAMIR à régler mais deux ou trois champs simples. Ils se rangent en
+   grille souple plutôt qu'en colonne, sans quoi le tiroir déroulerait quatre
+   lignes pour trois listes courtes. */
+.scope-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
 .scope-editor-field > span {
   display: block;
   margin-bottom: 4px;

@@ -5,6 +5,7 @@
  *  question, pas de sujet.
  */
 
+import type { RailOption, ScopeField, SeriesScope } from "../components/SeriesRail";
 import type { CspMetadata } from "../types";
 
 export type CspLevel = "groupe_6" | "categorie_29";
@@ -37,15 +38,51 @@ export const MAX_COMPARED = 8;
  *  contrairement aux 118 pathologies, la nomenclature *est* ici l'ordre utile,
  *  et le niveau se lit en regard de chaque entrée. Le code porte son niveau,
  *  parce qu'une série ne sait pas d'où elle vient une fois choisie. */
-export function cspCatalogue(metadata: CspMetadata | null) {
+export type CspEntry = RailOption & { level: CspLevel; raw: string };
+
+export function cspCatalogue(metadata: CspMetadata | null): CspEntry[] {
   return (metadata?.levels ?? []).flatMap((level) =>
     level.options.map((option) => ({
       code: `${level.key}:${option.code}`,
       label: option.label,
       group: level.label,
+      // L'effectif du dernier millésime : il classe la recherche et désigne la
+      // sélection d'ouverture, il ne s'affiche jamais comme un résultat.
+      weight: option.effectif ?? null,
       level: level.key,
       raw: option.code,
     })));
+}
+
+/** La sélection d'ouverture : les trois groupes les plus nombreux du dernier
+ *  millésime. Arriver sur une comparaison à un élément n'apprend rien, et les
+ *  six grands groupes sont le niveau où la question se pose d'abord. */
+export function cspOpeningSelection(catalogue: CspEntry[], howMany = 3): string[] {
+  return catalogue
+    .filter((item) => item.level === "groupe_6")
+    .slice()
+    .sort((left, right) => (right.weight ?? 0) - (left.weight ?? 0))
+    .slice(0, howMany)
+    .map((item) => item.code);
+}
+
+/** Les filtres qu'une série peut porter en propre. Le millésime n'en est pas :
+ *  la période reste commune. */
+export function cspScopeFields(metadata: CspMetadata): ScopeField[] {
+  return [
+    { key: "region", label: "Territoire", options: metadata.regions.map((item) => ({ value: item.code, label: item.label })) },
+    { key: "age", label: "Âge", options: metadata.ages.map((item) => ({ value: item.code, label: item.label })) },
+    { key: "sex", label: "Sexe", options: metadata.sexes.map((item) => ({ value: String(item.code), label: item.label })) },
+  ];
+}
+
+export function cspScopeOf(scope: SeriesScope | undefined,
+                           region: string, age: string, sex: number) {
+  return {
+    region: scope?.region ?? region,
+    age: scope?.age ?? age,
+    sex: scope?.sex !== undefined ? Number(scope.sex) : sex,
+  };
 }
 
 export function scopeLabel(metadata: CspMetadata, year: number,

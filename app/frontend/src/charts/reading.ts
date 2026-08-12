@@ -39,6 +39,11 @@ export type Reading = {
   height: number;
   /** Renseigné lorsqu'il n'y a rien à montrer, avec la raison. */
   empty: string | null;
+  /** La clé de lecture des couleurs, **dans le HTML de la page** : elle y est
+   *  sélectionnable et lisible par un lecteur d'écran, là où une légende de
+   *  canevas ne l'est pas. Absente sur une lecture à série unique, où la
+   *  couleur ne distingue rien. */
+  legend?: Array<{ key: string; label: string; color: string }>;
   /** Titre de l'axe des abscisses : ce que comptent les catégories. */
   xTitle: string;
 };

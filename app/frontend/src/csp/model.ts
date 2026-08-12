@@ -7,6 +7,7 @@
  */
 
 import { buildOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
+import { buildCompareReading } from "../charts/compareReading";
 import type { ChartTokens } from "../charts/tokens";
 import { resolveForm, type FormOption, type Reading } from "../charts/reading";
 import { formatValue } from "../utils";
@@ -255,49 +256,28 @@ export function buildCspReadings(input: CspInput): Reading[] {
  * cette mesure : ce sont les effectifs qui les ouvrent.
  */
 
-export type CspCompareView = {
-  key: string;
-  label: string;
-  form: ChartForm;
-  question: string;
-  needsAdditive?: boolean;
-  needsYears?: number;
-};
-
-export const CSP_COMPARE_VIEWS: CspCompareView[] = [
-  { key: "line", label: "Courbes", form: "line", question: "Comment leurs trajectoires se comparent-elles ?" },
-  { key: "bar", label: "Barres", form: "bar", question: "Combien, millésime par millésime ?" },
-  { key: "rank", label: "Classement", form: "rank", question: "Laquelle pèse le plus ?" },
-  { key: "diverging", label: "Écarts", form: "diverging", needsYears: 2,
-    question: "Laquelle progresse, laquelle recule sur la période ?" },
-  { key: "shareArea", label: "Aires empilées", form: "shareArea", needsAdditive: true, needsYears: 2,
-    question: "Comment la composition de la population active se déforme-t-elle ?" },
-  { key: "stack", label: "Empilé", form: "stack", needsAdditive: true,
-    question: "Combien pèsent-elles ensemble, et qui apporte quoi ?" },
-  { key: "pie", label: "Camembert", form: "pie", needsAdditive: true,
-    question: "Comment la population active se partage-t-elle ?" },
-];
-
 export type CspCompareInput = {
   compared: Array<{
-    code: string;
     label: string;
+    isOther?: boolean;
     annual: Array<{ year: number; effectif: number | null; share: number | null }>;
   }>;
   measure: "share" | "effectif";
   scopeLabel: string;
   tokens: ChartTokens;
   view: string;
+  /** Vrai dès qu'une série porte son propre périmètre. */
+  mixed: boolean;
 };
 
 export function buildCspCompare(input: CspCompareInput): Reading {
-  const { compared, measure, scopeLabel, tokens, view } = input;
+  const { compared, measure, scopeLabel, tokens, view, mixed } = input;
   const isShare = measure === "share";
   const kind = isShare ? "percent" : "quantity";
   const unitLabel = isShare ? "% des actifs en emploi" : "personnes";
   const measureLabel = isShare ? "Part parmi les actifs en emploi" : "Effectif pondéré (Insee)";
 
-  // Les millésimes communs à toutes les séries : comparer sur un axe où l'une
+  // Les millésimes communs à toutes les séries : comparer sur un axe où l'un
   // manque ferait passer une absence pour une chute.
   const years = compared.length
     ? compared
@@ -306,9 +286,9 @@ export function buildCspCompare(input: CspCompareInput): Reading {
     : [];
 
   const series: ChartSeries[] = compared.map((item, index) => ({
-    key: item.code,
+    key: `${index}-${item.label}`,
     label: item.label,
-    isOther: false,
+    isOther: Boolean(item.isOther),
     colorIndex: index,
     values: years.map((year) => {
       const row = item.annual.find((candidate) => candidate.year === year);
@@ -317,59 +297,20 @@ export function buildCspCompare(input: CspCompareInput): Reading {
     }),
   }));
 
-  const offered = CSP_COMPARE_VIEWS.filter((item) =>
-    (!item.needsAdditive || !isShare) && years.length >= (item.needsYears ?? 0));
-  const chosen = offered.find((item) => item.key === view) ?? offered[0];
-  const form = chosen?.form ?? "line";
-  const asPie = form === "pie";
-
-  const pieSeries: ChartSeries[] = series.map((item) => ({
-    ...item,
-    values: [item.values.reduce<number | null>(
-      (total, value) => (value === null ? total : (total ?? 0) + value), null)],
-  }));
-
-  const enough = compared.length >= 2;
-
-  return {
-    key: "compare",
-    nav: "Comparer",
-    title: enough
-      ? `${measureLabel} · ${compared.length} catégories comparées`
-      : "Comparer des catégories socioprofessionnelles",
-    question: chosen?.question ?? "",
+  return buildCompareReading({
+    periods: years,
+    series,
+    additive: !isShare,
+    mixed,
+    kind, unitLabel, measureLabel, tokens, view,
+    nounPlural: "catégories",
+    periodTitle: "Millésime",
+    seriesTitle: "Groupes comparés",
+    scopeLabel,
     caveats: [
       WEIGHTED_NOTE,
       NOMENCLATURE_NOTE,
       ...(isShare ? [DENOMINATOR_NOTE, SHARE_NOTE] : []),
-      `Toutes les catégories comparées partagent le même périmètre : ${scopeLabel}.`,
     ],
-    forms: offered.map((item) => ({ key: item.key, label: item.label })),
-    form: chosen?.key ?? "line",
-    option: enough && years.length
-      ? buildOption({
-        form,
-        categories: asPie ? [scopeLabel] : years,
-        series: asPie ? pieSeries : series,
-        kind, unitLabel, tokens,
-        directLabels: form === "line" && series.length <= 6,
-        xTitle: asPie ? undefined
-          : (form === "rank" || form === "diverging" ? "Groupes comparés" : "Millésime"),
-      })
-      : null,
-    table: {
-      columns: ["Millésime", ...series.map((item) => item.label)],
-      rows: years.map((year, index) => [
-        String(year), ...series.map((item) => formatValue(item.values[index], kind)),
-      ]),
-    },
-    ariaLabel: `${measureLabel}, ${compared.length} catégories comparées`,
-    height: form === "rank" || form === "diverging"
-      ? Math.max(CHART_HEIGHT, 80 + series.length * 26)
-      : CHART_HEIGHT,
-    empty: !enough
-      ? "Ajoutez une deuxième catégorie : une comparaison à un seul élément n’en est pas une."
-      : (years.length ? null : "Aucun millésime commun aux catégories retenues."),
-    xTitle: "Millésime",
-  };
+  });
 }
