@@ -1,0 +1,289 @@
+/* Le bandeau « Ce que je compare », et le réglage d'une série.
+ *
+ * Tout vient des jetons de theme.css. Le bandeau ne porte plus de surface : il
+ * prolonge la barre de filtres, il ne la concurrence pas.
+ */
+
+.compare-rail { position: relative; margin: 0 0 var(--space-3); }
+
+.compare-rail-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 4px 2px 10px;
+}
+
+/* L'intitulé prend le jeton des légendes de filtres : il nomme la rangée, il ne
+   se dispute pas la lecture avec elle. Les capitales et le gras l'en faisaient
+   le premier élément lu. */
+.compare-rail-label {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+}
+
+/* Une seule ligne, toujours. Ce qui déborde est caché par le composant, qui
+   compte ce qui tient et replie le reste dans « +N autres ». `nowrap` seul
+   couperait la dernière puce ; c'est la mesure qui décide. */
+.compare-rail-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  /* Ni retour à la ligne, ni hauteur qui varie avec le contenu : c'est cette
+     hauteur qui bougeait quand une puce se repliait, ce qui relançait la
+     mesure — replier, remesurer, replier. */
+  flex-wrap: nowrap;
+  height: 26px;
+  overflow: hidden;
+}
+
+.compare-rail-chip {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font-size: .6rem;
+  white-space: nowrap;
+  transition: border-color .14s var(--ease);
+}
+.compare-rail-chip.hidden { display: none; }
+.compare-rail-chip.open { border-color: var(--accent); }
+.compare-rail-chip.empty { padding: 0 10px; color: var(--ink-muted); font-style: italic; }
+
+.compare-rail-chip-body {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 4px 0 10px;
+  border: 0;
+  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .6rem;
+  cursor: pointer;
+}
+.compare-rail-chip-body:hover { color: var(--ink); }
+.compare-rail-chip-body i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 2px; }
+
+/* La croix reste présente et cliquable au doigt : sa zone déborde la puce vers
+   le haut et le bas jusqu'à 44 px, sans grandir la rangée. Discrète au repos,
+   elle se contraste au survol et au focus clavier — la faire disparaître la
+   rendrait inatteignable sur écran tactile. */
+.compare-rail-chip-remove {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 100%;
+  padding: 0 8px 0 2px;
+  border: 0;
+  border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: .58rem;
+  line-height: 1;
+  opacity: .45;
+  cursor: pointer;
+  transition: opacity .14s var(--ease), color .14s var(--ease);
+}
+.compare-rail-chip-remove::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+.compare-rail-chip:hover .compare-rail-chip-remove,
+.compare-rail-chip-remove:hover,
+.compare-rail-chip-remove:focus-visible { opacity: 1; color: var(--accent); }
+.compare-rail-chip-remove:disabled { opacity: .18; cursor: not-allowed; }
+
+/* Le repli de ce qui ne tient pas, et l'ajout : deux puces fantômes, bordure
+   seule, qui mènent au tiroir. */
+.compare-rail-more,
+.compare-rail-add {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: .6rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.compare-rail-more { border-style: solid; }
+.compare-rail-more:hover,
+.compare-rail-add:hover { color: var(--ink); border-color: var(--ink-muted); }
+
+.compare-rail-toggle {
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: .6rem;
+  font-weight: 640;
+  cursor: pointer;
+}
+.compare-rail-toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+
+/* ── Le réglage d'une série ──────────────────────────────────────────────────
+ *
+ * En absolu : il se pose **au-dessus** du contenu et ne pousse jamais le
+ * graphique vers le bas, ce que la règle du projet interdit. */
+
+.chip-popover {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% - 4px);
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  /* Un seul défilement, celui du popover entier. Le corps avait le sien, et le
+     dernier champ du panneau de filtres venait alors recouvrir la note qui le
+     suit — deux textes l'un sur l'autre. */
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  animation: chip-popover-in .16s var(--ease) both;
+}
+
+@keyframes chip-popover-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Sous 720 px, un flottant n'a plus la place de se poser : il devient une
+   feuille ancrée en bas d'écran, où le pouce l'atteint. */
+.chip-popover.sheet {
+  position: fixed;
+  z-index: 70;
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  max-width: none;
+  max-height: 78vh;
+  overflow-y: auto;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-popover { animation: none; }
+}
+
+.chip-popover > header { display: flex; align-items: center; gap: var(--space-2); }
+.chip-popover > header i { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 3px; }
+.chip-popover > header strong { flex: 1; min-width: 0; overflow: hidden; color: var(--ink); font-size: var(--text-xs); text-overflow: ellipsis; white-space: nowrap; }
+
+.chip-popover-name {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: 620;
+}
+.chip-popover-name:hover { border-color: var(--line); }
+.chip-popover-name:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+
+.chip-popover-value {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-popover-body { display: flex; flex-direction: column; gap: var(--space-3); }
+.chip-popover-body .advanced-filter-panel { gap: var(--space-3); border: 0; padding: 0; background: transparent; box-shadow: none; }
+.chip-popover-body .advanced-filter-heading { display: none; }
+.chip-popover-body .filter-section-title strong {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 620;
+}
+.chip-popover-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); }
+.chip-popover-note { margin: 0; color: var(--ink-muted); font-size: var(--text-2xs); line-height: 1.45; }
+
+.chip-popover > footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+.chip-popover-all {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.chip-popover-all:hover { text-decoration: underline; }
+.chip-popover-remove {
+  margin-left: auto;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink-secondary);
+  font: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+}
+.chip-popover-remove:hover:not(:disabled) { color: var(--accent); border-color: var(--accent-line); }
+.chip-popover-remove:disabled { opacity: .4; cursor: not-allowed; }
+
+/* La rangée fantôme : hors écran, jamais lue, jamais cliquable. Elle porte
+   toujours toutes les puces à leur largeur réelle, et c'est sur elle que se
+   décide ce qui tient sur la ligne. Mesurer la rangée visible faisait osciller
+   le rendu : une puce repliée n'a plus de largeur, la mesure suivante concluait
+   que tout tenait, et ainsi de suite jusqu'à figer l'onglet. */
+.compare-rail-ghost {
+  position: absolute;
+  flex-wrap: nowrap;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+}

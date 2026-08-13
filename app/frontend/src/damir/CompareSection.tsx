@@ -29,12 +29,14 @@ import { buildOption, pieOption, type ChartForm, type ChartSeries } from "../cha
 import { paletteColor, useChartTokens, type ChartTokens } from "../charts/tokens";
 import { SeriesPicker } from "../explore/SeriesPicker";
 import { SeriesDrawer } from "../components/SeriesDrawer";
+import { CompareRail } from "../components/CompareRail";
+import { AdvancedFilterPanel, type FilterField } from "../components/AdvancedFilterPanel";
 import {
   applyReading, assignColorSlots, periodValueOf, rankedKeys, readingKind,
   readingUnitLabel, selectSeries, valuesOf,
   type ExploreMeasure, type ExploreResponse, type ExploreSeries, type Reading,
 } from "../explore/model";
-import { isFree, newFreeKey, scopeChips, type SeriesScope } from "../explore/seriesScope";
+import { isFree, lockedField, newFreeKey, scopeChips, scopeForSeries, type SeriesScope } from "../explore/seriesScope";
 import { csvFromRows, formatValue, writeFilters } from "../utils";
 import { ExportPngButton } from "../components/ExportPngButton";
 import { PaletteChoice } from "../components/PaletteChoice";
@@ -584,40 +586,49 @@ export function CompareSection({
           je vois aussitôt quelles séries en découlent, puis je choisis la
           forme et je lis le graphique. Le rail reste compact, un résumé sur
           une ligne ; son édition s'ouvre en dessous et pousse le reste. */}
-      <div className="compare-rail">
-        <div className="compare-rail-summary">
-          <span className="compare-rail-label">Ce que je compare</span>
-          <div className="compare-rail-chips" role="list">
-            {chartSeries.map((item) => (
-              <span key={item.key} className="compare-rail-chip" role="listitem">
-                <i style={{ background: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther) }} />
-                {item.label}
-                {/* Retirer une série est le geste le plus fréquent : il se fait
-                    ici, sans passer par le tiroir. Le repli, lui, s'éteint. */}
-                <button
-                  type="button"
-                  onClick={() => (item.isOther
-                    ? setShowOther(false)
-                    : setSelection(active.filter((key) => key !== item.key)))}
-                  disabled={!item.isOther && active.length <= 1}
-                  title={!item.isOther && active.length <= 1
-                    ? "Une comparaison garde au moins une série"
-                    : `Retirer ${item.label}`}
-                  aria-label={`Retirer ${item.label}`}
-                >✕</button>
-              </span>
-            ))}
-            {!chartSeries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}
-          </div>
-          <button
-            type="button"
-            className={`compare-rail-toggle ${pickerOpen ? "open" : ""}`}
-            aria-expanded={pickerOpen}
-            onClick={() => setPickerOpen((open) => !open)}
-          >{pickerOpen ? "Fermer" : "Modifier les séries"}</button>
-        </div>
+      <CompareRail
+        chips={chartSeries.map((item) => ({
+          key: item.key,
+          label: item.label,
+          color: paletteColor(tokens, item.colorIndex, chartSeries.length, item.isOther),
+          value: valueMap.get(item.key) ?? null,
+          removable: item.isOther || active.length > 1,
+          isOther: item.isOther,
+        }))}
+        kind={measure?.kind ?? "money"}
+        onRemove={(key) => {
+          const chosen = chartSeries.find((item) => item.key === key);
+          if (chosen?.isOther) setShowOther(false);
+          else setSelection(active.filter((item) => item !== key));
+        }}
+        onOpenDrawer={() => setPickerOpen(true)}
+        nameOf={(key) => names[key] ?? ""}
+        onNameChange={(key, name) => setNames((current) => ({ ...current, [key]: name }))}
+        renderScope={(key) => (
+          <>
+            {/* Le périmètre de cette série seule, avec les champs de
+                l'AdvancedFilterPanel : la logique de filtrage ne vit qu'à un
+                endroit, et le tiroir écrit dans le même état. La période est
+                commune par construction, la dimension comparée est réservée. */}
+            <AdvancedFilterPanel
+              metadata={metadata}
+              value={scopes[key] ?? scopeForSeries(activeBreakdown.field ?? "none", key, isFree(key), filters)}
+              onChange={(next) => onScopeChange(key, next)}
+              hiddenFields={["start_year", "end_year",
+                ...(lockedField(activeBreakdown.field ?? "none", isFree(key)) ?? [])] as FilterField[]}
+            />
+            {scopes[key] && !isFree(key) ? (
+              <button type="button" className="chip-popover-all"
+                onClick={() => onScopeChange(key, null)}
+              >Revenir au périmètre commun</button>
+            ) : null}
+            <p className="chip-popover-note">
+              La période reste commune : deux axes du temps différents ne se comparent pas.
+            </p>
+          </>
+        )}
+      />
 
-      </div>
 
       {measure ? (
         <SeriesDrawer

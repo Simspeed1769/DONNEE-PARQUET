@@ -23,7 +23,11 @@
 import { useMemo, useState } from "react";
 import { formatValue } from "../utils";
 import { ChoiceSelect } from "./ChoiceSelect";
+import { CompareRail } from "./CompareRail";
 import { SeriesDrawer } from "./SeriesDrawer";
+
+/** La clé de la ligne « Reste du périmètre » : elle n'a pas d'index de série. */
+const OTHER_KEY = "__other__";
 
 /** Une entrée du catalogue comparable, classée par poids par l'appelant. */
 export type RailOption = {
@@ -190,52 +194,73 @@ export function SeriesRail({
     setEditing(index + 1);
   };
 
+  const chips = [
+    ...entries.map((entry, index) => ({
+      key: `${index}-${entry.code}`,
+      label: seriesName(entry, catalogue, base, fields),
+      color: colorOf(index),
+      value: valueOf?.(entry, index) ?? null,
+      removable: entries.length > 1,
+    })),
+    ...(other?.on ? [{
+      key: OTHER_KEY, label: other.label, color: other.color,
+      removable: true, isOther: true,
+    }] : []),
+  ];
+
+  /** L'index d'une puce, retrouvé depuis sa clé. Les séries se repèrent par
+   *  position — un même objet peut figurer deux fois, sur deux périmètres. */
+  const indexOf = (key: string) => Number(key.split("-")[0]);
+
   return (
-    <div className="compare-rail">
-      <div className="compare-rail-summary">
-        <span className="compare-rail-label">Ce que je compare</span>
-        <div className="compare-rail-chips" role="list">
-          {entries.map((entry, index) => {
-            const name = seriesName(entry, catalogue, base, fields);
-            return (
-              <span key={`${index}-${entry.code}`} className="compare-rail-chip" role="listitem">
-                <i style={{ background: colorOf(index) }} />
-                {name}
-                {/* Retirer une série est le geste le plus fréquent : il se fait
-                    ici, sans passer par le tiroir. */}
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  disabled={entries.length <= 1}
-                  title={entries.length <= 1
-                    ? "Une comparaison garde au moins une série"
-                    : `Retirer ${name}`}
-                  aria-label={`Retirer ${name}`}
-                >✕</button>
-              </span>
-            );
-          })}
-          {other?.on ? (
-            <span className="compare-rail-chip" role="listitem">
-              <i style={{ background: other.color }} />
-              {other.label}
-              <button
-                type="button"
-                onClick={() => other.onToggle(false)}
-                title="Masquer le reste du périmètre"
-                aria-label="Masquer le reste du périmètre"
-              >✕</button>
-            </span>
-          ) : null}
-          {!entries.length ? <span className="compare-rail-chip empty">Aucune série</span> : null}
-        </div>
-        <button
-          type="button"
-          className={`compare-rail-toggle ${open ? "open" : ""}`}
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
-        >{open ? "Fermer" : "Modifier les séries"}</button>
-      </div>
+    <>
+      <CompareRail
+        chips={chips}
+        kind={kind}
+        onRemove={(key) => (key === OTHER_KEY ? other?.onToggle(false) : remove(indexOf(key)))}
+        onOpenDrawer={() => setOpen(true)}
+        nameOf={(key) => entries[indexOf(key)]?.name ?? ""}
+        onNameChange={(key, name) => patch(indexOf(key), { name })}
+        renderScope={(key) => {
+          const index = indexOf(key);
+          const entry = entries[index];
+          if (!entry) return null;
+          const scope = entry.scope ?? base;
+          const chipsOfScope = scopeChips(entry.scope, base, fields);
+          return (
+            <>
+              {/* L'objet comparé lui-même : on remplace une pathologie par une
+                  autre sans passer par le tiroir. La recherche, elle, y reste —
+                  cent dix-huit entrées ne se parcourent pas dans un popover. */}
+              <ChoiceSelect
+                label={noun.charAt(0).toLocaleUpperCase("fr-FR") + noun.slice(1)}
+                value={entry.code}
+                onChange={(code) => patch(index, { code })}
+                options={catalogue.map((item) => ({ value: item.code, label: item.label }))}
+              />
+              <div className="chip-popover-fields">
+                {fields.map((field) => (
+                  <ChoiceSelect
+                    key={field.key}
+                    label={field.label}
+                    options={field.options}
+                    value={scope[field.key] ?? ""}
+                    onChange={(next) => patch(index, { scope: { ...scope, [field.key]: next } })}
+                  />
+                ))}
+              </div>
+              {chipsOfScope.length ? (
+                <button type="button" className="chip-popover-all"
+                  onClick={() => patch(index, { scope: undefined })}
+                >Revenir au périmètre commun</button>
+              ) : null}
+              <p className="chip-popover-note">
+                La période reste commune : deux axes du temps différents ne se comparent pas.
+              </p>
+            </>
+          );
+        }}
+      />
 
       <SeriesDrawer
         open={open}
@@ -408,6 +433,6 @@ export function SeriesRail({
           </p>
         ) : null}
       </SeriesDrawer>
-    </div>
+    </>
   );
 }
