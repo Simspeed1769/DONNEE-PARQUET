@@ -81,10 +81,8 @@ from .population import (
     population_overview,
 )
 from .correlations import (
-    CorrelationRequest,
     RegressionRequest,
     catalogue,
-    correlate,
     regression,
 )
 from .explore import ExploreRequest, OptionsRequest, aggregate_options, explore, filter_options
@@ -578,17 +576,11 @@ def correlation_meta_view() -> dict[str, Any]:
     return _correlation_catalogue()
 
 
-@lru_cache(maxsize=64)
-def _correlate_cached(payload_json: str) -> dict[str, Any]:
-    return correlate(repository, CorrelationRequest.model_validate_json(payload_json))
-
-
-@app.post("/api/correlations")
-def correlate_view(payload: CorrelationRequest) -> dict[str, Any]:
-    try:
-        return _correlate_cached(payload.model_dump_json())
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+# `POST /api/correlations` est parti avec l'écran avancé : la corrélation
+# appariée n'avait plus d'appelant côté interface. Croisements passe par la
+# régression, qui répond à la même question en tenant l'âge et le sexe. La
+# fonction `correlate()` reste dans `correlations.py` en attendant que le
+# point 2.2 tranche le sort de `statistics.py`, qu'elle est seule à employer.
 
 
 @lru_cache(maxsize=64)

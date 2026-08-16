@@ -111,47 +111,12 @@ export type CorrelationCatalogue = {
   unit_factors: Record<string, string[]>;
 };
 
-export type CorrelationRequest = {
-  unit: string;
-  x: { source: string; metric: string; selection: string | null };
-  y: { source: string; metric: string; selection: string | null };
-  start_year: number;
-  end_year: number;
-  sex: "all" | "men" | "women";
-  age_band: string | null;
-  detrend: boolean;
-};
-
-export type CorrelationResult = {
-  unit: string;
-  unit_label: string;
-  unit_hint: string;
-  x: { key: string; label: string; unit: string; rate: boolean; selection: string | null };
-  y: { key: string; label: string; unit: string; rate: boolean; selection: string | null };
-  points: Array<{ key: string; label: string; region: string | null; year: string | null; x: number; y: number }>;
-  detrended: boolean;
-  statistics: {
-    n: number;
-    pearson: number | null;
-    spearman: number | null;
-    p_value: number | null;
-    r_squared: number | null;
-    ci_low: number | null;
-    ci_high: number | null;
-    slope: number | null;
-    intercept: number | null;
-  };
-  minimum_detectable_r: number | null;
-  warnings: Array<{ level: "critical" | "warning" | "info"; text: string }>;
-  regions_used: number;
-};
+/* `CorrelationRequest` / `CorrelationResult` et `runCorrelation` sont partis
+   avec l'écran avancé : la corrélation appariée n'avait plus d'appelant. Le
+   catalogue, lui, sert toujours — c'est lui qui peuple Croisements. */
 
 export function getCorrelationCatalogue(signal?: AbortSignal): Promise<CorrelationCatalogue> {
   return request<CorrelationCatalogue>("/api/correlations/meta", signal);
-}
-
-export function runCorrelation(payload: CorrelationRequest, signal?: AbortSignal): Promise<CorrelationResult> {
-  return post<CorrelationResult>("/api/correlations", payload, signal);
 }
 
 /** Modalités disponibles pour le sélecteur de séries, classées par poids réel. */

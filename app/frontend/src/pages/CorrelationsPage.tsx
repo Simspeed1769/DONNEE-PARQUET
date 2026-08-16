@@ -8,9 +8,10 @@
  *  catalogue commençait par choisir un mode, ce qui est déjà une question de
  *  spécialiste.
  *
- *  Ne reste donc que Guidé. L'écran avancé n'est pas supprimé pour autant : il
- *  vit entier dans `correlations/AdvancedCross.tsx`, simplement non routé, et
- *  les endpoints de corrélation qu'il appelle sont toujours servis.
+ *  Ne reste donc que Guidé. L'écran avancé a été conservé un temps hors route,
+ *  au cas où : personne ne l'a rebranché, et 673 lignes non exercées se sont
+ *  mises à coûter — il fallait les tenir en cohérence avec l'API pour aucun
+ *  utilisateur. Il est supprimé ; Git le porte si le besoin revient.
  *
  *  Les unités d'observation restent des cellules région × âge × sexe, jamais
  *  des individus : les phrases produites ici comparent des territoires à âge et
