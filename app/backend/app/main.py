@@ -4,6 +4,8 @@ import csv
 import io
 import os
 import threading
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
@@ -409,10 +411,23 @@ class DamirRepository:
 
 repository = DamirRepository()
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Cycle de vie du serveur : préchauffer avant de servir.
+
+    Remplace `@app.on_event("startup")`, déprécié par FastAPI. `warm_caches` est
+    définie plus bas dans le module, à côté du service de l'interface ; Python
+    résout le nom à l'appel, donc l'ordre de lecture du fichier est préservé.
+    """
+    warm_caches()
+    yield
+
+
 app = FastAPI(
     title="DAMIR Studio API",
     description="API locale de consultation du cube Open DAMIR.",
     version="0.1.0",
+    lifespan=lifespan,
 )
 app.add_middleware(
     CORSMiddleware,
@@ -1086,6 +1101,33 @@ def extraction_xlsx(payload: ExtractionRequest) -> StreamingResponse:
     )
 
 
+def _recoverable_logical_name(asset_name: str, suffix: str) -> str | None:
+    """Retrouve le nom logique d'un asset périmé, d'après ce qui est sur le disque.
+
+    Vite nomme ses fichiers `<nom logique>-<empreinte>.<ext>`. Quand un onglet
+    resté ouvert redemande un fichier d'une construction précédente, il faut
+    reconnaître ce nom logique pour lui servir la version courante.
+
+    Cette liste était tenue à la main, et elle avait dérivé : elle citait encore
+    `ExplorePage` et `vendor-plotly`, disparus, et ignorait `PopulationPage`,
+    `CorrelationsPage` et `DamirPage` — c'est-à-dire que la reprise ne couvrait
+    aucun des écrans récents. On la dérive donc des fichiers présents : ajouter
+    un écran ne demande plus de penser à l'inscrire ici.
+
+    Le découpage se fait sur les tirets, et on retient la correspondance la plus
+    longue : `vendor-react-ABC.js` doit se rattacher à `vendor-react`, pas à
+    `vendor` — sans quoi une demande pour l'un pourrait servir l'autre.
+    """
+    prefixes: set[str] = set()
+    for path in FRONTEND_ASSETS.glob(f"*{suffix}"):
+        parts = path.name[: -len(suffix)].split("-") if suffix else path.name.split("-")
+        # Le dernier segment est l'empreinte : il ne peut pas être un nom logique.
+        for cut in range(1, len(parts)):
+            prefixes.add("-".join(parts[:cut]))
+    matches = [name for name in prefixes if asset_name.startswith(f"{name}-")]
+    return max(matches, key=len) if matches else None
+
+
 @app.get("/assets/{asset_name}")
 def frontend_asset(asset_name: str) -> FileResponse:
     """Serve hashed assets and recover transparently from a stale HTML bundle."""
@@ -1099,26 +1141,7 @@ def frontend_asset(asset_name: str) -> FileResponse:
         )
 
     suffix = Path(asset_name).suffix
-    logical_names = (
-        "index",
-        "ExplorePage",
-        "PathologyPage",
-        "CspPage",
-        "MortalityPage",
-        "BenchmarksPage",
-        "ExtractionPage",
-        "MethodologyPage",
-        "AdvancedFilterPanel",
-        "MultiSelect",
-        "utils",
-        "vendor-react",
-        "vendor-echarts",
-        "vendor-plotly",
-    )
-    logical_name = next(
-        (name for name in logical_names if asset_name.startswith(f"{name}-")),
-        None,
-    )
+    logical_name = _recoverable_logical_name(asset_name, suffix)
     if logical_name:
         candidates = sorted(
             FRONTEND_ASSETS.glob(f"{logical_name}-*{suffix}"),
@@ -1136,7 +1159,6 @@ def frontend_asset(asset_name: str) -> FileResponse:
     raise HTTPException(status_code=404, detail="Fichier d’interface introuvable.")
 
 
-@app.on_event("startup")
 def warm_caches() -> None:
     """Prépare les métadonnées et la première vue pendant que le navigateur démarre.
 

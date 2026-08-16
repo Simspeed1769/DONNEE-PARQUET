@@ -84,16 +84,22 @@ avec décalage **et** flou.
 
 ## Formes propres au produit
 
-- **Sections DAMIR** (`.damir-sections`) — trois profondeurs d'une même
-  exploration, pas trois outils : le Panorama d'une prestation, la comparaison
-  de plusieurs prestations, la comparaison composée de bout en bout. Chaque
-  onglet porte la question à laquelle il répond, ce qui permet de choisir sans
-  avoir à essayer. Le périmètre et la mesure suivent d'une section à l'autre :
-  changer de section est un changement de question, pas de sujet.
-- **Séries libres** (`.free-series`) — dans la comparaison libre, chaque série
-  est une ligne nommable, avec ses filtres écrits en gris dessous et son
-  panneau de filtres qui ne s'ouvre qu'à la demande. La construction est
-  progressive : une série et un axe à l'ouverture, jamais un formulaire.
+- **Sections DAMIR** (`.damir-sections`) — **deux** profondeurs d'une même
+  exploration, pas deux outils : le *Panorama* d'une prestation, et *Comparer*,
+  qui met en regard ce qu'on veut. Chaque onglet porte la question à laquelle il
+  répond, ce qui permet de choisir sans avoir à essayer. Le périmètre et la
+  mesure suivent d'une section à l'autre : changer de section est un changement
+  de question, pas de sujet.
+  > L'ancienne troisième section, la « comparaison libre », n'est plus un écran.
+  > Elle est devenue une *capacité* de Comparer : une série libre s'ajoute au
+  > tiroir des séries. `damir/legacyCompare.ts` rouvre les anciens liens dans le
+  > même état, pour qu'aucune adresse partagée ne tombe sur une page vide.
+- **Tiroir des séries** (`.series-drawer`, `components/seriesDrawer.css`) —
+  chaque série est une ligne nommable, avec son périmètre écrit en gris dessous
+  (`.drawer-note`) et ses filtres qui ne s'ouvrent qu'à la demande
+  (`.drawer-scope`). « + Série libre » compose une série qui ne descend d'aucune
+  modalité et n'est que son périmètre. La construction est progressive : une
+  série et un axe à l'ouverture, jamais un formulaire.
 - **Barre de portée** (`.scope-bar`, `panorama.css`) — tout le paramétrage d'un
   écran DAMIR sur deux lignes : ce qu'on regarde (grand poste → poste →
   sous-poste → prestation, puis la mesure), puis sur qui et quand. Les filtres
@@ -107,12 +113,13 @@ avec décalage **et** flou.
   choix de forme à droite, sur une seule ligne. Les repères sont revenus sous
   cette forme après avoir été retirés : c'est un bandeau de tuiles qui poussait
   le graphique hors de l'écran, pas les chiffres eux-mêmes.
-- **Périmètre par série** (`.scope-editor`) — toute série porte son jeu de
-  filtres complet, indépendant des autres ; une **série libre** ne descend même
-  d'aucune modalité et n'est que son périmètre. Le réglage vit sur la ligne de
-  la série et n'apparaît qu'au survol ; ce qui distingue la série, lui, est
-  écrit en permanence — en gris sous son nom (`.series-scope-note`) et dans son
-  libellé sur le graphique.
+- **Périmètre par série** (`.drawer-scope`) — toute série porte son jeu de
+  filtres complet, indépendant des autres. Le réglage vit sur la ligne de la
+  série et n'apparaît qu'à la demande ; ce qui distingue la série, lui, est
+  écrit en permanence — en gris sous son nom (`.drawer-note`) et dans son
+  libellé sur le graphique. Le tiroir s'ouvre **dans le flux**, sous sa ligne :
+  posé en absolu au-dessus d'un panneau qui défile déjà, il rognait la section
+  Population.
 - **Puces « Tenir constant »** (`.regression-factors`) — les dimensions de
   l'observation qu'on met dans le modèle. Trois puces, une ligne : le geste le
   plus important de l'écran doit être le plus court à faire, pas le plus voyant.

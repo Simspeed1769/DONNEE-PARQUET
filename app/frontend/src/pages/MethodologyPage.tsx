@@ -69,7 +69,9 @@ export function MethodologyPage() {
     <div className="content-wrap methodology-page compact-methodology">
       <section className="hero methodology-hero">
         <div>
-          <div className="eyebrow"><span>Référentiel</span> 4 sources actives</div>
+          {/* Le compte vient du catalogue rendu juste en dessous. Écrit en dur,
+              il annonçait « 4 sources » devant cinq fiches. */}
+          <div className="eyebrow"><span>Référentiel</span> {sources.length} sources actives</div>
           <h1>Données & méthode</h1>
           <p>Le périmètre, la période et les limites essentielles. Le détail reste accessible à la demande.</p>
         </div>
