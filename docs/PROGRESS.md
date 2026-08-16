@@ -446,3 +446,41 @@ et le seul chemin qui y menait faussait la série.
   vues sur les courbes en étaient la conséquence — les lignes de grille passent
   au quasi-noir en sombre et se détachent sur un panneau resté clair, ce qui est
   le défaut de thème déjà signalé ci-dessus.
+
+## Mission « 3 blocs » · Bloc 1, point 1.1 — le thème sombre tranché
+
+Le défaut le plus visible du produit : `theme.css` portait deux thèmes complets,
+mais `styles.css` repeignait les panneaux en blanc par-dessus. Décision prise :
+**garder la bascule et rendre le sombre propre**, pas la retirer.
+
+- **Fait — la cause, pas les deux symptômes.** Les deux lignes citées par
+  l'audit (`.panel { background:#fff }` et le `background-color:#fff !important`
+  des champs) n'étaient que les plus voyantes d'un ensemble : **327 règles
+  atteignables** portaient une couleur en dur. Toutes sont passées aux jetons.
+  Vérifié par script : plus aucune couleur en dur dans une règle atteignable.
+- **Fait — les jetons qui manquaient.** `theme.css` n'avait ni fond ni filet
+  pour les états, ni encre d'infobulle, ni anneau de focus, ni couleur pour le
+  repère « B ». Ajoutés dans les trois portées (clair, `prefers-color-scheme`,
+  `[data-theme="dark"]`) : `--good-wash/-line`, `--warning-wash/-line`,
+  `--info-text/-wash`, `--counterpart(-ink)`, `--tooltip-surface/-ink`,
+  `--overlay`, `--focus-ring`.
+- **Fait — vérifié à l'écran.** Les neuf écrans parcourus en sombre forcé, plus
+  le tiroir des séries, le bandeau « Ce que je compare », les popovers, le
+  tiroir de méthode et son voile, les tableaux repliés, le panneau « Plus de
+  filtres ». Contrôle de non-régression en clair sur Comparer et Référentiel.
+- **Écarté — la barre latérale.** Elle est sombre dans les deux thèmes
+  (`--sidebar` passe d'un brun très foncé à un noir) : ses encres claires sont
+  justes des deux côtés, et les passer aux jetons d'encre les rendrait *fausses*
+  en clair. Ses couleurs en dur restent, délibérément, et c'est écrit en tête de
+  `styles.css`.
+- **Écarté — les règles mortes.** 251 des 434 classes de `styles.css` ne sont
+  citées nulle part dans le code ; elles portent encore ~490 couleurs en dur.
+  Elles ne peignent rien. Les toucher aurait gonflé le diff sans rien changer à
+  l'écran, et `styles.css` ne doit pas être réécrit en une passe : elles
+  partiront avec leurs sélecteurs au point 2.4.
+- **Conséquence assumée en thème clair.** Consolider vers les jetons déplace
+  légèrement deux teintes : le bandeau « masqué » du catalogue passe d'un ocre
+  `#d28a37` au `--warning` du thème, et le bandeau « pondéré » d'un vert-de-gris
+  `#4d8b7a` au `--good`. Même rôle, teinte du système plutôt que teinte locale.
+- **Non vérifié** : le rendu sous 1272 px, dans les deux thèmes — c'est
+  l'objet du point 1.2, pas de celui-ci.
