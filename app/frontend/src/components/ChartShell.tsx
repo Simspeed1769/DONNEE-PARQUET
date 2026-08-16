@@ -20,10 +20,15 @@ import type { ChartTokens } from "../charts/tokens";
 import { csvFromRows } from "../utils";
 import { ExportPngButton } from "./ExportPngButton";
 import { PaletteChoice } from "./PaletteChoice";
+import { ViewSwitch } from "./ViewSwitch";
 import type { KpiItem } from "./KpiStrip";
 
 type Props = {
-  kicker: string;
+  /** L'amorce au-dessus du titre. **Facultative, et à laisser vide dès qu'elle
+   *  répéterait le nom de la base** : l'en-tête de page et la barre latérale le
+   *  portent déjà. Elle ne sert que lorsqu'elle nomme le *sujet* — la
+   *  pathologie observée, le groupe CSP, le territoire. */
+  kicker?: string;
   title: string;
   /** Boutons de bascule propres à la carte (mesure, vue complémentaire…) :
    *  chaque base garde la main sur les siens plutôt que de les faire rentrer
@@ -103,7 +108,13 @@ export function ChartShell({
   return (
     <article className={`panel pathology-chart ${className ?? ""}`}>
       <header>
-        <div><span className="section-kicker">{kicker}</span><h3>{title}</h3></div>
+        <div>
+          {/* Une seule amorce par écran. Le nom de la base est déjà porté par
+              l'en-tête de page et la barre latérale : le répéter ici ajoutait
+              une ligne qui n'apprend rien au-dessus du graphique. */}
+          {kicker ? <span className="section-kicker">{kicker}</span> : null}
+          <h3>{title}</h3>
+        </div>
         {readings && readings.length > 1 ? (
           <div className="pathology-toggle damir-views" role="tablist" aria-label="Lecture affichée">
             {readings.map((item) => (
@@ -138,18 +149,13 @@ export function ChartShell({
               puis la couleur — un réglage d'apparence pèse moins que le choix
               de ce qu'on montre. */}
           <div className="damir-strip-controls">
-            {forms && forms.length > 1 ? (
-              <div className="pathology-toggle damir-forms" role="group" aria-label="Forme du graphique">
-                {forms.map((item) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    aria-pressed={form === item.key}
-                    className={form === item.key ? "active" : ""}
-                    onClick={() => onForm?.(item.key)}
-                  >{item.label}</button>
-                ))}
-              </div>
+            {forms ? (
+              <ViewSwitch
+                options={forms}
+                value={form ?? ""}
+                onChange={(key) => onForm?.(key)}
+                label="Forme du graphique"
+              />
             ) : null}
             <PaletteChoice />
           </div>

@@ -563,3 +563,34 @@ retirées en entier. **Ni l'un ni l'autre.**
   contre 0,43–0,77) laisse deux fois moins de place pour étaler la clarté :
   c'est la raison du reste de l'écart entre les deux modes, et elle n'est pas
   contournable sans sortir de la bande ou perdre le contraste 3:1.
+
+## Bloc 1.7 — faire respirer le haut de page
+
+Sur Comparer, six bandes s'empilaient avant le tracé. Trois sont parties.
+
+- **Fait — l'axe de comparaison descend dans la barre de filtres.** Choisir de
+  comparer des postes plutôt que des régions est un choix de *sujet*, au même
+  titre qu'un filtre. La rangée de huit onglets qui vivait sur la bande du
+  graphique devient un `ChoiceSelect` « Comparer selon », en tête de la seconde
+  ligne — l'emplacement que le commentaire de `ScopeBar` prévoyait déjà. Son
+  panneau s'ouvre **au-dessus** du contenu : la barre ne change pas de hauteur.
+- **Fait — cinq vues d'accès direct, le reste replié.** Nouveau composant
+  partagé `ViewSwitch` : Courbes, Barres, Classement, Base 100, Variation
+  restent à un clic ; Empilé, Camembert, Aires empilées, Écarts et Carte de
+  chaleur passent sous « Autres vues », avec leur nombre. Quand la vue active
+  est repliée, le bouton porte son nom — sinon rien ne dirait pourquoi l'écran
+  affiche un camembert. **Le repli est cosmétique** : `offeredViews()` continue
+  de retirer les formes qui mentiraient, elles n'arrivent pas jusqu'au
+  composant. Vérifié : sur Pathologies, où la prévalence n'est pas additive, il
+  ne reste qu'une vue repliée au lieu de cinq.
+- **Fait — une seule amorce par écran.** Sur Comparer, « Comparer selon · grands
+  postes » répétait l'axe désormais lu dans la barre, et le titre, lui, ne le
+  portait pas : le titre devient « Montant remboursé par grands postes —
+  5 séries ». Sur les quatre bases, les amorces `X · comparaison` sont du pur
+  bruit et disparaissent ; celles de Panorama gardent le *sujet* et perdent le
+  nom de la base, déjà porté par l'en-tête de page et la barre latérale.
+- **Écarté.** Réécrire les titres des modèles pour y fondre le sujet : cela
+  aurait touché les noms de fichiers d'export et les titres pré-remplis du PNG,
+  pour un gain que le dédoublonnage des amorces obtient déjà.
+- **Rien de fonctionnel n'a disparu** : les huit axes de comparaison et les dix
+  vues restent tous atteignables, seule la densité change.

@@ -12,6 +12,7 @@ import "./components/copyLinkButton.css";
 import "./components/compareRail.css";
 import "./components/seriesDrawer.css";
 import "./components/exportPngButton.css";
+import "./components/viewSwitch.css";
 
 // Avant le premier rendu : voir `applyStoredPalette`.
 applyStoredPalette();

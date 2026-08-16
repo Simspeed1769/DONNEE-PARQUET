@@ -176,7 +176,7 @@ export function PanoramaSection({
       </section>
 
       <ChartShell
-        kicker={`CSP · ${overview.context.csp_label}`}
+        kicker={overview.context.csp_label}
         title={current.title}
         readings={CSP_READINGS}
         reading={reading}

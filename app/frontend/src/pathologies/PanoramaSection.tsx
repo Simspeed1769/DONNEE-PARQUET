@@ -195,7 +195,7 @@ export function PanoramaSection({
       </section>
 
       <ChartShell
-        kicker={`Pathologies · ${overview.context.label}`}
+        kicker={overview.context.label}
         title={current.title}
         readings={PATHOLOGY_READINGS}
         reading={reading}

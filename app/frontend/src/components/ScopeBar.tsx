@@ -34,12 +34,16 @@ export type ScopeBarProps = {
   /** Champs que l'écran pilote lui-même et qu'il ne faut pas dupliquer ici. */
   hidden?: Array<keyof AdvancedFilters>;
   loading?: boolean;
+  /** Variante de grille, quand l'écran pose plus d'un contrôle en tête de la
+   *  seconde ligne. Comparer y met l'axe **et** la mesure : sans ça, ses deux
+   *  champs se partagent la colonne prévue pour un. */
+  className?: string;
 };
 
 /** Le temps qu'on laisse à la main de se poser avant d'interroger le cube. */
 const FILTER_DEBOUNCE_MS = 250;
 
-export function ScopeBar({ metadata, value, onChange, children, hidden = [], loading = false }: ScopeBarProps) {
+export function ScopeBar({ metadata, value, onChange, children, hidden = [], loading = false, className = "" }: ScopeBarProps) {
   /* — Le brouillon —
      Cocher trois territoires d'affilée lançait trois agrégations, dont deux
      que personne n'attendait. La barre tient donc un brouillon : il suit la
@@ -133,7 +137,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
   const dirty = JSON.stringify(draft) !== JSON.stringify(defaultFilters(metadata));
 
   return (
-    <section className="panel scope-bar" aria-label="Portée de l’analyse">
+    <section className={`panel scope-bar ${className}`} aria-label="Portée de l’analyse">
       <div className="scope-bar-row scope-bar-service">
         <label>
           <span>Grand poste</span>

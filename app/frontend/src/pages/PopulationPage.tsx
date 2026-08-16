@@ -211,7 +211,7 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
 
       {current ? (
         <ChartShell
-          kicker={`Population · ${overview?.context.region_label ?? ""}`}
+          kicker={overview?.context.region_label ?? ""}
           title={current.title}
           readings={POPULATION_READINGS}
           reading={reading}

@@ -24,6 +24,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { runExplore, type ExploreRequest } from "../api";
 import { ScopeBar } from "../components/ScopeBar";
+import { ChoiceSelect } from "../components/ChoiceSelect";
 import { EChart, type EChartsOption } from "../charts/EChart";
 import { buildOption, pieOption, type ChartForm, type ChartSeries } from "../charts/buildOption";
 import { paletteColor, useChartTokens, type ChartTokens } from "../charts/tokens";
@@ -40,6 +41,7 @@ import { isFree, lockedField, newFreeKey, scopeChips, scopeForSeries, type Serie
 import { csvFromRows, formatValue, writeFilters } from "../utils";
 import { ExportPngButton } from "../components/ExportPngButton";
 import { PaletteChoice } from "../components/PaletteChoice";
+import { ViewSwitch } from "../components/ViewSwitch";
 import { SOURCE_LINE } from "../panorama/exportSlide";
 import type { SectionProps } from "./PanoramaSection";
 
@@ -561,8 +563,24 @@ export function CompareSection({
         value={filters}
         onChange={setFilters}
         loading={loading}
+        className="scope-bar-compare"
         hidden={activeBreakdown.field === "service" ? ["service_codes"] : []}
       >
+        {/* L'axe de comparaison vit ici et non sur la bande du graphique :
+            choisir de comparer des postes plutôt que des régions est un choix
+            de **sujet**, au même titre qu'un filtre — pas un choix de
+            représentation. La bande du graphique ne garde que ce qui relève de
+            la lecture : les vues, la palette. */}
+        <div className="scope-bar-field scope-bar-breakdown">
+          <span>Comparer selon</span>
+          <ChoiceSelect
+            label="Comparer selon"
+            options={BREAKDOWNS.map((item) => ({ value: item.key, label: item.label }))}
+            value={breakdown}
+            onChange={(next) => setBreakdown(next as BreakdownKey)}
+          />
+        </div>
+
         <label className="scope-bar-measure">
           <span>Mesure</span>
           <select value={measureKey} onChange={(event) => setMeasureKey(event.target.value)}>
@@ -673,39 +691,29 @@ export function CompareSection({
       ) : null}
 
       <article className="panel damir-stage">
+        {/* Une seule ligne de titre, qui porte l'information. L'amorce
+            « Comparer selon · grands postes » répétait l'axe — désormais lu
+            dans la barre de filtres — et le titre, lui, ne le portait pas :
+            trois lignes pour un seul fait. */}
         <header className="damir-stage-head">
           <div className="damir-stage-title">
-            <span className="section-kicker">Comparer selon · {breakdownLabelLower}</span>
-            <h2>{measure?.label ?? "Chargement…"} — {chartSeries.length} série{chartSeries.length > 1 ? "s" : ""}</h2>
-          </div>
-          <div className="pathology-toggle damir-views" role="tablist" aria-label="Comparer selon">
-            {BREAKDOWNS.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                role="tab"
-                aria-selected={breakdown === item.key}
-                className={breakdown === item.key ? "active" : ""}
-                onClick={() => setBreakdown(item.key)}
-              >{item.label}</button>
-            ))}
+            <h2>
+              {measure?.label ?? "Chargement…"}
+              {pickable ? ` par ${breakdownLabelLower}` : ""}
+              {` — ${chartSeries.length} série${chartSeries.length > 1 ? "s" : ""}`}
+            </h2>
           </div>
         </header>
 
         <div className="damir-strip">
           <p className="damir-question">{view.question}</p>
           <div className="damir-strip-controls">
-          <div className="pathology-toggle damir-forms" role="group" aria-label="Vue">
-            {availableViews.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                aria-pressed={view.key === item.key}
-                className={view.key === item.key ? "active" : ""}
-                onClick={() => setViewKey(item.key)}
-              >{item.label}</button>
-            ))}
-          </div>
+            <ViewSwitch
+              options={availableViews}
+              value={view.key}
+              onChange={(key) => setViewKey(key as ViewKey)}
+              label="Vue"
+            />
             <PaletteChoice />
           </div>
         </div>

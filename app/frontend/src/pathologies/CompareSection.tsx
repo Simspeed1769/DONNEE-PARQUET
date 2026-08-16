@@ -195,7 +195,6 @@ export function CompareSection({
     {error ? <div className="analysis-error"><strong>La comparaison n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
     <ChartShell
-      kicker="Pathologies · comparaison"
       title={current.title}
       forms={current.forms}
       form={current.form}

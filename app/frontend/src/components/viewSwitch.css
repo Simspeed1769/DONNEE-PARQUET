@@ -1,0 +1,95 @@
+/* Le choix de vue : cinq boutons, puis un repli.
+ *
+ * Le bouton de repli emprunte la forme des boutons de vue plutôt que celle
+ * d'un lien : c'est le même geste, sur le même rang. Son panneau se pose
+ * **au-dessus** du contenu, comme les listes de la barre de portée — la règle
+ * du dépôt est qu'une ouverture ne pousse jamais le graphique vers le bas. */
+
+.view-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.view-more { position: relative; flex: 0 0 auto; }
+
+.view-more-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  background: var(--surface-sunken);
+  font-size: .55rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .16s var(--ease), border-color .16s var(--ease);
+}
+.view-more-toggle:hover { color: var(--ink); border-color: var(--line-strong); }
+.view-more-toggle.open { border-color: var(--accent-line); }
+/* Quand la vue active est repliée, le bouton porte son nom : il devient le
+   bouton actif du rang, sans quoi rien à l'écran ne dirait quelle vue est en
+   place. */
+.view-more-toggle.active {
+  color: var(--accent-hover);
+  border-color: var(--accent-line);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.view-more-toggle em {
+  display: grid;
+  place-items: center;
+  min-width: 15px;
+  height: 15px;
+  border-radius: var(--radius-pill);
+  color: var(--ink-muted);
+  background: var(--surface-hover);
+  font-size: .5rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.view-more-toggle.active em { color: var(--accent-hover); background: var(--accent-wash); }
+
+.view-more-popover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 5px);
+  right: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 178px;
+  padding: 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.view-more-popover button {
+  padding: 7px 9px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  background: transparent;
+  font: inherit;
+  font-size: .58rem;
+  font-weight: 650;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.view-more-popover button:hover { color: var(--ink); background: var(--surface-hover); }
+.view-more-popover button.active { color: var(--accent-hover); background: var(--accent-wash); font-weight: 750; }
+
+@media (max-width: 720px) {
+  /* Sous cette largeur la rangée de vues défile plutôt que de passer à la
+     ligne : c'est la hauteur du haut de page qu'on protège. */
+  .view-switch { overflow-x: auto; scrollbar-width: thin; }
+  .view-switch > .pathology-toggle { flex: 0 0 auto; }
+}

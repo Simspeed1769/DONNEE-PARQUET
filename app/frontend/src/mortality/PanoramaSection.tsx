@@ -101,7 +101,7 @@ export function PanoramaSection({
     </section>
 
     <ChartShell
-      kicker={`Mortalité · ${populationLabel.toLowerCase()}`}
+      kicker={populationLabel}
       title={current.title}
       readings={MORTALITY_READINGS}
       reading={reading}
