@@ -34,8 +34,13 @@ Instructions pour Claude Code sur ce dépôt.
   élevé présentent aussi… ». Toute formulation individuelle (« les agriculteurs
   consomment plus d'IJ ») est interdite dans l'interface, les phrases générées
   et les exports.
-- **Les réserves voyagent.** Réserves méthodologiques et avertissements serveur
-  accompagnent le graphique à l'écran **et** dans l'image exportée.
+- **Les réserves voyagent, à la bonne échelle.** À l'écran, réserves
+  méthodologiques et avertissements serveur accompagnent le graphique **en
+  entier**, sous « Ce que ce graphique ne montre pas ». Dans l'image exportée,
+  c'est leur **nombre et le renvoi** qui voyagent, pas leur texte : un pavé sous
+  un graphique de présentation fait perdre le graphique, mais une image muette
+  laisse croire qu'il n'y avait rien à dire. Une image ne doit jamais donner
+  moins d'avertissement que l'écran — elle peut en donner une forme plus courte.
 - **SQL paramétré uniquement** (motif `cube_where`), jamais de concaténation de
   valeurs utilisateur.
 - **Aucune nouvelle dépendance** (front ou back) sans accord explicite de

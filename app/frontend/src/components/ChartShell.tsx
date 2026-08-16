@@ -194,6 +194,7 @@ export function ChartShell({
               sourceLine={sourceLine}
               filenamePrefix={filenamePrefix}
               buildOption={exportOption}
+              caveatCount={caveats.length}
               disabled={!option}
             />
           ) : null}

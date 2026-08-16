@@ -2,10 +2,16 @@
  *
  *  Copier le seul canevas produirait une image muette — ni titre, ni périmètre,
  *  ni source. On recompose donc une diapositive, mais **sobre** : le périmètre
- *  en surtitre, le titre, le tracé en grand, la source et la date en pied. Les
- *  réserves méthodologiques et la phrase de lecture restent à l'écran, dans
- *  leur tiroir, et ne partent plus dans l'image : celle-ci va dans une
- *  présentation, où un pavé de texte sous le graphique fait perdre le graphique.
+ *  en surtitre, le titre, le tracé en grand, la source et la date en pied.
+ *
+ *  **Ce que deviennent les réserves.** Le principe du dépôt voulait qu'elles
+ *  voyagent en entier dans l'image ; le code les en avait retirées en entier.
+ *  Ni l'un ni l'autre : un pavé de texte sous un graphique de présentation fait
+ *  perdre le graphique, mais une image muette laisse croire qu'il n'y avait
+ *  rien à dire. L'image porte donc **le nombre de réserves et où les lire** —
+ *  une ligne, dans la teinte d'accent, juste au-dessus de la source. Le lecteur
+ *  sait qu'il y a des réserves ; celui qui veut les lire revient à l'outil, où
+ *  elles sont intégrales sous le même intitulé.
  *
  *  Deux règles, valables pour **tous** les écrans :
  *
@@ -40,7 +46,25 @@ export type SlideExport = {
   scope: string;
   /** Mention de source : chaque base porte la sienne. */
   sourceLine?: string;
+  /** Combien de réserves accompagnent cette lecture à l'écran.
+   *
+   *  Le texte des réserves ne part pas dans l'image, leur *existence* si. Zéro
+   *  ou absent : aucune ligne n'est écrite — annoncer « 0 réserve » serait une
+   *  affirmation plus forte que le silence, et fausse. */
+  caveatCount?: number;
 };
+
+/** L'intitulé sous lequel les réserves sont rangées à l'écran.
+ *
+ *  Écrit tel quel dans l'image : celui qui la lit doit retrouver le même mot
+ *  dans l'outil, sinon le renvoi ne renvoie nulle part. */
+const CAVEATS_LABEL = "Ce que ce graphique ne montre pas";
+
+function caveatLine(count: number | undefined): string | null {
+  if (!count || count < 1) return null;
+  const plural = count > 1 ? "réserves méthodologiques accompagnent" : "réserve méthodologique accompagne";
+  return `${count} ${plural} cette lecture — « ${CAVEATS_LABEL} », dans l’outil.`;
+}
 
 function wrap(context: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const lines: string[] = [];
@@ -117,7 +141,10 @@ export async function renderSlide(
     + FOOT_SIZE * 1.4 + 12
     + titleLines.length * (TITLE_SIZE * 1.25)
     + 26;
-  const footHeight = 26 + FOOT_SIZE * 1.5 + PADDING;
+  const caveats = caveatLine(slide.caveatCount);
+  const footHeight = 26
+    + (caveats ? FOOT_SIZE * 1.5 : 0)
+    + FOOT_SIZE * 1.5 + PADDING;
 
   // Tout ce qui reste entre l'en-tête et le pied revient au tracé : c'est lui
   // qu'on est venu chercher.
@@ -152,6 +179,16 @@ export async function renderSlide(
 
   context.drawImage(chart, PADDING, headHeight, inner, chartHeight);
   cursor = headHeight + chartHeight + 26;
+
+  // Le renvoi aux réserves, dans la teinte d'accent : c'est la seule ligne de
+  // l'image qui demande au lecteur d'aller voir ailleurs, elle doit se
+  // remarquer sans peser autant que le titre.
+  if (caveats) {
+    context.fillStyle = tokens.accent;
+    context.font = plain(FOOT_SIZE);
+    context.fillText(caveats, PADDING, cursor);
+    cursor += FOOT_SIZE * 1.5;
+  }
 
   // La source et la date d'export, sur la même ligne : d'où vient l'image, et
   // de quand elle date — une donnée consolidée depuis n'aurait pas les mêmes

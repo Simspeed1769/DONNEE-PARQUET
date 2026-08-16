@@ -743,6 +743,7 @@ export function CompareSection({
               sourceLine={SOURCE_LINE}
               filenamePrefix="damir-comparer"
               buildOption={buildChart}
+              caveatCount={sharedResponse?.warnings.length ?? 0}
               disabled={!chartSeries.length}
             />
             <button type="button" onClick={exportCsv} disabled={!chartSeries.length}>Exporter le CSV</button>

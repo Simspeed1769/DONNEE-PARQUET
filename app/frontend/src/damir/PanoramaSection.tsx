@@ -454,6 +454,7 @@ export function PanoramaSection({
                     .find((item) => item.key === slide.key);
                   return rebuilt?.option ?? slide.option;
                 }}
+                caveatCount={slide.caveats.length + (response?.warnings.length ?? 0)}
                 disabled={!exportable}
               />
             ) : null}

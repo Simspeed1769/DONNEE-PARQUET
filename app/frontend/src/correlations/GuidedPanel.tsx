@@ -294,8 +294,12 @@ export function GuidedPanel({ catalogue }: Props) {
     regionHeld ? "région tenue constante" : null,
   ].filter((part): part is string => Boolean(part)).join(" · ");
 
-  /** Les réserves du serveur, précédées de la garde écologique : c'est celle
-   *  qui doit voyager avec l'image, où personne n'est là pour la rappeler. */
+  /** Les réserves du serveur, précédées de la garde écologique.
+   *
+   *  Elles ne partent pas en toutes lettres dans l'image — un pavé de texte
+   *  sous un graphique de présentation fait perdre le graphique — mais leur
+   *  nombre et le renvoi vers l'outil, si. Cette liste était déclarée ici et
+   *  n'était lue nulle part : l'intention était écrite, pas branchée. */
   const guidedCaveats = [
     "Chaque point est une cellule région × âge × sexe, jamais une personne : un résultat ne se lit pas au niveau individuel.",
     ...(result?.warnings ?? []).map((warning) => warning.text),
@@ -445,6 +449,7 @@ export function GuidedPanel({ catalogue }: Props) {
                 sourceLine={CROSS_SOURCE_LINE}
                 filenamePrefix="croisement-guide"
                 buildOption={(t) => effectsOption(xTerms, t, xTerms[0]?.effect_kind ?? "absolute")}
+                caveatCount={guidedCaveats.length}
               />
             </header>
             <EChart
@@ -471,6 +476,7 @@ export function GuidedPanel({ catalogue }: Props) {
                     sourceLine={CROSS_SOURCE_LINE}
                     filenamePrefix="croisement-guide"
                     buildOption={(t) => scatterOption(result.points, primaryTerm, yLabel, t, null)}
+                    caveatCount={guidedCaveats.length}
                   />
                   <button type="button" onClick={() => exportCells(result.points)}>Exporter le CSV</button>
                 </div>

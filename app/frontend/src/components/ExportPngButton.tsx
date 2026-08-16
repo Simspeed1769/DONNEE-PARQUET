@@ -25,11 +25,14 @@ type Props = {
   /** Fabrique d'options plutôt qu'option toute faite : l'image est re-rendue
    *  avec la palette claire, quel que soit le thème à l'écran. */
   buildOption: (tokens: ChartTokens) => EChartsOption;
+  /** Combien de réserves accompagnent la lecture. L'image en porte le nombre et
+   *  le renvoi, jamais le texte : voir l'en-tête de `exportSlide.ts`. */
+  caveatCount?: number;
   disabled?: boolean;
 };
 
 export function ExportPngButton({
-  defaultTitle, scope, sourceLine, filenamePrefix, buildOption, disabled,
+  defaultTitle, scope, sourceLine, filenamePrefix, buildOption, caveatCount, disabled,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(defaultTitle);
@@ -69,7 +72,7 @@ export function ExportPngButton({
     setBusy(true);
     setNotice(null);
     try {
-      const blob = await renderSlide(buildOption, { title: chosen, scope, sourceLine });
+      const blob = await renderSlide(buildOption, { title: chosen, scope, sourceLine, caveatCount });
       download(blob, chosen, filenamePrefix);
       setOpen(false);
       setNotice("Image enregistrée.");
@@ -99,7 +102,12 @@ export function ExportPngButton({
               onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); void save(); } }}
             />
           </label>
-          <p>Image 16:9, fond clair : le périmètre, le titre, le graphique, la source et la date. Les réserves restent dans l’outil.</p>
+          <p>
+            Image 16:9, fond clair : le périmètre, le titre, le graphique, la source et la date.
+            {caveatCount
+              ? " L’image indique qu’il y a des réserves et où les lire ; leur texte reste dans l’outil."
+              : ""}
+          </p>
           <div className="export-png-actions">
             <button type="button" className="link-button" onClick={() => setOpen(false)}>Annuler</button>
             <button type="button" onClick={() => void save()} disabled={busy}>

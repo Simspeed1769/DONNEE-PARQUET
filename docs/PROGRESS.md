@@ -505,3 +505,27 @@ mais `styles.css` repeignait les panneaux en blanc par-dessus. Décision prise :
   contredisaient. `app/LISEZMOI.md` est nommé référence unique dans `CLAUDE.md`,
   et ses propres renvois au fichier supprimé sont retirés. `MISSION_V6.md`,
   achevée, rejoint `docs/missions/`.
+
+## Bloc 1.5 — les réserves dans l'image : tranché
+
+`CLAUDE.md` disait qu'elles voyagent en entier ; `exportSlide.ts` les avait
+retirées en entier. **Ni l'un ni l'autre.**
+
+- **Décidé.** L'image porte le **nombre** de réserves et **où les lire**, pas
+  leur texte : « 1 réserve méthodologique accompagne cette lecture — “Ce que ce
+  graphique ne montre pas”, dans l'outil. » Une ligne, dans la teinte d'accent,
+  au-dessus de la source. Raison : un pavé sous un graphique de présentation
+  fait perdre le graphique, mais une image muette laisse croire qu'il n'y avait
+  rien à dire. La règle qui reste : *une image ne donne jamais moins
+  d'avertissement que l'écran, elle peut en donner une forme plus courte.*
+- **Fait.** `caveatCount` traverse `ExportPngButton` depuis les quatre points
+  d'appel (ChartShell, Panorama, Comparer, Croisements). Aucune ligne écrite
+  quand il n'y a pas de réserve : annoncer « 0 réserve » serait une affirmation
+  plus forte que le silence, et fausse.
+- **Trouvé au passage.** `GuidedPanel` déclarait `guidedCaveats` avec un
+  commentaire disant que la garde écologique « doit voyager avec l'image » — et
+  la liste n'était lue nulle part. L'intention était écrite, pas branchée ; elle
+  l'est maintenant.
+- **Aligné.** Le principe de `CLAUDE.md` est réécrit pour dire la décision.
+- **Vérifié** sur une image réellement produite : mention au singulier, teinte
+  d'accent, pied non chevauché.
