@@ -5,9 +5,16 @@
  *  se ramène à une pastille ronde de la couleur active, qui bascule au clic et
  *  ne dit son rôle qu'à l'infobulle.
  *
- *  La pastille porte la teinte que la palette donne à une série seule —
- *  `--accent-chart` — et non une couleur écrite ici : elle change donc en même
- *  temps que les graphiques, par la même transition.
+ *  La pastille porte la teinte de tête de la palette — `--accent-chart` — et
+ *  non une couleur écrite ici : elle change donc en même temps que les
+ *  graphiques, par la même transition.
+ *
+ *  Ce que la bascule gouverne : la rampe séquentielle (cartes, cartes de
+ *  chaleur) et l'ordre des teintes catégorielles. Ce qu'elle ne gouverne
+ *  **plus** : la couleur d'une série seule, devenue un graphite d'encre dans
+ *  les deux palettes. Une courbe unique n'encode rien par sa couleur ; lui
+ *  laisser suivre un réglage d'apparence n'avait pas de sens, et le rouge par
+ *  défaut faisait lire une alerte là où il n'y en a pas.
  */
 
 import { usePalette } from "../charts/palette";

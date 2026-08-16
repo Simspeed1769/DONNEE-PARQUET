@@ -11,10 +11,13 @@ export type ChartTokens = {
   line: string;
   grid: string;
   accent: string;
-  /** La teinte d'une série seule au graphique : elle suit la palette choisie
-   *  (rouge par défaut, bleue au besoin) là où l'accent de marque, lui, ne
-   *  bouge jamais. */
+  /** La teinte de tête de la palette choisie — rouge par défaut, bleue au
+   *  besoin. Elle sert la pastille de réglage et ce qui doit s'accorder à la
+   *  palette ; elle n'est plus la couleur d'une série seule. */
   accentChart: string;
+  /** La teinte d'une série **seule** au graphique : un graphite d'encre, la
+   *  même dans les deux palettes. Voir `soloColor`. */
+  plotSolo: string;
   good: string;
   critical: string;
   series: string[];
@@ -51,6 +54,7 @@ export function readTokens(): ChartTokens {
     grid: read(styles, "--grid", "#eceae3"),
     accent: read(styles, "--accent", "#d8383c"),
     accentChart: read(styles, "--accent-chart", "#d8383c"),
+    plotSolo: read(styles, "--plot-solo", "#4a463d"),
     good: read(styles, "--good-text", "#006300"),
     critical: read(styles, "--critical-text", "#a32020"),
     series: Array.from({ length: SERIES_SLOTS }, (_, index) =>
@@ -122,16 +126,23 @@ export function seriesColor(tokens: ChartTokens, index: number, isOther = false)
   return tokens.series[index % tokens.series.length];
 }
 
-/** La teinte d'une série **seule au graphique**.
+/** La teinte d'une série **seule au graphique** : un graphite d'encre.
  *
- *  Une courbe unique n'a personne dont se distinguer : la palette catégorielle
- *  n'y sert à rien, et son premier emplacement n'est qu'un choix arbitraire.
- *  Elle porte donc l'accent de marque, ce qui raccorde les graphiques au reste
- *  de l'application. Dès qu'il y a deux séries, c'est la palette qui reprend la
- *  main : là, la couleur doit distinguer, pas décorer.
+ *  Une courbe unique n'a personne dont se distinguer. La couleur n'y encode
+ *  donc rien — et une couleur qui n'encode rien ne doit rien *suggérer*.
+ *
+ *  Elle portait l'accent de marque, ce qui rendait rouge tout graphique par
+ *  défaut. Dans un contexte de santé et de dépense, le rouge signifie alerte :
+ *  une courbe de remboursements qui monte se lisait comme un problème alors
+ *  qu'elle est neutre. Le graphite ne dit rien, ce qu'on lui demande justement.
+ *
+ *  Le graphite ne suit pas la bascule de palette : celle-ci gouverne ce qui
+ *  code une grandeur (la rampe) et l'ordre des teintes catégorielles, pas
+ *  l'absence de teinte. Dès qu'il y a deux séries, la palette reprend la main :
+ *  là, la couleur doit distinguer.
  */
 export function soloColor(tokens: ChartTokens): string {
-  return tokens.accentChart;
+  return tokens.plotSolo;
 }
 
 /** La teinte d'une série selon qu'elle est seule ou en compagnie. */

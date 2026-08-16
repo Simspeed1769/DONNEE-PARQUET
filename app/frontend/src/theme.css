@@ -5,12 +5,41 @@
  * en inversant le mode clair — ses couleurs de série sont des marches
  * distinctes des mêmes teintes, validées contre la surface sombre.
  *
- * La palette catégorielle passe les six contrôles de la méthode dataviz dans
- * les deux modes (bande de clarté, plancher de chroma, séparation
- * daltonienne, plancher vision normale, contraste). En mode clair, trois
- * teintes passent sous 3:1 : la règle de secours s'applique — l'interface
- * expose toujours les étiquettes directes et la vue tableau, si bien que la
- * couleur ne porte jamais seule l'information.
+ * ── La palette catégorielle, mesurée ───────────────────────────────────────
+ *
+ * Contrôles de la méthode dataviz, rejoués après la hiérarchisation. Le test
+ * « adjacent » est celui qui vaut pour les formes du produit (courbes, barres,
+ * empilements) ; « toutes paires » est le test strict, celui qui dit ce que
+ * vaut un graphique à six ou huit séries simultanées.
+ *
+ *                          CLAIR            SOMBRE
+ *   bande de clarté        PASS             PASS
+ *   plancher de chroma     PASS             PASS
+ *   CVD, adjacent          PASS  8.2        PASS  8.8
+ *   vision normale, adj.   PASS 17.7        PASS 16.2
+ *   contraste              relief (3)       PASS
+ *   CVD, toutes paires     ÉCHEC 3.9        ÉCHEC 1.2
+ *   vision nrm., ttes p.   PASS 15.9        ÉCHEC  9.9
+ *
+ * **Ce que l'échec « toutes paires » veut dire, et pourquoi il reste.** Huit
+ * teintes catégorielles simultanément distinguables n'existent pas : le
+ * plafond est atteint dès le trio de tête, où rouge et vert tombent à ΔE 6,9
+ * en deutéranopie. Aucun choix sur les rangs suivants ne le relève. La réponse
+ * n'est donc pas une meilleure teinte, c'est de ne pas faire porter à la
+ * couleur seule ce qu'elle ne peut pas porter : étiquettes directes, vue
+ * tableau, légende, et repli du delà en « Reste du périmètre ». C'est aussi
+ * pourquoi les rangs 4 à 8 reculent — chroma décroissant, clarté étalée : la
+ * palette dit « trois séries se lisent, les suivantes s'accompagnent ».
+ *
+ * Le progrès mesuré porte exactement sur le défaut constaté — la confusion à
+ * six séries en vision normale : 7,1 → 15,9 en clair, 7,1 → 9,9 en sombre. La
+ * bande de clarté du mode sombre (0,48–0,67 contre 0,43–0,77) laisse deux fois
+ * moins de place pour étaler : c'est la raison du reste de l'écart, et elle
+ * n'est pas contournable sans sortir de la bande ou perdre le contraste 3:1.
+ *
+ * En mode clair, trois teintes passent sous 3:1 : la règle de secours
+ * s'applique — l'interface expose toujours les étiquettes directes et la vue
+ * tableau, si bien que la couleur ne porte jamais seule l'information.
  */
 
 :root {
@@ -72,15 +101,30 @@
   /* — Anneau de focus — */
   --focus-ring: rgba(91, 12, 2, .25);
 
-  /* — Palette de séries (ordre fixe, jamais recyclé) — */
+  /* — La teinte d'une série SEULE au graphique — graphite d'encre.
+     Une courbe unique n'a personne dont se distinguer : elle ne porte aucune
+     information catégorielle, donc elle ne doit porter aucune teinte. Elle
+     portait l'accent de marque, si bien que tous les graphiques par défaut
+     étaient rouges — et dans un contexte de santé et de dépense, le rouge
+     signifie alerte : une courbe qui monte se lisait comme un problème alors
+     qu'elle est neutre. Le graphite ne dit rien, ce qui est exactement ce
+     qu'on lui demande. Le rouge redevient l'accent de marque : amorces,
+     titres, états actifs — jamais le tracé par défaut. */
+  --plot-solo: #4a463d;
+
+  /* — Palette de séries (ordre fixe, jamais recyclé) —
+     Trois rangs à pleine saturation, puis une récession : le chroma décroît
+     de 0,135 à 0,108 et la clarté s'étale. Les huit rangs étaient auparavant
+     saturés à clarté comparable — lisibles à deux ou trois séries, confus à
+     six. Voir l'en-tête du fichier pour les mesures. */
   --series-1: #e34948;
   --series-2: #2a78d6;
   --series-3: #1baf7a;
-  --series-4: #eda100;
-  --series-5: #e87ba4;
-  --series-6: #008300;
-  --series-7: #4a3aa7;
-  --series-8: #eb6834;
+  --series-4: #d2942c;
+  --series-5: #f590b5;
+  --series-6: #23621e;
+  --series-7: #4c478e;
+  --series-8: #8c4326;
   --series-other: #9a968c;
 
   /* — Rampe séquentielle (une teinte, clair → foncé) — */
@@ -194,14 +238,17 @@
 
     --focus-ring: rgba(240, 87, 91, .42);
 
+    /* Graphite clair : le même rôle, retourné contre la surface sombre. */
+    --plot-solo: #d7d3c8;
+
     --series-1: #e66767;
     --series-2: #3987e5;
     --series-3: #199e70;
-    --series-4: #c98500;
-    --series-5: #d55181;
-    --series-6: #008300;
-    --series-7: #9085e9;
-    --series-8: #d95926;
+    --series-4: #be7800;
+    --series-5: #be5478;
+    --series-6: #377e31;
+    --series-7: #685eb0;
+    --series-8: #a45032;
     --series-other: #6f6c64;
 
     --ramp-1: #0d366b;
@@ -277,14 +324,17 @@
 
   --focus-ring: rgba(240, 87, 91, .42);
 
+  /* Graphite clair : le même rôle, retourné contre la surface sombre. */
+  --plot-solo: #d7d3c8;
+
   --series-1: #e66767;
   --series-2: #3987e5;
   --series-3: #199e70;
-  --series-4: #c98500;
-  --series-5: #d55181;
-  --series-6: #008300;
-  --series-7: #9085e9;
-  --series-8: #d95926;
+  --series-4: #be7800;
+  --series-5: #be5478;
+  --series-6: #377e31;
+  --series-7: #685eb0;
+  --series-8: #a45032;
   --series-other: #6f6c64;
 
   --ramp-1: #0d366b;

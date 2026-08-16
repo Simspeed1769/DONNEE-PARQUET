@@ -529,3 +529,37 @@ retirées en entier. **Ni l'un ni l'autre.**
 - **Aligné.** Le principe de `CLAUDE.md` est réécrit pour dire la décision.
 - **Vérifié** sur une image réellement produite : mention au singulier, teinte
   d'accent, pied non chevauché.
+
+## Bloc 1.8 — le rouge n'est plus la couleur par défaut d'un tracé
+
+- **Décidé : graphite d'encre**, pas bleu profond. Le bleu serait entré en
+  collision avec `--series-2` et avec la rampe bleue ; le graphite ne collide
+  avec rien. Une série seule n'encode aucune catégorie : elle ne doit porter
+  aucune teinte. Nouveau jeton `--plot-solo` (#4a463d clair, #d7d3c8 sombre),
+  lu par `soloColor()`. Contrastes mesurés : 9,4:1 sur blanc, 12,1:1 sur la
+  surface sombre.
+- **Le graphite ne suit pas la bascule de palette.** Celle-ci gouverne ce qui
+  code une grandeur — la rampe — et l'ordre des teintes catégorielles, pas
+  l'absence de teinte. Le bouton reste, en réglage secondaire, comme demandé.
+- **Palette hiérarchisée.** Rangs 1-3 inchangés, à pleine saturation ; rangs
+  4-8 en récession, chroma de 0,135 à 0,108 et clarté étalée.
+- **Les six contrôles, rejoués dans les deux modes** (tableau complet en tête de
+  `theme.css`). Le progrès porte exactement sur le défaut constaté — la
+  confusion à six séries en vision normale, toutes paires : **7,1 → 15,9 en
+  clair** (l'échec devient un succès), **7,1 → 9,9 en sombre**. Les cinq
+  contrôles « adjacent », ceux qui valent pour les courbes et les barres,
+  restent au vert dans les deux modes, contraste 3:1 compris en sombre.
+- **Non résolu, et non résoluble : la séparation daltonienne toutes paires.**
+  Le plafond est atteint dès le trio de tête — rouge et vert tombent à ΔE 6,9
+  en deutéranopie — et aucun choix sur les rangs suivants ne le relève. Huit
+  teintes catégorielles simultanément distinguables n'existent pas. La réponse
+  n'est pas une meilleure teinte : c'est de ne pas faire porter à la couleur
+  seule ce qu'elle ne peut pas porter — étiquettes directes, vue tableau,
+  légende, repli en « Reste du périmètre », tous déjà présents.
+- **Écarté.** Retoucher les rangs 1-3 : cela aurait repeint tous les graphiques
+  existants pour un gain nul sur le plafond, qui vient de la paire rouge/vert
+  elle-même.
+- **Écart de méthode assumé.** La bande de clarté du mode sombre (0,48–0,67
+  contre 0,43–0,77) laisse deux fois moins de place pour étaler la clarté :
+  c'est la raison du reste de l'écart entre les deux modes, et elle n'est pas
+  contournable sans sortir de la bande ou perdre le contraste 3:1.
