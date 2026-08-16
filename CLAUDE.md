@@ -4,10 +4,14 @@ Instructions pour Claude Code sur ce dépôt.
 
 ## Où se trouve quoi
 
-- `MISSION_V6.md` — la feuille de route **en cours**, à la racine. Les missions
-  achevées sont archivées dans `docs/missions/`.
+- `MISSION_3_BLOCS.md` — la feuille de route **en cours**, à la racine. Les
+  missions achevées sont archivées dans `docs/missions/`.
+- **`app/LISEZMOI.md` — la référence unique sur l'état du code.** Audit vérifié
+  par lecture et par exécution : technologies, données, routes, écrans, règles,
+  défauts connus. En cas de doute sur ce que fait l'application, c'est ce
+  document qui fait foi, pas la mémoire. (Il remplace `docs/ETAT_DES_LIEUX.md`,
+  supprimé : deux photos du code se contredisaient.)
 - `docs/PROGRESS.md` — le journal des phases livrées : fait / écarté / décisions.
-- `docs/ETAT_DES_LIEUX.md` — la photo du code au 9 août 2026.
 - `DESIGN.md`, `PRODUCT.md` — fichiers de convention lus par l'outillage de
   design ; ils restent à la racine pour cette raison.
 - `app/` — le produit (`backend/`, `frontend/`). `data/` — les cubes.

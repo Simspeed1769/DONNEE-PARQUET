@@ -484,3 +484,24 @@ mais `styles.css` repeignait les panneaux en blanc par-dessus. Décision prise :
   `#4d8b7a` au `--good`. Même rôle, teinte du système plutôt que teinte locale.
 - **Non vérifié** : le rendu sous 1272 px, dans les deux thèmes — c'est
   l'objet du point 1.2, pas de celui-ci.
+
+## Bloc 1, points 1.3 · 1.4 · 1.6 · 1.9 — les listes, les chaînes, le code mort
+
+- **1.3 fait.** `logical_names` est dérivée des fichiers présents plutôt que
+  tenue à la main : la reprise d'asset périmé couvre désormais tous les écrans,
+  y compris ceux qui n'existent pas encore. Cinq tests neufs, dont le cas d'une
+  empreinte Vite contenant elle-même un tiret et celui de `vendor-react` qui ne
+  doit jamais se rabattre sur `vendor`.
+- **1.4 fait.** `lifespan` remplace `on_event` (plus aucun warning) ; le compte
+  des sources vient du catalogue ; `DESIGN.md` décrit deux sections DAMIR et le
+  tiroir des séries à la place de `.free-series` et `.scope-editor`, disparus.
+- **1.6 fait.** `AdvancedCross.tsx` supprimé (673 l.), avec `runCorrelation` et
+  `POST /api/correlations`, devenus sans appelant.
+- **1.6 écarté, volontairement.** `correlate()` reste dans `correlations.py`
+  sans appelant : elle est seule à employer `statistics.py`, et c'est le point
+  2.2 qui décide du sort de ce module — il prévoit explicitement ce nettoyage
+  « après 1.6 ».
+- **1.9 fait.** `docs/ETAT_DES_LIEUX.md` supprimé : deux photos du code se
+  contredisaient. `app/LISEZMOI.md` est nommé référence unique dans `CLAUDE.md`,
+  et ses propres renvois au fichier supprimé sont retirés. `MISSION_V6.md`,
+  achevée, rejoint `docs/missions/`.
