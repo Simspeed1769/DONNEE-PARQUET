@@ -111,7 +111,12 @@ a { color: inherit; text-decoration: none; }
 .app-shell.sidebar-collapsed .main-content { width: calc(100% - 76px); margin-left: 76px; }
 
 .content-wrap { width: min(1480px, 100%); margin: 0 auto; padding: 37px 36px 50px; }
-.hero { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
+/* `flex-wrap` : l'en-tête de page tient un titre à gauche et des actions à
+   droite, et il était en `nowrap`. Sous 790 px, les deux boutons d'export
+   d'Extraire sortaient de 138 px par la droite et faisaient défiler la page
+   entière. Passer à la ligne est le comportement juste pour tous les écrans —
+   c'est la cause, pas l'instance. */
+.hero { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 14px; margin-bottom: 25px; }
 .eyebrow { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; color: var(--ink-muted); font-size: .68rem; font-weight: 650; letter-spacing: .045em; text-transform: uppercase; }
 .eyebrow span { padding: 4px 8px; border-radius: 20px; color: var(--red-dark); background: var(--accent-wash); font-size: .61rem; }
 .hero h1 { margin: 0; color: var(--ink); font-size: clamp(1.8rem, 2.7vw, 2.45rem); line-height: 1.12; letter-spacing: -.038em; }

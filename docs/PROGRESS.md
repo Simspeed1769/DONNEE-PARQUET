@@ -594,3 +594,46 @@ Sur Comparer, six bandes s'empilaient avant le tracé. Trois sont parties.
   pour un gain que le dédoublonnage des amorces obtient déjà.
 - **Rien de fonctionnel n'a disparu** : les huit axes de comparaison et les dix
   vues restent tous atteignables, seule la densité change.
+
+## Bloc 1.2 — la revue responsive, enfin faite
+
+Signalée deux fois comme « non vérifiée ». Faite aux sept largeurs (1400 · 1272
+· 1240 · 1024 · 860 · 720 · 620), sur les neuf écrans, dans les deux thèmes.
+
+**Méthode.** La fenêtre Chrome étant maximisée, elle refuse de rétrécir sous la
+largeur de l'écran (1272 px CSS ici) : les redimensionnements réussissaient en
+apparence sans rien changer. L'application est donc chargée dans une **iframe**
+dont on fixe la largeur — les media queries s'y évaluent sur la largeur de
+l'iframe, ce qui donne un contrôle exact **et** l'accès aux largeurs supérieures
+à celle de l'écran. Une sonde mesure ensuite trois choses : la page qui déborde,
+un élément qui sort de son conteneur, un texte rogné sans ellipse ni défilement.
+Regarder neuf écrans à sept largeurs à l'œil aurait laissé passer les 2 px.
+
+**Trois défauts trouvés et corrigés :**
+
+1. **Le panneau des listes multiples sortait de l'écran** dès 1240 px. Il était
+   tendu `left: 0; right: 0` avec 240 px de largeur minimale : un champ plus
+   étroit le faisait grandir vers la droite, et sur Territoire / Âge / Sexe il
+   passait le bord. Il est désormais ancré à droite — tous les sélecteurs
+   multiples de la barre vivent dans sa moitié droite.
+2. **Régression que le point 1.7 venait d'introduire** : la grille à sept
+   colonnes de la barre de Comparer a une spécificité supérieure aux paliers
+   existants, qui ne la rattrapaient donc plus. La page défilait
+   horizontalement de 59 px à 1024 et de 223 px à 860. Les paliers citent
+   maintenant la variante.
+3. **Le double de mesure du bandeau « Ce que je compare »** était en
+   `position: absolute` : invisible, mais il **compte dans le débordement
+   défilable de son ancêtre**, et large de `max-content` il faisait défiler la
+   page entière. Passé en `fixed`, il n'entre plus dans cette zone et mesure
+   toujours aussi juste.
+4. **Les boutons d'export d'Extraire** sortaient de 138 px sous 790 px :
+   `.hero` était en `nowrap`. Il passe à la ligne — c'est la cause, partagée par
+   tous les écrans, pas l'instance.
+
+- **Aucune police n'a été réduite** : les quatre correctifs portent sur
+  l'ancrage, la spécificité, le mode de positionnement et le retour à la ligne.
+- **Résiduel accepté** : 2 px de débordement sur Extraire à 860 px, dans le
+  bruit d'arrondi d'un affichage à dpr 1,5. Invisible, sans barre de défilement.
+- **Faux positif consigné** : la sonde signale le `✕` des puces de comparaison
+  comme rogné de 11 px. C'est sa cible tactile de 44 px, volontairement plus
+  large que le bouton de 22 px — à ne pas « corriger » au prochain passage.

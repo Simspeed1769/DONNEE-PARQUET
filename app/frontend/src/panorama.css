@@ -120,9 +120,16 @@
   position: absolute;
   z-index: 40;
   top: calc(100% + 5px);
+  /* Ancré à **droite**, et non tendu entre les deux bords.
+     Avec `left: 0; right: 0` et une largeur minimale de 240 px, un champ plus
+     étroit que 240 px voyait son panneau grandir vers la droite : sur les
+     champs de fin de rangée — Territoire, Âge, Sexe — il sortait de l'écran
+     dès 1240 px. Tous les sélecteurs multiples de la barre vivent dans sa
+     moitié droite : ouvrir vers la gauche est donc juste pour tous. */
   right: 0;
-  left: 0;
+  left: auto;
   min-width: 240px;
+  max-width: min(320px, 86vw);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
@@ -402,21 +409,27 @@
 
 @media (max-width: 1240px) {
   .scope-bar-service { grid-template-columns: 1fr 1fr; }
-  .scope-bar-scope { grid-template-columns: 1fr 1fr 1fr; }
+  .scope-bar-scope,
+  /* La variante de Comparer a une spécificité supérieure : sans la citer ici,
+     elle gardait ses sept colonnes jusqu'en dessous de 900 px et poussait la
+     page à défiler horizontalement. */
+  .scope-bar-compare .scope-bar-scope { grid-template-columns: 1fr 1fr 1fr; }
   .scope-bar-trailing { grid-column: 1 / -1; justify-content: flex-start; }
   .scope-bar-drawer-panel { right: auto; left: 0; }
 }
 
 @media (max-width: 860px) {
   .scope-bar-service,
-  .scope-bar-scope { grid-template-columns: 1fr 1fr; }
+  .scope-bar-scope,
+  .scope-bar-compare .scope-bar-scope { grid-template-columns: 1fr 1fr; }
   .damir-stage-head { align-items: flex-start; flex-direction: column; }
   .damir-views { align-self: stretch; overflow-x: auto; }
 }
 
 @media (max-width: 620px) {
   .scope-bar-service,
-  .scope-bar-scope { grid-template-columns: 1fr; }
+  .scope-bar-scope,
+  .scope-bar-compare .scope-bar-scope { grid-template-columns: 1fr; }
   .damir-stage-foot { align-items: flex-start; flex-direction: column; }
 }
 

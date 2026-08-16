@@ -275,8 +275,15 @@
    décide ce qui tient sur la ligne. Mesurer la rangée visible faisait osciller
    le rendu : une puce repliée n'a plus de largeur, la mesure suivante concluait
    que tout tenait, et ainsi de suite jusqu'à figer l'onglet. */
+/* Le double invisible qui sert à mesurer combien de puces tiennent sur la
+   ligne. Il est en `fixed` et non en `absolute` : un élément absolu, même
+   invisible, **compte dans le débordement défilable de son ancêtre**. Large de
+   `max-content`, il faisait donc défiler la page entière vers la droite dès
+   que les puces dépassaient la largeur disponible — 223 px de trop à 860 px de
+   large. Un élément fixe, lui, n'entre pas dans cette zone, et les largeurs
+   mesurées sur ses enfants restent exactement les mêmes. */
 .compare-rail-ghost {
-  position: absolute;
+  position: fixed;
   flex-wrap: nowrap;
   top: 0;
   left: 0;
