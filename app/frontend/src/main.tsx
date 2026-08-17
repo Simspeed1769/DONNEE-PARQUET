@@ -5,6 +5,7 @@ import { applyStoredPalette } from "./charts/palette";
 import "./theme.css";
 import "./styles.css";
 import "./explore.css";
+import "./seriesPicker.css";
 import "./panorama.css";
 import "./correlations.css";
 import "./pivot.css";

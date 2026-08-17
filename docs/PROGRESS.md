@@ -741,3 +741,35 @@ Le motif CSV + Excel était recopié **cinq fois** dans `main.py`, pour plus de
   écrit `""` pour distinguer un champ vide d'une ligne vide. Artefact du
   format, pas du produit — le test porte donc sur deux colonnes, comme la
   réalité.
+
+## Bloc 2.4 — découper les fichiers volumineux
+
+Un fichier par commit, sans changer de comportement. Six découpages.
+
+| Fichier | Avant | Après | Nouveau fichier |
+|---|---:|---:|---|
+| `correlations.py` | 1 200 | 706 | `regression.py` (360) |
+| `main.py` | 1 189 | 680 | `repository.py` (342) + `exports.py` (2.3) |
+| `studio.py` | 1 089 | 320 | *(vidé au point 2.1)* |
+| `buildOption.ts` | 887 | 280 | `chartBase.ts` (171) + `chartForms.ts` (512) |
+| `explore.css` | 891 | 587 | `seriesPicker.css` (314) |
+| `damir/CompareSection.tsx` | 797 | 724 | `compareModel.ts` (100) |
+| `panorama/charts.ts` | 730 | 363 | `territoryCharts.ts` (376) |
+| `styles.css` | 2 228 | 1 597 | *(page « Repères » retirée)* |
+
+- **Deux fichiers restent au-dessus de 700**, à 1 % et 3 % du seuil :
+  `correlations.py` (706) et `CompareSection.tsx` (724). Pour le second, ce qui
+  reste sont des fermetures sur l'état du composant — construction du tableau,
+  export CSV, fabrique d'option — et les extraire demanderait des helpers à six
+  paramètres. Le dépôt préfère une duplication lisible à une abstraction
+  prématurée ; le fichier est désormais organisé, ce qui était le but.
+- **`styles.css` n'a pas été réécrit en une passe**, comme demandé. Une seule
+  page a été migrée : celle de « Repères », que le point 2.1 venait de rendre
+  morte — 629 lignes et 166 couleurs en dur, parties avec l'écran. Les
+  suivantes le seront de la même façon.
+- **Vérifié à l'écran, pas seulement au compilateur.** Un découpage de
+  graphiques peut casser un rendu en silence : le classement, la carte de
+  chaleur, la carte de France et la lecture Âge ont été comparés avant/après
+  sur la même adresse. Une alerte au passage — la carte de chaleur a semblé
+  bloquer après le découpage ; en remisant les modifications et en rechargeant,
+  elle bloquait aussi *sans* elles. Incident d'onglet, pas régression.
