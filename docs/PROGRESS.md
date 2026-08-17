@@ -876,3 +876,46 @@ contrarient.
   poste — aucun appel réseau. Le document sépare donc explicitement les bornes
   mesurées de la colonne « à vérifier chez le producteur », plutôt que de
   présenter une mémoire comme un constat.
+
+## v6 · Bloc 3 point 3.3 — Les trois pièges, audités ; l'ingestion, bloquée
+
+- **Ingestion impossible, et ce n'est pas un renoncement de méthode.**
+  `data/source/` ne contient que le classeur Insee de population, déjà ingéré
+  (1975–2026). Il n'y a aucune donnée DAMIR supplémentaire à ajouter. Ce qui
+  est livré est donc l'audit que le point demande de faire **avant** toute
+  ingestion : `tools/audit_pieges.py` et `docs/INGESTION.md`.
+- **Piège 1, réforme régionale de 2016 : inexistant dans ce fichier.** Le cube
+  emploie les mêmes 14 codes de 2014 à 2025, ceux d'après la réforme. Un jeu de
+  codes identique ne prouvant rien, le contrôle porte sur la continuité des
+  parts : plus grand écart au passage 2015 → 2016, **0,370 pt**, et il est sur
+  « Non renseignée », pas sur une région. Un reclassement raté déplacerait des
+  points entiers.
+- **Trouvé à la place : la région « Non renseignée » pèse 17,7 % en 2024**, avec
+  une dérive de 14,5 % en 2015. Ce n'est pas une corruption — 73 % en sont des
+  Indemnités Journalières, dont 90,5 % n'ont pas de région, une prestation en
+  espèces n'ayant pas de lieu de soins. Mais le **classement l'affiche** (en
+  tête, devant l'Île-de-France, vérifié) là où **la carte ne le peut pas** :
+  une carte DAMIR représente 82 % du total sans le dire.
+- **Piège 2, nomenclature `prs_nat` : couverture intégrale.** Zéro code
+  orphelin sur douze ans, le repli `COALESCE(…, 'Autres')` ne se déclenche
+  jamais (0,0000 % chaque année). Mais il est **dormant, pas mort** : la
+  nomenclature gagne **36 à 90 codes par an**. Une année ingérée sans extension
+  préalable de la transco en enverrait autant vers « Autres », sans erreur.
+- **Piège 3, révisions CIM : sans objet sur la période, mais le contrôle usuel
+  est le mauvais.** 86 causes strictement identiques sur dix millésimes. Or les
+  identifiants ne sont pas des codes CIM mais des **rangs** (`cause_001`…) : si
+  un millésime insère une ligne, le rang 42 change de maladie, le jeu de codes
+  reste d'apparence identique, et rien ne le détecte. Consigne : apparier sur
+  les **libellés**.
+- **Quatrième piège, non prévu, trouvé en vérifiant les autres.** Les
+  Pathologies portent leurs marges **dans** leurs dimensions (`tous sexes` à
+  côté de `hommes`/`femmes` — ratio mesuré 1,000 —, `tsage`, `dept 999`,
+  `region 99`). Une somme naïve y compte double. Vérifié que le produit ne s'y
+  trompe pas : il sélectionne la marge et emploie `MAX(ntop)`, jamais `SUM`.
+  Un millésime livré sans ses marges rendrait des totaux vides sans lever
+  d'erreur — d'où un contrôle dédié dans le script.
+- **Écarté** : une table de passage 22 → 13 régions (mesurée inutile, elle
+  serait du code non exercé) · un correctif au poids du 99 (ce serait inventer
+  un territoire) · une table CIM-9 → CIM-10 (sans objet à partir de 2015) ·
+  l'avertissement de carte sur le 99, réel mais relevant de l'interface et non
+  d'un point d'ingestion — consigné en reste à faire.
