@@ -43,13 +43,15 @@ import {
   facetOrder, mapReading, periodValue, profileOf, shareOf, yearValues,
   type PanoramaResponse,
 } from "./model";
+import { decompose, decomposable } from "./decomposition";
+import { bridgeOption, posteOption } from "./decompositionChart";
 
-export type SlideKey = "evolution" | "territory" | "age" | "sex";
+export type SlideKey = "evolution" | "territory" | "age" | "sex" | "decomposition";
 
 /** Toutes les formes que le panorama sait dessiner, tous écrans confondus.
  *  Chaque lecture n'en expose qu'un sous-ensemble, et seulement celles que sa
  *  donnée autorise. */
-export type FormKey = SeriesForm | TerritoryForm | AgeForm | "pie";
+export type FormKey = SeriesForm | TerritoryForm | AgeForm | "pie" | "bridge" | "poste";
 
 export type FormOption = { key: FormKey; label: string };
 
@@ -131,6 +133,7 @@ export function buildSlides(input: SlideInput): Slide[] {
     territorySlide(input),
     ageSlide(input),
     sexSlide(input),
+    decompositionSlide(input),
   ];
 }
 
@@ -560,6 +563,103 @@ function sexSlide({ response, measure, tokens, consolidatedThrough,
     ariaLabel: `${measure.label} par sexe et par année`,
     height: 430,
     empty,
+  };
+}
+
+/* — 5. Décomposition : d'où vient l'écart — */
+
+/** L'écart entre la première et la dernière année, séparé en ses deux causes.
+ *
+ *  C'est la seule lecture du panorama qui ne décrive pas un état mais une
+ *  **cause**. Elle ne porte donc pas sur les sujets choisis mais sur les grands
+ *  postes du périmètre : « d'où vient la hausse » se répond par poste, jamais
+ *  par prestation isolée, faute de quoi la réponse tient en une ligne.
+ */
+function decompositionSlide({ response, measure, tokens, consolidatedThrough,
+                              completenessByYear, forms }: SlideInput): Slide {
+  const { years } = response;
+  const period = `${years[0]}–${years.at(-1)}`;
+  const offered: FormOption[] = [
+    { key: "bridge", label: "Cascade" },
+    { key: "poste", label: "Par poste" },
+  ];
+
+  const empty = (reason: string): Slide => ({
+    key: "decomposition",
+    nav: "Décomposition",
+    title: `D'où vient l'écart de ${lower(measure.label)}, ${period}`,
+    caveats: [],
+    forms: [],
+    form: "bridge",
+    option: {},
+    table: { columns: [], rows: [] },
+    ariaLabel: "Décomposition indisponible",
+    height: 430,
+    empty: reason,
+  });
+
+  // Une mesure qui n'est pas un montant additif n'est pas un `q × c`. La
+  // lecture n'est alors pas offerte — elle n'est pas offerte grisée.
+  if (!decomposable(measure)) {
+    return empty(
+      `${measure.label} n'est pas un montant : un volume et un coût moyen ne s'en déduisent pas. `
+      + "Choisissez une mesure en euros pour lire d'où vient l'écart.",
+    );
+  }
+  if (years.length < 2) {
+    return empty("Une seule année dans la période : il n'y a pas d'écart à décomposer.");
+  }
+
+  const buckets = response.reference.grand_post ?? [];
+  const decomposition = buckets.length ? decompose(buckets, measure, years) : null;
+  if (!decomposition) {
+    return empty("Aucun poste du périmètre ne déclare de quantité : le coût moyen n'y est pas défini.");
+  }
+
+  const form = resolveForm(offered, forms.decomposition);
+
+  const caveats: string[] = [
+    "L'effet de structure est hors de cette lecture. À l'intérieur d'un poste, un "
+    + "report vers des prestations plus chères s'y lit comme un effet coût, alors "
+    + "que le tarif de chaque prestation n'a pas bougé.",
+    "Les quantités ne sont pas homogènes entre prestations — une boîte, une journée "
+    + "et un acte ne s'additionnent pas. C'est pourquoi la décomposition se fait "
+    + "poste par poste et jamais sur un total.",
+  ];
+  if (decomposition.excluded.length) {
+    caveats.push(
+      `${decomposition.excluded.length} poste${decomposition.excluded.length > 1 ? "s" : ""} `
+      + `hors décomposition : ${decomposition.excluded.map((item) => `${item.label} (${item.reason})`).join(", ")}. `
+      + "Leur écart est porté par une marche distincte plutôt que réparti sur les autres.",
+    );
+  }
+  const consolidation = consolidationCaveat(years, consolidatedThrough, completenessByYear);
+  if (consolidation) caveats.push(consolidation);
+
+  return {
+    key: "decomposition",
+    nav: "Décomposition",
+    title: `D'où vient l'écart de ${lower(measure.label)}, ${period}`,
+    caveats,
+    forms: offered,
+    form,
+    option: form === "poste"
+      ? posteOption(decomposition, measure.kind, tokens)
+      : bridgeOption(decomposition, measure.kind, tokens),
+    table: {
+      columns: ["Grand poste", String(years[0]), String(years.at(-1)), "Effet volume", "Effet coût moyen", "Écart"],
+      rows: decomposition.postes.map((poste) => [
+        poste.label,
+        formatValue(poste.from, measure.kind),
+        formatValue(poste.to, measure.kind),
+        formatValue(poste.volume, measure.kind, true),
+        formatValue(poste.cost, measure.kind, true),
+        formatValue(poste.delta, measure.kind, true),
+      ]),
+    },
+    ariaLabel: `Décomposition de l'écart de ${lower(measure.label)} en effet volume et effet coût moyen`,
+    height: 430,
+    empty: null,
   };
 }
 

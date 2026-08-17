@@ -962,3 +962,40 @@ contrarient.
   et le constat est écrit dans le code. Le signal textuel existe ailleurs — la
   réserve nomme l'exercice et chiffre son taux — et c'est lui qui voyage dans
   le PNG.
+
+## v6 · Bloc 3 point 3.5 — D'où vient l'écart : volume et coût moyen
+
+- **Une cinquième lecture au Panorama**, la seule qui ne décrive pas un état
+  mais une **cause**. Un montant qui progresse de 4 % peut recouvrir deux
+  histoires opposées — davantage d'actes au même prix, ou autant d'actes plus
+  chers — et la décision n'est pas la même.
+- **L'identité employée est la forme symétrique**, `Δq·(c₀+c₁)/2` et
+  `Δc·(q₀+q₁)/2`, et non la forme naïve. La naïve laisse un terme croisé
+  `Δq·Δc` qui n'appartient à personne ; la symétrique somme exactement à
+  `q₁c₁ − q₀c₀`. Ce n'est pas une élégance : une cascade dont les marches ne
+  rejoignent pas l'arrivée est une cascade fausse.
+- **Ce que ça donne, 2015 → 2024** : 107,01 Md € · effet volume **+22,12 Md €**
+  · effet coût moyen **+18,15 Md €** · 147,09 Md €. Par poste : Pharmacie
+  +9,42 Md €, Radios +7,58, Indemnités Journalières +7,51.
+- **Aucune requête supplémentaire.** `grand_post` rejoint les facettes de la
+  requête panorama existante ; le serveur balaie déjà toutes les facettes en une
+  passe (`_facet_rows`), précisément pour ne pas relire le cube plusieurs fois.
+- **Une donnée absente reste absente.** Trois postes ne sont pas décomposables —
+  Autres et Transports (montant négatif : un coût moyen négatif n'est pas un
+  coût), Codes réservés (aucune quantité). Ils sont **nommés en réserve** et
+  leur écart porté par une marche distincte, jamais réparti sur les autres ni
+  mis à zéro.
+- **La lecture n'est pas offerte sur une mesure qui n'est pas un montant.** Un
+  taux n'est pas un `q × c` : la lecture affiche pourquoi, elle n'est pas
+  proposée grisée.
+- **Défaut trouvé à l'écran : `LegendComponent` n'est pas enregistré** dans
+  `EChart.tsx` — tout le produit emploie des légendes HTML, que le panorama ne
+  dessine pas. Ma première version « Par poste » posait deux barres par poste et
+  une clé `legend` qui était une configuration morte ; les étiquettes directes
+  de repli se chevauchaient à quatorze pixels d'écart. La forme est devenue
+  **une barre nette par poste**, où la couleur porte un signe et non une
+  identité : plus de légende nécessaire. Le partage volume/coût est au survol et
+  dans le tableau, là où on le cherche une fois le poste repéré.
+- **Écarté** : l'effet de structure, hors périmètre par la mission — un report
+  vers des prestations plus chères au sein d'un poste s'y lit comme un effet
+  coût. C'est la limite principale, énoncée en première réserve.

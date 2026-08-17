@@ -50,8 +50,14 @@ export type SectionProps = {
 /** Huit sujets au plus : c'est la borne du serveur, et celle au-delà de laquelle
  *  la palette catégorielle ne sépare plus les teintes de façon fiable. */
 const MAX_SUBJECTS = 8;
-const FACETS = ["region", "age", "sex"];
-const SLIDE_KEYS: SlideKey[] = ["evolution", "territory", "age", "sex"];
+/** `grand_post` n'alimente aucune lecture d'état : il sert à la Décomposition.
+ *
+ *  Il est demandé **dans la même requête** et non par un appel séparé, parce
+ *  que le serveur balaie toutes les facettes en une passe (`_facet_rows`) —
+ *  interroger facette par facette relirait le cube autant de fois. La règle du
+ *  point 3.5 est tenue : aucune requête supplémentaire. */
+const FACETS = ["region", "age", "sex", "grand_post"];
+const SLIDE_KEYS: SlideKey[] = ["evolution", "territory", "age", "sex", "decomposition"];
 
 /** Les formes retenues par lecture voyagent dans l'adresse : une analyse
  *  partagée doit revenir sous la forme sous laquelle elle a été composée. */
