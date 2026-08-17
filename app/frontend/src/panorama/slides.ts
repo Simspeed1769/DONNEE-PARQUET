@@ -32,9 +32,13 @@ import { pieOption } from "../charts/buildOption";
 import { formatValue } from "../utils";
 import type { ExploreMeasure } from "../explore/model";
 import {
-  ageOption, seriesOption, sexCompareOption, territoryOption, territoryRankOption,
-  type AgeForm, type ChartRow, type SeriesForm, type TerritoryForm,
+  seriesOption,
+  type ChartRow, type SeriesForm, type TerritoryForm,
 } from "./charts";
+import {
+  ageOption, sexCompareOption, territoryOption, territoryRankOption,
+  type AgeForm,
+} from "./territoryCharts";
 import {
   facetOrder, mapReading, periodValue, profileOf, shareOf, yearValues,
   type PanoramaResponse,
