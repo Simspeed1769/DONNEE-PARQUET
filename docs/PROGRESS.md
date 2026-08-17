@@ -1124,3 +1124,23 @@ aurait coûté plus qu'il n'aurait préservé.
   est morte. Comparer, le Tableau et Extraire n'appliquent aucune restriction et
   offrent un volume « tous postes confondus » — un nombre qui ne veut rien dire.
   `LISEZMOI.md` l. 1323 documente un garde-fou d'Extraire qui n'existe pas.
+
+## v7 · Mission « Motion » point 0 — Audit : la fondation existe déjà
+
+- **Le défaut que la mission juge le plus probable et le plus coûteux — un
+  import `motion.*` qui réintègre tout le moteur — n'existe pas.** Zéro
+  occurrence dans le dépôt, et `LazyMotion` est monté en mode `strict`, qui rend
+  la faute impossible par construction plutôt que par vigilance.
+- **Six fichiers importent `motion/react`** : cinq n'en tirent
+  qu'`AnimatePresence`, qui doit rester au premier plan et non dans le morceau
+  différé ; `components/motion.tsx` tient le reste.
+- **La fondation du point 1 est déjà posée** (bloc 3, point 3.1) : `LazyMotion`
+  + `domAnimation` via un fichier de découpe, monté une seule fois dans
+  `App.tsx:213` ; `MotionConfig reducedMotion="user"` doublé d'une durée nulle
+  vérifiable à la lecture ; vocabulaire commun (`SPRING`, `POPOVER`, `CHIP`,
+  `REVEAL`, `DRAWER`) dans un fichier unique.
+- **Poids** : `motionFeatures` 37,37 Ko bruts, **14,06 Ko gzippés** — exactement
+  le repère de la mission. Le moteur ne charge qu'après le premier rendu.
+- **Ce qui reste du point 2** : les puces du bandeau (entrée/sortie et `layout`),
+  la bascule Panorama ↔ Comparer, les blocs repliés. Le tiroir et les deux
+  popovers sont animés.
