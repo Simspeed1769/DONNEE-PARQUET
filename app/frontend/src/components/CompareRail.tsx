@@ -21,6 +21,8 @@
  */
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence } from "motion/react";
+import { POPOVER, m } from "./motion";
 import { formatValue } from "../utils";
 
 export type RailChip = {
@@ -278,8 +280,13 @@ export function CompareRail({
         >Modifier les séries</button>
       </div>
 
+      {/* Le popover de réglage : même fondu-glissé que les autres panneaux
+          flottants du produit, pour qu'ils se comportent tous pareil. */}
+      <AnimatePresence>
       {current && renderScope ? (
-        <div
+        <m.div
+          key={current.key}
+          {...POPOVER}
           className={`chip-popover ${sheet ? "sheet" : ""}`}
           ref={popover}
           role="dialog"
@@ -316,8 +323,9 @@ export function CompareRail({
               onClick={() => { setOpen(null); onRemove(current.key); }}
             >Retirer cette série</button>
           </footer>
-        </div>
+        </m.div>
       ) : null}
+      </AnimatePresence>
     </div>
   );
 }

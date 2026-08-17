@@ -804,3 +804,47 @@ et non par les tests.
   - **Ce que ça vaut** : arithmétiquement juste, sémantiquement vide. Décider
     quand `coverage` a un sens par grand poste est un choix méthodologique, pas
     un refactor : à trancher avec l'utilisateur, pas dans un commit de dette.
+
+## Bloc 3.1 — Motion sur le chrome
+
+Seule dépendance ajoutée au produit, autorisation explicite. Elle ne touche que
+le chrome ; **aucun `m.*` n'enveloppe un conteneur de graphique** — ECharts a
+son propre moteur de transition, et deux systèmes sur le même élément se
+contrarient.
+
+- **Surfaces animées** : tiroir des séries, tiroir de méthode et son voile,
+  popover « Autres vues », popover de réglage d'une série. Fondu-glissé de 6 px
+  pour les panneaux, glissé de 24 px pour les tiroirs.
+- **Le motif `LazyMotion` + `m`, vraiment appliqué.** Premier essai :
+  `domAnimation` importé statiquement, `index` passe de 7,5 à **32 Ko gzip** —
+  le motif ne servait à rien. `motionFeatures.ts` crée le point de découpe et
+  le moteur part dans un morceau différé.
+
+| | avant | après |
+|---|---:|---:|
+| `index` (chemin critique) | 7 478 o gzip | **18 010 o gzip** |
+| `motionFeatures` (différé) | — | 14 069 o gzip |
+| total JS brut | 1 198 121 o | 1 281 256 o |
+
+  Coût réel sur le chemin critique : **+10,5 Ko gzip**. Le moteur (14 Ko) ne
+  charge qu'après le premier rendu.
+
+- **`prefers-reduced-motion` : deux gardes, dont une vérifiable en la lisant.**
+  `reducedMotion="user"` est celle de Motion ; une **durée nulle** est la nôtre.
+  Une durée de zéro n'est pas une subtilité de bibliothèque, c'est de
+  l'arithmétique. La transition est posée **uniquement** dans le fournisseur :
+  aucun composant ne fournit la sienne, faute de quoi il court-circuiterait la
+  garde en silence. Les `transition={SPRING_WIDE}` locaux ont été retirés pour
+  cette raison.
+- **Écrit avec `x`, `y`, `scale`** plutôt qu'avec des chaînes `transform:` —
+  ce sont les valeurs que Motion sait composer et que sa neutralisation
+  inspecte.
+- **Ce que je n'ai pas pu vérifier, et pourquoi.** L'onglet d'automatisation
+  reste `visibilityState: "hidden"` **même pendant une capture** : l'horloge
+  d'animation y est gelée (mesuré — 0 ms d'avancement pour 660 ms réelles).
+  Toute observation de position y est donc mensongère, et mes premières mesures
+  du mouvement réduit l'étaient. Ce qui est vérifié : les animations sont bien
+  appliquées aux bonnes surfaces, et les valeurs convergent quand l'horloge
+  tourne (opacité 0,90 → 1, translation 2,4 px → 0). Ce qui ne l'est pas par
+  machine : la coupure sous `prefers-reduced-motion`, d'où la seconde garde,
+  écrite pour être vraie par construction plutôt que par confiance.

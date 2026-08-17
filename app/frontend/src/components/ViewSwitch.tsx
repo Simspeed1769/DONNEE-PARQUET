@@ -18,6 +18,8 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence } from "motion/react";
+import { POPOVER, m } from "./motion";
 
 export type ViewOption = { key: string; label: string };
 
@@ -97,11 +99,21 @@ export function ViewSwitch({ options, value, onChange, label }: Props) {
             {foldedActive ? foldedActive.label : "Autres vues"}
             <em>{folded.length}</em>
           </button>
-          {open ? (
-            <div className="view-more-popover" role="group" aria-label={`${label} — autres vues`}>
-              {folded.map(button)}
-            </div>
-          ) : null}
+          {/* `AnimatePresence` retient le panneau le temps de sa sortie ;
+              sans lui, un panneau qu'on referme disparaît d'un coup et le
+              geste n'a pas de fin visible. */}
+          <AnimatePresence>
+            {open ? (
+              <m.div
+                className="view-more-popover"
+                role="group"
+                aria-label={`${label} — autres vues`}
+                {...POPOVER}
+              >
+                {folded.map(button)}
+              </m.div>
+            ) : null}
+          </AnimatePresence>
         </div>
       ) : null}
     </div>

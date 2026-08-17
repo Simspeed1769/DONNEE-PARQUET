@@ -1,3 +1,5 @@
+import { AnimatePresence } from "motion/react";
+import { DRAWER, m } from "../components/motion";
 import { useEffect, useMemo, useState } from "react";
 import { getMethodology } from "../api";
 import { DENOMINATORS } from "../methodology/denominators";
@@ -155,10 +157,25 @@ export function MethodologyPage() {
         <button type="button" onClick={() => setSelectedKey("damir")}>Mesures DAMIR</button>
       </section>
 
-      {selected ? <div className="method-drawer-backdrop" role="presentation" onMouseDown={(event) => {
-        if (event.target === event.currentTarget) setSelectedKey(null);
-      }}>
-        <aside className="method-drawer" role="dialog" aria-modal="true" aria-labelledby="method-drawer-title">
+      {/* Le voile en fondu, le tiroir en glissé : deux mouvements distincts
+          pour deux rôles distincts. Le voile ne bouge pas — il couvre. */}
+      <AnimatePresence>
+      {selected ? <m.div
+        className="method-drawer-backdrop"
+        role="presentation"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setSelectedKey(null);
+        }}>
+        <m.aside
+          className="method-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="method-drawer-title"
+          {...DRAWER}
+            >
           <header className="method-drawer-header">
             <div><span>{selected.producer} · {selected.period}</span><h2 id="method-drawer-title">{selected.name}</h2></div>
             <button type="button" onClick={() => setSelectedKey(null)} aria-label="Fermer">×</button>
@@ -201,8 +218,9 @@ export function MethodologyPage() {
               <p>{selected.granularity}</p>
             </details>
           </div>
-        </aside>
-      </div> : null}
+        </m.aside>
+      </m.div> : null}
+      </AnimatePresence>
     </div>
   );
 }

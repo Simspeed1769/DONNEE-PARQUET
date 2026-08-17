@@ -4,6 +4,7 @@ import { getMetadata } from "./api";
 import { CopyLinkButton } from "./components/CopyLinkButton";
 import { ThemeToggle } from "./components/ThemeToggle";
 import type { Metadata, PageKey } from "./types";
+import { MotionProvider } from "./components/motion";
 
 const CHUNK_RELOAD_KEY = "damir-chunk-reload";
 
@@ -209,6 +210,7 @@ function App() {
   );
 
   return (
+    <MotionProvider>
     <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <aside className="sidebar" id="main-sidebar">
         <div className="brand"><div className="brand-mark"><span /></div><div><strong>DAMIR</strong><small>Studio</small></div></div>
@@ -265,6 +267,7 @@ function App() {
         </Suspense></PageErrorBoundary>}
       </main>
     </div>
+    </MotionProvider>
   );
 }
 

@@ -14,6 +14,8 @@
  *  le pied fixe qui porte l'ajout, le compteur et la fermeture.
  */
 
+import { AnimatePresence } from "motion/react";
+import { DRAWER, m } from "./motion";
 import { useEffect, useRef, type ReactNode } from "react";
 
 type Props = {
@@ -108,10 +110,20 @@ export function SeriesDrawer({ open, onClose, title, subtitle, children, action,
     target?.focus?.();
   }, [open]);
 
-  if (!open) return null;
-
+  // Le tiroir entre et sort par la droite. `AnimatePresence` le retient le
+  // temps de sa sortie ; le `if (!open) return null` d'avant le faisait
+  // disparaître d'un coup, et l'écran semblait sauter.
   return (
-    <aside className="series-drawer" ref={panel} role="dialog" aria-modal="false" aria-label={title}>
+    <AnimatePresence>
+    {open ? (
+    <m.aside
+      className="series-drawer"
+      ref={panel}
+      role="dialog"
+      aria-modal="false"
+      aria-label={title}
+      {...DRAWER}
+    >
       <header className="series-drawer-head">
         <div>
           <strong>{title}</strong>
@@ -128,6 +140,8 @@ export function SeriesDrawer({ open, onClose, title, subtitle, children, action,
         <span className="series-drawer-count">{count}</span>
         <button type="button" className="drawer-add" onClick={onClose}>Fermer</button>
       </footer>
-    </aside>
+    </m.aside>
+    ) : null}
+    </AnimatePresence>
   );
 }
