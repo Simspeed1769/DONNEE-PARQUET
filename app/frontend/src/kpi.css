@@ -4,58 +4,59 @@
  * rien n'entre dans `styles.css`, et une bande qui sert quatre écrans mérite
  * d'être trouvable.
  *
- * Le parti : **un seul fond, aucune boîte**. Quatre panneaux encadrés posés
- * au-dessus d'un cinquième — la carte du graphique — donnaient cinq cadres
- * empilés et plus aucune hiérarchie. Ici le nombre porte tout le poids, le
- * libellé s'efface, et un filet vertical suffit à séparer.
+ * ## Ni cadre, ni surface
+ *
+ * Les repères ont d'abord été quatre panneaux encadrés, puis une bande encadrée.
+ * Les deux ajoutaient un cadre au-dessus de celui du graphique, et deux cadres
+ * empilés ne font pas de hiérarchie — ils font deux boîtes. Ici il n'y a plus
+ * de boîte du tout : les repères vivent sur le fond de la page, séparés par
+ * l'espacement seul. Ce qui les tient ensemble, c'est leur alignement.
+ *
+ * ## Trois niveaux, et qu'on les distingue
+ *
+ * Le libellé est un en-tête minuscule — capitales, interlettrage, gris. La
+ * valeur porte tout le poids sans crier : `--text-xl`, graisse moyenne. La
+ * précision chuchote : même corps que le libellé mais sans capitales ni
+ * graisse, ce qui suffit à la faire passer au troisième plan.
+ *
+ * La valeur était en `--text-2xl` et en graisse 700 : elle écrasait le titre du
+ * graphique posé juste en dessous, alors qu'elle n'est qu'un repère.
  */
 
 .kpi-band {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  margin: 0 0 var(--space-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  overflow: hidden;
+  gap: var(--space-3) var(--space-5);
+  margin: 0 0 var(--space-4);
 }
 
 .kpi-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
-  padding: var(--space-3) var(--space-4);
-  /* Le filet est posé à gauche puis retiré du premier : sur une grille qui
-     replie ses colonnes, une bordure à droite laisserait un trait pendant en
-     fin de rangée. */
-  border-left: 1px solid var(--line);
 }
-
-.kpi-item:first-child { border-left: 0; }
 
 .kpi-label {
   color: var(--ink-muted);
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   font-weight: 700;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
   text-transform: uppercase;
 }
 
-/* Le nombre : la seule chose de cette bande qu'on vient chercher.
-   `tabular-nums` pour que deux repères voisins alignent leurs chiffres. */
+/* `tabular-nums` pour que deux repères voisins alignent leurs chiffres. */
 .kpi-value {
   color: var(--ink);
   font-size: var(--text-xl);
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
 /* Une phrase ne se compose pas en corps de titre : elle redescend au corps
-   courant et abandonne la graisse, sans quoi elle crie plus fort que les
-   nombres qui l'entourent. */
+   courant, sans quoi elle crie plus fort que les nombres qui l'entourent. */
 .kpi-sentence {
   font-size: var(--text-sm);
   font-weight: 600;
@@ -63,21 +64,18 @@
 }
 
 .kpi-detail {
-  color: var(--ink-secondary);
-  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 
-/* Sur un écran étroit la bande passe à deux colonnes, puis à une : le filet
-   vertical n'a alors plus de sens et devient un filet horizontal. */
+/* Sans cadre, la bande n'a rien à replier : la grille passe simplement de
+   quatre colonnes à deux, puis à une. */
 @media (max-width: 720px) {
   .kpi-band { grid-template-columns: repeat(2, 1fr); }
-  .kpi-item:nth-child(odd) { border-left: 0; }
-  .kpi-item:nth-child(n + 3) { border-top: 1px solid var(--line); }
 }
 
 @media (max-width: 460px) {
   .kpi-band { grid-template-columns: 1fr; }
-  .kpi-item { border-left: 0; }
-  .kpi-item + .kpi-item { border-top: 1px solid var(--line); }
 }

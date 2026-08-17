@@ -1144,3 +1144,22 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Ce qui reste du point 2** : les puces du bandeau (entrée/sortie et `layout`),
   la bascule Panorama ↔ Comparer, les blocs repliés. Le tiroir et les deux
   popovers sont animés.
+
+## v7 · Mission « Alléger » point 2 — Les repères, discrets
+
+- **Ni cadre ni surface.** La bande avait encore un fond et une bordure : deux
+  cadres empilés avec celui du graphique ne font pas de hiérarchie, ils font
+  deux boîtes. Les repères vivent maintenant sur le fond de la page, tenus par
+  leur seul alignement.
+- **Trois niveaux enfin distincts.** Libellé `--text-2xs` en capitales grises,
+  valeur `--text-xl` en graisse **600** — elle était en 700 et écrasait le titre
+  du graphique posé juste dessous —, précision `--text-2xs` sans capitales ni
+  graisse.
+- **Le plafond de quatre repères est déjà tenu** : Pathologies 4, CSP 4,
+  Mortalité 4, Population 3. Rien à replier, et aucun découpage ajouté — il
+  aurait supprimé une capacité pour un cas qui n'existe pas.
+- **Écart assumé avec la mission, sur consigne postérieure de l'utilisateur.**
+  Le point 2 demande de remettre les repères dans la carte, sur la rangée des
+  choix de forme (`.damir-strip`). L'utilisateur avait demandé l'inverse la
+  veille — une zone dédiée au-dessus de la carte. La zone dédiée est conservée ;
+  tout le reste du point (poids typographique, cadres, plafond) est appliqué.
