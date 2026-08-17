@@ -773,3 +773,34 @@ Un fichier par commit, sans changer de comportement. Six découpages.
   sur la même adresse. Une alerte au passage — la carte de chaleur a semblé
   bloquer après le découpage ; en remisant les modifications et en rechargeant,
   elle bloquait aussi *sans* elles. Incident d'onglet, pas régression.
+
+## Bloc 2 · après-coup — un liseré, un import perdu, un chiffre à regarder
+
+Trois choses trouvées **après** les commits du bloc, dont deux par l'exécution
+et non par les tests.
+
+- **Corrigé — le liseré sur le flanc.** Le « Point de vigilance » du Tableau
+  portait un `border-left: 3px` recopié de la feuille de « Repères » que je
+  venais de supprimer. `explore.css` porte pourtant la convention écrite :
+  « une pastille en tête de ligne, **jamais un liseré coloré sur le flanc** …
+  deux grammaires pour un même rôle se verraient ». Le bloc prend la pastille.
+- **Corrigé — un import perdu au découpage.** `DELAYS_PATH` et `TRANSCO_PATH`
+  n'ont pas suivi la couche d'accès dans `repository.py`. Conséquence :
+  `metadata()` levait une `NameError` **dans le préchauffage, qui avale toute
+  exception**. L'application démarrait, répondait, passait les 61 tests, et
+  imprimait discrètement `préchauffage interrompu` dans une console que
+  personne ne lit. Trouvé en relisant le journal du serveur, pas autrement.
+  - **Le trou est fermé** : `tests/test_startup.py` appelle directement les
+    trois gestes du préchauffage — métadonnées, première vue, classement des
+    prestations. 64 tests verts.
+- **Signalé, non corrigé — le taux de prise en charge sur les prestations en
+  espèces.** Le Tableau rend visible ce qui l'était moins ailleurs : sur
+  « Indemnités Journalières », le taux affiche **16 714 %**. Ce n'est pas un
+  défaut du Tableau — la même formule donne le même nombre sur Panorama, et le
+  cube le confirme (rem = 13,4 Md €, dep = 80 M € en 2015 : une prestation en
+  espèces n'a pas de dépense présentée). Trois grands postes sont concernés :
+  Indemnités Journalières, Autres, Transports — ces deux derniers parce que
+  leurs composantes sont négatives.
+  - **Ce que ça vaut** : arithmétiquement juste, sémantiquement vide. Décider
+    quand `coverage` a un sens par grand poste est un choix méthodologique, pas
+    un refactor : à trancher avec l'utilisateur, pas dans un commit de dette.

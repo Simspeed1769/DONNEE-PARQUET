@@ -85,12 +85,14 @@ from .studio import methodology, studio_metadata
 
 
 from .repository import (
-    CSP_GEOJSON_PATH,
     CACHE_DIR,
+    CSP_GEOJSON_PATH,
     DATA_DIR,
+    DELAYS_PATH,
     FRONTEND_ASSETS,
     FRONTEND_DIST,
     REGIONS,
+    TRANSCO_PATH,
     repository,
 )
 

@@ -220,12 +220,31 @@
   font-size: .6rem;
   font-weight: 600;
 }
+/* Le point de vigilance porte une **pastille en tête de ligne**, pas un liseré
+   sur le flanc. C'est la convention écrite dans `explore.css` pour le verdict
+   et les avertissements de croisement : ces blocs se croisent d'un écran à
+   l'autre, et deux grammaires pour un même rôle se verraient. Le liseré venait
+   de la feuille de « Repères », supprimée au point 2.4 — il n'avait pas à lui
+   survivre. */
 .pivot-method section.limitation {
   padding: 12px 13px;
-  border-left: 3px solid var(--warning);
+  border-radius: var(--radius-sm);
   background: var(--warning-wash);
 }
-.pivot-method section.limitation p { color: var(--warning-text); }
+.pivot-method section.limitation p {
+  display: flex;
+  gap: var(--space-2);
+  color: var(--warning-text);
+}
+.pivot-method section.limitation p::before {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--warning);
+  content: "";
+}
 .pivot-method-rule {
   margin-top: 18px;
   padding: 12px 13px;
