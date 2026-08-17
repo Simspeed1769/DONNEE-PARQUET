@@ -848,3 +848,31 @@ contrarient.
   tourne (opacité 0,90 → 1, translation 2,4 px → 0). Ce qui ne l'est pas par
   machine : la coupure sous `prefers-reduced-motion`, d'où la seconde garde,
   écrite pour être vraie par construction plutôt que par confiance.
+
+## v6 · Bloc 3 point 3.2 — La couverture réelle des sources
+
+- **`tools/inventaire_sources.py` + `docs/SOURCES.md`.** Le script relit les
+  Parquet par la couche DuckDB du produit ; chaque chiffre du document sort
+  d'une commande. Il mesure aussi deux choses qu'aucun décompte de lignes ne
+  donne : le poids de chaque année DAMIR — critère par lequel le serveur décide
+  des années offertes — et la complétude de la dernière année de soins, estimée
+  par le profil de liquidation.
+- **Aucune série n'a de trou** sur les six vues. En revanche les bornes ne se
+  recouvrent pas : la CSP s'arrête en 2023, qui est donc la dernière année où
+  les cinq bases coexistent. L'interface ne le dit nulle part.
+- **La trouvaille du point : 2025 est offerte au choix et complète à 91,4 %.**
+  Elle passe le seuil de 1 % (97,3 % de 2024) ; seule la période *par défaut*
+  s'arrête à 2024. À l'écran, 2025 est en **baisse** de 2,7 % ; à maturité elle
+  est en **hausse** d'environ 6 %. La courbe n'atténue pas, elle inverse le
+  signe. C'est la justification directe du point 3.4.
+- **Diagnostic annexe : 2014 est écarté par un plancher en dur** (`soi_ann >=
+  2015`), pas par le seuil de 1 % — à 5,4 % il l'aurait passé. Les deux règles
+  ne sont pas redondantes, et c'est la date écrite en dur qui travaille.
+- **Deux bases sont révisées rétrospectivement** (population, mortalité) :
+  remplacer leur fichier change des dénominateurs d'années anciennes, donc des
+  taux déjà exportés. Consigné, car ce n'est pas un ajout mais une
+  reconstruction.
+- **Écarté** : ce que publie le producteur ne peut pas être relevé depuis le
+  poste — aucun appel réseau. Le document sépare donc explicitement les bornes
+  mesurées de la colonne « à vérifier chez le producteur », plutôt que de
+  présenter une mémoire comme un constat.
