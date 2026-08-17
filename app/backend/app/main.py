@@ -76,11 +76,8 @@ from .population import (
     population_metadata,
     population_overview,
 )
-from .correlations import (
-    RegressionRequest,
-    catalogue,
-    regression,
-)
+from .correlations import catalogue
+from .regression import RegressionRequest, regression
 from .explore import ExploreRequest, OptionsRequest, aggregate_options, explore, filter_options
 from .panorama import PanoramaRequest, panorama, reference_block
 from .pivot import PivotRequest, pivot
