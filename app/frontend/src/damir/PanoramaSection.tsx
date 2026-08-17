@@ -118,6 +118,10 @@ export function PanoramaSection({
     return SLIDE_KEYS.includes(raw as SlideKey) ? raw as SlideKey : "evolution";
   });
   const [forms, setForms] = useState<Partial<Record<SlideKey, FormKey>>>(() => formsFromParams(params));
+  /** Exclure 2020-2021 de l'ajustement de tendance. Vrai par défaut, et
+   *  l'adresse ne porte que la **dérogation** : un lien partagé sans ce
+   *  paramètre revient donc toujours sur le réglage prudent. */
+  const [excludeCovid, setExcludeCovid] = useState(() => params.get("covid") !== "inclus");
 
   const [response, setResponse] = useState<PanoramaResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -166,8 +170,10 @@ export function PanoramaSection({
       if (form) next.set(`form_${key}`, form);
       else next.delete(`form_${key}`);
     });
+    if (excludeCovid) next.delete("covid");
+    else next.set("covid", "inclus");
     window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
-  }, [view, forms]);
+  }, [view, forms, excludeCovid]);
 
   const measure: ExploreMeasure | null = useMemo(
     () => response?.measures.find((item) => item.key === measureKey) ?? response?.measures[0] ?? null,
@@ -209,9 +215,10 @@ export function PanoramaSection({
     measure,
     consolidatedThrough: metadata.reliability.consolidated_through,
     completenessByYear,
+    excludeCovid,
     highlightedRegion: selectedRegion,
     forms,
-  } : null), [response, measure, metadata, completenessByYear, selectedRegion, forms]);
+  } : null), [response, measure, metadata, completenessByYear, excludeCovid, selectedRegion, forms]);
 
   const slides = useMemo<Slide[]>(
     () => (slidesInput ? buildSlides({ ...slidesInput, tokens }) : []),
@@ -428,6 +435,25 @@ export function PanoramaSection({
             <PaletteChoice />
           </div>
         </div>
+
+        {/* La case n'apparaît qu'avec la prolongation, parce qu'elle ne règle
+            qu'elle. Elle est **décochable** et non affichée pour information :
+            2020 et 2021 sont des exercices réels, et compter une pandémie dans
+            une tendance doit rester un choix qu'on peut faire — pourvu qu'on le
+            fasse exprès. */}
+        {slide?.form === "trend" ? (
+          <label className="damir-trend-option">
+            <input
+              type="checkbox"
+              checked={excludeCovid}
+              onChange={(event) => setExcludeCovid(event.target.checked)}
+            />
+            <span>
+              Exclure les exercices Covid (2020-2021) de l’ajustement
+              <small>Les inclure revient à supposer qu’une pandémie se reproduit au même rythme.</small>
+            </span>
+          </label>
+        ) : null}
 
         {/* Pas de `key` sur ce conteneur : la remonter à chaque changement de
             lecture ou de forme détruisait l'instance ECharts, et avec elle toute

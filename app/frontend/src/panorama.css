@@ -543,3 +543,43 @@
   color: var(--ink-secondary);
   font-size: var(--text-xs);
 }
+
+/* La case des exercices Covid (point 3.6).
+ *
+ * Elle ne s'affiche qu'avec la prolongation de tendance, entre la bande de
+ * commandes et le graphique — c'est-à-dire à l'endroit où elle agit. Posée
+ * dans la bande, elle aurait poussé le graphique sous la ligne de flottaison ;
+ * posée sous le graphique, elle aurait réglé quelque chose qu'on a déjà lu. */
+.damir-trend-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  cursor: pointer;
+}
+
+.damir-trend-option input {
+  margin-top: 2px;
+  accent-color: var(--accent-chart);
+  cursor: pointer;
+}
+
+.damir-trend-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+
+.damir-trend-option small {
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+}
+
+.damir-trend-option:hover { border-color: var(--line-strong); }
+.damir-trend-option:focus-within { outline: 2px solid var(--accent-line); outline-offset: 2px; }

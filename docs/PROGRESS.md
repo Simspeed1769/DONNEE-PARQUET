@@ -999,3 +999,43 @@ contrarient.
 - **Écarté** : l'effet de structure, hors périmètre par la mission — un report
   vers des prestations plus chères au sein d'un poste s'y lit comme un effet
   coût. C'est la limite principale, énoncée en première réserve.
+
+## v6 · Bloc 3 point 3.6 — Prolongation de tendance
+
+- **Une forme de plus sur l'Évolution**, offerte au seul sujet unique :
+  prolonger huit trajectoires produirait huit bandes superposées dont on ne
+  lirait plus laquelle appartient à qui.
+- **Ajustement log-linéaire**, donc à **taux constant** et non à montant
+  constant ajouté — sur des dépenses de santé, la seconde hypothèse serait la
+  plus fausse des deux. Le taux annuel implicite est **affiché** : c'est
+  l'hypothèse elle-même.
+- **Les trois conditions, vérifiées à l'écran.** ① 2025 est écarté de
+  l'ajustement parce que non consolidé — **exclu plutôt que redressé** : le
+  redressement du point 3.4 est déjà une estimation, en nourrir une seconde
+  empilerait deux incertitudes sans que rien ne le dise. ② 2020-2021 exclus par
+  défaut, **case décochable** : mesuré, 8 exercices et +3,8 % en excluant, 10
+  exercices et +3,9 % en incluant. ③ Les six hypothèses sont énoncées sous le
+  graphique, donc dans le PNG.
+- **Le mot est tenu.** « Prolongation de tendance » partout ; « prévision »
+  n'apparaît qu'en dénégation explicite dans la première réserve, et dans deux
+  commentaires qui posent la règle. Aucun libellé ne l'emploie.
+- **La bande vient des résidus**, par l'intervalle de prédiction à 95 % :
+  `s·√(1 + 1/n + (t−t̄)²/Σ(tᵢ−t̄)²)`. Le troisième terme la fait s'évaser avec la
+  distance — une bande d'épaisseur constante suggérerait que la seconde année
+  prolongée vaut la première.
+- **Trois encodages distincts, dont deux non colorés** : observé en trait plein
+  avec points, prolongation en **tireté** — la forme dit « construit » même à
+  l'impression et pour qui ne distingue pas les teintes —, bande en aire pâle
+  sans contour.
+- **Défaut trouvé à l'écran : la tendance était détachée de la courbe.** 2025
+  étant écarté de l'ajustement, l'année laissait un trou entre le dernier point
+  ajusté et le premier point prolongé. La tendance **traverse** désormais les
+  années écartées : un trait interrompu ferait croire à une donnée manquante là
+  où il n'y a qu'une année retirée du calcul. Effet secondaire heureux — on voit
+  le point 2025 observé passer **sous** la tendance, ce qui est exactement le
+  défaut de liquidation du point 3.4, rendu visible.
+- **Français corrigé après lecture** : `toFixed` rendait « +3.8 % » avec un
+  point décimal, et la phrase disait « appliqué à montant remboursé » sans
+  article.
+- **Écarté** : le choix de l'horizon. Deux ans, non négociable dans le code — au
+  delà, la bande devient plus large que le signal et la forme cesse d'informer.

@@ -45,13 +45,15 @@ import {
 } from "./model";
 import { decompose, decomposable } from "./decomposition";
 import { bridgeOption, posteOption } from "./decompositionChart";
+import { COVID_YEARS, HORIZON, assumptions, prolong, trendObstacle } from "./trend";
+import { trendOption } from "./trendChart";
 
 export type SlideKey = "evolution" | "territory" | "age" | "sex" | "decomposition";
 
 /** Toutes les formes que le panorama sait dessiner, tous écrans confondus.
  *  Chaque lecture n'en expose qu'un sous-ensemble, et seulement celles que sa
  *  donnée autorise. */
-export type FormKey = SeriesForm | TerritoryForm | AgeForm | "pie" | "bridge" | "poste";
+export type FormKey = SeriesForm | TerritoryForm | AgeForm | "pie" | "bridge" | "poste" | "trend";
 
 export type FormOption = { key: FormKey; label: string };
 
@@ -120,6 +122,11 @@ export type SlideInput = {
    *  réserves doivent pouvoir se reconstituer hors de l'écran — l'export PNG
    *  les réassemble sans accès au contexte de l'application. */
   completenessByYear: Record<number, number>;
+  /** Les exercices Covid entrent-ils dans l'ajustement de tendance ?
+   *
+   *  Faux par défaut — la case est décochable, jamais absente : 2020 et 2021
+   *  sont des exercices réels, et l'utilisateur a le droit de les compter. */
+  excludeCovid: boolean;
   /** Territoire sur lequel l'écran est restreint, s'il y en a un. */
   highlightedRegion: string | null;
   /** Forme demandée par lecture. Une forme que la donnée n'autorise pas est
@@ -177,8 +184,81 @@ function consolidationCaveat(years: number[], consolidatedThrough: number | null
     + "le dernier point est un plancher, et la variation qu'il dessine est sous-estimée.";
 }
 
-function evolutionSlide({ response, measure, tokens, consolidatedThrough,
-                          completenessByYear, forms }: SlideInput): Slide {
+/** La prolongation est-elle calculable ? Sans quoi la forme n'est pas offerte.
+ *
+ *  Elle n'est jamais offerte grisée : une forme visible mais inerte fait
+ *  chercher la manipulation qui la débloquerait, et il n'y en a pas.
+ */
+function trendAvailable(row: ChartRow | undefined, years: number[],
+                        consolidatedThrough: number | null, excludeCovid: boolean): boolean {
+  if (!row) return false;
+  return prolong({ years, values: row.values, consolidatedThrough, excludeCovid }) !== null;
+}
+
+/** L'Évolution prolongée de deux ans. Voir `trend.ts` pour le calcul et ses
+ *  trois conditions. */
+function trendSlide({ response, measure, tokens, consolidatedThrough, excludeCovid,
+                      row, offered, forms }: SlideInput & {
+                        row: ChartRow; offered: FormOption[];
+                      }): Slide {
+  const { years } = response;
+  const trend = prolong({ years, values: row.values, consolidatedThrough, excludeCovid });
+  const title = `${measure.label} et prolongation de tendance, ${years[0]}–${years.at(-1)}`;
+
+  if (!trend) {
+    const kept = years.filter((year) => !(consolidatedThrough !== null && year > consolidatedThrough)
+      && !(excludeCovid && COVID_YEARS.includes(year))).length;
+    return {
+      key: "evolution",
+      nav: "Évolution",
+      title,
+      caveats: [],
+      forms: offered,
+      form: "trend",
+      option: {},
+      table: { columns: [], rows: [] },
+      ariaLabel: "Prolongation indisponible",
+      height: 430,
+      empty: trendObstacle(row.values, kept) ?? "La tendance ne s'ajuste pas sur cette série.",
+    };
+  }
+
+  const caveats = assumptions(trend, measure.label);
+  if (measure.caveat) caveats.push(measure.caveat);
+
+  return {
+    key: "evolution",
+    nav: "Évolution",
+    title,
+    caveats,
+    forms: offered,
+    form: "trend",
+    option: trendOption({
+      years, values: row.values, label: row.label, kind: measure.kind, trend, tokens,
+    }),
+    table: {
+      columns: ["Année", measure.label, "Prolongation", "Borne basse", "Borne haute"],
+      rows: [
+        ...years.map((year, index) => [
+          String(year), formatValue(row.values[index], measure.kind), "—", "—", "—",
+        ]),
+        ...trend.points.map((point) => [
+          String(point.year), "—",
+          formatValue(point.value, measure.kind),
+          formatValue(point.low, measure.kind),
+          formatValue(point.high, measure.kind),
+        ]),
+      ],
+    },
+    ariaLabel: `${measure.label} observé et prolongation de tendance sur ${HORIZON} ans`,
+    height: 430,
+    empty: null,
+  };
+}
+
+function evolutionSlide(input: SlideInput): Slide {
+  const { response, measure, tokens, consolidatedThrough,
+          completenessByYear, excludeCovid, forms } = input;
   const { years } = response;
   const rows = subjectRows(response, measure);
   const several = rows.length > 1;
@@ -191,8 +271,16 @@ function evolutionSlide({ response, measure, tokens, consolidatedThrough,
     ...(several && measure.additive ? [{ key: "area" as const, label: "Aires empilées" }] : []),
     // Un indice n'a de sens que s'il y a des trajectoires à comparer.
     ...(several ? [{ key: "index" as const, label: "Base 100" }] : []),
+    // Prolonger huit trajectoires produirait huit bandes superposées, dont on
+    // ne lirait plus laquelle appartient à qui. La forme n'est donc offerte que
+    // sur un sujet unique — et seulement si la tendance est calculable.
+    ...(!several && trendAvailable(rows[0], years, consolidatedThrough, excludeCovid)
+      ? [{ key: "trend" as const, label: "Prolongation" }]
+      : []),
   ];
   const form = resolveForm(offered, forms.evolution);
+
+  if (form === "trend") return trendSlide({ ...input, row: rows[0], offered });
 
   const asIndex = form === "index";
   const drawn = asIndex ? rows.map((row) => ({ ...row, values: indexed(row.values) })) : rows;
