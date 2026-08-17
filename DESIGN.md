@@ -45,11 +45,19 @@ contrainte, pas par goût — mettre le rouge devant l'orange fait tomber la pai
 à ΔE 5,6 en deutéranopie, sous le plancher ; c'est le bleu qui le suit. L'ordre
 retenu passe les six contrôles dans les deux thèmes.
 
-**Une série seule ne prend pas la palette** : elle prend `--accent`
-(`paletteColor`). Sans personne dont se distinguer, la couleur catégorielle
-n'encode rien, et son premier emplacement n'est qu'un choix arbitraire. Dès
-qu'il y a deux séries, la palette reprend la main — là, la couleur doit
-distinguer.
+**Une série seule ne prend pas la palette** : elle prend `--plot-solo`, un
+graphite d'encre. Sans personne dont se distinguer, la couleur catégorielle
+n'encode rien — et une couleur qui n'encode rien ne doit rien *suggérer*. Elle
+portait l'accent de marque, ce qui rendait rouge tout graphique par défaut :
+dans un contexte de santé et de dépense, une courbe qui monte se lisait comme
+une alerte alors qu'elle est neutre. Dès qu'il y a deux séries, la palette
+reprend la main — là, la couleur doit distinguer.
+
+Les **rangs 1 à 3 sont à pleine saturation, les rangs 4 à 8 reculent** (chroma
+décroissant, clarté étalée). Huit teintes simultanément distinguables
+n'existent pas : la palette dit « trois séries se lisent, les suivantes
+s'accompagnent », et c'est l'étiquette directe, la légende et la vue tableau qui
+portent l'identité au-delà.
 
 **Rampe séquentielle** (`--ramp-1..8`) pour une grandeur qui va du peu au
 beaucoup. **Rampe divergente** (`--diverge-1..7`, orange contre bleu) pour ce
@@ -133,8 +141,16 @@ avec décalage **et** flou.
   retirés.
 - **Réserves** (`.damir-caveats`) — ce qu'un graphique ne peut pas porter, écrit
   et chiffré à côté de lui. Ce bloc n'est pas décoratif : il est la condition
-  pour que le chiffre reste défendable. Il est rangé à l'écran, mais il repart
-  **entier dans l'image exportée**, où personne n'est là pour le rappeler.
+  pour que le chiffre reste défendable. Il est **entier** à l'écran ; dans
+  l'image exportée, ce sont son **nombre et le renvoi** qui partent, pas son
+  texte — un pavé sous un graphique de présentation fait perdre le graphique,
+  mais une image muette laisse croire qu'il n'y avait rien à dire.
+- **Tableau croisé** (`.pivot-table`, `pivot.css`) — en-tête et colonne de
+  libellés figées pendant le défilement, cellules teintées par la rampe
+  séquentielle, totaux de ligne et de colonne, tri sur n'importe quelle colonne.
+  Une cellule sans donnée prend `--map-void` et un tiret : elle n'est pas une
+  cellule à zéro. Les totaux sont **exclus** de l'échelle de teinte, sinon ils
+  écrasent la rampe et toutes les cellules paraissent pâles.
 
 ## Règles qui tiennent tout
 
@@ -203,5 +219,5 @@ dessous.
 `styles.css` porte encore cinq liserés latéraux colorés (`.kpi-card`,
 `.method-catalog-card`, alertes) et deux transitions sur `width`/`margin-left`
 au repli de la barre latérale. Ces éléments appartiennent aux écrans
-Pathologies, CSP, Mortalité, Repères et Méthodologie, qui n'ont pas encore été
+Pathologies, CSP, Mortalité, Tableau et Méthodologie, qui n'ont pas encore été
 repris.

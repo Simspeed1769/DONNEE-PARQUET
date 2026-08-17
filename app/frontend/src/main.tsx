@@ -7,6 +7,7 @@ import "./styles.css";
 import "./explore.css";
 import "./panorama.css";
 import "./correlations.css";
+import "./pivot.css";
 import "./methodology.css";
 import "./components/copyLinkButton.css";
 import "./components/compareRail.css";

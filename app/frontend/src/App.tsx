@@ -31,12 +31,12 @@ const pageImports = {
   mortality: () => import("./pages/MortalityPage"),
   population: () => import("./pages/PopulationPage"),
   correlations: () => import("./pages/CorrelationsPage"),
-  benchmarks: () => import("./pages/BenchmarksPage"),
+  pivot: () => import("./pages/PivotPage"),
   extraction: () => import("./pages/ExtractionPage"),
   methodology: () => import("./pages/MethodologyPage"),
 };
 
-const PAGES: PageKey[] = ["damir", "pathologies", "csp", "mortality", "population", "correlations", "benchmarks", "extraction", "methodology"];
+const PAGES: PageKey[] = ["damir", "pathologies", "csp", "mortality", "population", "correlations", "pivot", "extraction", "methodology"];
 
 const DamirPage = lazyPage(() => pageImports.damir().then((module) => ({ default: module.DamirPage })));
 const PathologyPage = lazyPage(() => pageImports.pathologies().then((module) => ({ default: module.PathologyPage })));
@@ -44,7 +44,7 @@ const CspPage = lazyPage(() => pageImports.csp().then((module) => ({ default: mo
 const MortalityPage = lazyPage(() => pageImports.mortality().then((module) => ({ default: module.MortalityPage })));
 const PopulationPage = lazyPage(() => pageImports.population().then((module) => ({ default: module.PopulationPage })));
 const CorrelationsPage = lazyPage(() => pageImports.correlations().then((module) => ({ default: module.CorrelationsPage })));
-const BenchmarksPage = lazyPage(() => pageImports.benchmarks().then((module) => ({ default: module.BenchmarksPage })));
+const PivotPage = lazyPage(() => pageImports.pivot().then((module) => ({ default: module.PivotPage })));
 const ExtractionPage = lazyPage(() => pageImports.extraction().then((module) => ({ default: module.ExtractionPage })));
 const MethodologyPage = lazyPage(() => pageImports.methodology().then((module) => ({ default: module.MethodologyPage })));
 
@@ -93,6 +93,9 @@ function pageFromLocation(): PageKey {
   // Panorama et Comparer ne font plus qu'un écran : les adresses qui les
   // désignaient y sont redirigées plutôt que cassées.
   if (page === "analysis" || page === "explore" || page === "panorama") return "damir";
+  // « Repères » est devenu le Tableau : l'ancienne adresse y mène plutôt que
+  // de tomber sur l'écran par défaut sans rien dire.
+  if (page === "benchmarks") return "pivot";
   return PAGES.includes(page as PageKey) ? page as PageKey : "damir";
 }
 
@@ -173,7 +176,7 @@ function App() {
     if (page === "population" || (page === "extraction" && extractionSource === "population")) return "Estimations Insee · 1975–2026";
     if (page === "damir") return "Open DAMIR";
     if (page === "correlations") return "Croisements entre sources";
-    if (page === "benchmarks") return "Repères multi-sources";
+    if (page === "pivot") return "Croisé dynamique";
     if (page === "methodology") return "Sources & définitions";
     return "Open DAMIR";
   }, [page, extractionSource]);
@@ -185,7 +188,7 @@ function App() {
     if (page === "population" || (page === "extraction" && extractionSource === "population")) return "Population";
     if (page === "damir") return "DAMIR";
     if (page === "correlations") return "Croisements";
-    if (page === "benchmarks") return "Repères";
+    if (page === "pivot") return "Tableau";
     if (page === "methodology") return "Référentiel";
     return "DAMIR";
   }, [page, extractionSource]);
@@ -221,7 +224,7 @@ function App() {
           <div className="nav-section">
             <span className="nav-caption">CROISER</span>
             {navButton("correlations", "link", "Croisements")}
-            {navButton("benchmarks", "grid", "Repères", "4")}
+            {navButton("pivot", "grid", "Tableau")}
           </div>
           <div className="nav-section nav-section-tools">
             <span className="nav-caption">EXTRAIRE</span>
@@ -256,7 +259,7 @@ function App() {
           {page === "mortality" ? <MortalityPage key={`mortality-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "population" ? <PopulationPage key={`population-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "benchmarks" ? <BenchmarksPage key={`benchmarks-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
+          {page === "pivot" ? <PivotPage key={`pivot-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} /> : null}
           {page === "methodology" ? <MethodologyPage /> : null}
         </Suspense></PageErrorBoundary>}

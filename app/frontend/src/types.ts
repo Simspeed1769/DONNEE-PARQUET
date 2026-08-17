@@ -1,4 +1,4 @@
-export type PageKey = "damir" | "pathologies" | "csp" | "mortality" | "population" | "correlations" | "benchmarks" | "extraction" | "methodology";
+export type PageKey = "damir" | "pathologies" | "csp" | "mortality" | "population" | "correlations" | "pivot" | "extraction" | "methodology";
 export type MetricKind = "money" | "quantity" | "percent" | "index" | "raw";
 
 export type Region = { code: number; label: string };
@@ -49,7 +49,6 @@ export type Metadata = {
   has_delays: boolean;
   reliability: Reliability;
   semantic_version: string;
-  analysis_questions: Array<{ key: AnalysisQuestion; label: string; description: string }>;
 };
 
 export type AdvancedFilters = {
@@ -73,81 +72,10 @@ export type HierarchyOptions = {
   services: Array<{ code: number; label: string; amount: number }>;
 };
 
-export type AnalysisQuestion = "evolution" | "comparison" | "juxtaposition" | "liquidation" | "decomposition" | "calculator";
-export type Comparator = "years" | "women_men" | "regions" | "custom";
-
-export type WorkbenchRequest = AdvancedFilters & {
-  question: AnalysisQuestion;
-  measure: string;
-  time_axis: "care" | "payment";
-  display: "raw" | "change" | "index";
-  comparator: Comparator;
-  reference: AdvancedFilters | null;
-  comparison_year_a: number | null;
-  comparison_year_b: number | null;
-  comparison_regions: number[];
-  reference_measure: string | null;
-  reference_time_axis: "care" | "payment" | null;
-  comparison_display: "auto" | "raw" | "index";
-  decomposition_basis: "change" | "total";
-  dimension: string;
-  limit: number;
-};
-
-export type ResultColumn = { key: string; label: string; kind: string };
-export type ResultRow = Record<string, string | number | null>;
-
-export type WorkbenchResult = {
-  question: AnalysisQuestion;
-  chart_type: "line" | "bar";
-  title: string;
-  subtitle: string;
-  unit: MetricKind;
-  unit_key?: string;
-  unit_label?: string;
-  series: Array<{
-    name: string;
-    unit?: MetricKind;
-    unit_key?: string;
-    unit_label?: string;
-    points: Array<{ x: string | number; y: number }>;
-  }>;
-  bars: Array<{
-    label: string;
-    value: number;
-    reference: number | null;
-    delta: number | null;
-    delta_pct: number | null;
-    contribution_pct: number | null;
-  }>;
-  summary: {
-    label_a: string;
-    label_b: string;
-    value_a: number;
-    value_b: number;
-    delta: number;
-    delta_pct: number | null;
-  };
-  table: { columns: ResultColumn[]; rows: ResultRow[] };
-  warnings: string[];
-  unknown_share: number | null;
-  dimension?: string;
-  additive?: boolean;
-  comparison_display?: "raw" | "index";
-  liquidation?: {
-    horizon: number;
-    eligible_through: number;
-    years: number[];
-    definition: string;
-    kpis: Array<{
-      key: string;
-      label: string;
-      value: number | null;
-      kind: "percent" | "delay";
-      detail: string;
-    }>;
-  };
-};
+/* Le vocabulaire de l'ancien ecran « Reperes » — `AnalysisQuestion`,
+   `Comparator`, `WorkbenchRequest`, `WorkbenchResult`, `ResultColumn`,
+   `ResultRow` — est parti avec lui (point 2.1). Le Tableau ne parle plus
+   qu'en composantes brutes et en formules : voir `pivot/model.ts`. */
 
 export type ExtractionRequest = AdvancedFilters & {
   dimensions: string[];
@@ -155,9 +83,15 @@ export type ExtractionRequest = AdvancedFilters & {
   limit: number;
 };
 
+/** Une colonne d'apercu d'extraction, et sa ligne. Ces deux formes portaient
+ *  les noms generiques `ResultColumn` / `ResultRow` du temps ou l'ancien ecran
+ *  « Reperes » les partageait ; elles ne servent plus qu'ici. */
+export type PreviewColumn = { key: string; label: string; kind: string };
+export type PreviewRow = Record<string, string | number | null>;
+
 export type ExtractionPreview = {
-  columns: ResultColumn[];
-  rows: ResultRow[];
+  columns: PreviewColumn[];
+  rows: PreviewRow[];
   total_rows: number;
   limited: boolean;
 };

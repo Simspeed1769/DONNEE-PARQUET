@@ -637,3 +637,44 @@ Regarder neuf écrans à sept largeurs à l'œil aurait laissé passer les 2 px.
 - **Faux positif consigné** : la sonde signale le `✕` des puces de comparaison
   comme rogné de 11 px. C'est sa cible tactile de 44 px, volontairement plus
   large que le bouton de 22 px — à ne pas « corriger » au prochain passage.
+
+## Bloc 2.1 — Repères devient un tableau croisé
+
+L'écran choisissait une source, puis un calcul parmi six, et produisait **un
+chiffre** que Panorama affichait déjà. Il devient un croisé dynamique : l'objet
+que tout le monde a manipulé dans un tableur, donc zéro apprentissage.
+
+- **Serveur — `pivot.py` (213 l.) et `POST /api/pivot`.** Le contrat central est
+  tenu : composantes brutes par cellule + `formula_spec`, jamais un indicateur
+  calculé. `cube_where` et les helpers d'`explore.py` sont réutilisés — pas de
+  second chemin d'agrégation. Plafond de 2 000 cellules, `ValueError` en
+  français au-delà.
+- **Trois paquets par cellule, et pas un de plus** : période, première année,
+  dernière année. C'est le strict nécessaire pour dériver les six agrégations
+  sans une charge utile proportionnelle au nombre d'années.
+- **Une forme qui mentirait n'est pas offerte.** Variation et TCAM comparent la
+  première à la dernière année, cellule par cellule : quand l'année *est* l'un
+  des axes, chaque cellule se comparerait à elle-même. Les deux agrégations sont
+  alors **absentes**, avec la raison écrite — pas grisées. Trouvé à l'écran, pas
+  en relisant le code : le premier essai rendait un tableau vide sans rien dire.
+- **Client** : `pivot/model.ts` (agrégations, teinte, tri), `PivotPage.tsx`,
+  `pivot.css`. Totaux de ligne/colonne/général, tri sur n'importe quelle
+  colonne, rampe séquentielle — totaux exclus de l'échelle, sinon tout paraît
+  pâle. Bascule graphique. **Méthode dépliée conservée.**
+- **Exports** : CSV côté client, PNG par le chemin commun, Excel en passant le
+  croisement à Extraire — une seule fabrique de classeur dans le produit.
+- **Nommage** : l'entrée devient **Tableau**. `?page=benchmarks` redirige vers
+  `pivot` plutôt que de tomber sur l'écran par défaut.
+- **Retiré** : `BenchmarksPage.tsx` (1 137 l.), `benchmarks/charts.ts`,
+  `/api/workbench`, et le moteur de `studio.py` — **1 089 → 320 lignes**.
+  `reliability_metadata` est conservée, comme demandé.
+- **Tests** : 8 neufs sur le pivot (contrat, totaux = somme des cellules,
+  plafond, ordre du temps, recoupement avec le cube). Les 11 tests du workbench
+  partent avec lui. 55 tests verts, au-dessus du plancher de 54.
+- **Écart signalé** : la « dispersion » de l'ancien écran n'est pas reprise
+  comme agrégation. Elle se lit directement dans le tableau — l'étendue des
+  cellules d'une ligne est ce que la teinte montre — et un chiffre de plus
+  n'aurait rien ajouté.
+- **Dérive documentaire corrigée au passage** : `DESIGN.md` affirmait encore que
+  la série seule prend `--accent` (faux depuis 1.8) et que les réserves partent
+  entières dans l'image (faux depuis 1.5).

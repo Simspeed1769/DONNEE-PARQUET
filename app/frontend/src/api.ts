@@ -17,11 +17,10 @@ import type {
   PopulationExtractionRequest,
   PopulationMetadata,
   PopulationOverview,
-  WorkbenchRequest,
-  WorkbenchResult,
 } from "./types";
 import type { ExploreResponse } from "./explore/model";
 import type { PanoramaResponse } from "./panorama/model";
+import type { PivotResponse } from "./pivot/model";
 import type { AdvancedFilters } from "./types";
 
 export type ExploreRequest = AdvancedFilters & {
@@ -78,6 +77,15 @@ export function getMetadata(signal?: AbortSignal): Promise<Metadata> {
 
 export function runExplore(payload: ExploreRequest, signal?: AbortSignal): Promise<ExploreResponse> {
   return post<ExploreResponse>("/api/explore", payload, signal);
+}
+
+export type PivotRequest = AdvancedFilters & { rows: string; columns: string };
+
+/** Le tableau croisé. Comme `/api/explore`, la réponse ne porte que des
+ *  composantes brutes et des formules : changer de mesure ou d'agrégation se
+ *  fait dans le navigateur, sans repasser par ici. */
+export function runPivot(payload: PivotRequest, signal?: AbortSignal): Promise<PivotResponse> {
+  return post<PivotResponse>("/api/pivot", payload, signal);
 }
 
 export type PanoramaRequest = AdvancedFilters & {
@@ -210,10 +218,6 @@ export function getHierarchy(
   if (postValue) params.set("post", postValue);
   if (subPost) params.set("sub_post", subPost);
   return request<HierarchyOptions>(`/api/options?${params.toString()}`, signal);
-}
-
-export function runWorkbench(payload: WorkbenchRequest, signal?: AbortSignal): Promise<WorkbenchResult> {
-  return post<WorkbenchResult>("/api/workbench", payload, signal);
 }
 
 export function getPathologyMetadata(signal?: AbortSignal): Promise<PathologyMetadata> {

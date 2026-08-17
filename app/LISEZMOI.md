@@ -71,7 +71,7 @@ endroit (`FORMULAS` dans `explore.py`).
 | Explicitement absents | NumPy, SciPy, pandas, statsmodels · react-router, Redux/Zustand, Tailwind, MUI, axios, react-query, toute lib d'animation |
 
 **Neuf écrans** : DAMIR · Pathologies · CSP · Mortalité · Population ·
-Croisements · Repères · Extraire · Données & méthode.
+Croisements · Tableau · Extraire · Données & méthode.
 
 **État de santé au 15 août 2026.**
 
@@ -177,7 +177,8 @@ Outil_DAMIR_V1/
 | `explore.py` | 438 | moteur générique : composantes brutes + `FORMULAS` |
 | `panorama.py` | 449 | sujets × facettes en un balayage (`GROUPING SETS`) |
 | `correlations.py` | 1 200 | vocabulaire commun des 5 sources, corrélation, régression |
-| `studio.py` | 1 091 | Repères (`workbench`) + `methodology()` + cadence de liquidation |
+| `studio.py` | 320 | `methodology()` + cadence de liquidation |
+| `pivot.py` | 213 | le Tableau : croisé à deux dimensions, composantes brutes |
 | `csp.py` | 530 | base CSP (Insee, recensement) |
 | `population.py` | 455 | base Population (Insee) + dénominateur de référence |
 | `pathologies.py` | 416 | base Cartographie (Cnam) |
@@ -215,7 +216,7 @@ panorama/            model · slides (le modèle qui décide des formes) · char
 explore/             model (dérivation des indicateurs) · SeriesPicker · seriesScope
 pathologies/  csp/  mortality/  population/     model + section + 2 sections React
 correlations/        GuidedPanel (routé) · RegressionPanel · AdvancedCross (NON routé)
-benchmarks/          charts
+pivot/               model (agrégations, teinte, tri)
 methodology/         denominators (33 lignes de dénominateurs, écrites à la main)
 pages/               9 fichiers, un par écran
 theme.css            LA source des couleurs (361 l.)
@@ -502,7 +503,7 @@ annuelles qui progressent, non-indépendance des années d'une même région,
 divergence Pearson/Spearman > 0,25, et **toujours** la garde du sophisme
 écologique.
 
-### `studio.py` — Repères et méthodologie
+### `studio.py` — fiabilité et méthodologie
 
 Six « questions » : `evolution`, `comparison`, `juxtaposition`, `liquidation`,
 `decomposition`, `calculator`. Chacune renvoie la même forme de réponse (titre,
@@ -563,7 +564,7 @@ et `immutable, max-age=31536000` sur `/assets/`.
 | `POST /api/explore` | agrégation générique par dimension | `lru_cache(64)` |
 | `POST /api/explore/options` | modalités classées par poids + recherche | `lru_cache(32)` sur le **seul périmètre** |
 | `POST /api/panorama` | sujets × facettes en un balayage | `lru_cache(64)` + référentiel en `lru_cache(16)` |
-| `POST /api/workbench` | les six calculs de Repères | — |
+| `POST /api/pivot` | le croisé à deux dimensions : composantes brutes + formules | `lru_cache(32)` |
 
 Astuce notable sur `/api/explore/options` : la clé de cache neutralise `query`
 et `limit`, de sorte que **la frappe au clavier ne relance aucun balayage** —
@@ -932,7 +933,7 @@ quatre groupes.
 | Groupe | Entrées |
 |---|---|
 | **EXPLORER** | DAMIR · Pathologies · CSP · Mortalité · Population |
-| **CROISER** | Croisements · Repères (pastille « 4 ») |
+| **CROISER** | Croisements · Tableau |
 | **EXTRAIRE** | Extraire |
 | **RÉFÉRENTIEL** | Données & méthode |
 
@@ -1266,26 +1267,36 @@ exportée.
 
 ---
 
-### 10.7 Repères — `pages/BenchmarksPage.tsx` (1 137 l.)
+### 10.7 Tableau — `pages/PivotPage.tsx`
 
-Un espace statistique commun aux quatre premières sources. On choisit une
-**source**, puis un **calcul**, et l'écran n'offre que les calculs défendables
-sur cette source.
+Un **croisé dynamique** sur le cube DAMIR : deux axes, une mesure, une
+agrégation. L'objet que tout le monde a manipulé dans un tableur, donc zéro
+apprentissage.
 
-Six calculs : `value` (la valeur), `period_total` (cumul de période),
-`average_unit` (moyenne par unité), `cagr` (taux de croissance annuel moyen),
-`change` (variation), `dispersion`.
+Il remplace « Repères », qui choisissait une source puis un calcul parmi six et
+produisait **un chiffre** — alors que Panorama affichait déjà la dernière
+valeur, la variation et le cumul.
 
-Le résultat est **un chiffre**, avec sa phrase, son périmètre, sa comparaison,
-ses badges, et sa **méthode dépliée** : définition, formule, dénominateur,
-limitation. Le graphique n'est qu'un **contexte replié** (« Voir le contexte »),
-en deux formes seulement — un classement de territoires ou de causes, ou une
-trajectoire par millésime (`benchmarks/charts.ts`).
+- **Trois zones** : Lignes, Colonnes (dans la barre de portée, avec le
+  périmètre — un axe est un choix de sujet), et Mesure.
+- **Six agrégations**, celles de l'ancien écran : dernière année, cumul,
+  moyenne par an, variation, TCAM, part du total. Le modèle **retire** variation
+  et TCAM quand l'année est déjà l'un des axes : chaque cellule se comparerait
+  à elle-même.
+- **Totaux de ligne, de colonne et général**, tri sur n'importe quelle colonne,
+  cellules teintées par la rampe séquentielle. Les totaux sont exclus de
+  l'échelle de teinte, sinon toutes les cellules paraîtraient pâles.
+- **La méthode dépliée est conservée** : définition, formule, dénominateur,
+  point de vigilance. C'est ce qui distingue ce tableau d'un croisé de tableur.
+- **Exports** : CSV côté client, PNG par le chemin commun, Excel en passant le
+  croisement à Extraire — une seule fabrique de classeur dans le produit.
 
-Il consomme `/api/workbench` pour DAMIR et les endpoints `overview` pour les
-trois autres. Export : CSV côté client.
+Il consomme `POST /api/pivot`, qui respecte le contrat central : **composantes
+brutes + `formula_spec`**, jamais un indicateur calculé. Changer de mesure ou
+d'agrégation ne provoque donc aucune requête.
 
-C'est **le plus gros fichier du frontend** et l'un des points de dette (§16).
+**Frontière avec Extraire**, écrite dans l'écran : Extraire sort des lignes
+brutes pour un tableur ; le Tableau donne un agrégat lisible à l'écran.
 
 ---
 

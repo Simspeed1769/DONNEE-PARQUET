@@ -147,19 +147,20 @@
   column-gap: 9px;
 }
 
-/* Le sélecteur d'axe emprunte la hauteur et le filet des autres champs de la
-   barre, et son panneau se pose **au-dessus** du contenu : la barre ne change
-   pas de hauteur quand on l'ouvre. */
-.scope-bar-breakdown > .choice-select { border-color: var(--line-strong); border-radius: var(--radius); }
-.scope-bar-breakdown > .choice-select summary { min-height: 39px; padding: 0 11px; }
-.scope-bar-breakdown > .choice-select summary > span:first-child { display: none; }
-.scope-bar-breakdown > .choice-select summary strong {
+/* Tout sélecteur d'axe posé dans la barre — « Comparer selon » sur Comparer,
+   « Lignes » et « Colonnes » sur le Tableau — emprunte la hauteur et le filet
+   des autres champs, et son panneau se pose **au-dessus** du contenu : la
+   barre ne change pas de hauteur quand on l'ouvre. */
+.scope-bar-field > .choice-select { border-color: var(--line-strong); border-radius: var(--radius); }
+.scope-bar-field > .choice-select summary { min-height: 39px; padding: 0 11px; }
+.scope-bar-field > .choice-select summary > span:first-child { display: none; }
+.scope-bar-field > .choice-select summary strong {
   max-width: none;
   color: var(--ink-soft);
   font-size: .63rem;
   font-weight: 500;
 }
-.scope-bar-breakdown > .choice-select .choice-popover {
+.scope-bar-field > .choice-select .choice-popover {
   position: absolute;
   z-index: 40;
   top: calc(100% + 5px);

@@ -87,12 +87,8 @@ from .correlations import (
 )
 from .explore import ExploreRequest, OptionsRequest, aggregate_options, explore, filter_options
 from .panorama import PanoramaRequest, panorama, reference_block
-from .studio import (
-    WorkbenchRequest,
-    methodology,
-    run_workbench,
-    studio_metadata,
-)
+from .pivot import PivotRequest, pivot
+from .studio import methodology, studio_metadata
 
 
 APP_DIR = Path(__file__).resolve().parent
@@ -483,10 +479,20 @@ def options(
     return hierarchy_options(repository, grand_post, post, sub_post)
 
 
-@app.post("/api/workbench")
-def workbench(payload: WorkbenchRequest) -> dict[str, Any]:
+@lru_cache(maxsize=32)
+def _pivot_cached(payload_json: str) -> dict[str, Any]:
+    return pivot(repository, PivotRequest.model_validate_json(payload_json), REGIONS)
+
+
+@app.post("/api/pivot")
+def pivot_view(payload: PivotRequest) -> dict[str, Any]:
+    """Le tableau croisé : deux dimensions, composantes brutes, formules.
+
+    Comme `/api/explore`, cette route ne renvoie aucun indicateur calculé :
+    changer de mesure ou d'agrégation se fait côté client, sans requête.
+    """
     try:
-        return run_workbench(repository, payload, REGIONS)
+        return _pivot_cached(payload.model_dump_json())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

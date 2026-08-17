@@ -1,0 +1,251 @@
+/* Le Tableau — un croisé dynamique.
+ *
+ * Rien de nouveau côté couleurs : la teinte des cellules vient de la rampe
+ * séquentielle du thème, la même que les cartes et les cartes de chaleur. Elle
+ * code une **grandeur**, jamais une identité — c'est pourquoi ce n'est pas la
+ * palette catégorielle qui sert ici. */
+
+.pivot-page { width: min(1680px, 100%); padding: 34px 40px 64px; }
+.pivot-hero { align-items: center; }
+.pivot-hero p strong { color: var(--ink); font-weight: 700; }
+
+.pivot-hero-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+.pivot-hero-actions button {
+  min-height: 37px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-secondary);
+  background: var(--surface);
+  font-size: .62rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.pivot-hero-actions button:hover { color: var(--ink); border-color: var(--line-strong); }
+.pivot-hero-actions button[aria-pressed="true"] {
+  color: var(--accent-hover);
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+
+.pivot-stage { margin-top: 16px; padding: 20px 22px 14px; }
+.pivot-stage-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.pivot-stage-head h2 { margin: 0; color: var(--ink); font-size: 1.05rem; letter-spacing: -.015em; }
+
+.pivot-controls { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.pivot-measure { min-width: 190px; }
+.pivot-aggregation { min-width: 176px; }
+/* Les deux sélecteurs empruntent la forme des champs de la barre de portée :
+   même hauteur, même filet, et un panneau qui se pose au-dessus du contenu. */
+.pivot-controls .choice-select { border-color: var(--line-strong); border-radius: var(--radius); }
+.pivot-controls .choice-select summary { min-height: 37px; padding: 0 11px; }
+.pivot-controls .choice-select summary > span:first-child { display: none; }
+.pivot-controls .choice-select summary strong {
+  max-width: none;
+  color: var(--ink-soft);
+  font-size: .62rem;
+  font-weight: 500;
+}
+.pivot-controls .choice-popover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 5px);
+  right: 0;
+  left: auto;
+  min-width: 220px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-floating);
+}
+
+.pivot-note { margin: 10px 0 0; color: var(--warning-text); font-size: .6rem; }
+
+/* — Le tableau —
+   Il défile dans son propre cadre : un croisé large ne doit pas faire défiler
+   la page, et l'en-tête doit rester lisible pendant qu'on parcourt les lignes. */
+.pivot-table-wrap {
+  max-height: 560px;
+  margin-top: 12px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  scrollbar-width: thin;
+}
+
+.pivot-table { width: 100%; border-collapse: separate; border-spacing: 0; font-variant-numeric: tabular-nums; }
+
+.pivot-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 0;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--surface-sunken);
+  text-align: right;
+  white-space: nowrap;
+}
+.pivot-table thead th button {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  color: var(--ink-secondary);
+  background: transparent;
+  font: inherit;
+  font-size: .62rem;
+  font-weight: 800;
+  text-align: right;
+  cursor: pointer;
+}
+.pivot-table thead th button:hover { color: var(--accent-hover); }
+
+/* Le coin et la colonne des libellés restent visibles pendant le défilement
+   horizontal : sans eux, un tableau large devient une grille de chiffres
+   anonymes. */
+.pivot-corner,
+.pivot-table tbody th,
+.pivot-table tfoot th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  padding: 10px 12px;
+  background: var(--surface-sunken);
+  color: var(--ink);
+  font-size: .64rem;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+.pivot-corner { z-index: 3; color: var(--ink-muted); font-weight: 800; font-size: .58rem; }
+
+.pivot-table tbody td,
+.pivot-table tfoot td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-size: .68rem;
+  text-align: right;
+  white-space: nowrap;
+}
+.pivot-table tbody tr:last-child td { border-bottom: 0; }
+
+/* Une cellule sans donnée n'est pas une cellule à zéro : elle ne prend aucune
+   marche de la rampe, et son tiret le dit. */
+.pivot-void { color: var(--ink-muted); background: var(--map-void); }
+
+.pivot-total,
+.pivot-total-head { font-weight: 800; }
+.pivot-table tfoot td,
+.pivot-table tfoot th {
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 0;
+  background: var(--surface-sunken);
+  font-weight: 800;
+}
+
+.pivot-warnings {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pivot-warnings li {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--warning-text);
+  background: var(--warning-wash);
+  font-size: .58rem;
+  line-height: 1.45;
+}
+
+/* — La méthode dépliée —
+   Ce qui distingue ce tableau d'un croisé de tableur. Elle vit sous le
+   tableau plutôt qu'en tiroir latéral : à cette largeur, un panneau de côté
+   volait la place aux colonnes. */
+.pivot-method { margin-top: 16px; padding: 20px 24px 22px; }
+.pivot-method > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.pivot-method > header span {
+  display: block;
+  color: var(--accent-hover);
+  font-size: .5rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.pivot-method > header h3 { margin: 6px 0 0; color: var(--ink); font-size: .86rem; }
+.pivot-method > header button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  background: var(--surface);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.pivot-method section { margin-top: 16px; }
+.pivot-method section > span {
+  display: block;
+  color: var(--ink-muted);
+  font-size: .5rem;
+  font-weight: 850;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.pivot-method section p { margin: 7px 0 0; color: var(--ink-secondary); font-size: .62rem; line-height: 1.55; }
+.pivot-method section strong {
+  display: block;
+  margin: 7px 0 0;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  background: var(--surface-sunken);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: .6rem;
+  font-weight: 600;
+}
+.pivot-method section.limitation {
+  padding: 12px 13px;
+  border-left: 3px solid var(--warning);
+  background: var(--warning-wash);
+}
+.pivot-method section.limitation p { color: var(--warning-text); }
+.pivot-method-rule {
+  margin-top: 18px;
+  padding: 12px 13px;
+  border: 1px solid var(--good-line);
+  border-radius: var(--radius-sm);
+  color: var(--good-text);
+  background: var(--good-wash);
+  font-size: .56rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .pivot-page { padding: 28px 22px 48px; }
+  .pivot-stage-head { align-items: flex-start; flex-direction: column; }
+  .pivot-controls { width: 100%; }
+}
+
+@media (max-width: 620px) {
+  .pivot-measure,
+  .pivot-aggregation { min-width: 0; flex: 1; }
+  .pivot-table-wrap { max-height: 440px; }
+}
