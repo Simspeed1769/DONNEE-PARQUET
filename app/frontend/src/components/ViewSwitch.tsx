@@ -1,17 +1,21 @@
-/** Le choix de vue : cinq d'accès direct, le reste replié.
+/** Le choix de vue, et son repli **quand l'appelant en demande un**.
  *
  *  Dix boutons de vue en permanence, c'était trop : la bande de commandes
  *  passait sur deux lignes et poussait le graphique sous la ligne de flottaison
- *  d'un portable. Les cinq vues qui répondent aux questions courantes —
- *  Courbes, Barres, Classement, Base 100, Variation — restent à un clic ; les
- *  formes de composition et de comparaison croisée s'ouvrent sous « Autres
- *  vues ».
+ *  d'un portable. D'où « Autres vues » — mais le composant décidait seul, sur
+ *  une liste écrite ici, quelles vues méritaient un bouton visible. Un écran qui
+ *  n'offre que trois formes héritait donc d'un bouton de repli qui ne repliait
+ *  rien, tout en ajoutant un contrôle : l'inverse de ce qu'on lui demandait.
  *
- *  **Le repli est cosmétique, jamais une autorisation.** C'est toujours le
+ *  **Le repli est devenu une propriété du modèle.** L'appelant nomme les vues à
+ *  replier ; s'il n'en nomme aucune, tout est en accès direct et aucun bouton
+ *  n'apparaît. Le Panorama des cinq bases ne replie rien ; seul le Comparer de
+ *  DAMIR, qui offre dix formes, garde son repli.
+ *
+ *  **Le repli reste cosmétique, jamais une autorisation.** C'est toujours le
  *  modèle qui décide des formes licites : une vue qui mentirait — un camembert
  *  sur une mesure non additive, une carte de chaleur à deux séries — n'arrive
- *  pas jusqu'ici. Ce composant ne reçoit que des vues déjà permises, et se
- *  contente de choisir lesquelles méritent un bouton visible.
+ *  pas jusqu'ici. Ce composant ne reçoit que des vues déjà permises.
  *
  *  Quand la vue active est repliée, son nom s'écrit sur le bouton de repli :
  *  sans cela, l'écran afficherait un camembert sans que rien ne dise pourquoi.
@@ -23,7 +27,9 @@ import { POPOVER, m } from "./motion";
 
 export type ViewOption = { key: string; label: string };
 
-/** Les vues d'accès direct, dans cet ordre. Tout le reste se replie.
+/** Les vues que le **Comparer de DAMIR** garde en accès direct ; il replie le
+ *  reste. Elle vit ici parce que c'est le seul écran qui replie, et qu'une
+ *  constante partagée par un unique appelant n'a pas à voyager.
  *
  *  Le critère : répondent-elles à une question qu'on se pose *avant* d'avoir
  *  une hypothèse ? Combien, combien par période, laquelle pèse le plus,
@@ -39,14 +45,21 @@ type Props = {
   onChange: (key: string) => void;
   /** Nom du groupe pour les lecteurs d'écran : « Vue », « Forme du graphique ». */
   label: string;
+  /** Les vues à replier derrière « Autres vues ».
+   *
+   *  Omise ou vide : rien n'est replié et le bouton n'existe pas. C'est le cas
+   *  de tous les Panoramas — leurs trois ou quatre formes tiennent sur une
+   *  rangée, et un bouton de repli n'y aurait rien à replier. */
+  folded?: readonly string[];
 };
 
-export function ViewSwitch({ options, value, onChange, label }: Props) {
+export function ViewSwitch({ options, value, onChange, label, folded: foldedKeys }: Props) {
   const [open, setOpen] = useState(false);
   const holder = useRef<HTMLDivElement | null>(null);
 
-  const primary = options.filter((item) => PRIMARY_VIEWS.includes(item.key as never));
-  const folded = options.filter((item) => !PRIMARY_VIEWS.includes(item.key as never));
+  const shouldFold = (key: string) => Boolean(foldedKeys?.includes(key));
+  const primary = options.filter((item) => !shouldFold(item.key));
+  const folded = options.filter((item) => shouldFold(item.key));
   const foldedActive = folded.find((item) => item.key === value) ?? null;
 
   // Même piège que partout ailleurs dans le dépôt : l'écoute posée dans la

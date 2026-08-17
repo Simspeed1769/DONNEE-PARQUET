@@ -41,7 +41,7 @@ import { isFree, lockedField, newFreeKey, scopeChips, scopeForSeries, type Serie
 import { csvFromRows, formatValue, writeFilters } from "../utils";
 import { ExportPngButton } from "../components/ExportPngButton";
 import { PaletteChoice } from "../components/PaletteChoice";
-import { ViewSwitch } from "../components/ViewSwitch";
+import { PRIMARY_VIEWS, ViewSwitch } from "../components/ViewSwitch";
 import { SOURCE_LINE } from "../panorama/exportSlide";
 import type { SectionProps } from "./PanoramaSection";
 
@@ -635,11 +635,17 @@ export function CompareSection({
         <div className="damir-strip">
           <p className="damir-question">{view.question}</p>
           <div className="damir-strip-controls">
+            {/* Le seul écran qui replie : dix formes, dont cinq répondent à une
+                question qu'on ne se pose qu'après avoir une hypothèse. Partout
+                ailleurs le repli est omis, et le bouton n'existe pas. */}
             <ViewSwitch
               options={availableViews}
               value={view.key}
               onChange={(key) => setViewKey(key as ViewKey)}
               label="Vue"
+              folded={availableViews
+                .map((item) => item.key)
+                .filter((key) => !PRIMARY_VIEWS.includes(key as never))}
             />
             <PaletteChoice />
           </div>

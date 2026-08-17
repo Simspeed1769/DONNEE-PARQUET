@@ -1163,3 +1163,17 @@ aurait coûté plus qu'il n'aurait préservé.
   choix de forme (`.damir-strip`). L'utilisateur avait demandé l'inverse la
   veille — une zone dédiée au-dessus de la carte. La zone dédiée est conservée ;
   tout le reste du point (poids typographique, cadres, plafond) est appliqué.
+
+## v7 · Mission « Alléger » point 3 — « Autres vues » n'appartient qu'à Comparer
+
+- **Le repli était décidé par le composant**, sur une liste écrite en dur
+  (`PRIMARY_VIEWS`). Un Panorama qui n'offre que trois formes héritait donc d'un
+  bouton qui ne repliait rien, tout en ajoutant un contrôle.
+- **Il devient une propriété de l'appelant** : `ViewSwitch` reçoit `folded`, et
+  sans elle ne replie rien — le bouton n'existe alors pas du tout, plutôt que
+  d'exister vide.
+- **Seul le Comparer de DAMIR replie**, parce que lui seul offre dix formes.
+  Vérifié à l'écran : Panorama Pathologies n'affiche plus que « Courbe / Barres »,
+  Comparer conserve « Autres vues 4 ».
+- `PRIMARY_VIEWS` reste exporté mais n'a plus qu'un appelant, ce que son
+  commentaire dit désormais.
