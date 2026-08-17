@@ -710,3 +710,34 @@ permanent. Trois simplifications, et rien touché à ce qui protège la lecture.
 - **Signalé, hors périmètre** : rien n'empêche d'expliquer une mesure par
   elle-même (effet 0 %, intervalle nul). C'est une forme qui ne ment pas mais
   qui n'apprend rien ; à traiter si l'usage le remonte.
+
+## Bloc 2.3 — un seul module d'export
+
+Le motif CSV + Excel était recopié **cinq fois** dans `main.py`, pour plus de
+400 lignes quasi identiques.
+
+- **Fait.** `app/exports.py` : une `ExportSpec` par source — nom de fichier,
+  colonnes, lignes, largeurs, métadonnées — et deux fonctions, `csv_response`
+  et `xlsx_response`. `main.py` passe de **1 189 à 986 lignes**, et chaque
+  source tient désormais en une trentaine de lignes déclaratives.
+- **Rien perdu, et même gagné.** DAMIR, CSP et Pathologies n'avaient ni
+  en-têtes figées, ni largeurs de colonne, ni bandeau coloré : ils les ont
+  maintenant. Le dictionnaire des mesures DAMIR et l'état de consolidation sont
+  portés par `extra_blocks`, un mécanisme général plutôt qu'un cas particulier.
+- **Ce qui reste réglable par source, parce que c'en est vraiment un choix** :
+  le format des pourcentages — une décimale pour DAMIR et Pathologies, deux
+  pour les trois autres. Unifier aurait été un appauvrissement déguisé en
+  cohérence.
+- **Non déplacé, volontairement** : la limite de 250 000 lignes et les règles de
+  cohérence par source (« conservez la dimension Cause… ») restent dans les
+  `*_extraction_rows`, où elles protègent la requête et pas seulement le
+  fichier. Elles se sont d'ailleurs manifestées en écrivant les tests, ce qui
+  est la preuve qu'elles tiennent toujours.
+- **Tests** : `test_exports.py`, 6 tests qui parcourent **les cinq sources** —
+  point-virgule et nomenclature d'octets, deux feuilles, en-têtes figées,
+  source et date, dictionnaire DAMIR, largeurs et formats, et une valeur
+  absente qui reste vide. 61 tests verts.
+- **Trouvé en écrivant les tests** : sur une colonne unique, le module `csv`
+  écrit `""` pour distinguer un champ vide d'une ligne vide. Artefact du
+  format, pas du produit — le test porte donc sur deux colonnes, comme la
+  réalité.

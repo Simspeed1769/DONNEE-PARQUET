@@ -1,6 +1,5 @@
 ﻿from __future__ import annotations
 
-import csv
 import io
 import os
 import threading
@@ -16,13 +15,10 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from openpyxl import Workbook
-from openpyxl.cell import WriteOnlyCell
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment, Font, PatternFill
-from openpyxl.utils import get_column_letter
 
 from .cache import DiskCache, fingerprint
+from .exports import ExportSpec, csv_response, metadata_header, xlsx_response
 from .analysis import (
     DIMENSIONS,
     METRICS,
@@ -669,89 +665,38 @@ def population_extraction_preview_view(payload: PopulationExtractionRequest) -> 
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
-@app.post("/api/population/extraction.csv")
-def population_extraction_csv(payload: PopulationExtractionRequest) -> StreamingResponse:
-    try:
-        rows = population_extraction_rows(repository, payload)
-        columns = population_extraction_columns(payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    output = io.StringIO()
-    writer = csv.writer(output, delimiter=";")
-    writer.writerow([column["label"] for column in columns])
-    for row in rows:
-        writer.writerow([row.get(column["key"]) for column in columns])
-    headers = {"Content-Disposition": 'attachment; filename="population_extraction.csv"'}
-    return StreamingResponse(iter(["﻿" + output.getvalue()]), media_type="text/csv; charset=utf-8",
-                             headers=headers)
-
-
-@app.post("/api/population/extraction.xlsx")
-def population_extraction_xlsx(payload: PopulationExtractionRequest) -> StreamingResponse:
+def _population_spec(payload: PopulationExtractionRequest) -> ExportSpec:
     try:
         rows = population_extraction_rows(repository, payload)
         columns = population_extraction_columns(payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     metadata = population_metadata(repository)
-    workbook = Workbook(write_only=True)
-    sheet = workbook.create_sheet("Données")
-    sheet.freeze_panes = "A2"
-    widths = {"year": 12, "region": 32, "age": 18, "sex": 14, "population": 18, "share": 20}
-    for index, column in enumerate(columns, start=1):
-        sheet.column_dimensions[get_column_letter(index)].width = widths.get(column["key"], 22)
-    header_fill = PatternFill(fill_type="solid", fgColor="18243A")
-    header_cells = []
-    for column in columns:
-        cell = WriteOnlyCell(sheet, value=column["label"])
-        cell.font = Font(bold=True, color="FFFFFF")
-        cell.fill = header_fill
-        cell.alignment = Alignment(vertical="center")
-        header_cells.append(cell)
-    sheet.append(header_cells)
-    for row in rows:
-        cells = []
-        for column in columns:
-            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
-            if column["kind"] == "quantity":
-                cell.number_format = "#,##0"
-            elif column["kind"] == "percent":
-                cell.number_format = "0.00"
-            cells.append(cell)
-        sheet.append(cells)
-    metadata_sheet = workbook.create_sheet("Métadonnées")
-    metadata_sheet.freeze_panes = "A2"
-    metadata_sheet.column_dimensions["A"].width = 24
-    metadata_sheet.column_dimensions["B"].width = 110
-    metadata_rows = [
-        ["Élément", "Valeur"],
-        ["Source", metadata["source"]],
-        ["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")],
-        ["Champ", metadata["scope"]],
-        ["Période", f"{payload.start_year}–{payload.end_year}"],
-        ["Dimensions", ", ".join(POPULATION_DIMENSIONS[key][0] for key in payload.dimensions)],
-        ["Mesures", ", ".join(POPULATION_MEASURES[key][0] for key in payload.measures)],
-        ["Précaution", "Population au 1er janvier : ce n’est pas une population moyenne annuelle."],
-        ["Valeurs absentes", "Une cellule non publiée reste vide et n’est jamais remplacée par zéro."],
-    ]
-    for row_index, values in enumerate(metadata_rows):
-        cells = []
-        for value in values:
-            cell = WriteOnlyCell(metadata_sheet, value=value)
-            cell.alignment = Alignment(vertical="top", wrap_text=True)
-            if row_index == 0:
-                cell.font = Font(bold=True, color="FFFFFF")
-                cell.fill = header_fill
-            elif len(cells) == 0:
-                cell.font = Font(bold=True, color="18243A")
-            cells.append(cell)
-        metadata_sheet.append(cells)
-    buffer = io.BytesIO()
-    workbook.save(buffer)
-    headers = {"Content-Disposition": 'attachment; filename="population_extraction.xlsx"'}
-    return StreamingResponse(iter([buffer.getvalue()]),
-                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             headers=headers)
+    return ExportSpec(
+        filename="population_extraction",
+        columns=columns,
+        rows=rows,
+        widths={"year": 12, "region": 32, "age": 18, "sex": 14, "population": 18, "share": 20},
+        metadata=[
+            *metadata_header(metadata["source"]),
+            ["Champ", metadata["scope"]],
+            ["Période", f"{payload.start_year}–{payload.end_year}"],
+            ["Dimensions", ", ".join(POPULATION_DIMENSIONS[key][0] for key in payload.dimensions)],
+            ["Mesures", ", ".join(POPULATION_MEASURES[key][0] for key in payload.measures)],
+            ["Précaution", "Population au 1er janvier : ce n’est pas une population moyenne annuelle."],
+            ["Valeurs absentes", "Une cellule non publiée reste vide et n’est jamais remplacée par zéro."],
+        ],
+    )
+
+
+@app.post("/api/population/extraction.csv")
+def population_extraction_csv(payload: PopulationExtractionRequest) -> StreamingResponse:
+    return csv_response(_population_spec(payload))
+
+
+@app.post("/api/population/extraction.xlsx")
+def population_extraction_xlsx(payload: PopulationExtractionRequest) -> StreamingResponse:
+    return xlsx_response(_population_spec(payload))
 
 
 @app.get("/api/mortality/meta")
@@ -778,323 +723,175 @@ def mortality_extraction_preview_view(payload: MortalityExtractionRequest) -> di
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
-@app.post("/api/mortality/extraction.csv")
-def mortality_extraction_csv(payload: MortalityExtractionRequest) -> StreamingResponse:
-    try:
-        rows = mortality_extraction_rows(repository, payload)
-        columns = mortality_extraction_columns(payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    output = io.StringIO(newline="")
-    writer = csv.writer(output, delimiter=";")
-    writer.writerow([column["label"] for column in columns])
-    for row in rows:
-        writer.writerow([row.get(column["key"]) for column in columns])
-    headers = {"Content-Disposition": 'attachment; filename="mortalite_extraction.csv"'}
-    return StreamingResponse(iter(["\ufeff" + output.getvalue()]), media_type="text/csv; charset=utf-8",
-                             headers=headers)
-
-
-@app.post("/api/mortality/extraction.xlsx")
-def mortality_extraction_xlsx(payload: MortalityExtractionRequest) -> StreamingResponse:
+def _mortality_spec(payload: MortalityExtractionRequest) -> ExportSpec:
     try:
         rows = mortality_extraction_rows(repository, payload)
         columns = mortality_extraction_columns(payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     metadata = mortality_metadata(repository)
-    selected_cause = next((item for item in metadata["causes"] if item["code"] == payload.cause), None)
-    workbook = Workbook(write_only=True)
-    sheet = workbook.create_sheet("Données")
-    sheet.freeze_panes = "A2"
-    column_widths = {
-        "year": 12,
-        "cause": 48,
-        "population": 24,
-        "deaths": 18,
-        "share": 20,
-    }
-    for index, column in enumerate(columns, start=1):
-        sheet.column_dimensions[get_column_letter(index)].width = column_widths.get(column["key"], 22)
-    header_fill = PatternFill(fill_type="solid", fgColor="18243A")
-    header_cells = []
-    for column in columns:
-        cell = WriteOnlyCell(sheet, value=column["label"])
-        cell.font = Font(bold=True, color="FFFFFF")
-        cell.fill = header_fill
-        cell.alignment = Alignment(vertical="center")
-        header_cells.append(cell)
-    sheet.append(header_cells)
-    for row in rows:
-        cells = []
-        for column in columns:
-            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
-            if column["kind"] == "quantity":
-                cell.number_format = "#,##0"
-            elif column["kind"] == "percent":
-                cell.number_format = "0.00"
-            cells.append(cell)
-        sheet.append(cells)
-    metadata_sheet = workbook.create_sheet("Métadonnées")
-    metadata_sheet.freeze_panes = "A2"
-    metadata_sheet.column_dimensions["A"].width = 24
-    metadata_sheet.column_dimensions["B"].width = 110
-    metadata_rows = [
-        ["Élément", "Valeur"],
-        ["Source", metadata["source"]],
-        ["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")],
-        ["Champ", metadata["scope"]],
-        ["Période", f"{payload.start_year}–{payload.end_year}"],
-        ["Cause", selected_cause["label"] if selected_cause else "Toutes les causes disponibles"],
-        ["Population", MORTALITY_GROUPS[payload.population] if payload.population in MORTALITY_GROUPS else "Tous les périmètres publiés"],
-        ["Dimensions", ", ".join(MORTALITY_DIMENSIONS[key][0] for key in payload.dimensions)],
-        ["Mesures", ", ".join(MORTALITY_MEASURES[key][0] for key in payload.measures)],
-        ["Précaution", "Effectifs bruts non rapportés à une population exposée ; aucune comparaison de risque ne doit être déduite."],
-        ["Valeurs absentes", "Une cellule non disponible ou non applicable reste vide et n’est jamais remplacée par zéro."],
-    ]
-    for row_index, values in enumerate(metadata_rows):
-        cells = []
-        for value in values:
-            cell = WriteOnlyCell(metadata_sheet, value=value)
-            cell.alignment = Alignment(vertical="top", wrap_text=True)
-            if row_index == 0:
-                cell.font = Font(bold=True, color="FFFFFF")
-                cell.fill = header_fill
-            elif len(cells) == 0:
-                cell.font = Font(bold=True, color="18243A")
-            cells.append(cell)
-        metadata_sheet.append(cells)
-    buffer = io.BytesIO()
-    workbook.save(buffer)
-    headers = {"Content-Disposition": 'attachment; filename="mortalite_extraction.xlsx"'}
-    return StreamingResponse(iter([buffer.getvalue()]),
-                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             headers=headers)
+    cause = next((item for item in metadata["causes"] if item["code"] == payload.cause), None)
+    return ExportSpec(
+        filename="mortalite_extraction",
+        columns=columns,
+        rows=rows,
+        widths={"year": 12, "cause": 48, "population": 24, "deaths": 18, "share": 20},
+        metadata=[
+            *metadata_header(metadata["source"]),
+            ["Champ", metadata["scope"]],
+            ["Période", f"{payload.start_year}–{payload.end_year}"],
+            ["Cause", cause["label"] if cause else "Toutes les causes disponibles"],
+            ["Population", MORTALITY_GROUPS.get(payload.population, "Tous les périmètres publiés")],
+            ["Dimensions", ", ".join(MORTALITY_DIMENSIONS[key][0] for key in payload.dimensions)],
+            ["Mesures", ", ".join(MORTALITY_MEASURES[key][0] for key in payload.measures)],
+            ["Précaution", "Effectifs bruts non rapportés à une population exposée ; aucune comparaison de risque ne doit être déduite."],
+            ["Valeurs absentes", "Une cellule non disponible ou non applicable reste vide et n’est jamais remplacée par zéro."],
+        ],
+    )
 
 
-@app.get("/api/csp/regions.geojson")
-def csp_regions_geojson() -> FileResponse:
-    if not CSP_GEOJSON_PATH.exists():
-        raise HTTPException(status_code=404, detail="Le fond de carte régional n’est pas disponible.")
-    return FileResponse(CSP_GEOJSON_PATH, media_type="application/geo+json")
+@app.post("/api/mortality/extraction.csv")
+def mortality_extraction_csv(payload: MortalityExtractionRequest) -> StreamingResponse:
+    return csv_response(_mortality_spec(payload))
 
 
-@app.post("/api/csp/extraction/preview")
-def csp_extraction_preview_view(payload: CspExtractionRequest) -> dict[str, Any]:
-    try:
-        return csp_extraction_preview(repository, payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
+@app.post("/api/mortality/extraction.xlsx")
+def mortality_extraction_xlsx(payload: MortalityExtractionRequest) -> StreamingResponse:
+    return xlsx_response(_mortality_spec(payload))
 
 
-@app.post("/api/csp/extraction.csv")
-def csp_extraction_csv(payload: CspExtractionRequest) -> StreamingResponse:
-    try:
-        rows = csp_extraction_rows(repository, payload)
-        columns = csp_extraction_columns(payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    output = io.StringIO(newline="")
-    writer = csv.writer(output, delimiter=";")
-    writer.writerow([column["label"] for column in columns])
-    for row in rows:
-        writer.writerow([row.get(column["key"]) for column in columns])
-    headers = {"Content-Disposition": f'attachment; filename="csp_extraction_{payload.year}.csv"'}
-    return StreamingResponse(iter(["\ufeff" + output.getvalue()]), media_type="text/csv; charset=utf-8",
-                             headers=headers)
-
-
-@app.post("/api/csp/extraction.xlsx")
-def csp_extraction_xlsx(payload: CspExtractionRequest) -> StreamingResponse:
+def _csp_spec(payload: CspExtractionRequest) -> ExportSpec:
     try:
         rows = csp_extraction_rows(repository, payload)
         columns = csp_extraction_columns(payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     metadata = csp_metadata(repository)
-    selected_level = next(item for item in metadata["levels"] if item["key"] == payload.level)
-    selected_csp = next((item for item in selected_level["options"] if item["code"] == payload.csp_code), None)
-    workbook = Workbook(write_only=True)
-    sheet = workbook.create_sheet("Données")
-    sheet.append([column["label"] for column in columns])
-    for row in rows:
-        cells = []
-        for column in columns:
-            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
-            if column["kind"] == "quantity":
-                cell.number_format = "#,##0"
-            elif column["kind"] == "percent":
-                cell.number_format = "0.00"
-            cells.append(cell)
-        sheet.append(cells)
-    metadata_sheet = workbook.create_sheet("Métadonnées")
-    metadata_sheet.append(["Élément", "Valeur"])
-    metadata_sheet.append(["Source", metadata.get("source", "Recensement de la population · Insee")])
-    metadata_sheet.append(["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")])
-    metadata_sheet.append(["Millésime", payload.year])
-    metadata_sheet.append(["Champ", "Actifs ayant un emploi (TACT = 11)"])
-    metadata_sheet.append(["Niveau CSP", selected_level["label"]])
-    metadata_sheet.append(["CSP", selected_csp["label"] if selected_csp else payload.csp_code])
-    metadata_sheet.append(["Dimensions", ", ".join(CSP_DIMENSIONS[key][0] for key in payload.dimensions)])
-    metadata_sheet.append(["Mesures", ", ".join(CSP_MEASURES[key][0] for key in payload.measures)])
-    metadata_sheet.append(["Pondération", "Effectifs calculés avec le poids individuel IPONDI"])
-    buffer = io.BytesIO()
-    workbook.save(buffer)
-    headers = {"Content-Disposition": f'attachment; filename="csp_extraction_{payload.year}.xlsx"'}
-    return StreamingResponse(iter([buffer.getvalue()]),
-                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             headers=headers)
+    level = next(item for item in metadata["levels"] if item["key"] == payload.level)
+    csp = next((item for item in level["options"] if item["code"] == payload.csp_code), None)
+    return ExportSpec(
+        filename=f"csp_extraction_{payload.year}",
+        columns=columns,
+        rows=rows,
+        widths={"year": 12, "region": 32, "age": 18, "sex": 14, "csp": 44, "effectif": 18, "share": 20},
+        metadata=[
+            *metadata_header(metadata.get("source", "Recensement de la population · Insee")),
+            ["Millésime", payload.year],
+            ["Champ", "Actifs ayant un emploi (TACT = 11)"],
+            ["Niveau CSP", level["label"]],
+            ["CSP", csp["label"] if csp else payload.csp_code],
+            ["Dimensions", ", ".join(CSP_DIMENSIONS[key][0] for key in payload.dimensions)],
+            ["Mesures", ", ".join(CSP_MEASURES[key][0] for key in payload.measures)],
+            ["Pondération", "Effectifs calculés avec le poids individuel IPONDI"],
+        ],
+    )
 
 
-@app.post("/api/pathologies/extraction/preview")
-def pathologies_extraction_preview_view(payload: PathologyExtractionRequest) -> dict[str, Any]:
+@app.post("/api/csp/extraction.csv")
+def csp_extraction_csv(payload: CspExtractionRequest) -> StreamingResponse:
+    return csv_response(_csp_spec(payload))
+
+
+@app.post("/api/csp/extraction.xlsx")
+def csp_extraction_xlsx(payload: CspExtractionRequest) -> StreamingResponse:
+    return xlsx_response(_csp_spec(payload))
+
+
+def _pathologies_spec(payload: PathologyExtractionRequest) -> ExportSpec:
     try:
-        return pathology_extraction_preview(repository, payload)
+        rows = pathology_extraction_rows(repository, payload)
+        columns = pathology_extraction_columns(payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return ExportSpec(
+        filename="pathologies_extraction",
+        columns=columns,
+        rows=rows,
+        widths={"year": 12, "region": 32, "age": 18, "sex": 14, "patients": 18, "prevalence": 20},
+        # Une décimale, comme DAMIR : une prévalence se lit à 0,1 point près.
+        percent_format="0.0",
+        metadata=[
+            *metadata_header("Cartographie des pathologies · Cnam"),
+            ["Code pathologie", payload.top],
+            ["Période", f"{payload.start_year}–{payload.end_year}"],
+            ["Dimensions", ", ".join(PATHOLOGY_DIMENSIONS[key][0] for key in payload.dimensions)],
+            ["Mesures", ", ".join(PATHOLOGY_MEASURES[key][0] for key in payload.measures)],
+            ["Secret statistique", "Les effectifs inférieurs à 10 patients peuvent être masqués à la source."],
+        ],
+    )
 
 
 @app.post("/api/pathologies/extraction.csv")
 def pathologies_extraction_csv(payload: PathologyExtractionRequest) -> StreamingResponse:
-    try:
-        rows = pathology_extraction_rows(repository, payload)
-        columns = pathology_extraction_columns(payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    output = io.StringIO(newline="")
-    writer = csv.writer(output, delimiter=";")
-    writer.writerow([column["label"] for column in columns])
-    for row in rows:
-        writer.writerow([row.get(column["key"]) for column in columns])
-    headers = {"Content-Disposition": 'attachment; filename="pathologies_extraction.csv"'}
-    return StreamingResponse(iter(["\ufeff" + output.getvalue()]), media_type="text/csv; charset=utf-8",
-                             headers=headers)
+    return csv_response(_pathologies_spec(payload))
 
 
 @app.post("/api/pathologies/extraction.xlsx")
 def pathologies_extraction_xlsx(payload: PathologyExtractionRequest) -> StreamingResponse:
-    try:
-        rows = pathology_extraction_rows(repository, payload)
-        columns = pathology_extraction_columns(payload)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    workbook = Workbook(write_only=True)
-    sheet = workbook.create_sheet("Données")
-    sheet.append([column["label"] for column in columns])
-    for row in rows:
-        cells = []
-        for column in columns:
-            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
-            if column["kind"] == "quantity":
-                cell.number_format = "#,##0"
-            elif column["kind"] == "percent":
-                cell.number_format = "0.0"
-            cells.append(cell)
-        sheet.append(cells)
-    metadata_sheet = workbook.create_sheet("Métadonnées")
-    metadata_sheet.append(["Élément", "Valeur"])
-    metadata_sheet.append(["Source", "Cartographie des pathologies · Cnam"])
-    metadata_sheet.append(["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")])
-    metadata_sheet.append(["Code pathologie", payload.top])
-    metadata_sheet.append(["Période", f"{payload.start_year}–{payload.end_year}"])
-    metadata_sheet.append(["Dimensions", ", ".join(PATHOLOGY_DIMENSIONS[key][0] for key in payload.dimensions)])
-    metadata_sheet.append(["Mesures", ", ".join(PATHOLOGY_MEASURES[key][0] for key in payload.measures)])
-    metadata_sheet.append(["Secret statistique", "Les effectifs inférieurs à 10 patients peuvent être masqués à la source."])
-    buffer = io.BytesIO()
-    workbook.save(buffer)
-    headers = {"Content-Disposition": 'attachment; filename="pathologies_extraction.xlsx"'}
-    return StreamingResponse(iter([buffer.getvalue()]),
-                             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                             headers=headers)
+    return xlsx_response(_pathologies_spec(payload))
 
 
-@app.post("/api/extraction/preview")
-def extraction(payload: ExtractionRequest) -> dict[str, Any]:
+def _damir_spec(payload: ExtractionRequest) -> ExportSpec:
+    """L'export DAMIR : le seul qui embarque un dictionnaire des mesures.
+
+    C'est ce que `extra_blocks` sert : sous les métadonnées, un tableau
+    Mesure / Définition / Formule / Précaution, puis l'état de consolidation.
+    Un fichier de remboursements qui circule sans dire jusqu'où l'exercice est
+    liquidé se lit comme une baisse là où il n'y a qu'un décalage.
+    """
     try:
-        return extraction_preview(repository, payload, REGIONS)
+        rows = extraction_rows(repository, payload, REGIONS)
+        columns = extraction_columns(payload)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+    method = methodology(repository)
+    definitions = {item["key"]: item for item in method["measures"]}
+    dictionary = [["Mesure", "Définition", "Formule", "Précaution"]]
+    for key in payload.measures:
+        item = definitions.get(key)
+        if item:
+            dictionary.append([item["label"], item["definition"], item["formula"], item["caveat"] or ""])
 
-def _rows_to_csv(rows: list[dict[str, Any]]) -> str:
-    output = io.StringIO(newline="")
-    if not rows:
-        return ""
-    writer = csv.DictWriter(output, fieldnames=list(rows[0]), delimiter=";")
-    writer.writeheader()
-    writer.writerows(rows)
-    return "\ufeff" + output.getvalue()
+    return ExportSpec(
+        filename="damir_extraction_avancee",
+        columns=columns,
+        rows=rows,
+        widths={"year": 12, "region": 32, "age": 18, "sex": 14, "grand_post": 40,
+                "post": 40, "sub_post": 40, "service": 44},
+        # Une décimale : un taux de prise en charge se lit à 0,1 point près.
+        percent_format="0.0",
+        metadata=[
+            *metadata_header("Open DAMIR · Assurance Maladie"),
+            ["Période", f"{payload.start_year}–{payload.end_year}"],
+            ["Grand poste", payload.grand_post or "Tous"],
+            ["Poste", payload.post or "Tous"],
+            ["Sous-poste", payload.sub_post or "Tous"],
+            ["Prestations", ", ".join(map(str, payload.service_codes)) or "Toutes"],
+            ["Sexes", ", ".join(map(str, payload.sexes)) or "Tous"],
+            ["Âges", ", ".join(map(str, payload.ages)) or "Tous"],
+            ["Régions", ", ".join(map(str, payload.regions)) or "Toutes"],
+            ["Assurances", ", ".join(map(str, payload.insurances)) or "Toutes"],
+            ["Enveloppes", ", ".join(map(str, payload.envelopes)) or "Toutes"],
+            ["ALD", "Toutes" if payload.ald is None else "ALD" if payload.ald == 1 else "Hors ALD"],
+            ["Dimensions", ", ".join(DIMENSIONS[key][0] for key in payload.dimensions)],
+            ["Mesures", ", ".join(METRICS[key].label for key in payload.measures)],
+        ],
+        extra_blocks=[
+            dictionary,
+            [["Consolidation", method["reliability"].get("status", "Indisponible")]],
+        ],
+    )
 
 
 @app.post("/api/extraction.csv")
 def extraction_csv(payload: ExtractionRequest) -> StreamingResponse:
-    try:
-        rows = extraction_rows(repository, payload, REGIONS)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    headers = {"Content-Disposition": 'attachment; filename="damir_extraction_avancee.csv"'}
-    return StreamingResponse(
-        iter([_rows_to_csv(rows)]),
-        media_type="text/csv; charset=utf-8",
-        headers=headers,
-    )
+    return csv_response(_damir_spec(payload))
 
 
 @app.post("/api/extraction.xlsx")
 def extraction_xlsx(payload: ExtractionRequest) -> StreamingResponse:
-    try:
-        rows = extraction_rows(repository, payload, REGIONS)
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    workbook = Workbook(write_only=True)
-    sheet = workbook.create_sheet("Données")
-    columns = extraction_columns(payload)
-    sheet.append([column["label"] for column in columns])
-    for row in rows:
-        cells = []
-        for column in columns:
-            cell = WriteOnlyCell(sheet, value=row.get(column["key"]))
-            if column["kind"] in ("money", "quantity"):
-                cell.number_format = "#,##0"
-            elif column["kind"] == "percent":
-                cell.number_format = "0.0"
-            cells.append(cell)
-        sheet.append(cells)
-    metadata_sheet = workbook.create_sheet("Métadonnées")
-    metadata_sheet.append(["Élément", "Valeur"])
-    metadata_sheet.append(["Source", "Open DAMIR · Assurance Maladie"])
-    metadata_sheet.append(["Date d’extraction", datetime.now().astimezone().isoformat(timespec="seconds")])
-    metadata_sheet.append(["Période", f"{payload.start_year}–{payload.end_year}"])
-    metadata_sheet.append(["Grand poste", payload.grand_post or "Tous"])
-    metadata_sheet.append(["Poste", payload.post or "Tous"])
-    metadata_sheet.append(["Sous-poste", payload.sub_post or "Tous"])
-    metadata_sheet.append(["Prestations", ", ".join(map(str, payload.service_codes)) or "Toutes"])
-    metadata_sheet.append(["Sexes", ", ".join(map(str, payload.sexes)) or "Tous"])
-    metadata_sheet.append(["Âges", ", ".join(map(str, payload.ages)) or "Tous"])
-    metadata_sheet.append(["Régions", ", ".join(map(str, payload.regions)) or "Toutes"])
-    metadata_sheet.append(["Assurances", ", ".join(map(str, payload.insurances)) or "Toutes"])
-    metadata_sheet.append(["Enveloppes", ", ".join(map(str, payload.envelopes)) or "Toutes"])
-    metadata_sheet.append(["ALD", "Toutes" if payload.ald is None else "ALD" if payload.ald == 1 else "Hors ALD"])
-    metadata_sheet.append(["Dimensions", ", ".join(DIMENSIONS[key][0] for key in payload.dimensions)])
-    metadata_sheet.append(["Mesures", ", ".join(METRICS[key].label for key in payload.measures)])
-    metadata_sheet.append([])
-    metadata_sheet.append(["Mesure", "Définition", "Formule", "Précaution"])
-    definitions = methodology(repository)["measures"]
-    selected = {item["key"]: item for item in definitions if item["key"] in payload.measures}
-    for key in payload.measures:
-        item = selected[key]
-        metadata_sheet.append([item["label"], item["definition"], item["formula"], item["caveat"] or ""])
-    reliability = methodology(repository)["reliability"]
-    metadata_sheet.append([])
-    metadata_sheet.append(["Consolidation", reliability.get("status", "Indisponible")])
-    buffer = io.BytesIO()
-    workbook.save(buffer)
-    headers = {"Content-Disposition": 'attachment; filename="damir_extraction_avancee.xlsx"'}
-    return StreamingResponse(
-        iter([buffer.getvalue()]),
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers=headers,
-    )
+    return xlsx_response(_damir_spec(payload))
 
 
 def _recoverable_logical_name(asset_name: str, suffix: str) -> str | None:
