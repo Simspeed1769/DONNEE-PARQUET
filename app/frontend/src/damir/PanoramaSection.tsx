@@ -185,13 +185,27 @@ export function PanoramaSection({
 
   /* La description des lectures vit à part de la palette : l'écran les assemble
      avec le thème courant, l'export les réassemble en clair. */
+  /** Les taux de liquidation, réduits aux années affichées.
+   *
+   *  Passés aux lectures plutôt que lus par elles : une réserve doit pouvoir
+   *  s'écrire hors de l'application, et l'export PNG la réassemble sans accès
+   *  aux métadonnées. */
+  const completenessByYear = useMemo(() => {
+    const table: Record<number, number> = {};
+    metadata.reliability.completeness?.forEach((item) => {
+      if (item.ratio !== null) table[item.year] = Math.round(item.ratio * 100);
+    });
+    return table;
+  }, [metadata]);
+
   const slidesInput = useMemo(() => (response && measure ? {
     response,
     measure,
     consolidatedThrough: metadata.reliability.consolidated_through,
+    completenessByYear,
     highlightedRegion: selectedRegion,
     forms,
-  } : null), [response, measure, metadata, selectedRegion, forms]);
+  } : null), [response, measure, metadata, completenessByYear, selectedRegion, forms]);
 
   const slides = useMemo<Slide[]>(
     () => (slidesInput ? buildSlides({ ...slidesInput, tokens }) : []),

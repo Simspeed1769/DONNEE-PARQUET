@@ -32,6 +32,64 @@ def _filter_data(payload: FilterPayload) -> dict[str, Any]:
     }
 
 
+#: Le délai au-delà duquel la courbe de liquidation est considérée close.
+#: C'est la borne de `curve`, et donc la définition pratique de « 100 % liquidé »
+#: dans tout le produit : ce qui arrive après deux ans n'est pas modélisé.
+MAX_DELAY = 24
+
+
+def _completeness(repo: QueryRepository, profile: dict[int, float],
+                  available_month: int) -> list[dict[str, Any]]:
+    """Part déjà liquidée de chaque année de soins, à la date des flux observés.
+
+    Une année de soins ne se clôt pas avec son dernier flux mensuel : les soins
+    de décembre se remboursent l'année suivante. Sans ce redressement, la
+    dernière année d'une courbe descend toujours — et l'écran donne à lire une
+    baisse là où il n'y a qu'une observation tronquée.
+
+    Le calcul est mois par mois, parce que la troncature l'est : au sein d'un
+    même exercice, janvier a été observé onze mois de plus que décembre. Le
+    profil (`curve`, mesuré sur les années mûres) dit quelle part chaque durée
+    d'observation représente ; la division redresse.
+
+    Aucune extrapolation au-delà de ce que le profil couvre : un mois observé
+    plus longtemps que `MAX_DELAY` est tenu pour complet, ce qui est la même
+    convention que celle de la courbe.
+    """
+    if not profile:
+        return []
+
+    rows = repo.query(
+        "SELECT soi_ann AS year, soi_moi AS month, SUM(rem)::DOUBLE AS value "
+        "FROM delays WHERE rem IS NOT NULL GROUP BY 1, 2 ORDER BY 1, 2"
+    )
+    longest = max(profile)
+    observed: dict[int, float] = {}
+    mature: dict[int, float] = {}
+    for row in rows:
+        year, month = int(row["year"]), int(row["month"])
+        value = max(float(row["value"] or 0), 0.0)
+        delay = available_month - (year * 12 + month)
+        share = profile.get(min(delay, longest), 0.0) if delay >= 0 else 0.0
+        observed[year] = observed.get(year, 0.0) + value
+        # Une part nulle ne peut pas servir de diviseur : le mois n'a rien été
+        # observé, donc rien n'est estimable. On ne le remplace pas par zéro —
+        # l'année entière devient inestimable, et le dira.
+        mature[year] = mature.get(year, 0.0) + (value / share if share > 0 else float("nan"))
+
+    result: list[dict[str, Any]] = []
+    for year in sorted(observed):
+        estimate = mature[year]
+        complete = estimate == estimate and estimate > 0  # écarte NaN
+        result.append({
+            "year": year,
+            "observed": observed[year],
+            "mature": estimate if complete else None,
+            "ratio": min(observed[year] / estimate, 1.0) if complete else None,
+        })
+    return result
+
+
 def reliability_metadata(repo: QueryRepository) -> dict[str, Any]:
     if not repo.has_delays:
         return {
@@ -42,6 +100,7 @@ def reliability_metadata(repo: QueryRepository) -> dict[str, Any]:
             "liquidation_observed_through": None,
             "thresholds": {},
             "curve": [],
+            "completeness": [],
         }
 
     maximum_rows = repo.query(
@@ -58,6 +117,7 @@ def reliability_metadata(repo: QueryRepository) -> dict[str, Any]:
             "liquidation_observed_through": None,
             "thresholds": {},
             "curve": [],
+            "completeness": [],
         }
 
     rows = repo.query(
@@ -75,11 +135,15 @@ def reliability_metadata(repo: QueryRepository) -> dict[str, Any]:
     cumulative = 0.0
     curve: list[dict[str, Any]] = []
     thresholds: dict[str, int | None] = {"50": None, "90": None, "95": None, "97": None}
+    # La même courbe sert deux fois : à l'écran, et comme profil de redressement
+    # dans `_completeness`. Deux mesures de la même cadence divergeraient.
+    profile: dict[int, float] = {}
     for row in rows:
         cumulative += max(float(row["value"] or 0), 0)
         percentage = 100 * cumulative / total if total else 0.0
         delay = int(row["delay"])
         curve.append({"delay": delay, "label": f"M+{delay}", "value": percentage})
+        profile[delay] = percentage / 100
         for threshold in thresholds:
             if thresholds[threshold] is None and percentage >= int(threshold):
                 thresholds[threshold] = delay
@@ -103,6 +167,7 @@ def reliability_metadata(repo: QueryRepository) -> dict[str, Any]:
         "liquidation_observed_through": liquidation_observed_through,
         "thresholds": thresholds,
         "curve": curve,
+        "completeness": _completeness(repo, profile, available_month),
     }
 
 

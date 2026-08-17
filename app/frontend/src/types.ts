@@ -30,6 +30,16 @@ export type Reliability = {
   liquidation_observed_through?: number | null;
   thresholds: Record<string, number | null>;
   curve: Array<{ delay: number; label: string; value: number }>;
+  /** Part déjà liquidée de chaque année de soins, à la date des flux observés.
+   *
+   *  `ratio` est `null` quand l'année n'est pas estimable — jamais 0, qui se
+   *  lirait comme « rien n'est liquidé » au lieu de « on ne sait pas ». */
+  completeness: Array<{
+    year: number;
+    observed: number;
+    mature: number | null;
+    ratio: number | null;
+  }>;
 };
 
 export type Metadata = {

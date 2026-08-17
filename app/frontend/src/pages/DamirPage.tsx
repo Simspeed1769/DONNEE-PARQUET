@@ -23,7 +23,7 @@ import { CompareSection } from "../damir/CompareSection";
 import { PanoramaSection } from "../damir/PanoramaSection";
 import { hasLegacyCompareParams, redirectLegacyCompareParams } from "../damir/legacyCompare";
 import type { AdvancedFilters, Metadata } from "../types";
-import { filtersFromSearch, writeFilters } from "../utils";
+import { filtersFromSearch, writeFilters, yearStatusLabel } from "../utils";
 
 /** Réécrit l'adresse une fois, avant que quoi que ce soit — ici ou dans les
  *  sections filles, qui relisent chacune `window.location` de leur côté —
@@ -95,8 +95,11 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
           <h1>DAMIR</h1>
         </div>
         <div className="damir-hero-side">
+          {/* Le taux plutôt que le mot : « en consolidation » signale un
+              manque, « liquidé à 91 % » le mesure — et c'est la différence
+              entre savoir qu'il faut se méfier et savoir de combien. */}
           <span className={`status-chip ${provisional ? "provisional" : "reliable"}`}>
-            {provisional ? `${filters.end_year} · en consolidation` : metadata.reliability.status}
+            {provisional ? yearStatusLabel(metadata, filters.end_year) : metadata.reliability.status}
           </span>
           <button type="button" className="method-link" onClick={onOpenMethodology}>Données &amp; méthode →</button>
         </div>

@@ -162,28 +162,61 @@ export type SeriesInput = {
   form: SeriesForm;
 };
 
+/** Rang de la première année encore en consolidation, `-1` s'il n'y en a pas. */
+export function provisionalFrom(years: number[], consolidatedThrough: number | null): number {
+  if (consolidatedThrough === null) return -1;
+  return years.findIndex((year) => year > consolidatedThrough);
+}
+
+/** Le point d'une année non consolidée, atténué.
+ *
+ *  La teinte reste **celle de la série** : atténuer n'est pas recolorer, et un
+ *  point qui changerait de couleur se lirait comme un autre sujet. Seule
+ *  l'intensité baisse, ce qui dit « pas encore acquis » sans rien affirmer
+ *  d'autre.
+ *
+ *  C'est un encodage **secondaire**, jamais le seul : la zone porte le mot
+ *  « en consolidation », et la réserve sous le graphique chiffre le taux. Un
+ *  lecteur qui ne perçoit pas la nuance a déjà lu les deux autres.
+ *
+ *  Seule la **couleur** est surchargée : ECharts fusionne le style d'un point
+ *  avec celui de sa série, si bien que l'arrondi des barres et le liseré des
+ *  symboles de courbe restent ceux du reste du graphique. Redéclarer ici tout
+ *  le style reviendrait à le maintenir en double.
+ */
+function provisionalDatum(value: number | null, color: string, tokens: ChartTokens) {
+  if (value === null) return null;
+  return {
+    value,
+    itemStyle: { color: withAlpha(color, tokens.mode === "dark" ? 0.42 : 0.34) },
+  };
+}
+
 /** La zone encore en consolidation, posée une seule fois. */
 export function provisionalMark(years: number[], consolidatedThrough: number | null,
                          tokens: ChartTokens) {
-  const from = consolidatedThrough === null
-    ? -1
-    : years.findIndex((year) => year > consolidatedThrough);
+  const from = provisionalFrom(years, consolidatedThrough);
   if (from < 0) return undefined;
   return {
     silent: true,
     itemStyle: { color: withAlpha(tokens.inkMuted, tokens.mode === "dark" ? 0.14 : 0.08) },
-    label: {
-      show: true,
-      position: "insideTop" as const,
-      distance: 6,
-      color: tokens.inkMuted,
-      fontFamily: tokens.font,
-      fontSize: 11,
-      formatter: "en consolidation",
-    },
-    data: [[{ xAxis: String(years[from]) }, { xAxis: String(years[years.length - 1]) }]],
+    // Bornée sur les **rangs** de l'axe, décalés d'un demi-pas, et non sur les
+    // libellés d'année. Bornée aux libellés, une zone d'une seule année allait
+    // de 2025 à 2025 : une largeur nulle, donc rien du tout à l'écran —
+    // précisément le cas courant, puisqu'un seul exercice est en général non
+    // consolidé.
+    data: [[{ xAxis: from - 0.5 }, { xAxis: years.length - 0.5 }]],
   };
 }
+//
+// Cette zone ne porte **pas** de libellé, et c'est un constat plutôt qu'un
+// choix : ni un `formatter`, ni un `name` sur la borne de départ n'ont réussi à
+// le faire rendre (vérifié à l'écran, aux deux formes). Plutôt que de laisser
+// un `label: { show: true }` qui n'affiche rien — une configuration qui ment
+// sur ce qu'elle fait —, la zone reste muette et le sens est porté ailleurs :
+// le point de l'année est atténué, et la réserve sous le graphique nomme
+// l'exercice et chiffre son taux de liquidation. Le signal textuel existe donc,
+// et c'est lui qui voyage dans le PNG.
 
 /** La trajectoire, sous la forme choisie.
  *
@@ -208,9 +241,18 @@ export function seriesOption({
   // se lit sans survol — donc aussi une fois projetée.
   const columnLabels = asBar && years.length <= 6;
 
+  // Les années au-delà de la consolidation portent une marque atténuée. Sans
+  // elle, le dernier point a l'aplomb des autres alors qu'il est un plancher.
+  const provisional = provisionalFrom(years, consolidatedThrough);
+
   const series = rows.map((row, index) => {
     const color = paletteColor(tokens, row.colorIndex, rows.length);
-    const data = row.values.map((value) => (value === null ? null : value / scale.divisor));
+    const data = row.values.map((value, position) => {
+      const scaled = value === null ? null : value / scale.divisor;
+      return provisional >= 0 && position >= provisional
+        ? provisionalDatum(scaled, color, tokens)
+        : scaled;
+    });
 
     if (asBar) {
       return {

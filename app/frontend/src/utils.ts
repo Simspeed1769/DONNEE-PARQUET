@@ -81,9 +81,24 @@ export function scaleFor(values: number[], kind: string): { divisor: number; lab
   return { divisor: 1, label: kind === "index" ? "Indice base 100" : "%" };
 }
 
+/** Part liquidée d'un exercice, en pourcentage entier — `null` si inconnue.
+ *
+ *  Arrondi à l'entier parce que la grandeur est une **estimation** : écrire
+ *  « 91,4 % » donnerait à un redressement une précision qu'il n'a pas.
+ */
+export function completenessRate(metadata: Metadata, year: number): number | null {
+  const row = metadata.reliability.completeness?.find((item) => item.year === year);
+  return row?.ratio == null ? null : Math.round(row.ratio * 100);
+}
+
 export function yearStatusLabel(metadata: Metadata, year: number): string {
   const consolidated = metadata.reliability.consolidated_through;
-  return consolidated !== null && year > consolidated ? `${year} · en consolidation` : String(year);
+  if (consolidated === null || year <= consolidated) return String(year);
+  // Le taux quand on l'a : « en consolidation » dit qu'il manque quelque chose,
+  // « liquidé à 91 % » dit combien — et c'est la seule des deux formulations
+  // avec laquelle on peut décider de lire le point ou de l'ignorer.
+  const rate = completenessRate(metadata, year);
+  return rate === null ? `${year} · en consolidation` : `${year} · liquidé à ${rate} %`;
 }
 
 export function defaultFilters(metadata: Metadata): AdvancedFilters {

@@ -143,6 +143,18 @@ def health() -> dict[str, str]:
 
 DISK_CACHE = DiskCache(CACHE_DIR)
 
+#: Version de la **forme** des métadonnées, à incrémenter dès qu'un champ y est
+#: ajouté, retiré ou change de sens.
+#:
+#: Sans elle, l'empreinte du cache ne porte que sur les fichiers de données : un
+#: poste dont le cube n'a pas bougé continuerait de servir l'ancienne charge
+#: utile, et le champ nouveau n'arriverait jamais à l'écran. La panne est
+#: silencieuse et trompeuse — le serveur est à jour, le front est à jour, et
+#: c'est un fichier JSON qui décide. Constaté en ajoutant `completeness` au
+#: point 3.4 : l'entrée en cache locale ne le contenait pas, et rien ne l'aurait
+#: signalé.
+METADATA_SCHEMA = 2
+
 
 def _build_metadata() -> dict[str, Any]:
     base = repository.metadata()
@@ -158,7 +170,7 @@ def metadata() -> dict[str, Any]:
     # Ces métadonnées coûtent plusieurs balayages du cube et ne changent qu'avec
     # les fichiers de données : le cache disque évite de les repayer à chaque
     # lancement, et l'empreinte les invalide dès qu'un cube bouge.
-    token = fingerprint([repository.cube_path, DELAYS_PATH, TRANSCO_PATH])
+    token = f"v{METADATA_SCHEMA}-{fingerprint([repository.cube_path, DELAYS_PATH, TRANSCO_PATH])}"
     return DISK_CACHE.get_or_build("metadata", token, _build_metadata)
 
 

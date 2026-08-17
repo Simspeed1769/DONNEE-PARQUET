@@ -919,3 +919,46 @@ contrarient.
   un territoire) · une table CIM-9 → CIM-10 (sans objet à partir de 2015) ·
   l'avertissement de carte sur le 99, réel mais relevant de l'interface et non
   d'un point d'ingestion — consigné en reste à faire.
+
+## v6 · Bloc 3 point 3.4 — Le taux de liquidation, à l'écran
+
+- **Le chiffre qui manquait.** `reliability_metadata` calculait la courbe de
+  liquidation et ses seuils, mais jamais la part déjà liquidée d'un exercice.
+  `_completeness` la dérive mois par mois — au sein d'un même exercice, janvier
+  a été observé onze mois de plus que décembre — en **réutilisant la courbe
+  déjà là** comme profil de redressement. Deux mesures de la même cadence
+  auraient divergé.
+- **Ce que ça donne : 2025 est liquidé à 91,3 %**, 2024 à 99,6 %. La puce de la
+  page DAMIR affiche désormais « 2025 · liquidé à 91 % » au lieu de
+  « en consolidation » : le premier libellé mesure, le second se contente de
+  prévenir. Et la formulation est plus courte que celle qu'elle remplace.
+- **La réserve est chiffrée, et sur les quatre lectures**, pas seulement
+  l'Évolution : Territoire, Âge et Sexe agrègent sur la période et héritent donc
+  de la même sous-estimation. Elle est écrite une seule fois
+  (`consolidationCaveat`) — deux lectures qui l'énonceraient différemment
+  laisseraient croire à deux faits.
+- **Le dernier point est atténué**, teinte de la série conservée : atténuer
+  n'est pas recolorer, un point qui changerait de couleur se lirait comme un
+  autre sujet. Encodage secondaire — la zone ombrée et la réserve portent le
+  sens.
+- **Défaut trouvé au passage : la zone « en consolidation » ne s'affichait
+  jamais.** Bornée sur les libellés d'année, elle allait de 2025 à 2025 : une
+  largeur nulle. Elle est désormais bornée sur les rangs de l'axe, décalés d'un
+  demi-pas. Vérifié à l'écran.
+- **Défaut plus grave, trouvé avant de le publier : le cache disque des
+  métadonnées est indexé sur l'empreinte des seuls fichiers de données.** Un
+  champ ajouté à la charge utile n'invalide rien. Constaté sur ce poste :
+  l'entrée en cache ne contenait pas `completeness` et aurait été servie telle
+  quelle — serveur à jour, front à jour, et un fichier JSON décidant que la
+  fonctionnalité n'existe pas. Corrigé par un `METADATA_SCHEMA` qui entre dans
+  la clé, et **verrouillé par deux tests** : l'un vérifie que le champ traverse
+  le cache, l'autre que la version est bien dans la clé.
+- **Sept tests** (`test_completeness.py`), dont celui qui mord : une année
+  consolidée doit ressortir à 100 %. Le redressement est calibré sur les années
+  mûres, s'il les gonfle il gonfle aussi la dernière. **71 tests verts.**
+- **Écarté** : le libellé texte *dans* la zone ombrée. Ni un `formatter` ni un
+  `name` sur la borne n'ont réussi à le faire rendre (vérifié à l'écran).
+  Plutôt qu'un `label: { show: true }` qui n'affiche rien, la zone reste muette
+  et le constat est écrit dans le code. Le signal textuel existe ailleurs — la
+  réserve nomme l'exercice et chiffre son taux — et c'est lui qui voyage dans
+  le PNG.

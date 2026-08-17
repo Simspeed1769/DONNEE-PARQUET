@@ -112,6 +112,12 @@ export type SlideInput = {
   tokens: ChartTokens;
   /** Dernière année consolidée, pour marquer ce qui bouge encore. */
   consolidatedThrough: number | null;
+  /** Part liquidée des exercices non consolidés, en pourcentage entier.
+   *
+   *  Elle est passée ici plutôt que lue depuis les métadonnées, parce que les
+   *  réserves doivent pouvoir se reconstituer hors de l'écran — l'export PNG
+   *  les réassemble sans accès au contexte de l'application. */
+  completenessByYear: Record<number, number>;
   /** Territoire sur lequel l'écran est restreint, s'il y en a un. */
   highlightedRegion: string | null;
   /** Forme demandée par lecture. Une forme que la donnée n'autorise pas est
@@ -144,7 +150,32 @@ function subjectRows(response: PanoramaResponse, measure: ExploreMeasure): Chart
 
 /* — 1. Évolution — */
 
-function evolutionSlide({ response, measure, tokens, consolidatedThrough, forms }: SlideInput): Slide {
+/** La réserve de consolidation, chiffrée quand on sait la chiffrer.
+ *
+ *  Elle est écrite ici une seule fois : deux lectures qui énonceraient la même
+ *  réserve dans deux mots différents laisseraient croire à deux faits.
+ */
+function consolidationCaveat(years: number[], consolidatedThrough: number | null,
+                             completenessByYear: Record<number, number>): string | null {
+  if (consolidatedThrough === null) return null;
+  const provisional = years.filter((year) => year > consolidatedThrough);
+  if (!provisional.length) return null;
+
+  const rates = provisional
+    .map((year) => (completenessByYear[year] === undefined ? null : `${year} liquidé à ${completenessByYear[year]} %`))
+    .filter((item): item is string => item !== null);
+
+  if (!rates.length) {
+    return `Les années postérieures à ${consolidatedThrough} sont encore en consolidation : `
+      + "les liquidations tardives n'y sont pas toutes remontées, le dernier point est donc un plancher.";
+  }
+  return `Exercice${rates.length > 1 ? "s" : ""} encore en consolidation — ${rates.join(", ")} `
+    + "à la date des derniers flux observés. Les liquidations tardives n'y sont pas remontées : "
+    + "le dernier point est un plancher, et la variation qu'il dessine est sous-estimée.";
+}
+
+function evolutionSlide({ response, measure, tokens, consolidatedThrough,
+                          completenessByYear, forms }: SlideInput): Slide {
   const { years } = response;
   const rows = subjectRows(response, measure);
   const several = rows.length > 1;
@@ -165,12 +196,8 @@ function evolutionSlide({ response, measure, tokens, consolidatedThrough, forms 
   const kind = asIndex ? "base100" : measure.kind;
 
   const caveats: string[] = [];
-  if (consolidatedThrough !== null && years.some((year) => year > consolidatedThrough)) {
-    caveats.push(
-      `Les années postérieures à ${consolidatedThrough} sont encore en consolidation : `
-      + "les liquidations tardives n'y sont pas toutes remontées, le dernier point est donc un plancher.",
-    );
-  }
+  const consolidation = consolidationCaveat(years, consolidatedThrough, completenessByYear);
+  if (consolidation) caveats.push(consolidation);
   if (asIndex) {
     caveats.push(
       `Chaque sujet vaut 100 en ${years[0]} : le graphique compare des rythmes, pas des montants. `
@@ -210,7 +237,8 @@ function evolutionSlide({ response, measure, tokens, consolidatedThrough, forms 
 
 /* — 2. Territoire — */
 
-function territorySlide({ response, measure, tokens, highlightedRegion, forms }: SlideInput): Slide {
+function territorySlide({ response, measure, tokens, highlightedRegion,
+                          consolidatedThrough, completenessByYear, forms }: SlideInput): Slide {
   const comparing = response.subjects.length > 1;
   const lead = response.subjects[0];
   const order = facetOrder(response.reference.region ?? [], "region", measure, response.components);
@@ -223,6 +251,12 @@ function territorySlide({ response, measure, tokens, highlightedRegion, forms }:
 
   // Ce que la carte ne peut pas porter est dit, chiffré, à côté d'elle.
   const caveats: string[] = [];
+  // Une lecture agrégée sur la période hérite de l'incomplétude du dernier
+  // exercice : le cumul est sous-estimé partout, pas seulement au bout d'une
+  // courbe. La réserve vaut donc ici comme dans l'Évolution.
+  const territoryConsolidation = consolidationCaveat(
+    response.years, consolidatedThrough, completenessByYear);
+  if (territoryConsolidation) caveats.push(territoryConsolidation);
   if (lead) {
     const whole = periodValue(lead.total, measure, response.components);
     (lead.facets.region ?? [])
@@ -314,7 +348,8 @@ function territorySlide({ response, measure, tokens, highlightedRegion, forms }:
 
 /* — 3. Âge — */
 
-function ageSlide({ response, measure, tokens, forms }: SlideInput): Slide {
+function ageSlide({ response, measure, tokens, consolidatedThrough,
+                    completenessByYear, forms }: SlideInput): Slide {
   const all = facetOrder(response.reference.age ?? [], "age", measure, response.components);
   // « Âge inconnu » quitte l'axe : sur une échelle ordinale, une modalité qui
   // n'a pas de position invente une pente entre 80 ans et rien.
@@ -334,6 +369,9 @@ function ageSlide({ response, measure, tokens, forms }: SlideInput): Slide {
   }));
 
   const caveats: string[] = [];
+  const ageConsolidation = consolidationCaveat(
+    response.years, consolidatedThrough, completenessByYear);
+  if (ageConsolidation) caveats.push(ageConsolidation);
   const unknown = all.find((bucket) => bucket.key === AGE_UNKNOWN);
   const leadSubject = response.subjects[0];
   if (unknown && leadSubject) {
@@ -389,7 +427,8 @@ function ageSlide({ response, measure, tokens, forms }: SlideInput): Slide {
 
 /* — 4. Sexe — */
 
-function sexSlide({ response, measure, tokens, consolidatedThrough, forms }: SlideInput): Slide {
+function sexSlide({ response, measure, tokens, consolidatedThrough,
+                    completenessByYear, forms }: SlideInput): Slide {
   const comparing = response.subjects.length > 1;
   const { years } = response;
   const lead = response.subjects[0];
@@ -404,7 +443,10 @@ function sexSlide({ response, measure, tokens, consolidatedThrough, forms }: Sli
     .sort((left, right) => (SEX_COLOR[left.key] ?? 9) - (SEX_COLOR[right.key] ?? 9));
   const femaleLabel = known.find((bucket) => bucket.key === FEMALE)?.label ?? "Femmes";
 
-  const caveats = [residualCaveat(response, measure)].filter((item): item is string => item !== null);
+  const caveats = [
+    consolidationCaveat(years, consolidatedThrough, completenessByYear),
+    residualCaveat(response, measure),
+  ].filter((item): item is string => item !== null);
   const period = `${years[0]}–${years.at(-1)}`;
 
   /* — Comparaison de sujets : un classement sur la part des femmes — */
