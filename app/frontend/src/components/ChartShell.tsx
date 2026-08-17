@@ -44,13 +44,11 @@ type Props = {
   forms?: FormOption[];
   form?: string;
   onForm?: (key: string) => void;
-  /** La question à laquelle la forme répond. */
-  question?: string;
-  /** Les repères chiffrés de la base, **au format DAMIR** : une ligne, valeur
-   *  en gras et libellé discret, sur la même bande que le choix de forme. Les
-   *  cartes encadrées qu'employaient Pathologies et CSP prenaient une bande
-   *  entière et repoussaient le graphique hors de l'écran. */
-  highlights?: KpiItem[];
+  /* Ni `question` ni `highlights` ici — et c'est le sujet de ce changement.
+     Les repères chiffrés sont remontés au-dessus de la carte (`KpiStrip`), où
+     ils ont une zone à eux ; la question au-dessus du graphique est retirée,
+     le titre disant déjà ce qu'on regarde. La carte ne porte plus que le
+     graphique et ce qui sert à le lire. */
   /** Contenu propre à la base, entre l'en-tête et le graphique — un panneau
    *  de réglage (le masquage Cnam, par exemple) qui n'a pas sa place dans
    *  l'en-tête mais appartient à la même carte que le graphique. */
@@ -94,7 +92,7 @@ type Props = {
 };
 
 export function ChartShell({
-  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm, question, highlights,
+  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm,
   beforeChart, afterChart, legend, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, tableNote, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
@@ -132,22 +130,14 @@ export function ChartShell({
         {headerActions}
       </header>
 
-      {/* Les repères à gauche, le choix de forme à droite : une seule bande,
-          et le graphique reste où il est. C'est la disposition de DAMIR. */}
+      {/* La bande ne porte plus que les commandes du graphique.
+          Les repères chiffrés en sont sortis — ils sont désormais au-dessus de
+          la carte, dans `KpiStrip`, où ils ont leur propre zone. Et la question
+          (« Comment cela évolue-t-il dans le temps ? ») a disparu : le titre
+          juste au-dessus dit déjà ce que montre le graphique, et la relire à
+          chaque changement de lecture n'apprenait rien. */}
       <div className="damir-strip">
-          {highlights && highlights.length ? (
-            <div className="damir-highlights">
-              {highlights.map((item) => (
-                <span key={item.key} className="damir-highlight">
-                  <strong>{item.value}</strong>
-                  <small>{item.label}</small>
-                </span>
-              ))}
-            </div>
-          ) : <span />}
-          {/* Les contrôles du graphique en fin de rangée : la forme d'abord,
-              puis la couleur — un réglage d'apparence pèse moins que le choix
-              de ce qu'on montre. */}
+          <span />
           <div className="damir-strip-controls">
             {forms ? (
               <ViewSwitch
@@ -160,10 +150,6 @@ export function ChartShell({
             <PaletteChoice />
           </div>
       </div>
-
-      {/* La question sous la bande plutôt que dedans : à trois éléments, la
-          ligne débordait sur les écrans étroits. */}
-      {question ? <p className="damir-question chart-shell-question">{question}</p> : null}
 
       {beforeChart}
 

@@ -1060,13 +1060,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .pathology-title-line h2 { margin: 6px 0 0; color: var(--ink); font-size: 1.15rem; }
 .pathology-title-line small { display: block; margin-top: 6px; color: var(--ink-muted); font-size: .56rem; }
 .pathology-title-line button, .pathology-footer button { padding: 9px 13px; border: 1px solid var(--accent-line); border-radius: 8px; color: var(--accent-hover); background: var(--accent-wash); font-size: .6rem; font-weight: 800; cursor: pointer; }
-.pathology-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.pathology-kpis article { min-width: 0; padding: 18px 19px; }
-.pathology-kpis span, .pathology-kpis strong, .pathology-kpis small { display: block; }
-.pathology-kpis span { color: var(--ink-muted); font-size: .55rem; font-weight: 800; text-transform: uppercase; }
-.pathology-kpis strong { margin-top: 10px; overflow: hidden; color: var(--ink); font-size: 1.42rem; text-overflow: ellipsis; }
-.pathology-kpis strong.ratio-sentence { max-width: 270px; overflow: visible; font-size: 1.02rem; line-height: 1.25; letter-spacing: -.02em; white-space: normal; }
-.pathology-kpis small { margin-top: 7px; color: var(--ink-muted); font-size: .54rem; }
 .pathology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .pathology-chart { min-width: 0; padding: 20px 22px 13px; }
 .pathology-chart > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -1107,7 +1100,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
   .pathology-hierarchy-row { grid-template-columns: 1fr 1fr; }
   .pathology-population-row { grid-template-columns: 1fr 1fr 1fr; }
   .pathology-population-row .quality-chip { justify-self: start; }
-  .pathology-kpis { grid-template-columns: repeat(2, 1fr); }
   .method-source-grid { grid-template-columns: 1fr 1fr; }
 }
 
@@ -1123,7 +1115,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 }
 
 @media (max-width: 620px) {
-  .pathology-hierarchy-row, .pathology-population-row, .pathology-kpis { grid-template-columns: 1fr; }
+.pathology-hierarchy-row, .pathology-population-row { grid-template-columns: 1fr; }
   .pathology-title-line, .pathology-footer { align-items: flex-start; flex-direction: column; }
   .extraction-source-switch { width: 100%; }
   .extraction-source-switch button { min-width: 0; flex: 1; }
@@ -1494,7 +1486,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .pathology-title-line small,
 .mortality-title-line small { color: var(--muted); }
 .kpi-card,
-.pathology-kpis article,
 .analysis-filter-panel,
 .analysis-filter-drawer,
 .comparison-choice-card,
@@ -1530,7 +1521,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .csp-overseas-insets button { color: var(--counterpart); }
 .csp-overseas-insets button.selected { border-color: var(--counterpart); }
 .kpi-card > strong,
-.pathology-kpis strong,
 .liquidation-kpis strong,
 .liquidation-reading article strong,
 .calculator-primary > strong { color: var(--ink); font-variant-numeric: tabular-nums; }

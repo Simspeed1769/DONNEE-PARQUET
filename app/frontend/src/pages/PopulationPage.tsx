@@ -16,7 +16,7 @@ import type { ECharts } from "echarts/core";
 import { getPopulationMetadata, getPopulationOverview } from "../api";
 import { ChartShell } from "../components/ChartShell";
 import { PageHero } from "../components/PageHero";
-import type { KpiItem } from "../components/KpiStrip";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
 import { paletteParams, readPalette } from "../charts/palette";
@@ -210,8 +210,10 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
       {error ? <div className="analysis-error"><strong>La fiche Population n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
       {current ? (
+        <>
+        <KpiStrip items={kpiItems} />
+
         <ChartShell
-          kicker={overview?.context.region_label ?? ""}
           title={current.title}
           readings={POPULATION_READINGS}
           reading={reading}
@@ -219,8 +221,6 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
           forms={current.forms}
           form={current.form}
           onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
-          question={current.question}
-          highlights={kpiItems}
           headerActions={
             <div className="pathology-toggle" aria-label="Mesure">
               <button type="button" className={measure === "population" ? "active" : ""}
@@ -247,6 +247,7 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
           onExtract={openExtraction}
           className="csp-stage"
         />
+        </>
       ) : null}
 
       <footer className="pathology-footer csp-footer">

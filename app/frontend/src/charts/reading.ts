@@ -27,8 +27,13 @@ export type Reading = {
   nav: string;
   /** Titre de projection. */
   title: string;
-  /** La question à laquelle la forme répond, écrite au-dessus du graphique. */
-  question: string;
+  /** La question à laquelle la forme répond.
+   *
+   *  **Facultative, et seul le Comparer de DAMIR la renseigne encore.** Les
+   *  quatre bases du gabarit commun l'affichaient au-dessus de leur graphique,
+   *  où elle répétait le titre posé deux lignes plus haut ; elle y a été
+   *  retirée, avec le reste du texte qui entourait le graphique. */
+  question?: string;
   caveats: string[];
   forms: FormOption[];
   /** La forme dessinée : celle demandée si elle est offerte, sinon la première. */

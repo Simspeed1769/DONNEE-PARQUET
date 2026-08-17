@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
-import type { KpiItem } from "../components/KpiStrip";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { formatKpi } from "../utils";
@@ -100,8 +100,9 @@ export function PanoramaSection({
       </div>
     </section>
 
+    <KpiStrip items={kpiItems} />
+
     <ChartShell
-      kicker={populationLabel}
       title={current.title}
       readings={MORTALITY_READINGS}
       reading={reading}
@@ -109,8 +110,6 @@ export function PanoramaSection({
       forms={current.forms}
       form={current.form}
       onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
-      question={current.question}
-      highlights={kpiItems}
       headerActions={
         <div className="pathology-toggle" aria-label="Mesure">
           <button type="button" className={measure === "deaths" ? "active" : ""}

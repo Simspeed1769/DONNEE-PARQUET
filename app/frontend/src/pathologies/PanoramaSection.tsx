@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getPathologyOverview } from "../api";
 import { MultiSelect } from "../components/MultiSelect";
-import type { KpiItem } from "../components/KpiStrip";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
@@ -194,8 +194,9 @@ export function PanoramaSection({
         <button type="button" onClick={openExtraction}>Extraire les données →</button>
       </section>
 
+      <KpiStrip items={kpiItems} />
+
       <ChartShell
-        kicker={overview.context.label}
         title={current.title}
         readings={PATHOLOGY_READINGS}
         reading={reading}
@@ -203,8 +204,6 @@ export function PanoramaSection({
         forms={current.forms}
         form={current.form}
         onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
-        question={current.question}
-        highlights={kpiItems}
         headerActions={
           <div className="pathology-toggle" aria-label="Mesure">
             <button type="button" className={measure === "prevalence" ? "active" : ""}

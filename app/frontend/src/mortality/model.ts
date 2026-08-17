@@ -111,7 +111,7 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
   const sexForm = resolveForm(sexForms, forms.sex);
 
   const categorical = (
-    key: MortalityReadingKey, nav: string, title: string, question: string, xTitle: string,
+    key: MortalityReadingKey, nav: string, title: string, xTitle: string,
     denominator: string,
     rows: Array<{ label: string; value: number | null }>, offered: FormOption[], form: string,
     extraCaveats: string[] = [],
@@ -123,7 +123,7 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
       ? rows.map((row, index) => ({ key: row.label, label: row.label, isOther: false, colorIndex: index, values: [row.value] }))
       : [seriesOf(key, measureOf(denominator), rows.map((row) => row.value))];
     return {
-      key, nav, title, question,
+      key, nav, title,
       caveats: [...base, ...denominatorNote(denominator), ...extraCaveats],
       forms: offered, form,
       option: rows.length
@@ -152,7 +152,6 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
       key: "evolution",
       nav: "Évolution",
       title: `${measureOf(ALL_CAUSES_DENOMINATOR)}, ${annual[0]?.year ?? ""}–${annual.at(-1)?.year ?? ""}`,
-      question: "Comment cela évolue-t-il dans le temps ?",
       caveats: [...base, ...denominatorNote(ALL_CAUSES_DENOMINATOR)],
       forms: evolutionForms,
       form: evolutionForm,
@@ -171,12 +170,12 @@ export function buildMortalityReadings(input: MortalityInput): Reading[] {
     // Âge et sexe répartissent les décès de la cause affichée entre leurs
     // modalités : leur dénominateur est cette cause, pas le total toutes causes.
     categorical("age", "Âge", `${measureOf(SAME_CAUSE_DENOMINATOR)} par tranche d’âge`,
-      "Quelles tranches d’âge pèsent le plus ?", "Tranche d’âge", SAME_CAUSE_DENOMINATOR,
+      "Tranche d’âge", SAME_CAUSE_DENOMINATOR,
       ageRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       ageForms, ageForm,
       ["Trois tranches larges seulement : la source ne publie pas d’âge fin."]),
     categorical("sex", "Sexe", `${measureOf(SAME_CAUSE_DENOMINATOR)} selon le sexe`,
-      "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe", SAME_CAUSE_DENOMINATOR,
+      "Sexe", SAME_CAUSE_DENOMINATOR,
       sexRows.map((item) => ({ label: item.label, value: isShare ? item.share : item.deaths })),
       sexForms, sexForm),
   ];

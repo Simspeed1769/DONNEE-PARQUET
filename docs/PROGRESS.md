@@ -1063,3 +1063,46 @@ contrarient.
   Vérifié en remisant le correctif : les six tests tombent, et repassent une
   fois le code restauré. Le balayage est propre sur l'ensemble du backend.
 - **77 tests verts** (71 avant).
+
+## v6 · Allègement des écrans de base — KPI, texte, couleur
+
+Demande de l'utilisateur, portant sur Population, Mortalité et Pathologies —
+étendue à la CSP, quatrième écran du même gabarit : en laisser un dépareillé
+aurait coûté plus qu'il n'aurait préservé.
+
+- **Les graphiques repassent au rouge.** `--plot-solo` était un graphite, sur
+  l'argument qu'une courbe seule n'encode rien par sa couleur et que le rouge,
+  en santé, signifie alerte. L'argument tient, **l'utilisateur a tranché
+  autrement** : un outil dont tous les graphiques sont gris n'a plus de
+  dominante. Le jeton pointe désormais `--accent-chart`, déjà défini comme « la
+  teinte d'une série seule au graphique » et déjà sensible à la bascule de
+  palette — donc rouge par défaut, bleu si l'utilisateur choisit le bleu. Les
+  deux surcharges sombres en dur ont été retirées : elles masquaient le renvoi.
+- **Les repères chiffrés sortent de la carte du graphique.** Ils partageaient
+  une rangée avec le choix de forme et le sélecteur de palette — un résultat
+  qu'on lit, à côté de deux réglages qu'on manipule. Ils ont désormais leur
+  bande à eux, au-dessus. `KpiStrip`, qui existait déjà pour ce rôle et n'était
+  plus importé que pour son type, est ranimé plutôt que remplacé : aucun
+  composant nouveau.
+- **Une bande, pas des cartes.** Quatre panneaux encadrés au-dessus d'un
+  cinquième ne faisaient plus de hiérarchie. Un seul fond, un filet vertical
+  entre les repères, le nombre en grand : c'est lui qu'on vient chercher.
+  Styles dans `kpi.css`, fichier dédié adossé aux jetons — rien n'entre dans
+  `styles.css`.
+- **La question au-dessus du graphique disparaît** (« Comment cela évolue-t-il
+  dans le temps ? »). Le titre, deux lignes plus haut, dit déjà ce qu'on
+  regarde. Retirée de `ChartShell`, de ses sept points d'appel et des quatre
+  modèles de lecture ; `question` devient facultatif dans le type partagé, où
+  seul le Comparer de DAMIR le renseigne encore.
+- **L'amorce de la carte disparaît aussi.** « DIABÈTE » s'affichait une
+  troisième fois, après l'amorce de section et le titre h2. `ChartShell`
+  énonçait déjà la règle — l'amorce est à laisser vide dès qu'elle répète ;
+  elle répétait.
+- **Défaut trouvé à l'écran : la CSP écrivait son ratio deux fois**, « 0,76
+  femme pour 1 homme » en gros puis en petit. Sa valeur **est** son détail ; le
+  drapeau `sentence` supprime le second.
+- **`.pathology-kpis` retiré de `styles.css`** : huit règles mortes et trois
+  sélecteurs dans des groupes partagés.
+- **`docs/captures/`** : les douze écrans, avec un LISEZMOI qui donne les URL
+  pour les refaire — une capture non reproductible ne vaut que le jour où on la
+  prend.

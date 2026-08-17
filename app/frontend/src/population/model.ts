@@ -135,7 +135,7 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
   const sexForm = resolveForm(sexForms, forms.sex);
 
   const categorical = (
-    key: PopulationReadingKey, nav: string, title: string, question: string, xTitle: string,
+    key: PopulationReadingKey, nav: string, title: string, xTitle: string,
     rows: Array<{ label: string; value: number | null }>, offered: FormOption[], form: string,
     extra: string[] = [],
   ): Reading => {
@@ -144,7 +144,7 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
       ? rows.map((row, index) => ({ key: row.label, label: row.label, isOther: false, colorIndex: index, values: [row.value] }))
       : [{ key, label: measureLabel, isOther: false, colorIndex: 0, values: rows.map((row) => row.value) }];
     return {
-      key, nav, title, question,
+      key, nav, title,
       caveats: [...base, ...extra],
       forms: offered, form,
       option: rows.length
@@ -172,7 +172,6 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
       key: "evolution",
       nav: "Évolution",
       title: `${measureLabel}, ${annual[0]?.year ?? ""}–${annual.at(-1)?.year ?? ""}`,
-      question: "Comment la population évolue-t-elle dans le temps ?",
       caveats: base,
       forms: evolutionForms,
       form: evolutionForm,
@@ -198,13 +197,12 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
       const rows = territories.map((item) => ({ label: item.label, value: valueOf(item) }));
       if (territoryForm !== "map") {
         return categorical("territory", "Territoire", `${measureLabel} par territoire`,
-          "Où vivent-ils ?", "Région", rows, territoryForms, territoryForm);
+          "Région", rows, territoryForms, territoryForm);
       }
       return {
         key: "territory",
         nav: "Territoire",
         title: `${measureLabel} par territoire`,
-        question: "Où vivent-ils ?",
         caveats: [...base,
           "Les DROM sont hors du cadrage métropolitain de la carte ; le classement les porte.",
         ],
@@ -236,9 +234,6 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
         title: isPyramid
           ? `Pyramide des âges · ${context?.region_label ?? ""} ${context?.year ?? ""}`
           : `${measureLabel} par âge`,
-        question: isPyramid
-          ? "Quelle est la forme de cette population ?"
-          : "Comment la population se répartit-elle par âge ?",
         caveats: [...base,
           ...(isPyramid
             ? ["Les deux versants portent des effectifs, pas des parts : la largeur se lit comme un nombre de personnes."]
@@ -278,7 +273,7 @@ export function buildPopulationReadings(input: PopulationInput): Reading[] {
       };
     })(),
     categorical("sex", "Sexe", `${measureLabel} selon le sexe`,
-      "Comment la population se partage-t-elle entre femmes et hommes ?", "Sexe",
+      "Sexe",
       sexRows, sexForms, sexForm),
   ];
 }

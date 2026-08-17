@@ -54,7 +54,7 @@ export function readTokens(): ChartTokens {
     grid: read(styles, "--grid", "#eceae3"),
     accent: read(styles, "--accent", "#d8383c"),
     accentChart: read(styles, "--accent-chart", "#d8383c"),
-    plotSolo: read(styles, "--plot-solo", "#4a463d"),
+    plotSolo: read(styles, "--plot-solo", "#d8383c"),
     good: read(styles, "--good-text", "#006300"),
     critical: read(styles, "--critical-text", "#a32020"),
     series: Array.from({ length: SERIES_SLOTS }, (_, index) =>

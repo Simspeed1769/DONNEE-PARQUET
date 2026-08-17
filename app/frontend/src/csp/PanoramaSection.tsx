@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getCspOverview } from "../api";
-import type { KpiItem } from "../components/KpiStrip";
+import { KpiStrip, type KpiItem } from "../components/KpiStrip";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
@@ -124,6 +124,10 @@ export function PanoramaSection({
     // Seule l'évolution est une variation : elle seule porte un signe.
     value: kpi.kind === "ratio" ? kpi.detail : formatKpi(kpi.value, kpi.kind, kpi.key === "evolution"),
     detail: kpi.detail,
+    // Un ratio est déjà une phrase, et sa valeur **est** son détail : sans ce
+    // drapeau, la bande écrivait « 0,76 femme pour 1 homme » deux fois de
+    // suite, en gros puis en petit.
+    sentence: kpi.kind === "ratio",
   }));
 
   const overseas = (overview?.territories ?? []).filter((item) => Number(item.code) < 11);
@@ -175,8 +179,9 @@ export function PanoramaSection({
         </div>
       </section>
 
+      <KpiStrip items={kpiItems} />
+
       <ChartShell
-        kicker={overview.context.csp_label}
         title={current.title}
         readings={CSP_READINGS}
         reading={reading}
@@ -184,8 +189,6 @@ export function PanoramaSection({
         forms={current.forms}
         form={current.form}
         onForm={(key) => setForms((value) => ({ ...value, [reading]: key }))}
-        question={current.question}
-        highlights={kpiItems}
         headerActions={
           <div className="pathology-toggle" aria-label="Mesure">
             <button type="button" className={measure === "share" ? "active" : ""}

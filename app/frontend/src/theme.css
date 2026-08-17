@@ -101,16 +101,18 @@
   /* — Anneau de focus — */
   --focus-ring: rgba(91, 12, 2, .25);
 
-  /* — La teinte d'une série SEULE au graphique — graphite d'encre.
-     Une courbe unique n'a personne dont se distinguer : elle ne porte aucune
-     information catégorielle, donc elle ne doit porter aucune teinte. Elle
-     portait l'accent de marque, si bien que tous les graphiques par défaut
-     étaient rouges — et dans un contexte de santé et de dépense, le rouge
-     signifie alerte : une courbe qui monte se lisait comme un problème alors
-     qu'elle est neutre. Le graphite ne dit rien, ce qui est exactement ce
-     qu'on lui demande. Le rouge redevient l'accent de marque : amorces,
-     titres, états actifs — jamais le tracé par défaut. */
-  --plot-solo: #4a463d;
+  /* — La teinte d'une série SEULE au graphique — l'accent de l'outil.
+     Elle a été graphite un temps, sur l'argument qu'une courbe unique n'encode
+     rien par sa couleur et que le rouge, en santé et en dépense, signifie
+     alerte. L'argument tient, mais **l'utilisateur a tranché autrement** : un
+     outil dont tous les graphiques sont gris n'a plus de dominante, et le gris
+     lu à côté de l'accent rouge de l'interface passait pour une panne de
+     rendu plutôt que pour une neutralité voulue.
+     Le jeton pointe donc `--accent-chart`, qui est déjà défini plus bas comme
+     « la teinte d'une série seule au graphique » et qui suit la bascule de
+     palette : rouge par défaut, bleu si l'utilisateur choisit le bleu. Écrire
+     une couleur en dur ici aurait figé le tracé sur une seule palette. */
+  --plot-solo: var(--accent-chart);
 
   /* — Palette de séries (ordre fixe, jamais recyclé) —
      Trois rangs à pleine saturation, puis une récession : le chroma décroît
@@ -238,8 +240,9 @@
 
     --focus-ring: rgba(240, 87, 91, .42);
 
-    /* Graphite clair : le même rôle, retourné contre la surface sombre. */
-    --plot-solo: #d7d3c8;
+    /* Rien à retourner ici : `--plot-solo` pointe `--accent-chart`, qui a déjà
+       sa propre version sombre quelques lignes plus bas. Une surcharge en dur
+       masquerait ce renvoi et ramènerait le tracé au gris. */
 
     --series-1: #e66767;
     --series-2: #3987e5;
@@ -324,8 +327,9 @@
 
   --focus-ring: rgba(240, 87, 91, .42);
 
-  /* Graphite clair : le même rôle, retourné contre la surface sombre. */
-  --plot-solo: #d7d3c8;
+  /* Rien à retourner ici : `--plot-solo` pointe `--accent-chart`, qui a déjà
+     sa propre version sombre. Une surcharge en dur masquerait ce renvoi et
+     ramènerait le tracé au gris. */
 
   --series-1: #e66767;
   --series-2: #3987e5;

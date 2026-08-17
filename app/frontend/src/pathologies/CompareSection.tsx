@@ -199,7 +199,6 @@ export function CompareSection({
       forms={current.forms}
       form={current.form}
       onForm={setView}
-      question={current.question}
       headerActions={
         <div className="pathology-toggle" aria-label="Mesure">
           <button type="button" className={measure === "prevalence" ? "active" : ""}

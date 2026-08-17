@@ -126,7 +126,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
   const asPie = (form: string) => form === "pie";
 
   const categorical = (
-    key: CspReadingKey, nav: string, title: string, question: string, xTitle: string,
+    key: CspReadingKey, nav: string, title: string, xTitle: string,
     rows: Array<{ label: string; value: number | null }>, offered: FormOption[], form: string,
     extra: string[] = [], forceKind?: string,
   ): Reading => {
@@ -136,7 +136,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
       : [{ key, label: measureLabel, isOther: false, colorIndex: 0, values: rows.map((row) => row.value) }];
     const localKind = forceKind ?? kind;
     return {
-      key, nav, title, question,
+      key, nav, title,
       caveats: [...base, ...extra],
       forms: offered, form,
       option: rows.length
@@ -170,7 +170,6 @@ export function buildCspReadings(input: CspInput): Reading[] {
       title: annual.length > 1
         ? `${measureLabel}, ${annual[0]?.year}–${annual.at(-1)?.year}`
         : `${measureLabel}, millésime ${annual[0]?.year ?? ""}`,
-      question: "Comment cela évolue-t-il d’un millésime à l’autre ?",
       caveats: [...base, ...(evolutionNote ? [evolutionNote] : [])],
       forms: evolutionForms,
       form: evolutionForm,
@@ -187,7 +186,6 @@ export function buildCspReadings(input: CspInput): Reading[] {
       key: "territory",
       nav: "Territoire",
       title: `${measureLabel} par région`,
-      question: territoryForm === "map" ? "Où est-ce le plus fort ?" : "Quels territoires pèsent le plus ?",
       caveats: [...base, "Les DROM sont hors du cadrage métropolitain de la carte : ils sont posés en encarts sous elle."],
       forms: territoryForms,
       form: territoryForm,
@@ -217,9 +215,6 @@ export function buildCspReadings(input: CspInput): Reading[] {
       key: "age",
       nav: "Âge",
       title: `${measureLabel} par âge et sexe`,
-      question: ageForm === "pyramid"
-        ? "Comment les femmes et les hommes du groupe se répartissent-ils par âge ?"
-        : "Comment cela se répartit-il selon l’âge ?",
       caveats: base,
       forms: ageForms,
       form: ageForm,
@@ -237,7 +232,7 @@ export function buildCspReadings(input: CspInput): Reading[] {
       xTitle: "Tranche d’âge",
     },
     categorical("sex", "Sexe", `${measureLabel} selon le sexe`,
-      "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe",
+      "Sexe",
       sexRows, sexForms, sexForm),
   ];
 }

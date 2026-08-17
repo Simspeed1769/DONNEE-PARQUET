@@ -139,7 +139,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
   const sexForm = resolveForm(sexForms, forms.sex);
 
   const categorical = (
-    key: PathologyReadingKey, nav: string, title: string, question: string, xTitle: string,
+    key: PathologyReadingKey, nav: string, title: string, xTitle: string,
     rows: Array<{ label: string; value: number | null }>, offered: FormOption[], form: string,
     extra: string[] = [],
   ): Reading => {
@@ -148,7 +148,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       ? rows.map((row, index) => ({ key: row.label, label: row.label, isOther: false, colorIndex: index, values: [row.value] }))
       : [{ key, label: measureLabel, isOther: false, colorIndex: 0, values: rows.map((row) => row.value) }];
     return {
-      key, nav, title, question,
+      key, nav, title,
       caveats: [...base, ...extra],
       forms: offered, form,
       option: rows.length
@@ -182,7 +182,6 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       key: "evolution",
       nav: "Évolution",
       title: `${measureLabel}, ${annual[0]?.year ?? ""}–${annual.at(-1)?.year ?? ""}`,
-      question: "Comment cela évolue-t-il dans le temps ?",
       caveats: [...base, ...(showFrance ? ["La courbe France entière sert de repère : elle porte le même indicateur sur l'ensemble du territoire."] : [])],
       forms: evolutionForms,
       form: evolutionForm,
@@ -212,7 +211,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
 
       if (!onMap) {
         return categorical("territory", "Territoire", `${measureLabel} par territoire`,
-          "Quels territoires sont les plus touchés ?", "Région",
+          "Région",
           rows.map(({ label, value }) => ({ label, value })),
           territoryForms, territoryForm, quality);
       }
@@ -221,7 +220,6 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
         key: "territory",
         nav: "Territoire",
         title: `${measureLabel} par territoire`,
-        question: "Où est-ce le plus fort ?",
         caveats: [
           ...base,
           "Un territoire sans valeur publiée reste en gris : c'est une absence, pas une valeur basse.",
@@ -253,9 +251,6 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       key: "age",
       nav: "Âge",
       title: `${measureLabel} par âge et sexe`,
-      question: ageForm === "pyramid"
-        ? "Comment les patientes et les patients se répartissent-ils par âge ?"
-        : "Quels âges sont les plus touchés, et cela diffère-t-il entre femmes et hommes ?",
       caveats: base,
       forms: ageForms,
       form: ageForm,
@@ -273,7 +268,7 @@ export function buildPathologyReadings(input: PathologyInput): Reading[] {
       xTitle: "Tranche d’âge",
     },
     categorical("sex", "Sexe", `${measureLabel} selon le sexe`,
-      "Comment cela se partage-t-il entre femmes et hommes ?", "Sexe",
+      "Sexe",
       sexRows, sexForms, sexForm,
       isRate ? ["La prévalence par sexe est reconstruite sur les effectifs et leur population de référence, jamais moyennée sur les tranches d'âge."] : []),
   ];
