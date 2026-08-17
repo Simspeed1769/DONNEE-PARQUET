@@ -582,11 +582,9 @@ def correlation_meta_view() -> dict[str, Any]:
     return _correlation_catalogue()
 
 
-# `POST /api/correlations` est parti avec l'écran avancé : la corrélation
-# appariée n'avait plus d'appelant côté interface. Croisements passe par la
-# régression, qui répond à la même question en tenant l'âge et le sexe. La
-# fonction `correlate()` reste dans `correlations.py` en attendant que le
-# point 2.2 tranche le sort de `statistics.py`, qu'elle est seule à employer.
+# `POST /api/correlations` est parti avec l'écran avancé (point 1.6), et
+# `correlate()` avec lui au point 2.2 : Croisements passe par la régression,
+# qui répond à la même question en tenant l'âge et le sexe constants.
 
 
 @lru_cache(maxsize=64)

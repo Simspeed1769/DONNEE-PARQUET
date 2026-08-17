@@ -678,3 +678,35 @@ que tout le monde a manipulé dans un tableur, donc zéro apprentissage.
 - **Dérive documentaire corrigée au passage** : `DESIGN.md` affirmait encore que
   la série seule prend `--accent` (faux depuis 1.8) et que les réserves partent
   entières dans l'image (faux depuis 1.5).
+
+## Bloc 2.2 — Croisements : plus simple à comprendre
+
+L'écran était déjà bon — porte unique, unité fixée, encart écologique
+permanent. Trois simplifications, et rien touché à ce qui protège la lecture.
+
+- **Une variable par défaut** : c'était déjà le cas. Ce qui ne l'était pas :
+  les trois sources d'une deuxième variable étaient trois boutons permanents,
+  qui donnaient à un écran simple l'air d'un formulaire. Elles vivent derrière
+  un seul « + Ajouter une variable ».
+- **Le graphique des effets n'apparaît qu'à partir de deux variables.** À une
+  seule, il redisait la phrase sous la forme d'un segment unique sur un axe.
+- **La phrase coupée en deux.** Verdict en français simple, en corps de texte ;
+  effet et intervalle à 95 % en dessous, en plus petit et en chiffres tabulaires.
+  Les deux tenaient dans une seule phrase, parenthèse comprise : celui qui vient
+  savoir *s'il y a un lien* devait traverser « effet : +2,4 % ; IC à 95 % :
+  0,8 à 4,1 » pour l'apprendre.
+- **Inchangés, délibérément** : le langage écologique, le gabarit qui nomme les
+  cellules région × âge × sexe, et l'encart permanent « Comment lire ces
+  résultats ». Vérifié à l'écran.
+- **Nettoyage** : `correlate()`, ses avertissements typés et le retrait de
+  tendance quittent `correlations.py` (1 200 → 1 025 l.) — plus aucun appelant
+  depuis 1.6.
+- **Gardé, et pourquoi** : `statistics.py`, bien qu'aucun code applicatif ne
+  l'appelle plus. Ce n'est pas le cas d'`AdvancedCross` : c'est une
+  bibliothèque de fonctions pures, sans couplage à l'API, testée contre des
+  valeurs publiées. Elle ne coûte rien à garder, et le point **3.6** en a besoin
+  nommément — la bande d'incertitude d'une prolongation vient des résidus, donc
+  d'une loi de Student.
+- **Signalé, hors périmètre** : rien n'empêche d'expliquer une mesure par
+  elle-même (effet 0 %, intervalle nul). C'est une forme qui ne ment pas mais
+  qui n'apprend rien ; à traiter si l'usage le remonte.

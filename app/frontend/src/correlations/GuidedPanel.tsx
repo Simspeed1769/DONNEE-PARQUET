@@ -66,22 +66,40 @@ function formatValue(value: number | null | undefined): string {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value);
 }
 
-/** La phrase au gabarit imposé par le mode Guidé — distincte de celle du GLM
- *  générique (`_term_sentence`, utilisée par Modèle) : celle-ci nomme
- *  explicitement l'unité d'observation et ce qui est tenu constant, pour
- *  qu'aucune lecture individuelle n'y soit possible. */
-function guidedSentence(term: RegressionTerm, yLabel: string, ageSexHeld: boolean): string {
+/** La lecture d'une variable, **en deux temps**.
+ *
+ *  Le verdict d'abord, en français simple et en corps de texte ; le chiffre de
+ *  l'effet et son intervalle en dessous, en plus petit. Les deux tenaient dans
+ *  une seule phrase, parenthèse comprise : celui qui vient pour savoir *s'il y
+ *  a un lien* devait traverser « effet : +2,4 % ; IC à 95 % : 0,8 à 4,1 » pour
+ *  l'apprendre, et celui qui vient pour le chiffre le trouvait noyé dans la
+ *  phrase.
+ *
+ *  Le gabarit reste **strictement** celui du mode Guidé, distinct de celui du
+ *  GLM générique (`_term_sentence`) : il nomme l'unité d'observation — des
+ *  cellules territoriales, jamais des personnes — et ce qui est tenu constant.
+ *  Aucune lecture individuelle n'y est possible, et ce point n'est pas
+ *  négociable.
+ */
+function guidedReading(term: RegressionTerm, yLabel: string, ageSexHeld: boolean): {
+  verdict: string; detail: string | null;
+} {
   const prefix = ageSexHeld ? "À âge et sexe comparables, " : "";
   const crossesZero = term.ci_low <= 0 && term.ci_high >= 0;
   if (crossesZero || term.p_value === null) {
-    return `${prefix}les cellules territoriales où « ${term.label} » est plus élevée ne se distinguent pas des autres sur ${yLabel.toLowerCase()} : le lien n’est pas établi sur ces données.`;
+    return {
+      verdict: `${prefix}les cellules territoriales où « ${term.label} » est plus élevée ne se distinguent pas des autres sur ${yLabel.toLowerCase()} : le lien n’est pas établi sur ces données.`,
+      detail: null,
+    };
   }
   // « un » plutôt qu'un accord de genre : le libellé de la mesure n'est pas
   // toujours disponible sous une forme dont on puisse déduire le genre.
   const direction = term.effect >= 0 ? `un ${yLabel.toLowerCase()} plus élevé` : `un ${yLabel.toLowerCase()} plus bas`;
-  const effectText = `effet : ${formatEffect(term.effect, term.effect_kind)} ; IC à 95 % : `
-    + `${formatEffect(term.ci_low, term.effect_kind)} à ${formatEffect(term.ci_high, term.effect_kind)}`;
-  return `${prefix}les cellules territoriales où « ${term.label} » est plus élevée présentent en moyenne ${direction} (${effectText}).`;
+  return {
+    verdict: `${prefix}les cellules territoriales où « ${term.label} » est plus élevée présentent en moyenne ${direction}.`,
+    detail: `Effet : ${formatEffect(term.effect, term.effect_kind)} · intervalle à 95 % : `
+      + `${formatEffect(term.ci_low, term.effect_kind)} à ${formatEffect(term.ci_high, term.effect_kind)}`,
+  };
 }
 
 /** Le nuage observé × expliqué par la première variable choisie.
@@ -160,6 +178,7 @@ export function GuidedPanel({ catalogue }: Props) {
   const [yPathology, setYPathology] = useState<string | null>(null);
 
   const [xEntries, setXEntries] = useState<XEntry[]>([{ id: newId(), kind: "csp", metric: "csp.share", selection: null }]);
+  const [addOpen, setAddOpen] = useState(false);
 
   const [ageSexHeld, setAgeSexHeld] = useState(true);
   const [regionHeld, setRegionHeld] = useState(false);
@@ -385,11 +404,26 @@ export function GuidedPanel({ catalogue }: Props) {
               </li>
             ))}
           </ul>
+          {/* Une variable, un nuage, une phrase — c'est l'état par défaut, et
+              celui qui répond à la question qu'on se pose en arrivant. Les
+              trois sources d'une deuxième variable étaient trois boutons
+              permanents : ils donnaient à un écran simple l'air d'un
+              formulaire. Elles vivent maintenant derrière un seul geste. */}
           <div className="guided-x-add">
-            <button type="button" onClick={() => addX("csp")} disabled={xEntries.length >= MAX_X}>+ Groupe CSP</button>
-            <button type="button" onClick={() => addX("patho")} disabled={xEntries.length >= MAX_X}>+ Pathologie</button>
-            <button type="button" onClick={() => addX("damir")} disabled={xEntries.length >= MAX_X}>+ Mesure DAMIR</button>
-            {xEntries.length >= MAX_X ? <span className="guided-x-max">Trois variables au plus, pour que les effets restent lisibles.</span> : null}
+            {xEntries.length >= MAX_X ? (
+              <span className="guided-x-max">Trois variables au plus, pour que les effets restent lisibles.</span>
+            ) : addOpen ? (
+              <>
+                <button type="button" onClick={() => { addX("csp"); setAddOpen(false); }}>Groupe CSP</button>
+                <button type="button" onClick={() => { addX("patho"); setAddOpen(false); }}>Pathologie</button>
+                <button type="button" onClick={() => { addX("damir"); setAddOpen(false); }}>Mesure DAMIR</button>
+                <button type="button" className="guided-x-cancel" onClick={() => setAddOpen(false)}>Annuler</button>
+              </>
+            ) : (
+              <button type="button" className="guided-x-open" onClick={() => setAddOpen(true)}>
+                + Ajouter une variable
+              </button>
+            )}
           </div>
         </li>
 
@@ -437,9 +471,21 @@ export function GuidedPanel({ catalogue }: Props) {
       {result && xTerms.length ? (
         <>
           <ul className="guided-sentences">
-            {xTerms.map((term) => <li key={term.key}>{guidedSentence(term, yLabel, ageSexHeld)}</li>)}
+            {xTerms.map((term) => {
+              const reading = guidedReading(term, yLabel, ageSexHeld);
+              return (
+                <li key={term.key}>
+                  <p className="guided-verdict">{reading.verdict}</p>
+                  {reading.detail ? <p className="guided-effect">{reading.detail}</p> : null}
+                </li>
+              );
+            })}
           </ul>
 
+          {/* À une seule variable, ce graphique redit ce que la phrase vient
+              de dire — un unique segment sur un axe. Il n'apparaît qu'à partir
+              de deux, où il sert enfin à *comparer* des effets entre eux. */}
+          {xTerms.length > 1 ? (
           <section className="guided-chart-card">
             <header>
               <div><strong>Effet de chaque variable</strong><small>Intervalle à 95 %</small></div>
@@ -459,6 +505,7 @@ export function GuidedPanel({ catalogue }: Props) {
               ariaLabel={`Effet de chaque variable sur ${yLabel}, avec intervalle à 95 %`}
             />
           </section>
+          ) : null}
 
           {primaryTerm ? (
             <section className="guided-chart-card">

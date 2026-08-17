@@ -29,7 +29,6 @@ from pydantic import BaseModel
 
 from .analysis import QueryRepository
 from .glm import Family, GlmError, default_family, fit
-from .statistics import correlation_report, minimum_detectable_r
 
 # Régions présentes dans les trois sources régionales. DAMIR ne porte pas la
 # Corse (94) et agrège les DOM sous un code unique : les retenir produirait des
@@ -642,192 +641,18 @@ def _describe_cell(key: str, unit: Unit) -> dict[str, Any]:
     return described
 
 
-def _detrended(pairs: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Retire la moyenne de chaque année : ce qui reste est l'écart d'une région
-    à ses contemporaines, débarrassé de la tendance commune."""
-    by_year: dict[str, list[dict[str, Any]]] = {}
-    for pair in pairs:
-        by_year.setdefault(pair["year"] or "", []).append(pair)
-    adjusted: list[dict[str, Any]] = []
-    for group in by_year.values():
-        mean_x = sum(item["x"] for item in group) / len(group)
-        mean_y = sum(item["y"] for item in group) / len(group)
-        for item in group:
-            adjusted.append({**item, "x": item["x"] - mean_x, "y": item["y"] - mean_y})
-    return adjusted
-
-
-def _warnings(request: CorrelationRequest, x_definition: dict[str, Any],
-              y_definition: dict[str, Any], report: dict[str, Any],
-              denominator: str = INSEE_DENOMINATOR) -> list[dict[str, str]]:
-    """Les raisons de se méfier du chiffre qu'on vient d'afficher."""
-    notes: list[dict[str, str]] = []
-    n = int(report["n"])
-
-    # Un taux ne dit rien sans son dénominateur. Deux populations existent ici
-    # et ne mesurent pas la même chose : les résidents d'un territoire, et les
-    # assurés que l'Assurance Maladie protège. L'écran dit toujours laquelle
-    # divise.
-    if x_definition["rate"] or y_definition["rate"]:
-        averaged = (" La population de l'année est la moyenne des 1er janvier N et N+1 ;"
-                    " sur la dernière année disponible, le 1er janvier sert seul."
-                    if denominator == INSEE_DENOMINATOR else "")
-        notes.append({
-            "level": "info",
-            "text": f"Les taux affichés sont rapportés à la {denominator}.{averaged}",
-        })
-
-    if not x_definition["rate"] and not y_definition["rate"] and request.unit != "year":
-        notes.append({
-            "level": "critical",
-            "text": "Les deux indicateurs sont des effectifs : leur corrélation mesure "
-                    "surtout la taille des régions, pas une relation entre les phénomènes. "
-                    "Choisissez des indicateurs rapportés à la population.",
-        })
-
-    floor = minimum_detectable_r(n)
-    if floor is not None and n < 20:
-        notes.append({
-            "level": "warning",
-            "text": f"{n} observations seulement : en deçà de |r| = {floor:.2f}, "
-                    "aucune conclusion n'est possible — l'absence de corrélation "
-                    "visible ne prouve pas l'absence de relation.",
-        })
-
-    if request.unit == "year" and not request.detrend:
-        notes.append({
-            "level": "warning",
-            "text": "Deux séries annuelles qui progressent toutes deux avec le temps "
-                    "corrèlent presque toujours. Ce résultat ne vaut que si vous avez "
-                    "une raison de penser que le lien n'est pas seulement chronologique.",
-        })
-
-    if request.unit == "region_year":
-        notes.append({
-            "level": "info",
-            "text": "Les années d'une même région ne sont pas des observations "
-                    "indépendantes : la p-value est optimiste. Le croisement par région "
-                    "seule est plus prudent.",
-        })
-
-    pearson_value = report["pearson"]
-    spearman_value = report["spearman"]
-    if pearson_value is not None and spearman_value is not None:
-        if abs(pearson_value - spearman_value) > 0.25:
-            notes.append({
-                "level": "warning",
-                "text": "Pearson et Spearman divergent nettement : la relation n'est pas "
-                        "linéaire, ou quelques points extrêmes portent le résultat à eux seuls.",
-            })
-
-    if request.unit == "year":
-        notes.append({
-            "level": "info",
-            "text": "Ces points sont des agrégats nationaux : une relation entre deux "
-                    "moyennes ne dit rien des individus. Elle suggère une piste, elle "
-                    "n'établit pas une cause.",
-        })
-    else:
-        notes.append({
-            "level": "info",
-            "text": "Une relation observée entre territoires ne dit rien des individus qui "
-                    "les composent : c'est le sophisme écologique. Elle suggère une piste, "
-                    "elle n'établit pas une cause.",
-        })
-    return notes
-
-
-def correlate(repo: QueryRepository, request: CorrelationRequest) -> dict[str, Any]:
-    if request.start_year > request.end_year:
-        raise ValueError("La période sélectionnée est invalide.")
-    x_definition = METRICS.get(request.x.metric)
-    y_definition = METRICS.get(request.y.metric)
-    if x_definition is None or y_definition is None:
-        raise ValueError("Indicateur inconnu.")
-
-    allowed = UNITS[request.unit]["sources"]
-    for definition in (x_definition, y_definition):
-        if definition["source"] not in allowed:
-            raise ValueError(
-                f"« {definition['label']} » ne peut pas être croisé sur "
-                f"« {UNITS[request.unit]['label']} » : la mortalité n'existe qu'au "
-                "niveau national."
-            )
-
-    x_series = _series(repo, request.x, request)
-    y_series = _series(repo, request.y, request)
-
-    shared = sorted(set(x_series) & set(y_series))
-    pairs = []
-    for key in shared:
-        described = _describe_cell(key, request.unit)
-        pairs.append({
-            "key": key, **described,
-            "x": x_series[key], "y": y_series[key],
-        })
-
-    used = _detrended(pairs) if request.detrend and request.unit == "region_year" else pairs
-    report = correlation_report([item["x"] for item in used], [item["y"] for item in used])
-
-    return {
-        "unit": request.unit,
-        "unit_label": UNITS[request.unit]["label"],
-        "unit_hint": UNITS[request.unit]["hint"],
-        "x": {**x_definition, "key": request.x.metric, "selection": request.x.selection},
-        "y": {**y_definition, "key": request.y.metric, "selection": request.y.selection},
-        "points": pairs,
-        "detrended": request.detrend and request.unit == "region_year",
-        "statistics": report,
-        "minimum_detectable_r": minimum_detectable_r(int(report["n"])),
-        "warnings": _warnings(request, x_definition, y_definition, report,
-                              denominator_label(repo)),
-        "regions_used": len(COMMON_REGIONS),
-    }
-
-
-# ── Régression ───────────────────────────────────────────────────────────────
+# La correlation appariee vivait ici : `correlate()`, ses avertissements types
+# et le retrait de tendance. Elle est partie avec l'ecran avance de Croisements
+# (point 1.6) : plus aucun appelant. Croisements passe par la regression, qui
+# repond a la meme question en tenant l'age et le sexe constants — et dont les
+# avertissements sont produits par `regression()`, pas ici.
 #
-# Le croisement répond à « est-ce que ceci va avec cela ? ». La régression
-# répond à la question d'après : « une fois le reste tenu constant, que pèse
-# chaque variable ? ». C'est la seule chose que ce module ajoute — pas un
-# atelier de modélisation.
-
-# Ce qui peut tenir lieu de réponse : une mesure de remboursement, et elle seule.
-RESPONSE_METRICS = ("damir.spend_per_capita", "damir.average_reimbursed",
-                    "damir.coverage", "damir.spend_total", "patho.prevalence")
-
-FAMILY_LABELS: dict[str, str] = {
-    "gaussian": "Effet en euros (loi gaussienne)",
-    "gamma": "Effet en pourcentage (loi gamma)",
-    "poisson": "Effet en pourcentage (loi de Poisson)",
-}
-
-# Au-delà, la lecture cesse d'être « simple » et les variables se marchent dessus.
-MAX_PREDICTORS = 4
-
-
-#: Les dimensions de l'observation qui peuvent devenir des variables du modèle.
-#:
-#: C'est le point qui change la nature de l'écran. Tant que l'âge est un
-#: *filtre*, un modèle de la dépense attribue à la prévalence ou à la CSP une
-#: bonne part de ce qui n'est que la structure d'âge des régions. Devenu
-#: *variable*, l'âge absorbe cette part, et l'effet des autres se lit enfin à
-#: âge et sexe constants — ce qui est la seule façon de poser la question.
-FACTORS: dict[str, dict[str, Any]] = {
-    "factor.age": {
-        "dimension": "age", "label": "Tranche d'âge",
-        "hint": "Absorbe la structure d'âge, premier déterminant de la dépense.",
-    },
-    "factor.sex": {
-        "dimension": "sex", "label": "Sexe",
-        "hint": "Absorbe l'écart entre femmes et hommes.",
-    },
-    "factor.region": {
-        "dimension": "region", "label": "Région",
-        "hint": "Absorbe tout ce qui est propre à un territoire et ne change pas : "
-                "l'offre de soins, les pratiques, ce qu'on n'a pas mesuré.",
-    },
-}
+# `statistics.py` reste, bien qu'aucun code applicatif ne l'appelle plus. Ce
+# n'est pas le meme cas qu'`AdvancedCross` : c'est une bibliotheque de
+# fonctions pures, sans couplage a l'API, testee contre des valeurs publiees —
+# le quartet d'Anscombe, des tables de Student. Elle ne coute rien a garder, et
+# le point 3.6 (prolongation de tendance) en a besoin nommement : bande
+# d'incertitude issue des residus, donc loi de Student.
 
 
 def available_factors(unit: Unit) -> list[str]:
