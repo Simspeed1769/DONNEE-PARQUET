@@ -1039,3 +1039,27 @@ contrarient.
   article.
 - **Écarté** : le choix de l'horizon. Deux ans, non négociable dans le code — au
   delà, la bande devient plus large que le signal et la forme cesse d'informer.
+
+## v6 · Correctif — Croisements répondait 500
+
+- **Symptôme** : « Le catalogue des indicateurs n'a pas pu être chargé ».
+  `/api/correlations/meta` renvoyait 500, et la régression avec.
+- **Cause** : au point 2.2 — une simplification de l'**écran** Croisements —
+  quatre constantes du backend ont été supprimées alors que leurs **sept usages
+  subsistaient** : `RESPONSE_METRICS`, `MAX_PREDICTORS`, `FACTORS`,
+  `FAMILY_LABELS`. Le point 2.4 a ensuite réparti ces usages entre
+  `correlations.py` et `regression.py`, rendant le manque encore moins visible.
+  Un `import math` manquait aussi.
+- **Pourquoi la suite restait verte** : aucun test ne touchait ces deux chemins.
+  Un `NameError` de ce genre ne casse pas l'import du module et n'apparaît qu'à
+  l'ouverture de l'écran. C'est la **deuxième fois** — `DELAYS_PATH` au point
+  2.4 avait la même forme.
+- **Correction** : les constantes partagées reviennent dans `correlations.py`,
+  qui porte le vocabulaire commun et dont `regression.py` dépend déjà — jamais
+  l'inverse. `FAMILY_LABELS`, que seule la régression emploie, reste chez elle.
+- **Garde-fou, sur la classe et pas sur le cas.**
+  `test_croisements.py::test_no_undefined_globals` relit chaque module du
+  backend et vérifie qu'aucun nom n'y est employé sans y être défini ni importé.
+  Vérifié en remisant le correctif : les six tests tombent, et repassent une
+  fois le code restauré. Le balayage est propre sur l'ensemble du backend.
+- **77 tests verts** (71 avant).

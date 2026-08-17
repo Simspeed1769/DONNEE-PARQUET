@@ -19,6 +19,7 @@ l'écran le signale plutôt que de faire semblant.
 
 from __future__ import annotations
 
+import math
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -27,7 +28,10 @@ from .analysis import QueryRepository
 from .correlations import (
     AGE_BANDS,
     COMMON_REGIONS,
+    FACTORS,
+    MAX_PREDICTORS,
     METRICS,
+    RESPONSE_METRICS,
     UNIT_DIMENSIONS,
     UNITS,
     CorrelationRequest,
@@ -38,6 +42,14 @@ from .correlations import (
     _series,
     available_factors,
 )
+
+#: Le nom français de chaque loi, tel qu'il s'écrit dans la phrase de résultat.
+#: Propre à ce module : `correlations.py` n'ajuste rien et n'en a pas l'usage.
+FAMILY_LABELS: dict[str, str] = {
+    "gaussian": "Effet en euros (loi gaussienne)",
+    "gamma": "Effet en pourcentage (loi gamma)",
+    "poisson": "Effet en pourcentage (loi de Poisson)",
+}
 from .glm import Family, GlmError, default_family, fit
 
 

@@ -655,6 +655,45 @@ def _describe_cell(key: str, unit: Unit) -> dict[str, Any]:
 # d'incertitude issue des residus, donc loi de Student.
 
 
+# ── Le contrat de la régression, tenu ici ────────────────────────────────────
+#
+# Ces trois constantes servent des deux côtés : `regression.py` les emploie pour
+# valider une demande, `catalogue()` juste en dessous pour dire à l'écran ce
+# qu'il a le droit de proposer. Elles vivent donc dans ce module-ci, qui porte
+# le vocabulaire commun, et `regression.py` les importe — jamais l'inverse, il
+# dépend déjà de ce fichier.
+
+#: Ce qui peut tenir lieu de réponse : une mesure de remboursement, et elle seule.
+RESPONSE_METRICS = ("damir.spend_per_capita", "damir.average_reimbursed",
+                    "damir.coverage", "damir.spend_total", "patho.prevalence")
+
+#: Au-delà, la lecture cesse d'être « simple » et les variables se marchent dessus.
+MAX_PREDICTORS = 4
+
+#: Les dimensions de l'observation qui peuvent devenir des variables du modèle.
+#:
+#: C'est le point qui change la nature de l'écran. Tant que l'âge est un
+#: *filtre*, un modèle de la dépense attribue à la prévalence ou à la CSP une
+#: bonne part de ce qui n'est que la structure d'âge des régions. Devenu
+#: *variable*, l'âge absorbe cette part, et l'effet des autres se lit enfin à
+#: âge et sexe constants — ce qui est la seule façon de poser la question.
+FACTORS: dict[str, dict[str, Any]] = {
+    "factor.age": {
+        "dimension": "age", "label": "Tranche d'âge",
+        "hint": "Absorbe la structure d'âge, premier déterminant de la dépense.",
+    },
+    "factor.sex": {
+        "dimension": "sex", "label": "Sexe",
+        "hint": "Absorbe l'écart entre femmes et hommes.",
+    },
+    "factor.region": {
+        "dimension": "region", "label": "Région",
+        "hint": "Absorbe tout ce qui est propre à un territoire et ne change pas : "
+                "l'offre de soins, les pratiques, ce qu'on n'a pas mesuré.",
+    },
+}
+
+
 def available_factors(unit: Unit) -> list[str]:
     """Un facteur n'existe que si l'unité distingue sa dimension : sur « Région »,
     toutes les cellules ont le même âge, et l'indicatrice serait constante."""
