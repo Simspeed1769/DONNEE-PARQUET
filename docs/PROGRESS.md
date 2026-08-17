@@ -1106,3 +1106,21 @@ aurait coûté plus qu'il n'aurait préservé.
 - **`docs/captures/`** : les douze écrans, avec un LISEZMOI qui donne les URL
   pour les refaire — une capture non reproductible ne vaut que le jour où on la
   prend.
+
+## v7 · Mission « Alléger » point 1 — Diagnostic des mesures unitaires
+
+- **Aucun code modifié**, c'était la consigne. Rapport dans
+  `docs/DIAGNOSTIC_MESURES_UNITAIRES.md`.
+- **La donnée est intacte** : `qte` totalise 133 320 833 455 dans le cube source
+  comme dans le compact, zéro NULL des deux côtés, écart 0,000000 %. Le cube
+  n'est pas à reconstruire.
+- **La règle du Panorama est juste** — une prestation unique, parce qu'on
+  n'additionne pas des boîtes et des journées — mais sa restitution ne l'est
+  pas : trois options grisées portant « · indisponible » sans la raison que le
+  serveur envoie pourtant, et un repli automatique vers « Montant remboursé »
+  qui réécrit l'adresse sans un mot.
+- **Défaut miroir non repéré par la mission** : `requires_homogeneous_unit`
+  n'est posé sur aucune des douze mesures, donc la branche qui s'appuie dessus
+  est morte. Comparer, le Tableau et Extraire n'appliquent aucune restriction et
+  offrent un volume « tous postes confondus » — un nombre qui ne veut rien dire.
+  `LISEZMOI.md` l. 1323 documente un garde-fou d'Extraire qui n'existe pas.
