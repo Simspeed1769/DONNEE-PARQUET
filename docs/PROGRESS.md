@@ -1373,3 +1373,22 @@ aurait coûté plus qu'il n'aurait préservé.
 - Vérifié aux deux thèmes — en sombre, page `#0e0d0c`, tablette `#171614`, puce
   `#121110`, trois niveaux distincts — et à 1400 / 1024 / 720 px sans
   débordement.
+
+## v8 · État des lieux — Croisements et Tableau
+
+- **Note écrite pour la prochaine session**, `docs/ETAT_CROISEMENTS_ET_TABLEAU.md`.
+  Aucun code modifié.
+- **Correction de périmètre** : la demande visait trois écrans, mais « Repères »
+  n'existe plus — remplacé par le Tableau, ses six calculs devenus le menu
+  d'agrégation, l'ancienne adresse redirigée.
+- **Un défaut réel trouvé** : `pivot.py:219` émet l'avertissement « ticket
+  modérateur » dès qu'aucun grand poste n'est choisi, **quelle que soit la
+  mesure** — le serveur ne la connaît pas, elle est choisie côté client. Il
+  s'affiche donc sur « Montant remboursé », qu'il ne concerne pas. Signalé, non
+  corrigé.
+- **Une fausse piste écartée avant de l'écrire** : les axes du nuage semblaient
+  anonymes sur capture ; ils sont nommés dans le code et à l'écran, la capture
+  les avait rognés.
+- **Cinq questions posées à l'arbitrage**, dont celle qui touche à la justesse
+  des nombres : aligner ou non le Tableau, Comparer et Extraire sur la règle
+  d'unité du Panorama.
