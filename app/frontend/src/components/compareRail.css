@@ -1,16 +1,28 @@
 /* Le bandeau « Ce que je compare », et le réglage d'une série.
  *
- * Tout vient des jetons de theme.css. Le bandeau ne porte plus de surface : il
- * prolonge la barre de filtres, il ne la concurrence pas.
+ * Tout vient des jetons de theme.css.
+ *
+ * **Le bandeau a sa propre surface.** Posé à même le fond ivoire et collé au
+ * panneau de filtres, il se lisait comme le pied de celui-ci, et les puces
+ * semblaient flotter sur du gris. Il repose maintenant sur une tablette
+ * `--surface`, avec le rayon des panneaux — mais **sans bordure ni ombre** :
+ * elle le pose sans en faire un troisième panneau entre les deux qui
+ * l'encadrent.
+ *
+ * L'espacement au-dessus et en dessous est celui qui sépare deux panneaux, et
+ * le retrait horizontal est celui de leur contenu (22 px, comme `.damir-stage`) :
+ * les puces s'alignent donc sur le titre du panneau qui suit.
  */
 
-.compare-rail { position: relative; margin: 0 0 var(--space-3); }
+.compare-rail { position: relative; margin: var(--space-3) 0 var(--space-4); }
 
 .compare-rail-summary {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 4px 2px 10px;
+  padding: 10px 22px;
+  border-radius: var(--radius);
+  background: var(--surface);
 }
 
 /* L'intitulé prend le jeton des légendes de filtres : il nomme la rangée, il ne
@@ -46,7 +58,7 @@
   height: 26px;
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background: var(--surface-sunken);
   color: var(--ink-secondary);
   font-size: .6rem;
   white-space: nowrap;

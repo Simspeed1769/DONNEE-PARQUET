@@ -1353,3 +1353,23 @@ aurait coûté plus qu'il n'aurait préservé.
   « Ce que ce graphique ne montre pas » et jusqu'au PNG — « un ordre de grandeur
   et une tendance, jamais un tarif ». **8 tests** (`test_unit_scope.py`), 85 au
   total.
+
+## v8 · Le bandeau « Ce que je compare » repose sur une surface
+
+- **Il flottait sur le fond ivoire, collé au panneau de filtres** : l'ensemble se
+  lisait comme une zone unique, et les puces semblaient posées sur du gris. Il
+  repose maintenant sur une tablette `--surface`, au rayon des panneaux, **sans
+  bordure ni ombre** — elle le pose sans en faire un troisième panneau entre les
+  deux qui l'encadrent.
+- **Les puces passent en `--surface-sunken`** : blanches sur une tablette
+  blanche, un filet seul ne leur donnait plus de corps.
+- **Aligné et respiré** : retrait horizontal de 22 px, celui de `.damir-stage`,
+  si bien que « Ce que je compare » tombe sur le titre du panneau suivant —
+  mesuré à 274 contre 275 px. Douze pixels au-dessus, seize en dessous, les
+  écarts standards entre panneaux.
+- **Écart assumé avec la mission**, qui demandait au point 3 « sans surface ni
+  bordure ». L'utilisateur a demandé l'inverse en voyant l'écran : une surface,
+  esprit minimaliste. La surface est là, la bordure et l'ombre ne le sont pas.
+- Vérifié aux deux thèmes — en sombre, page `#0e0d0c`, tablette `#171614`, puce
+  `#121110`, trois niveaux distincts — et à 1400 / 1024 / 720 px sans
+  débordement.
