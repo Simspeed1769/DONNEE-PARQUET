@@ -169,6 +169,14 @@ export type RegressionResult = {
   factors: Array<{ key: string; label: string; hint: string; active: boolean }>;
   intercept: { estimate: number; std_error: number; p_value: number | null };
   terms: RegressionTerm[];
+  /** Ce que la maille a perdu à l'intersection des sources, et par la faute de
+   *  quelle variable. Une cellule qu'une source connaît et qu'une autre ignore
+   *  disparaît du modèle ; l'écran doit pouvoir le dire. */
+  coverage: {
+    kept: number;
+    dropped: number;
+    missing_in: string[];
+  };
   fit: {
     n: number;
     parameters: number;

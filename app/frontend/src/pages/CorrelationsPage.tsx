@@ -41,8 +41,10 @@ export function CorrelationsPage({ onOpenMethodology }: Props) {
       <header className="explore-head">
         <div>
           <span className="explore-eyebrow">Croisements entre sources</span>
+          {/* Aucun sous-titre : « 1 · Que voulez-vous expliquer ? », « 2 · Par
+              quoi l'expliquer ? » et « 3 · Contrôles » le disaient déjà, trois
+              lignes plus bas. */}
           <h1>Expliquer un indicateur</h1>
-          <p>Ce que vous voulez expliquer, par quoi, à quoi comparable — en trois temps.</p>
         </div>
         <div className="explore-head-side">
           <button type="button" className="ghost-button" onClick={onOpenMethodology}>Définitions &amp; méthode</button>

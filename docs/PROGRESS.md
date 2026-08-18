@@ -1392,3 +1392,25 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Cinq questions posées à l'arbitrage**, dont celle qui touche à la justesse
   des nombres : aligner ou non le Tableau, Comparer et Extraire sur la règle
   d'unité du Panorama.
+
+## v9 · Croisements point 1 — Dire ce qu'est un point
+
+- **Une ligne permanente en tête** : « Chaque point compare une région, une
+  tranche d'âge et un sexe. 191 points au total. » Les deux cases de l'étape 3
+  se lisaient comme un choix entre croiser par région **ou** par âge et sexe ;
+  la maille est toujours le triplet, et le dire à la source coûte une ligne.
+  C'est un avertissement de comparabilité : il reste visible.
+- **La cellule manquante est identifiée, pas devinée.** 191 sur 192 : c'est
+  `11:0:2` — Île-de-France, moins de 20 ans, femmes. DAMIR la porte, la CSP non,
+  parce que le recensement n'y compte **aucun** « Agriculteur exploitant »
+  (cinq groupes sur six présents dans cette cellule).
+- **Le serveur renvoie désormais `coverage`** — retenues, écartées, et **le nom
+  de la variable qui les perd**. L'intersection les écartait en silence : une
+  grille qui rétrécit sans le dire se lit comme une grille pleine. La ligne de
+  bilan affiche « 191 cellules (1 écartée — non renseignée dans « Part dans la
+  population active ») ».
+- **Le sous-titre est supprimé** : il répétait les trois intitulés numérotés
+  qu'il précédait de trois lignes.
+- **Trois tests** verrouillent le calcul, dont celui qui vérifie que le décompte
+  affiché et le `n` du modèle sont le même nombre — deux comptes divergents
+  seraient pires que pas de compte. **88 tests verts.**

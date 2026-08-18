@@ -167,6 +167,21 @@ def regression(repo: QueryRepository, request: RegressionRequest) -> dict[str, A
     # Seules les unités où **tout** est renseigné entrent dans le modèle : une
     # observation partielle fausserait les coefficients des autres variables.
     keys = sorted(set(response_series).intersection(*(set(item) for item in predictor_series)))
+
+    # Les cellules qu'une source connaît et qu'une autre ignore sont écartées en
+    # silence par l'intersection. L'écran doit pouvoir dire **combien** et
+    # **laquelle des variables** les perd : une maille qui rétrécit sans le dire
+    # laisse croire à une grille pleine.
+    universe = set(response_series).union(*(set(item) for item in predictor_series))         if predictor_series else set(response_series)
+    dropped = universe - set(keys)
+    culprits: list[str] = []
+    if dropped:
+        named = [(response_definition["label"], response_series)] + [
+            (definition["label"], series)
+            for definition, series in zip(definitions, predictor_series)
+        ]
+        culprits = [label for label, series in named if dropped - set(series)]
+
     if not keys:
         raise ValueError(
             "Aucune unité d'observation ne porte à la fois la mesure et toutes "
@@ -360,6 +375,14 @@ def regression(repo: QueryRepository, request: RegressionRequest) -> dict[str, A
             "p_value": p_values[0],
         },
         "terms": terms,
+        # Ce que la maille a perdu, et par la faute de quelle variable. Le
+        # décompte accompagne le total de cellules, comme le Panorama accompagne
+        # sa carte du nombre de territoires sans valeur.
+        "coverage": {
+            "kept": len(keys),
+            "dropped": len(dropped),
+            "missing_in": culprits,
+        },
         "fit": {
             "n": result["n"],
             "parameters": result["parameters"],

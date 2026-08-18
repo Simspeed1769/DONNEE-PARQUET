@@ -343,6 +343,20 @@ export function GuidedPanel({ catalogue }: Props) {
 
   return (
     <div className="guided">
+      {/* Ce qu'est un point, dit avant qu'on règle quoi que ce soit.
+       *
+       *  Les deux cases de l'étape 3 se lisaient comme un choix entre croiser
+       *  par région **ou** par âge et sexe. Ce n'en est pas un : la maille est
+       *  toujours le triplet, et ces cases n'ajoutent que des contrôles au
+       *  modèle. Le dire ici coûte une ligne et lève la confusion à la source.
+       *
+       *  C'est un avertissement de comparabilité au sens de `CLAUDE.md` : il
+       *  reste visible, il ne va pas derrière une icône. */}
+      <p className="guided-unit">
+        Chaque point compare une région, une tranche d’âge et un sexe.
+        {result ? ` ${result.coverage.kept} points au total.` : null}
+      </p>
+
       <ol className="guided-steps">
         <li>
           <span className="guided-step-label">1 · Que voulez-vous expliquer ?</span>
@@ -579,7 +593,20 @@ export function GuidedPanel({ catalogue }: Props) {
           ) : null}
 
           <p className="guided-fit">
-            {result.fit.n} cellules ·{" "}
+            {result.fit.n} cellules
+            {/* Ce que la maille a perdu, et par la faute de quelle variable.
+                L'intersection écartait ces cellules en silence : une grille qui
+                rétrécit sans le dire se lit comme une grille pleine. */}
+            {result.coverage.dropped ? (
+              <>
+                {" "}({result.coverage.dropped}{" "}
+                {result.coverage.dropped > 1 ? "écartées" : "écartée"}
+                {result.coverage.missing_in.length
+                  ? ` — non renseignée dans « ${result.coverage.missing_in.join(" », « ")} »`
+                  : null})
+              </>
+            ) : null}
+            {" · "}
             {result.fit.explained === null
               ? "part expliquée non calculable"
               : `${Math.round(result.fit.explained * 100)} % de l’écart entre cellules est expliqué par ce modèle`}

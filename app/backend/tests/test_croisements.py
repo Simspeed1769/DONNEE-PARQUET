@@ -137,5 +137,53 @@ class RegressionTests(unittest.TestCase):
         self.assertIn("4", str(raised.exception))
 
 
+class CoverageTests(unittest.TestCase):
+    """Ce que l'intersection des sources écarte, et qui le perd.
+
+    Le modèle ne retient que les cellules où **tout** est renseigné. Celles
+    qu'une source connaît et qu'une autre ignore disparaissaient en silence :
+    l'écran affichait « 191 cellules » sans dire qu'il en manquait une, ce qui
+    se lit comme une grille pleine.
+
+    Le cas de référence est réel et vérifié dans la donnée : en Île-de-France,
+    chez les femmes de moins de vingt ans, le recensement ne compte aucun
+    « Agriculteur exploitant ». La cellule existe donc dans DAMIR et pas dans la
+    CSP.
+    """
+
+    def result(self):
+        return regression(repository, RegressionRequest(
+            unit="region_age_sex",
+            response="damir.spend_per_capita",
+            predictors=[IndicatorRef(source="csp", metric="csp.share",
+                                     selection="Agriculteurs exploitants")],
+            factors=["factor.age", "factor.sex"],
+        ))
+
+    def test_the_dropped_cell_is_counted_and_attributed(self) -> None:
+        coverage = self.result()["coverage"]
+        self.assertEqual(coverage["kept"], 191)
+        self.assertEqual(coverage["dropped"], 1)
+        self.assertEqual(coverage["missing_in"], ["Part dans la population active"])
+
+    def test_kept_matches_what_the_model_actually_fitted(self) -> None:
+        """Le décompte affiché et le nombre d'observations du modèle sont la
+        même chose : deux comptes divergents seraient pires que pas de compte."""
+        result = self.result()
+        self.assertEqual(result["coverage"]["kept"], result["fit"]["n"])
+
+    def test_nothing_is_dropped_when_a_single_source_is_involved(self) -> None:
+        """Une variable DAMIR contre une réponse DAMIR : rien à intersecter,
+        donc rien d'écarté — et aucune variable désignée à tort."""
+        result = regression(repository, RegressionRequest(
+            unit="region_age_sex",
+            response="damir.spend_per_capita",
+            predictors=[IndicatorRef(source="damir", metric="damir.coverage")],
+            factors=["factor.age", "factor.sex"],
+        ))
+        self.assertEqual(result["coverage"]["dropped"], 0)
+        self.assertEqual(result["coverage"]["missing_in"], [])
+
+
 if __name__ == "__main__":
     unittest.main()
