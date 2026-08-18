@@ -21,7 +21,17 @@ import { csvFromRows } from "../utils";
 import { ExportPngButton } from "./ExportPngButton";
 import { PaletteChoice } from "./PaletteChoice";
 import { ViewSwitch } from "./ViewSwitch";
-import type { KpiItem } from "./KpiStrip";
+/** Un repère chiffré. Le type vivait dans `KpiStrip`, supprimé avec la bande
+ *  séparée : les repères sont revenus **dans** le panneau, sur la rangée qu'ils
+ *  partagent avec le choix de forme — la structure de DAMIR, devenue la seule. */
+export type KpiItem = {
+  key: string;
+  label: string;
+  value: string;
+  detail?: string;
+  /** Une phrase entière plutôt qu'un nombre nu. */
+  sentence?: boolean;
+};
 
 type Props = {
   /** L'amorce au-dessus du titre. **Facultative, et à laisser vide dès qu'elle
@@ -44,11 +54,19 @@ type Props = {
   forms?: FormOption[];
   form?: string;
   onForm?: (key: string) => void;
-  /* Ni `question` ni `highlights` ici — et c'est le sujet de ce changement.
-     Les repères chiffrés sont remontés au-dessus de la carte (`KpiStrip`), où
-     ils ont une zone à eux ; la question au-dessus du graphique est retirée,
-     le titre disant déjà ce qu'on regarde. La carte ne porte plus que le
-     graphique et ce qui sert à le lire. */
+  /** Le périmètre, en gris, sur une ligne sous le titre. Il remplace
+   *  l'en-tête de page hors panneau que portaient les quatre bases : deux
+   *  niveaux de titre pour la même chose, et des repères qui semblaient posés
+   *  sur un fond gris, détachés de ce qu'ils décrivent. */
+  scopeLine?: string;
+  /** Les repères chiffrés, sur la seconde rangée, à gauche des formes.
+   *
+   *  Ils avaient été sortis dans une bande au-dessus du panneau. La rangée des
+   *  formes laissait alors un grand vide à gauche — précisément la place des
+   *  repères. Ils y sont revenus. */
+  highlights?: KpiItem[];
+  /* Pas de `question` : le titre, deux lignes plus haut, dit déjà ce qu'on
+     regarde. */
   /** Contenu propre à la base, entre l'en-tête et le graphique — un panneau
    *  de réglage (le masquage Cnam, par exemple) qui n'a pas sa place dans
    *  l'en-tête mais appartient à la même carte que le graphique. */
@@ -92,7 +110,7 @@ type Props = {
 };
 
 export function ChartShell({
-  kicker, title, headerActions, readings, reading, onReading, forms, form, onForm,
+  kicker, title, scopeLine, highlights, headerActions, readings, reading, onReading, forms, form, onForm,
   beforeChart, afterChart, legend, height, option, exportOption, empty,
   loading = false, ariaLabel, onInstance,
   tableColumns, tableRows, tableNote, caveats, sourceLine, filenamePrefix, scope, onExtract, className,
@@ -112,6 +130,9 @@ export function ChartShell({
               une ligne qui n'apprend rien au-dessus du graphique. */}
           {kicker ? <span className="section-kicker">{kicker}</span> : null}
           <h3>{title}</h3>
+          {/* Le périmètre, en gris, sur une ligne. Il vivait dans un en-tête de
+              page hors panneau, avec un second titre au-dessus du premier. */}
+          {scopeLine ? <small className="chart-shell-scope">{scopeLine}</small> : null}
         </div>
         {readings && readings.length > 1 ? (
           <div className="pathology-toggle damir-views" role="tablist" aria-label="Lecture affichée">
@@ -130,14 +151,21 @@ export function ChartShell({
         {headerActions}
       </header>
 
-      {/* La bande ne porte plus que les commandes du graphique.
-          Les repères chiffrés en sont sortis — ils sont désormais au-dessus de
-          la carte, dans `KpiStrip`, où ils ont leur propre zone. Et la question
-          (« Comment cela évolue-t-il dans le temps ? ») a disparu : le titre
-          juste au-dessus dit déjà ce que montre le graphique, et la relire à
-          chaque changement de lecture n'apprenait rien. */}
+      {/* La seconde rangée, et la dernière : les repères à gauche, les formes
+          et la palette à droite. C'est la bande de DAMIR, devenue la structure
+          unique — elle attache les repères au graphique qu'ils résument, et
+          comble le vide que les formes laissaient à leur gauche. */}
       <div className="damir-strip">
-          <span />
+          {highlights && highlights.length ? (
+            <div className="damir-highlights">
+              {highlights.map((item) => (
+                <span key={item.key} className="damir-highlight">
+                  <strong>{item.value}</strong>
+                  <small>{item.label}</small>
+                </span>
+              ))}
+            </div>
+          ) : <span />}
           <div className="damir-strip-controls">
             {forms ? (
               <ViewSwitch

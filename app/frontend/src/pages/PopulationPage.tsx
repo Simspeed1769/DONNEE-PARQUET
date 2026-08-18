@@ -16,7 +16,7 @@ import type { ECharts } from "echarts/core";
 import { getPopulationMetadata, getPopulationOverview } from "../api";
 import { ChartShell } from "../components/ChartShell";
 import { PageHero } from "../components/PageHero";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
 import { paletteParams, readPalette } from "../charts/palette";
@@ -149,6 +149,12 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
   const scope = overview
     ? `${overview.context.region_label} · ${overview.context.age_label} · ${overview.context.sex_label} · 1er janvier ${year}`
     : "";
+  /** La même chose sans le territoire, qui est déjà l'amorce du panneau.
+   *  `scope` reste entier : il part dans l'image exportée, où rien ne rappelle
+   *  le territoire. */
+  const scopeLine = overview
+    ? `${overview.context.age_label} · ${overview.context.sex_label} · 1er janvier ${year}`
+    : "";
   const sourceLine = `Source · ${metadata.source} · ${metadata.scope}`;
   const openExtraction = () => onOpenExtraction(new URLSearchParams({
     page: "extraction", source: "population",
@@ -210,10 +216,10 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
       {error ? <div className="analysis-error"><strong>La fiche Population n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
       {current ? (
-        <>
-        <KpiStrip items={kpiItems} />
-
         <ChartShell
+          kicker={overview?.context.region_label ?? ""}
+          scopeLine={scopeLine}
+          highlights={kpiItems}
           title={current.title}
           readings={POPULATION_READINGS}
           reading={reading}
@@ -247,7 +253,6 @@ export function PopulationPage({ routeVersion, onOpenExtraction, onOpenMethodolo
           onExtract={openExtraction}
           className="csp-stage"
         />
-        </>
       ) : null}
 
       <footer className="pathology-footer csp-footer">

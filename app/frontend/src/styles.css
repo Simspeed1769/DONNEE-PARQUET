@@ -1055,11 +1055,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .pathology-loading-track { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; overflow: hidden; }
 .pathology-loading-track span { display: block; width: 35%; height: 100%; opacity: 0; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--red), var(--accent-hover), transparent); transform: translateX(-120%); }
 .pathology-loading-track.active span { opacity: 1; animation: panorama-loading 1.05s ease-in-out infinite; }
-.pathology-title-line { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin: 24px 2px 14px; }
-.pathology-title-line span { color: var(--accent-hover); font-size: .57rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
-.pathology-title-line h2 { margin: 6px 0 0; color: var(--ink); font-size: 1.15rem; }
-.pathology-title-line small { display: block; margin-top: 6px; color: var(--ink-muted); font-size: .56rem; }
-.pathology-title-line button, .pathology-footer button { padding: 9px 13px; border: 1px solid var(--accent-line); border-radius: 8px; color: var(--accent-hover); background: var(--accent-wash); font-size: .6rem; font-weight: 800; cursor: pointer; }
+.pathology-footer button { padding: 9px 13px; border: 1px solid var(--accent-line); border-radius: 8px; color: var(--accent-hover); background: var(--accent-wash); font-size: .6rem; font-weight: 800; cursor: pointer; }
 .pathology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
 .pathology-chart { min-width: 0; padding: 20px 22px 13px; }
 .pathology-chart > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
@@ -1116,7 +1112,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 
 @media (max-width: 620px) {
 .pathology-hierarchy-row, .pathology-population-row { grid-template-columns: 1fr; }
-  .pathology-title-line, .pathology-footer { align-items: flex-start; flex-direction: column; }
+.pathology-footer { align-items: flex-start; flex-direction: column; }
   .extraction-source-switch { width: 100%; }
   .extraction-source-switch button { min-width: 0; flex: 1; }
 }
@@ -1135,13 +1131,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .mortality-sub-toggle { min-height: 31px; margin-top: 5px; border: 0; background: #fff5f5; }
 .mortality-sub-toggle button { min-height: 25px; font-size: .54rem; }
 .mortality-filter-hint { display: block; min-height: 31px; padding: 9px 3px 0; color: #8f98a6; font-size: .54rem; }
-.mortality-title-line { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 26px 2px 14px; }
-.mortality-title-line > div:first-child > span { color: var(--accent-hover); font-size: .57rem; font-weight: 800; letter-spacing: .05em; }
-.mortality-title-line h2 { margin: 6px 0 0; color: var(--ink); font-size: 1.2rem; }
-.mortality-title-line small { display: block; margin-top: 6px; color: var(--ink-muted); font-size: .56rem; }
-.mortality-title-actions { display: flex; align-items: center; gap: 10px; }
-.mortality-title-actions button { padding: 9px 13px; border: 1px solid var(--accent-line); border-radius: 8px; color: var(--accent-hover); background: var(--accent-wash); font-size: .6rem; font-weight: 800; cursor: pointer; }
-.mortality-scope-chip { padding: 7px 10px; border: 1px solid var(--good-line); border-radius: 20px; color: var(--good-text); background: var(--good-wash); font-size: .54rem; font-weight: 800; }
 .mortality-kpis { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); margin-bottom: 16px; }
 .mortality-chart-stack { display: grid; gap: 16px; }
 .mortality-evolution-card, .mortality-complement-card { min-width: 0; }
@@ -1163,8 +1152,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 
 @media (max-width: 900px) {
   .mortality-page { padding: 28px 22px 48px; }
-  .mortality-title-line { align-items: flex-start; flex-direction: column; }
-  .mortality-title-actions { width: 100%; justify-content: space-between; }
   .mortality-evolution-card > header, .mortality-complement-card > header { align-items: flex-start; flex-direction: column; }
 }
 
@@ -1172,7 +1159,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
   .mortality-filter-grid { grid-template-columns: 1fr; }
   .mortality-cause-filter { grid-column: auto; }
   .mortality-mode-toggle button { padding: 0 6px; font-size: .53rem; }
-  .mortality-title-actions, .mortality-quality-note { align-items: flex-start; flex-direction: column; }
+.mortality-quality-note { align-items: flex-start; flex-direction: column; }
   .mortality-view-choice { width: 100%; }
   .mortality-view-choice button { min-width: 0; flex: 1; }
 }
@@ -1187,10 +1174,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .csp-context select { width: 100%; height: 39px; padding: 0 31px 0 11px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--surface-sunken); font-size: .63rem; }
 .csp-context select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); outline: none; }
 .csp-scope-chip { display: flex; align-items: center; justify-content: center; min-height: 39px; padding: 0 13px; border: 1px solid var(--good-line); border-radius: 9px; color: var(--good-text); background: var(--good-wash); font-size: .57rem; font-weight: 800; white-space: nowrap; }
-.csp-title-line { align-items: center; }
-.csp-title-chips { display: flex; gap: 7px; }
-.csp-title-actions { display: flex; align-items: center; gap: 12px; }
-.csp-title-chips span { padding: 6px 9px; border: 1px solid var(--line); border-radius: 20px; color: var(--ink-secondary); background: var(--surface-sunken); font-size: .54rem; letter-spacing: 0; text-transform: none; }
 .csp-kpis { margin-bottom: 16px; }
 .csp-dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(330px, .68fr); gap: 16px; }
 .csp-map-card, .csp-ranking-card { min-width: 0; padding: 20px 22px 15px; }
@@ -1247,9 +1230,7 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 @media (max-width: 700px) {
   .csp-page { padding: 28px 20px 48px; }
   .csp-primary-filters, .csp-population-filters, .method-source-grid, .source-limit-grid { grid-template-columns: 1fr; }
-  .csp-title-line, .csp-footer { align-items: flex-start; flex-direction: column; }
-  .csp-title-actions { align-items: flex-start; flex-direction: column; }
-  .csp-title-chips { flex-wrap: wrap; }
+.csp-footer { align-items: flex-start; flex-direction: column; }
   .csp-map-card, .csp-ranking-card { padding-right: 15px; padding-left: 15px; }
   .csp-map-foot { flex-direction: column; }
   .csp-evolution-card > header { align-items: flex-start; flex-direction: column; }
@@ -1474,8 +1455,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 }
 .section-kicker,
 .advanced-filter-heading span,
-.pathology-title-line > div:first-child > span,
-.mortality-title-line > div:first-child > span { color: var(--red-dark); }
 .eyebrow { color: var(--muted); }
 .eyebrow span {
   color: var(--red-dark);
@@ -1483,8 +1462,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 }
 .hero p,
 .panel-header p,
-.pathology-title-line small,
-.mortality-title-line small { color: var(--muted); }
 .kpi-card,
 .analysis-filter-panel,
 .analysis-filter-drawer,
@@ -1528,7 +1505,6 @@ td code { padding: 4px 7px; border-radius: 5px; color: var(--ink-secondary); bac
 .beta-badge,
 .quality-badge,
 .chart-method-chip,
-.mortality-scope-chip,
 .csp-scope-chip { border-radius: var(--radius); }
 .active-filter-line em,
 .analysis-scope strong,

@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/ChartShell";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { formatKpi } from "../utils";
@@ -88,21 +88,13 @@ export function PanoramaSection({
   if (!overview || !current) return null;
 
   return <>
-    <section className="mortality-title-line">
-      <div>
-        <span>LECTURE NATIONALE</span>
-        <h2>{overview.context.cause_label}</h2>
-        <small>{populationLabel} · {overview.context.year}</small>
-      </div>
-      <div className="mortality-title-actions">
-        <span className="mortality-scope-chip">Effectifs bruts · sans taux</span>
-        <button type="button" onClick={openExtraction}>Extraire</button>
-      </div>
-    </section>
-
-    <KpiStrip items={kpiItems} />
-
+    {/* « Effectifs bruts · sans taux » n'était pas une décoration : c'est une
+        réserve sur ce que la base peut dire. Elle rejoint la ligne de périmètre
+        plutôt que de disparaître avec l'en-tête. */}
     <ChartShell
+      kicker={overview.context.cause_label}
+      scopeLine={`Lecture nationale · ${populationLabel} · ${overview.context.year} · effectifs bruts, sans taux`}
+      highlights={kpiItems}
       title={current.title}
       readings={MORTALITY_READINGS}
       reading={reading}

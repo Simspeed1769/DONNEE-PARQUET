@@ -9,7 +9,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getCspOverview } from "../api";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/ChartShell";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
@@ -167,21 +167,13 @@ export function PanoramaSection({
     {error ? <div className="analysis-error"><strong>La fiche CSP n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
     {overview && current ? <>
-      <section className="pathology-title-line csp-title-line">
-        <div>
-          <span>{overview.context.level_label}</span>
-          <h2>{overview.context.csp_label}</h2>
-          <small>{scopeLabel(metadata, year, region, age, sex)}</small>
-        </div>
-        <div className="csp-title-actions">
-          <div className="csp-title-chips"><span>Millésime {overview.context.year}</span><span>Pondéré Insee</span></div>
-          <button type="button" onClick={openExtraction}>Extraire les données →</button>
-        </div>
-      </section>
-
-      <KpiStrip items={kpiItems} />
-
+      {/* Les deux pastilles de l'ancien en-tête — millésime et pondération —
+          sont du périmètre : elles rejoignent la ligne grise plutôt que de
+          disparaître. */}
       <ChartShell
+        kicker={overview.context.csp_label}
+        scopeLine={`${overview.context.level_label} · ${scopeLabel(metadata, year, region, age, sex)} · pondéré Insee`}
+        highlights={kpiItems}
         title={current.title}
         readings={CSP_READINGS}
         reading={reading}

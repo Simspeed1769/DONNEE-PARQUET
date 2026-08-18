@@ -583,3 +583,25 @@
 
 .damir-trend-option:hover { border-color: var(--line-strong); }
 .damir-trend-option:focus-within { outline: 2px solid var(--accent-line); outline-offset: 2px; }
+
+/* La ligne de périmètre du gabarit commun.
+ *
+ * Elle remplace l'en-tête de page hors panneau que portaient Pathologies, CSP,
+ * Mortalité et Population : un second titre au-dessus du premier, et des
+ * repères qui semblaient posés sur le fond de page, détachés de ce qu'ils
+ * décrivent. Le sujet est monté dans l'amorce, le périmètre est descendu ici.
+ *
+ * `display: block` parce qu'un `<small>` est en ligne : sans lui, la ligne se
+ * collerait au titre au lieu de passer dessous.
+ */
+.chart-shell-scope {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+}
+
+/* Le pied du panneau ne porte plus qu'un filet d'espace : la hauteur suit le
+   tracé, elle n'est plus réservée. */
+.pathology-chart .damir-stage-chart { margin-bottom: 0; }

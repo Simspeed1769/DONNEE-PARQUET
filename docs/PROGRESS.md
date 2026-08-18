@@ -1296,3 +1296,29 @@ aurait coûté plus qu'il n'aurait préservé.
   territoriale). Non entamé plutôt que bâclé : sur un produit dont la première
   règle est qu'une forme qui mentirait n'est pas offerte, un croisé à moitié
   gardé produirait des nombres faux.
+
+## v8 · Mission « Finition » point 1 — Une seule structure d'écran
+
+- **Les quatre en-têtes hors panneau ont disparu.** Le sujet est monté dans
+  l'amorce du panneau, le périmètre est descendu en ligne grise sous le titre.
+  Un seul titre par écran là où il y en avait deux pour la même chose.
+- **Les repères sont revenus dans le panneau**, sur la seconde rangée, à gauche
+  des formes — exactement le vide qu'elles laissaient. `KpiStrip` et `kpi.css`,
+  devenus morts, sont supprimés ; le type `KpiItem` emménage dans `ChartShell`.
+  **C'est un revirement assumé** : la bande séparée au-dessus du panneau avait
+  été demandée à l'oral trois jours plus tôt ; cette mission tranche l'inverse,
+  avec son argument, et la structure de DAMIR devient la seule.
+- **Aucune capacité perdue.** Les pastilles des en-têtes supprimés — « Effectifs
+  bruts · sans taux », « Millésime », « Pondéré Insee » — sont du périmètre :
+  elles rejoignent la ligne grise. Le bouton « Extraire les données → » en
+  double disparaît, les quatre bases passaient déjà `onExtract` au pied.
+- **Deux répétitions corrigées en chemin**, vues à l'écran : « Diabète » en
+  amorce **et** en tête de la ligne grise (la famille n'est reprise que si elle
+  diffère du sujet) ; « millésime 2023 · millésime 2023 » sur CSP (`scopeLabel`
+  le portait déjà).
+- **Aucun espace mort sous le graphique** : mesuré, le canevas remplit son
+  conteneur au pixel (430/430) et il reste 14 px avant le pied. Le vide que la
+  mission voyait venait des deux en-têtes empilés, pas d'une hauteur réservée.
+- **21 règles CSS mortes retirées** de `styles.css`, plus 7 sélecteurs dans des
+  groupes partagés. Recette : six largeurs, deux thèmes, aucun débordement,
+  aucun texte coupé, aucun chevauchement entre repères et commandes.

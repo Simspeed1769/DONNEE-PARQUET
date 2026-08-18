@@ -13,7 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ECharts } from "echarts/core";
 import { getPathologyOverview } from "../api";
 import { MultiSelect } from "../components/MultiSelect";
-import { KpiStrip, type KpiItem } from "../components/KpiStrip";
+import type { KpiItem } from "../components/ChartShell";
 import { ChartShell } from "../components/ChartShell";
 import { useChartTokens } from "../charts/tokens";
 import { useFrenchMap } from "../charts/frenchMap";
@@ -185,18 +185,15 @@ export function PanoramaSection({
     {error ? <div className="analysis-error"><strong>La fiche n’a pas pu être calculée</strong><span>{error}</span></div> : null}
 
     {overview && current ? <>
-      <section className="pathology-title-line">
-        <div>
-          <span>{overview.context.family}</span>
-          <h2>{overview.context.label}</h2>
-          <small>{scopeLabel(metadata, year, region, age, sex)}</small>
-        </div>
-        <button type="button" onClick={openExtraction}>Extraire les données →</button>
-      </section>
-
-      <KpiStrip items={kpiItems} />
-
       <ChartShell
+        kicker={overview.context.label}
+        scopeLine={[
+          // La famille n'est reprise que si elle dit autre chose que le sujet :
+          // sur « Diabète », les deux sont le même mot et la ligne le répétait.
+          overview.context.family !== overview.context.label ? overview.context.family : null,
+          scopeLabel(metadata, year, region, age, sex),
+        ].filter(Boolean).join(" · ")}
+        highlights={kpiItems}
         title={current.title}
         readings={PATHOLOGY_READINGS}
         reading={reading}
