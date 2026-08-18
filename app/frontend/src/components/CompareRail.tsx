@@ -22,7 +22,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence } from "motion/react";
-import { POPOVER, m } from "./motion";
+import { CHIP, POPOVER, m } from "./motion";
 import { formatValue } from "../utils";
 
 export type RailChip = {
@@ -213,11 +213,20 @@ export function CompareRail({
         <span className="compare-rail-label">Ce que je compare</span>
 
         <div className="compare-rail-chips" role="list" ref={row}>
+          {/* Ajouter et retirer une série sont les deux gestes de cet écran :
+              ce sont eux qui méritent d'être vus. `layout` fait glisser les
+              puces voisines vers leur nouvelle place au lieu de les téléporter
+              — c'est très exactement ce que le CSS ne sait pas faire.
+              La mesure de largeur, elle, se fait sur la rangée fantôme
+              (`data-ghost`), que rien n'anime : les deux ne se gênent pas. */}
+          <AnimatePresence initial={false}>
           {chips.map((chip, index) => {
             const short = shorten(chip.label);
             return (
-              <span
+              <m.span
                 key={chip.key}
+                layout
+                {...CHIP}
                 data-chip=""
                 className={`compare-rail-chip ${index >= visible ? "hidden" : ""} ${open === chip.key ? "open" : ""}`}
                 role="listitem"
@@ -243,9 +252,10 @@ export function CompareRail({
                     : "Une comparaison garde au moins une série"}
                   aria-label={chip.isOther ? "Masquer le reste du périmètre" : `Retirer ${chip.label}`}
                 >✕</button>
-              </span>
+              </m.span>
             );
           })}
+          </AnimatePresence>
 
           {hidden > 0 ? (
             <button type="button" className="compare-rail-more" onClick={() => onOpenDrawer()}

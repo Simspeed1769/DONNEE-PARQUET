@@ -1246,3 +1246,26 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Composant unique déjà en place** : `CompareRail` sert DAMIR directement et
   les trois autres bases via `SeriesRail`. Rien à unifier — vérifié, pas
   supposé.
+
+## v7 · Mission « Motion » point 2 — Ce qui devait être animé, et ce qui ne le sera pas
+
+- **Les puces du bandeau, avec `layout`.** Ajouter et retirer une série sont les
+  deux gestes de cet écran : leurs voisines glissent maintenant vers leur
+  nouvelle place au lieu de s'y téléporter. C'est le cas où Motion apporte ce
+  que le CSS ne sait pas faire. La mesure de largeur se fait sur la rangée
+  fantôme, que rien n'anime — les deux ne se gênent pas.
+- **La bascule Panorama ↔ Comparer : animée, puis retirée.** Le fondu partait
+  d'`opacity: 0`, si bien que la section n'apparaissait qu'une fois l'animation
+  jouée. Constaté à l'écran : sur un onglet dont l'horloge d'animation est
+  ralentie, la page est restée **blanche plus de huit secondes**, contenu monté
+  mais invisible. Un popover qui rate son fondu reste un popover ; une section
+  qui rate le sien devient une page vide. Retiré, et la raison est écrite dans
+  le code.
+- **Les blocs repliés restent des `<details>` natifs.** Les animer en hauteur
+  demanderait de les remplacer par un pli scripté, ce qui coûterait l'expansion
+  automatique à la recherche dans la page — une capacité réelle contre 200 ms
+  de cosmétique. `InfoHint`, lui, est animé, et le pli « Plus de filtres » du
+  popover aussi.
+- **Bundle inchangé** : `motionFeatures` 37,37 Ko / **14,06 Ko gzip**, identique
+  au repère. `index` passe de 53,86 à 54,01 Ko — soixante octets gzip de code
+  nouveau, pas un import mixte.

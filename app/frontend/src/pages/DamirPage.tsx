@@ -122,6 +122,17 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
         ))}
       </nav>
 
+      {/* **Pas d'animation ici, et c'est un choix mesuré.**
+       *
+       *  La bascule Panorama ↔ Comparer avait reçu un fondu court. Il partait
+       *  d'`opacity: 0` : la section entière ne devenait donc visible qu'une
+       *  fois l'animation jouée. Constaté à l'écran — sur un onglet dont
+       *  l'horloge d'animation est ralentie, la page est restée **blanche
+       *  plus de huit secondes**, contenu monté mais invisible.
+       *
+       *  Un popover qui rate son fondu reste un popover. Une section qui rate
+       *  le sien devient une page vide. Le rapport entre le risque et les
+       *  140 ms gagnées ne tient pas : la bascule est instantanée. */}
       {section === "panorama" ? <PanoramaSection {...shared} /> : null}
       {section === "compare" ? <CompareSection {...shared} /> : null}
     </div>
