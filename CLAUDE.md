@@ -34,6 +34,20 @@ Instructions pour Claude Code sur ce dépôt.
   élevé présentent aussi… ». Toute formulation individuelle (« les agriculteurs
   consomment plus d'IJ ») est interdite dans l'interface, les phrases générées
   et les exports.
+- **Une explication de plus d'une ligne ne s'affiche pas en permanence.** Elle
+  vit derrière `InfoHint` — une icône discrète, ouverte au clic ou au survol,
+  posée au plus près de ce qu'elle explique. Un paragraphe en travers de l'écran
+  est lu une fois et occupe la place tous les jours suivants.
+  **Deux exceptions, qui ne se cachent jamais** : les réserves méthodologiques
+  attachées à une lecture (le bloc « Ce que ce graphique ne montre pas ») et les
+  avertissements de comparabilité — « ces courbes ne décrivent pas la même
+  population », « 12 prestations sélectionnées, 8 comparées ». Ceux-là disent ce
+  que le graphique ne dit pas ; les mettre derrière une icône reviendrait à
+  parier que le lecteur ira la chercher.
+- **Motion s'importe exclusivement via `m` sous `LazyMotion`.** Jamais
+  `motion.*` : le composant complet réintègre tout le moteur dans le bundle
+  initial et annule le bénéfice du chargement différé. `LazyMotion` est monté en
+  mode `strict`, qui fait échouer la faute au lieu de la laisser passer.
 - **Les réserves voyagent, à la bonne échelle.** À l'écran, réserves
   méthodologiques et avertissements serveur accompagnent le graphique **en
   entier**, sous « Ce que ce graphique ne montre pas ». Dans l'image exportée,

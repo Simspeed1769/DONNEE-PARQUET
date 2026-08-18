@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { downloadCspExtraction, downloadExtraction, downloadMortalityExtraction, downloadPathologyExtraction, downloadPopulationExtraction, getCspExtractionPreview, getCspMetadata, getExtractionPreview, getMortalityExtractionPreview, getMortalityMetadata, getPathologyExtractionPreview, getPathologyMetadata, getPopulationExtractionPreview, getPopulationMetadata } from "../api";
 import { AdvancedFilterPanel } from "../components/AdvancedFilterPanel";
+import { InfoHint } from "../components/InfoHint";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import type { CspExtractionRequest, CspMetadata, ExtractionPreview, ExtractionRequest, Metadata, MortalityExtractionRequest, MortalityMetadata, PathologyExtractionRequest, PathologyMetadata, PopulationExtractionRequest, PopulationMetadata } from "../types";
 import { filtersFromSearch, writeFilters } from "../utils";
@@ -436,7 +437,7 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
     <div className="content-wrap extraction-page">
       <section className="hero analysis-hero">
         <div><div className="eyebrow"><span>Base sur mesure</span> Données agrégées</div><h1>Extraire</h1><p>Composez une base propre, estimez son volume et emportez avec Excel les définitions et le périmètre utilisés.</p><div className="extraction-source-switch"><button type="button" className={source === "damir" ? "active" : ""} onClick={() => chooseSource("damir")}>Dépenses DAMIR</button><button type="button" className={source === "pathologies" ? "active" : ""} onClick={() => chooseSource("pathologies")}>Pathologies</button><button type="button" className={source === "csp" ? "active" : ""} onClick={() => chooseSource("csp")}>CSP</button><button type="button" className={source === "mortality" ? "active" : ""} onClick={() => chooseSource("mortality")}>Mortalité</button><button type="button" className={source === "population" ? "active" : ""} onClick={() => chooseSource("population")}>Population</button></div></div>
-        <div className="extraction-actions"><button type="button" onClick={() => exportData("csv")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "csv" ? "Préparation…" : "Exporter CSV"}</button><button className="primary" type="button" onClick={() => exportData("xlsx")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "xlsx" ? "Préparation…" : "Exporter Excel"}</button></div>
+        <div className="extraction-actions"><button type="button" onClick={() => exportData("csv")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "csv" ? "Préparation…" : "Exporter CSV"}</button><button className="primary" type="button" onClick={() => exportData("xlsx")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "xlsx" ? "Préparation…" : "Exporter Excel"}</button><InfoHint label="le contenu du fichier Excel">Le classeur porte un onglet Métadonnées : source, période, filtres, définitions, formules, statut de consolidation et règles de masquage propres à la source.</InfoHint></div>
       </section>
       <div className={`extraction-loading-track ${loading ? "active" : ""}`} role="status" aria-label={loading ? "Aperçu en cours d’actualisation" : "Aperçu à jour"}><span /></div>
 
@@ -455,7 +456,6 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
             </div>
           </article>
           {previewPanel}
-          <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>Le fichier Excel contient désormais un onglet Métadonnées : source, période, filtres, définitions, formules et statut de consolidation.</span></aside>
         </section>
       </div> : source === "pathologies" ? <div className="pathology-extraction-workspace">
         <aside className="panel pathology-extraction-filters">
@@ -475,7 +475,6 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
             </div>
           </article>
           {previewPanel}
-          <aside className="extraction-metadata-note"><strong>Source distincte</strong><span>L’export conserve la pathologie, le périmètre et la règle de masquage dans l’onglet Métadonnées.</span></aside>
         </section>
       </div> : source === "csp" ? <div className="pathology-extraction-workspace csp-extraction-workspace">
         <aside className="panel pathology-extraction-filters">
@@ -494,7 +493,6 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
             </div>
           </article>
           {previewPanel}
-          <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>Le fichier conserve le champ de population, le niveau de CSP, la pondération et le millésime 2023 dans l’onglet Métadonnées.</span></aside>
         </section>
       </div> : source === "population" ? <div className="pathology-extraction-workspace csp-extraction-workspace">
         <aside className="panel pathology-extraction-filters">
@@ -519,7 +517,6 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
             </div>
           </article>
           {previewPanel}
-          <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>L’export conserve la source Insee, le champ, la période et l’avertissement « population au 1er janvier, pas une moyenne annuelle ».</span></aside>
         </section>
       </div> : <div className="pathology-extraction-workspace mortality-extraction-workspace">
         <aside className="panel pathology-extraction-filters">
@@ -544,7 +541,6 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
             </div>
           </article>
           {previewPanel}
-          <aside className="extraction-metadata-note"><strong>Excel auto-documenté</strong><span>L’export conserve la source CépiDc, la période, le périmètre, les mesures et l’avertissement « effectifs non rapportés à une population ».</span></aside>
         </section>
       </div>}
     </div>

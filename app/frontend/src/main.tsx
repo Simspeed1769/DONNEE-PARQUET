@@ -8,6 +8,7 @@ import "./explore.css";
 import "./seriesPicker.css";
 import "./panorama.css";
 import "./kpi.css";
+import "./infoHint.css";
 import "./correlations.css";
 import "./pivot.css";
 import "./methodology.css";

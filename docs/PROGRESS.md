@@ -1177,3 +1177,26 @@ aurait coûté plus qu'il n'aurait préservé.
   Comparer conserve « Autres vues 4 ».
 - `PRIMARY_VIEWS` reste exporté mais n'a plus qu'un appelant, ce que son
   commentaire dit désormais.
+
+## v7 · Mission « Alléger » point 5 — Les explications passent derrière une icône
+
+- **`InfoHint`** : vrai `<button>` focusable, panneau lié par `aria-describedby`,
+  `Échap` qui ferme **et rend le focus immédiatement** — aucune animation ne le
+  retarde. Le survol ouvre, le clic **épingle**. Styles dans `infoHint.css`,
+  adossés aux jetons.
+- **Défaut corrigé à l'écran** : le clic basculait au lieu d'épingler. À la
+  souris, `onMouseEnter` avait déjà ouvert le panneau ; le clic le refermait
+  donc aussitôt, et il était impossible de le fixer.
+- **Tableau** : les deux paragraphes permanents — le mode d'agrégation, et
+  pourquoi Variation et CAGR manquent quand l'année est en axe — passent dans
+  une icône contre l'étiquette « Agrégation ». L'en-tête tient en deux lignes.
+- **Extraire** : cinq encarts permanents retirés, dont quatre disaient la même
+  chose d'une source à l'autre. Une seule icône, sur le bouton qui produit le
+  fichier.
+- **Arbitrage : ce qui reste visible.** Les quatre `.damir-note` de DAMIR, CSP
+  et Mortalité sont des **avertissements de comparabilité** — « ces séries ne
+  décrivent pas la même population », « 12 prestations sélectionnées, 8
+  comparées ». Ils ne bougent pas. La mesure indisponible du Tableau non plus :
+  c'est un avertissement, pas une explication.
+- **La règle est écrite dans `CLAUDE.md`**, avec ses deux exceptions, à côté de
+  celle qui impose l'import de Motion via `m`.

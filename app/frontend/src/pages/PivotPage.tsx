@@ -24,6 +24,7 @@ import { ScopeBar } from "../components/ScopeBar";
 import { ChoiceSelect } from "../components/ChoiceSelect";
 import { ExportPngButton } from "../components/ExportPngButton";
 import { PaletteChoice } from "../components/PaletteChoice";
+import { InfoHint } from "../components/InfoHint";
 import { EChart, type EChartsOption } from "../charts/EChart";
 import { buildOption, type ChartSeries } from "../charts/buildOption";
 import { useChartTokens, type ChartTokens } from "../charts/tokens";
@@ -289,7 +290,18 @@ export function PivotPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
               />
             </div>
             <div className="scope-bar-field pivot-aggregation">
-              <span>Agrégation</span>
+              {/* Les deux explications de l'agrégation — comment elle calcule,
+                  et pourquoi deux d'entre elles manquent quand l'année est déjà
+                  en axe — occupaient trois lignes pleines au-dessus du tableau.
+                  Elles vivent maintenant derrière l'icône, contre l'étiquette
+                  de ce qu'elles expliquent. */}
+              <span>
+                Agrégation
+                <InfoHint label="l’agrégation choisie">
+                  {[AGGREGATIONS.find((item) => item.key === aggregation)?.hint, note]
+                    .filter(Boolean).join(" ")}
+                </InfoHint>
+              </span>
               <ChoiceSelect
                 label="Agrégation"
                 options={offered.map((item) => ({ value: item.key, label: item.label }))}
@@ -309,13 +321,13 @@ export function PivotPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
           </div>
         </header>
 
+        {/* Une mesure indisponible reste dite en clair : ce n'est pas une
+            explication mais un avertissement sur ce que le tableau ne peut pas
+            calculer. Les deux notes d'agrégation, elles, sont passées dans
+            l'icône au-dessus. */}
         {measure?.unavailable_reason ? (
           <p className="pivot-note">{measure.unavailable_reason}</p>
         ) : null}
-        <p className="damir-question">
-          {AGGREGATIONS.find((item) => item.key === aggregation)?.hint}
-        </p>
-        {note ? <p className="pivot-note">{note}</p> : null}
 
         {!table ? (
           <div className="damir-placeholder"><div className="skeleton" /></div>

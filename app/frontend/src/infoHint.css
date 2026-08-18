@@ -1,0 +1,80 @@
+/* L'icône d'information et son panneau court.
+ *
+ * Fichier dédié adossé aux jetons — rien n'entre dans `styles.css`.
+ *
+ * Le déclencheur doit se voir sans se remarquer : c'est un rond discret, de la
+ * taille d'une majuscule, qui ne prend pas de place dans le flux du texte
+ * qu'il accompagne. Le panneau, lui, se pose par-dessus et n'écarte rien —
+ * une explication qui décalerait le contenu autour d'elle referait le tort
+ * qu'elle est censée réparer.
+ */
+
+.info-hint {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.info-hint-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.info-hint-trigger:hover,
+.info-hint-trigger[aria-expanded="true"] {
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.info-hint-trigger:focus-visible {
+  outline: 2px solid var(--accent-line);
+  outline-offset: 2px;
+}
+
+/* Posé par-dessus, jamais dans le flux. `left: 0` avec `translate` ramène le
+   panneau dans la page quand l'icône est près du bord droit. */
+.info-hint-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 40;
+  display: block;
+  width: max-content;
+  max-width: min(320px, 74vw);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--tooltip-surface);
+  box-shadow: 0 8px 28px var(--overlay);
+  color: var(--tooltip-ink);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 620px) {
+  .info-hint-panel { max-width: 74vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info-hint-trigger { transition: none; }
+}
