@@ -1222,3 +1222,27 @@ aurait coûté plus qu'il n'aurait préservé.
   lignes à total négatif**.
 - **Aucun réglage de teinte ajouté** : le tableau lavé se lit mieux que nu, et
   un interrupteur aurait été un élément visible de plus.
+
+## v7 · Mission « Alléger » point 4 — Le popover de série, dévoilé par degrés
+
+- **Trois filtres visibles, le reste replié.** Sexe, Tranche d'âge, Territoire
+  restent ; la hiérarchie de prestations et les trois champs avancés passent
+  derrière « Plus de filtres », fermé par défaut. Le **compteur de filtres
+  actifs** est écrit sur le bouton : un réglage posé puis refermé ne s'oublie
+  pas.
+- **Le pli est générique.** Chaque champ est rendu par sa clé (`fieldNode`), la
+  section le pose s'il est visible, le pli s'il est replié — jamais deux fois.
+  L'appelant nomme les clés ; Extraire, qui les veut toutes à plat, ne nomme
+  rien et ne voit aucun pli.
+- **La hauteur du pli est animée par Motion** (`height: auto`), la seule chose
+  que le CSS ne sait pas faire et le seul endroit du produit où ça vaut la peine.
+- **Défaut corrigé : le popover portait deux moteurs d'animation.** Une keyframe
+  CSS `chip-popover-in` **et** la variante Motion `POPOVER` sur le même élément.
+  La keyframe rejouait le fondu à chaque re-rendu et se battait avec la
+  transformation de Motion. Elle est retirée ; Motion garde l'entrée **et la
+  sortie**, que le CSS ne pouvait pas animer.
+- **`transform-origin: top left`** : le panneau naît de sa puce au lieu
+  d'apparaître par-dessus. `scroll-behavior: smooth` sur le défilement unique.
+- **Composant unique déjà en place** : `CompareRail` sert DAMIR directement et
+  les trois autres bases via `SeriesRail`. Rien à unifier — vérifié, pas
+  supposé.

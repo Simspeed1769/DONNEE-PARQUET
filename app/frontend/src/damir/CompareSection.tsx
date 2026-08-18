@@ -561,6 +561,7 @@ export function CompareSection({
               onChange={(next) => onScopeChange(key, next)}
               hiddenFields={["start_year", "end_year",
                 ...(lockedField(activeBreakdown.field ?? "none", isFree(key)) ?? [])] as FilterField[]}
+              foldedFields={["post", "sub_post", "service_codes", "insurances", "envelopes", "ald"]}
             />
             {scopes[key] && !isFree(key) ? (
               <button type="button" className="chip-popover-all"
