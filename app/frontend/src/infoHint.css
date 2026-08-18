@@ -46,29 +46,32 @@
   outline-offset: 2px;
 }
 
-/* Posé par-dessus, jamais dans le flux. `left: 0` avec `translate` ramène le
-   panneau dans la page quand l'icône est près du bord droit. */
+/* Le panneau vit dans un portail sur `document.body` : il est donc en
+   coordonnées de **fenêtre**, et `top` / `left` lui sont donnés en ligne par le
+   composant, qui les mesure sur l'icône et les corrige si le panneau sort de
+   l'écran.
+
+   Fond `--surface` **opaque** et encre `--ink`, pas la paire d'infobulle : sur
+   le Tableau, le panneau sombre se posait par-dessus des cellules teintées et
+   devenait illisible. Un panneau qui explique doit d'abord se lire. */
 .info-hint-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  z-index: 40;
+  position: fixed;
+  z-index: 90;
   display: block;
   width: max-content;
-  max-width: min(320px, 74vw);
+  max-width: min(320px, calc(100vw - 24px));
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--tooltip-surface);
-  box-shadow: 0 8px 28px var(--overlay);
-  color: var(--tooltip-ink);
+  background: var(--surface);
+  box-shadow: 0 10px 30px var(--overlay);
+  color: var(--ink);
   font-size: var(--text-xs);
   font-weight: 400;
   line-height: 1.45;
   text-align: left;
   text-transform: none;
   letter-spacing: normal;
-  transform: translateX(-50%);
 }
 
 @media (max-width: 620px) {

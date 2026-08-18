@@ -30,9 +30,12 @@ from .analysis import (
     DIMENSIONS,
     METRICS,
     POSTES_SANS_BASE,
+    UNIT_DEPENDENT_KEYS,
     FilterPayload,
     QueryRepository,
     cube_where,
+    unit_caveat,
+    unit_scope,
 )
 from .explore import (
     COMPONENTS,
@@ -193,31 +196,23 @@ def _emit(key: str, label: str, per_year: dict[int, dict[str, float]],
 def _availability(payload: PanoramaRequest) -> dict[str, str | None]:
     """Explique, mesure par mesure, pourquoi elle est indisponible — ou None.
 
-    La règle de l'unité homogène se lit ici sur le **sujet** : une moyenne par
-    acte n'a de sens que si tous les actes agrégés comptent la même chose. Un
-    sujet unique qui est une prestation la garantit ; « tout confondu » ou
-    plusieurs prestations, non.
-
-    Le drapeau `requires_homogeneous_unit` de `METRICS` n'est posé sur aucune
-    mesure : la règle se lit donc sur l'unité déclarée, qui elle est juste. Une
-    valeur « par unité » et un volume comptent dans l'unité propre à chaque
-    prestation — des boîtes, des séances, des kilomètres — et additionner ces
-    unités entre prestations ne produit rien d'interprétable. On le déduit ici
-    plutôt que de modifier `METRICS`, partagé avec l'écran d'exploration.
+    La règle vit dans `analysis.unit_scope`, partagée avec l'exploration, le
+    Tableau et l'extraction : les quatre surfaces refusaient — ou acceptaient —
+    différemment la même chose. Ici s'ajoute seulement ce que le panorama sait
+    de plus : son **sujet**, qui vaut prestation unique quand il en désigne une.
     """
-    single_service = (
+    subject_is_service = (
         payload.subject_dimension == "service" and len(payload.subjects) == 1
-    ) or len(payload.service_codes) == 1
+    )
+    level, refusal = unit_scope(payload)
+    if subject_is_service:
+        level, refusal = "prestation", None
 
     reasons: dict[str, str | None] = {}
     for key, metric in METRICS.items():
-        unit_dependent = metric.unit_key in ("eur_per_unit", "service_unit")
         reason: str | None = None
-        if unit_dependent and not single_service:
-            reason = (
-                "Chaque prestation compte dans son unité propre : choisissez une "
-                "prestation unique pour lire un volume ou une moyenne."
-            )
+        if metric.unit_key in UNIT_DEPENDENT_KEYS and refusal:
+            reason = refusal
         elif key == "copayment" and payload.grand_post in POSTES_SANS_BASE:
             reason = "Ce grand poste n’a pas de base de remboursement."
         reasons[key] = reason
@@ -413,6 +408,13 @@ def panorama(repo: QueryRepository, payload: PanoramaRequest,
         })
 
     availability = _availability(payload)
+    # Le niveau de découpage sur lequel un volume se lit : il commande la
+    # réserve attachée aux trois mesures qui dépendent de l'unité.
+    scope_level = (
+        "prestation"
+        if payload.subject_dimension == "service" and len(payload.subjects) == 1
+        else unit_scope(payload)[0]
+    )
     return {
         "subject_dimension": payload.subject_dimension,
         "subject_dimension_label": DIMENSIONS[payload.subject_dimension][0],
@@ -431,7 +433,10 @@ def panorama(repo: QueryRepository, payload: PanoramaRequest,
                 "family": metric.family,
                 "definition": metric.definition,
                 "formula": metric.formula,
-                "caveat": metric.caveat,
+                "caveat": " ".join(filter(None, (
+                    metric.caveat,
+                    unit_caveat(scope_level) if metric.unit_key in UNIT_DEPENDENT_KEYS else None,
+                ))) or None,
                 "additive": metric.additive,
                 "unit_key": metric.unit_key,
                 "unit_label": metric.unit_label,

@@ -254,9 +254,6 @@ export function SeriesRail({
                   onClick={() => patch(index, { scope: undefined })}
                 >Revenir au périmètre commun</button>
               ) : null}
-              <p className="chip-popover-note">
-                La période reste commune : deux axes du temps différents ne se comparent pas.
-              </p>
             </>
           );
         }}
@@ -361,7 +358,6 @@ export function SeriesRail({
                         />
                       ))}
                     </div>
-                    <p>La période reste commune : deux axes du temps différents ne se comparent pas.</p>
                   </div>
                 ) : null}
               </li>

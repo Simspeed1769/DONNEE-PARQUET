@@ -225,12 +225,10 @@ export function PivotPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
       <section className="hero pivot-hero">
         <div>
           <div className="eyebrow"><span>Tableau</span> Open DAMIR</div>
+          {/* Aucun sous-titre : « Croiser deux dimensions » et les deux menus
+              d'axe disent déjà ce que fait l'écran. La frontière avec Extraire
+              se lit dans la barre latérale, où les deux entrées voisinent. */}
           <h1>Croiser deux dimensions</h1>
-          <p>
-            Un croisé dynamique sur le cube : deux axes, une mesure, une agrégation.
-            {" "}<strong>Extraire</strong> sort des lignes brutes pour un tableur ;
-            le Tableau donne un agrégat lisible ici, avec sa méthode.
-          </p>
         </div>
         <div className="pivot-hero-actions">
           <button type="button" onClick={() => setMethodOpen((open) => !open)} aria-pressed={methodOpen}>

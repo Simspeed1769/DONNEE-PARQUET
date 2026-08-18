@@ -1322,3 +1322,34 @@ aurait coûté plus qu'il n'aurait préservé.
 - **21 règles CSS mortes retirées** de `styles.css`, plus 7 sélecteurs dans des
   groupes partagés. Recette : six largeurs, deux thèmes, aucun débordement,
   aucun texte coupé, aucun chevauchement entre repères et commandes.
+
+## v8 · Trois défauts d'écran, et le volume ouvert à tout poste
+
+- **L'infobulle du Tableau était illisible.** Cause trouvée avant correction :
+  le panneau était en `position: absolute` dans un conteneur portant
+  `overflow: auto` (`pivot.css:76`) — rogné, emporté par le défilement, et
+  posé sur des cellules teintées dans la paire sombre d'infobulle. Il passe en
+  **portail** vers `document.body`, en position fixe mesurée sur l'icône,
+  corrigée s'il sort de la fenêtre, fond `--surface` **opaque** et encre
+  `--ink`. `Échap`, clic extérieur et focus inchangés.
+- **Le chevauchement du popover** venait de la phrase « La période reste
+  commune… », qui recouvrait le replieur. Elle est supprimée — le point 7 la
+  listait comme superflue —, avec ses **quatre** occurrences.
+- **La « pastille rouge parasite » n'existait pas** : c'était le graphique qui
+  transparaissait à travers le popover pendant son fondu d'ouverture. Rien à
+  corriger, et c'est dit plutôt que patché.
+- **Le popover tient enfin sans défilement** : débordement mesuré à 0 px, contre
+  52 px. « Grand poste » descend dans le pli — sur une série comparée par grand
+  poste, le champ est désactivé et ne fait qu'écho au nom de la puce. Le
+  compteur du pli affiche « 1 », de sorte qu'un filtre replié ne s'oublie pas.
+- **Le sous-titre du Tableau est supprimé** : le titre et les deux menus d'axe
+  disent déjà ce que fait l'écran.
+- **Volume et montants moyens s'ouvrent à tout niveau de la hiérarchie**, à la
+  demande de l'utilisateur : grand poste, poste, sous-poste ou prestation. La
+  règle unique vit dans `analysis.unit_scope` ; seul « tous les grands postes »
+  reste refusé, parce qu'on y additionnerait des boîtes, des journées et des
+  kilomètres. **Le prix est dit, pas payé en silence** : au-dessus de la
+  prestation, une réserve nommant le niveau accompagne la mesure jusqu'au bloc
+  « Ce que ce graphique ne montre pas » et jusqu'au PNG — « un ordre de grandeur
+  et une tendance, jamais un tarif ». **8 tests** (`test_unit_scope.py`), 85 au
+  total.

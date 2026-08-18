@@ -561,16 +561,18 @@ export function CompareSection({
               onChange={(next) => onScopeChange(key, next)}
               hiddenFields={["start_year", "end_year",
                 ...(lockedField(activeBreakdown.field ?? "none", isFree(key)) ?? [])] as FilterField[]}
-              foldedFields={["post", "sub_post", "service_codes", "insurances", "envelopes", "ald"]}
+              // Toute la hiérarchie de prestations descend dans le pli, « Grand
+              // poste » compris : sur une série comparée par grand poste, le
+              // champ est désactivé et ne fait qu'écho au nom de la puce. Sans
+              // lui, le popover tient sans défilement dans son état initial.
+              foldedFields={["grand_post", "post", "sub_post", "service_codes",
+                             "insurances", "envelopes", "ald"]}
             />
             {scopes[key] && !isFree(key) ? (
               <button type="button" className="chip-popover-all"
                 onClick={() => onScopeChange(key, null)}
               >Revenir au périmètre commun</button>
             ) : null}
-            <p className="chip-popover-note">
-              La période reste commune : deux axes du temps différents ne se comparent pas.
-            </p>
           </>
         )}
       />

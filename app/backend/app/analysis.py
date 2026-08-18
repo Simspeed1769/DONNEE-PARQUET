@@ -34,6 +34,68 @@ ENVELOPES = {
 }
 
 
+#: Les mesures dont la lecture dépend de l'unité de la prestation — un volume,
+#: un montant moyen « par unité ». Reconnues à leur `unit_key`, qui est juste,
+#: plutôt qu'à un drapeau qui ne l'était pas.
+UNIT_DEPENDENT_KEYS = ("eur_per_unit", "service_unit")
+
+
+def unit_scope(payload: "FilterPayload") -> tuple[str | None, str | None]:
+    """Le périmètre est-il assez homogène pour un volume ou une moyenne ?
+
+    Renvoie `(niveau, refus)` : le **niveau** de découpage retenu quand la
+    lecture est permise, ou le **refus** en français quand elle ne l'est pas.
+
+    ## Ce que la règle admet, et pourquoi elle a changé
+
+    Elle n'admettait qu'une **prestation unique**. C'était le seul périmètre
+    parfaitement homogène — mais aussi le seul, ce qui rendait le volume et les
+    deux moyennes inaccessibles tant qu'on n'était pas descendu au bout de la
+    hiérarchie. Un utilisateur qui regarde « Pharmacie » veut pouvoir lire un
+    volume de boîtes.
+
+    Elle admet donc désormais **tout niveau de la hiérarchie** : grand poste,
+    poste, sous-poste ou prestation. L'homogénéité y est croissante, et le
+    refus ne porte plus que sur le seul cas où elle n'existe pas du tout —
+    « tous les grands postes », où l'on additionnerait des boîtes, des journées
+    d'hospitalisation et des kilomètres.
+
+    Le prix de ce choix est dit à l'écran plutôt que payé en silence : voir
+    `unit_caveat`.
+    """
+    if len(payload.service_codes) == 1:
+        return "prestation", None
+    if payload.sub_post:
+        return "sous-poste", None
+    if payload.post:
+        return "poste", None
+    if payload.grand_post:
+        return "grand poste", None
+    return None, (
+        "Choisissez un grand poste, un poste, un sous-poste ou une prestation : "
+        "d’un poste à l’autre, les quantités ne comptent pas la même chose."
+    )
+
+
+def unit_caveat(level: str | None) -> str | None:
+    """La réserve qui accompagne un volume ou une moyenne lu sur un poste.
+
+    Sur une prestation unique, l'unité est une : aucune réserve. Au-dessus, les
+    quantités sommées mêlent des unités différentes, et d'autant plus que le
+    niveau est élevé. La lecture reste utile — c'est un ordre de grandeur et une
+    tendance — mais ce n'est pas un tarif, et l'écran doit le dire.
+    """
+    if level is None or level == "prestation":
+        return None
+    return (
+        f"Volume et montants moyens sont lus sur un {level} entier : les quantités "
+        "y sont sommées alors qu’elles ne comptent pas toutes la même chose — des "
+        "boîtes, des séances, des journées. Le résultat est un ordre de grandeur "
+        "et une tendance, jamais un tarif. Descendez à la prestation pour une "
+        "unité unique."
+    )
+
+
 POSTES_SANS_BASE = (
     "Indemnités Journalières",
     "Invalidité, Décès & Rentes",

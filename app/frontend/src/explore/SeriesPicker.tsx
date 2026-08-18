@@ -95,7 +95,6 @@ function ScopeEditor({
         hiddenFields={hidden}
       />
 
-      <p>La période reste commune : deux axes du temps différents ne se comparent pas.</p>
     </div>
   );
 }
