@@ -268,3 +268,22 @@
   .pivot-aggregation { min-width: 0; flex: 1; }
   .pivot-table-wrap { max-height: 440px; }
 }
+
+/* La teinte des cellules — un lavis, pas un aplat.
+ *
+ * Le tableau était rouge d'un bout à l'autre, à des intensités si proches que
+ * la couleur ne distinguait plus rien : elle était calculée sur l'étendue
+ * brute, si bien qu'un poste à 22 Md € poussait quinze postes plus petits dans
+ * la même marche. L'échelle se lit maintenant sur les **rangs** — voir
+ * `tintStep` —, et l'intensité a été divisée.
+ *
+ * Cinq marches, toutes assez claires pour que l'encre reste `--ink` : aucune
+ * inversion de couleur de texte, donc aucune cellule pénible à lire. La teinte
+ * vient de la rampe séquentielle du thème et suit la bascule de palette ; elle
+ * code une grandeur, jamais une identité.
+ */
+.pivot-tint-1 { background: color-mix(in oklab, var(--ramp-4) 6%, transparent); }
+.pivot-tint-2 { background: color-mix(in oklab, var(--ramp-4) 13%, transparent); }
+.pivot-tint-3 { background: color-mix(in oklab, var(--ramp-4) 22%, transparent); }
+.pivot-tint-4 { background: color-mix(in oklab, var(--ramp-4) 33%, transparent); }
+.pivot-tint-5 { background: color-mix(in oklab, var(--ramp-4) 46%, transparent); }

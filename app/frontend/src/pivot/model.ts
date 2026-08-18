@@ -152,11 +152,17 @@ export type PivotTable = {
   rowTotals: Map<string, number | null>;
   columnTotals: Map<string, number | null>;
   total: number | null;
-  /** Les extrêmes des cellules, pour la rampe séquentielle. Les totaux en sont
-   *  exclus : ils écraseraient l'échelle et toutes les cellules paraîtraient
-   *  pâles. */
+  /** Les extrêmes des cellules. Les totaux en sont exclus : ils écraseraient
+   *  l'échelle et toutes les cellules paraîtraient pâles. */
   min: number | null;
   max: number | null;
+  /** Toutes les valeurs de cellule, triées. C'est **la distribution réelle**,
+   *  et c'est sur elle que se calcule la teinte — pas sur l'étendue brute.
+   *
+   *  Sur une étendue brute, un poste à 22 Md € et quinze postes sous 1 Md €
+   *  donnaient quinze cellules dans la même marche : la couleur ne distinguait
+   *  plus rien. Sur les rangs, chaque marche reçoit la même part de cellules. */
+  sorted: number[];
 };
 
 export type SortState = { column: string | null; direction: "asc" | "desc" };
@@ -178,15 +184,15 @@ export function buildTable(
   const rowTotals = new Map(response.row_totals.map((item) => [item.row, compute(item)]));
   const columnTotals = new Map(response.column_totals.map((item) => [item.column, compute(item)]));
 
-  let min: number | null = null;
-  let max: number | null = null;
+  const flat: number[] = [];
   for (const row of values.values()) {
     for (const value of row.values()) {
-      if (value === null) continue;
-      min = min === null ? value : Math.min(min, value);
-      max = max === null ? value : Math.max(max, value);
+      if (value !== null) flat.push(value);
     }
   }
+  const sorted = [...flat].sort((left, right) => left - right);
+  const min = sorted.length ? sorted[0] : null;
+  const max = sorted.length ? sorted[sorted.length - 1] : null;
 
   // Tri : sur une colonne, sur le total, ou l'ordre naturel de l'axe.
   const rowKeys = [...response.row_keys];
@@ -214,18 +220,39 @@ export function buildTable(
     total: compute(response.total),
     min,
     max,
+    sorted,
   };
 }
 
 /** La clé réservée à la colonne « Total », qui n'est pas une modalité. */
 export const TOTAL_COLUMN = "__total__";
 
-/** Position d'une valeur sur la rampe séquentielle, de 0 à 1.
+/** Nombre de marches de teinte. Cinq, et pas huit : au-delà, deux marches
+ *  voisines ne se distinguent plus, et la teinte cesse de servir à quelque
+ *  chose tout en fatiguant l'œil. */
+export const TINT_STEPS = 5;
+
+/** Marche de teinte d'une valeur, de 1 à `TINT_STEPS` — `null` si aucune.
  *
- *  `null` quand l'échelle est plate ou la valeur absente : la cellule reste
- *  alors sans teinte, ce qui est plus honnête qu'un milieu de rampe arbitraire.
+ *  Calculée sur le **rang** dans la distribution et non sur l'étendue brute :
+ *  chaque marche reçoit ainsi la même part de cellules, et une valeur extrême
+ *  ne pousse plus tout le reste dans la même teinte.
+ *
+ *  `null` quand la valeur est absente ou que toutes se valent — une cellule
+ *  sans teinte est plus honnête qu'un milieu de rampe arbitraire.
  */
-export function rampPosition(value: number | null, min: number | null, max: number | null): number | null {
-  if (value === null || min === null || max === null || max === min) return null;
-  return (value - min) / (max - min);
+export function tintStep(value: number | null, sorted: number[]): number | null {
+  if (value === null || sorted.length < 2) return null;
+  if (sorted[0] === sorted[sorted.length - 1]) return null;
+  // Rang du premier élément égal : deux cellules de même valeur reçoivent la
+  // même marche, ce qu'une recherche du dernier rang ne garantirait pas.
+  let low = 0;
+  let high = sorted.length;
+  while (low < high) {
+    const middle = (low + high) >> 1;
+    if (sorted[middle] < value) low = middle + 1;
+    else high = middle;
+  }
+  const quantile = low / (sorted.length - 1);
+  return Math.min(TINT_STEPS, Math.floor(quantile * TINT_STEPS) + 1);
 }

@@ -33,7 +33,7 @@ import { DENOMINATORS } from "../methodology/denominators";
 import type { ExploreMeasure } from "../explore/model";
 import {
   AGGREGATIONS, TOTAL_COLUMN, aggregationNote, buildTable, isRatio,
-  offeredAggregations, rampPosition,
+  offeredAggregations, tintStep,
   type Aggregation, type PivotResponse, type SortState,
 } from "../pivot/model";
 import type { AdvancedFilters, Metadata } from "../types";
@@ -366,22 +366,31 @@ export function PivotPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
               <tbody>
                 {table.rowKeys.map((row) => (
                   <tr key={row.key}>
-                    <th scope="row">{row.label}</th>
+                    {/* Un total négatif n'est pas une anomalie d'agrégation :
+                        vérifié sur « Autres » en 2015, les −639,81 M€ sont
+                        −677,20 M€ de régularisations pour +37,39 M€ de
+                        remboursements. L'expliquer une fois, sur la ligne qui
+                        pose la question, plutôt qu'en note permanente. */}
+                    <th scope="row">
+                      {row.label}
+                      {(table.rowTotals.get(row.key) ?? 0) < 0 ? (
+                        <InfoHint label={`le total négatif de ${row.label}`}>
+                          Un total négatif vient des régularisations : des remboursements
+                          repris sur un exercice antérieur, que le cube porte à part. Hors
+                          régularisations, la ligne reste positive.
+                        </InfoHint>
+                      ) : null}
+                    </th>
                     {table.columnKeys.map((column) => {
                       const value = table.values.get(row.key)?.get(column.key) ?? null;
-                      const position = rampPosition(value, table.min, table.max);
+                      // Une marche de lavis, jamais un aplat : l'encre reste la
+                      // même du haut en bas de l'échelle, et il n'y a plus
+                      // d'inversion de couleur de texte à gérer — c'était elle
+                      // qui rendait les cellules fortes pénibles à lire.
+                      const step = tintStep(value, table.sorted);
                       return (
                         <td key={column.key}
-                          className={value === null ? "pivot-void" : ""}
-                          style={position === null ? undefined : {
-                            // La rampe séquentielle du thème, à huit marches :
-                            // la teinte code une grandeur, jamais une identité.
-                            background: `var(--ramp-${Math.min(8, Math.max(1, Math.round(position * 7) + 1))})`,
-                            // Au-delà du milieu de la rampe, l'encre doit
-                            // s'inverser, sinon les cellules fortes deviennent
-                            // illisibles.
-                            color: position > 0.55 ? "var(--surface)" : "var(--ink)",
-                          }}>
+                          className={value === null ? "pivot-void" : step ? `pivot-tint-${step}` : ""}>
                           {cellText(value)}
                         </td>
                       );

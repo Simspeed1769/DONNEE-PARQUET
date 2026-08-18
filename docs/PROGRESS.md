@@ -1200,3 +1200,25 @@ aurait coûté plus qu'il n'aurait préservé.
   c'est un avertissement, pas une explication.
 - **La règle est écrite dans `CLAUDE.md`**, avec ses deux exceptions, à côté de
   celle qui impose l'import de Motion via `m`.
+
+## v7 · Mission « Alléger » points 6.1 et 6.4 — La teinte du Tableau, et la ligne négative
+
+- **L'échelle se lit sur les rangs, plus sur l'étendue brute.** Un poste à
+  22 Md € poussait quinze postes plus petits dans la même marche : la couleur
+  ne distinguait plus rien. Chaque marche reçoit maintenant la même part de
+  cellules (`tintStep`, recherche dichotomique du premier rang égal — deux
+  cellules de même valeur reçoivent la même teinte).
+- **Un lavis, plus un aplat.** Cinq marches en `color-mix` sur la rampe
+  séquentielle, de 6 % à 46 %. L'encre reste `--ink` partout : **l'inversion de
+  couleur de texte disparaît**, et avec elle les cellules fortes pénibles à
+  lire. Huit marches ont été ramenées à cinq — au-delà, deux voisines ne se
+  distinguent plus.
+- **La teinte suit la palette** et vient du thème ; la cellule vide garde
+  `--map-void`, jamais un bas de rampe. Vérifié à l'écran sur « Codes réservés ».
+- **6.4 tranché : la ligne AUTRES est légitime.** En 2015, ses −639,81 M€ se
+  décomposent en **−677,20 M€ de régularisations** (`rem_neg`) pour
+  **+37,39 M€ de remboursements** — 46 codes, tous dans le poste « Divers ».
+  Ce n'est pas un défaut d'agrégation. Un `InfoHint` le dit, **sur les seules
+  lignes à total négatif**.
+- **Aucun réglage de teinte ajouté** : le tableau lavé se lit mieux que nu, et
+  un interrupteur aurait été un élément visible de plus.
