@@ -1269,3 +1269,30 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Bundle inchangé** : `motionFeatures` 37,37 Ko / **14,06 Ko gzip**, identique
   au repère. `index` passe de 53,86 à 54,01 Ko — soixante octets gzip de code
   nouveau, pas un import mixte.
+
+## v7 · Recette des deux missions — largeurs, thèmes, contraste
+
+- **Six largeurs, aucun débordement.** 1400 / 1272 / 1024 / 860 / 720 / 620 px
+  sur CSP, Pathologies, Population et le Tableau : `scrollWidth` toujours
+  inférieur à la largeur, zéro élément dont le texte dépasse sa boîte. Mesuré au
+  banc d'essai en iframe — la fenêtre est maximisée et ne se redimensionne pas,
+  mais les media queries d'une iframe s'évaluent sur *sa* largeur.
+- **Contraste du lavis du Tableau, composé sur le fond réel** (le lavis est
+  translucide, le lire dans la feuille de style ne dirait rien) :
+
+  | Marche | Thème clair | Thème sombre |
+  |---|---:|---:|
+  | 1 (la plus pâle) | 16,24 : 1 | 17,20 : 1 |
+  | 5 (la plus forte) | **10,51 : 1** | **10,32 : 1** |
+
+  Le pire cas dépasse AAA. C'est ce qu'achète l'encre constante : l'ancienne
+  rampe pleine exigeait d'inverser la couleur du texte précisément parce
+  qu'elle passait sous le seuil.
+- **Reste à faire : le point 6.3**, le Tableau ouvert aux cinq sources. Il
+  demande de porter dans le Tableau la machinerie par source qu'`Extraire`
+  possède déjà — cinq barres de portée distinctes, quatre chemins de requête, et
+  une table de licences d'agrégation (une prévalence ne se somme pas, une part
+  n'est pas additive entre régions, la Mortalité n'a pas de dimension
+  territoriale). Non entamé plutôt que bâclé : sur un produit dont la première
+  règle est qu'une forme qui mentirait n'est pas offerte, un croisé à moitié
+  gardé produirait des nombres faux.
