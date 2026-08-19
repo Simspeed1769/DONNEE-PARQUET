@@ -2,12 +2,32 @@ import { useEffect, useMemo, useState } from "react";
 import { downloadCspExtraction, downloadExtraction, downloadMortalityExtraction, downloadPathologyExtraction, downloadPopulationExtraction, getCspExtractionPreview, getCspMetadata, getExtractionPreview, getMortalityExtractionPreview, getMortalityMetadata, getPathologyExtractionPreview, getPathologyMetadata, getPopulationExtractionPreview, getPopulationMetadata } from "../api";
 import { AdvancedFilterPanel } from "../components/AdvancedFilterPanel";
 import { InfoHint } from "../components/InfoHint";
+import { PageHero } from "../components/PageHero";
 import { SearchableCauseSelect } from "../components/SearchableCauseSelect";
 import type { CspExtractionRequest, CspMetadata, ExtractionPreview, ExtractionRequest, Metadata, MortalityExtractionRequest, MortalityMetadata, PathologyExtractionRequest, PathologyMetadata, PopulationExtractionRequest, PopulationMetadata } from "../types";
 import { filtersFromSearch, writeFilters } from "../utils";
 
 type ExtractionSource = "damir" | "pathologies" | "csp" | "mortality" | "population";
-type Props = { metadata: Metadata; routeVersion: number; onSourceChange?: (source: ExtractionSource) => void };
+type Props = {
+  metadata: Metadata;
+  routeVersion: number;
+  onSourceChange?: (source: ExtractionSource) => void;
+  onOpenMethodology?: () => void;
+};
+
+/** Les cinq sources, en onglets — la même charpente que les cinq bases.
+ *
+ *  Elles étaient cinq boutons posés dans le titre de la page, sous une barre de
+ *  filtres latérale propre à chacune : le même produit se présentait de deux
+ *  façons selon qu'on explorait une base ou qu'on en extrayait une. */
+const SOURCES: Array<{ key: ExtractionSource; label: string; hint: string }> = [
+  { key: "damir", label: "Dépenses DAMIR", hint: "Remboursements par prestation" },
+  { key: "pathologies", label: "Pathologies", hint: "Effectifs et prévalence" },
+  { key: "csp", label: "CSP", hint: "Actifs par catégorie" },
+  { key: "mortality", label: "Mortalité", hint: "Décès publiés par cause" },
+  { key: "population", label: "Population", hint: "Habitants au 1er janvier" },
+];
+
 const PREVIEW_PAGE_SIZE = 40;
 
 function formatCell(value: string | number | null, kind: string): string {
@@ -19,7 +39,7 @@ function formatCell(value: string | number | null, kind: string): string {
   return String(value);
 }
 
-export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props) {
+export function ExtractionPage({ metadata, routeVersion, onSourceChange, onOpenMethodology }: Props) {
   const initialParams = useMemo(() => new URLSearchParams(window.location.search), [routeVersion]);
   const requestedSource = initialParams.get("source");
   const [source, setSource] = useState<ExtractionSource>(requestedSource === "pathologies" || requestedSource === "csp" || requestedSource === "mortality" || requestedSource === "population" ? requestedSource : "damir");
@@ -353,6 +373,11 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   useEffect(() => setPreviewPage(0), [preview]);
 
   const chooseSource = (next: ExtractionSource) => {
+    // Recliquer la source déjà choisie vidait l'aperçu sans rien relancer : les
+    // dépendances de l'effet n'avaient pas bougé, donc aucune requête ne
+    // repartait, et le panneau restait mort jusqu'au prochain changement de
+    // filtre. Le défaut existait avant les onglets ; ceux-ci invitent à cliquer.
+    if (next === source) return;
     setSource(next);
     setPreview(null);
     onSourceChange?.(next);
@@ -419,130 +444,226 @@ export function ExtractionPage({ metadata, routeVersion, onSourceChange }: Props
   const previewStart = previewPage * PREVIEW_PAGE_SIZE + 1;
   const previewEnd = Math.min((previewPage + 1) * PREVIEW_PAGE_SIZE, preview?.rows.length ?? 0);
 
-  const previewPanel = <article className="preview-card panel">
-    <div className="preview-header"><div><span className="section-kicker">Aperçu dynamique</span><h2>Base extraite</h2><p>{preview ? `${new Intl.NumberFormat("fr-FR").format(preview.total_rows)} lignes estimées dans le périmètre` : "Sélectionnez au moins une dimension et une mesure"}</p></div>{preview?.limited ? <span>Échantillon des 500 premières lignes</span> : null}</div>
-    {preview && preview.total_rows > 250000 ? <div className="analysis-warnings"><span>ⓘ L’export dépasse 250 000 lignes. Réduisez le périmètre ou le nombre de dimensions avant de lancer le téléchargement.</span></div> : null}
-    {error ? <div className="analysis-error"><strong>Impossible de générer l’aperçu</strong><span>{error}</span></div> : null}
-    {loading ? <div className="preview-loading"><div className="skeleton" /></div> : preview?.rows.length ? (
-      <>
-        <div className="advanced-table-wrap" role="region" aria-label="Aperçu de la base extraite" tabIndex={0}>
-          <table className="advanced-table"><caption className="sr-only">Aperçu paginé des données qui seront exportées</caption><thead><tr>{preview.columns.map((column) => <th scope="col" key={column.key}>{column.label}</th>)}</tr></thead><tbody>{visiblePreviewRows.map((row, index) => <tr key={`${previewPage}-${index}`}>{preview.columns.map((column) => <td key={column.key} title={formatCell(row[column.key], column.kind)} className={column.kind === "dimension" ? "" : "numeric"}>{formatCell(row[column.key], column.kind)}</td>)}</tr>)}</tbody></table>
-        </div>
-        <nav className="preview-pagination" aria-label="Pagination de l’aperçu"><span>Lignes {previewStart}–{previewEnd} sur {new Intl.NumberFormat("fr-FR").format(preview.rows.length)} affichables</span><div><button type="button" disabled={previewPage === 0} onClick={() => setPreviewPage((page) => Math.max(0, page - 1))}>← Précédent</button><strong>{previewPage + 1} / {previewPageCount}</strong><button type="button" disabled={previewPage >= previewPageCount - 1} onClick={() => setPreviewPage((page) => Math.min(previewPageCount - 1, page + 1))}>Suivant →</button></div></nav>
-      </>
-    ) : <div className="empty-extraction"><span>＋</span><strong>Votre base apparaîtra ici</strong><p>Ajoutez des dimensions et des mesures pour lancer l’agrégation.</p></div>}
-  </article>;
+  /** Ce que l'export produira, et de quoi il faut se méfier. La réserve reste
+   *  visible : c'est un avertissement de comparabilité, pas une précision. */
+  const CONTEXTS: Record<ExtractionSource, { caveatTitle: string; caveat: string }> = {
+    damir: {
+      caveatTitle: "Liquidation",
+      caveat: "Les derniers millésimes sont incomplets tant que les soins ne sont pas tous liquidés.",
+    },
+    pathologies: {
+      caveatTitle: "Secret statistique",
+      caveat: "Les petits effectifs peuvent être masqués à la source.",
+    },
+    csp: {
+      caveatTitle: "Champ Insee",
+      caveat: "Actifs ayant un emploi · effectifs pondérés avec IPONDI.",
+    },
+    mortality: {
+      caveatTitle: "Effectifs bruts",
+      caveat: "L’export porte les décès publiés, jamais un taux : le CépiDc ne publie pas de "
+        + "population exposée. Les Croisements, eux, rapportent ces décès à la population résidente Insee.",
+    },
+    population: {
+      caveatTitle: "Au 1er janvier",
+      caveat: "Estimations Insee, rétropolées sur les 13 régions actuelles depuis 1975. Le total "
+        + "« Ensemble » est recalculé par somme des hommes et des femmes.",
+    },
+  };
+
+  /** Les filtres de la source courante, mis en rangée par la grille de
+   *  `.extraction-filters` — la même charpente pour les cinq. */
+  const filterRow = source === "damir" ? (
+    <AdvancedFilterPanel metadata={metadata} value={filters} onChange={setFilters} />
+  ) : source === "pathologies" ? (
+    <>
+      <label><span>Niveau 1 · Famille</span><select value={pathologyFamily} onChange={(event) => choosePathologyFamily(event.target.value)}>{pathologyMetadata?.families.map((item) => <option key={item.label}>{item.label}</option>)}</select></label>
+      <label><span>Niveau 2 · Catégorie</span><select value={pathologyGroup} onChange={(event) => choosePathologyGroup(event.target.value)}>{pathologyGroups.map((item) => <option value={item.code} key={`${item.code}-${item.label}`}>{item.label}</option>)}</select></label>
+      <label><span>Niveau 3 · Détail</span><select value={pathologyTop} onChange={(event) => setPathologyTop(event.target.value)}>{pathologyOptions.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      <div className="extraction-period"><span>Période</span><div><select aria-label="Première année" value={pathologyStartYear} onChange={(event) => setPathologyStartYear(Number(event.target.value))}>{pathologyMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select><select aria-label="Dernière année" value={pathologyEndYear} onChange={(event) => setPathologyEndYear(Number(event.target.value))}>{pathologyMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></div></div>
+    </>
+  ) : source === "csp" ? (
+    <>
+      <label><span>Niveau de lecture</span><select value={cspLevel} onChange={(event) => chooseCspLevel(event.target.value as "groupe_6" | "categorie_29")}><option value="groupe_6">6 grands groupes</option><option value="categorie_29">29 catégories détaillées</option></select></label>
+      <label><span>CSP observée</span><select value={cspCode} onChange={(event) => setCspCode(event.target.value)}>{cspOptions.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      <div className="extraction-fixed"><span>Millésime</span><strong>2023</strong></div>
+    </>
+  ) : source === "population" ? (
+    <>
+      <label><span>Territoire</span><select value={populationRegion} onChange={(event) => setPopulationRegion(event.target.value)}><option value="__all__">Tous les territoires</option>{populationMetadata?.regions.filter((item) => item.code !== "99").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      <label><span>Tranche d’âge</span><select value={populationAge} onChange={(event) => setPopulationAge(event.target.value)}><option value="__all__">Toutes les tranches</option>{populationMetadata?.ages.filter((item) => item.code !== "tsage").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      <label><span>Sexe</span><select value={populationSex} onChange={(event) => setPopulationSex(event.target.value)}><option value="__all__">Les deux</option><option value="femmes">Femmes</option><option value="hommes">Hommes</option></select></label>
+      <div className="extraction-period"><span>Période</span><div><select aria-label="Première année" value={populationStartYear} onChange={(event) => setPopulationStartYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select><select aria-label="Dernière année" value={populationEndYear} onChange={(event) => setPopulationEndYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></div></div>
+    </>
+  ) : (
+    <>
+      <label className="extraction-wide"><span>Cause de décès</span><SearchableCauseSelect options={mortalityMetadata?.causes ?? []} value={mortalityCause} onChange={setMortalityCause} allOption={{ code: "__all__", label: "Toutes les causes disponibles" }} /></label>
+      <label><span>Population publiée</span><select value={mortalityPopulation} onChange={(event) => setMortalityPopulation(event.target.value)}><option value="__all__">Tous les périmètres publiés</option>{mortalityMetadata?.populations.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
+      <div className="extraction-period"><span>Période</span><div><select aria-label="Première année" value={mortalityStartYear} onChange={(event) => setMortalityStartYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select><select aria-label="Dernière année" value={mortalityEndYear} onChange={(event) => setMortalityEndYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></div></div>
+    </>
+  );
+
+  /** Le constructeur de colonnes : cinq sources, une seule forme.
+   *
+   *  Les cinq blocs qu'il remplace étaient identiques au libellé près. Leurs
+   *  seules différences réelles — une mesure qui exige une unité homogène, une
+   *  dimension rendue obligatoire par le périmètre — passent par `note`. */
+  const builder = (
+    hint: string,
+    dims: Array<{ key: string; label: string }>, dimValues: string[], setDims: (items: string[]) => void,
+    meas: Array<{ key: string; label: string }>, measValues: string[], setMeas: (items: string[]) => void,
+    dimensionsHint: string,
+    note?: (kind: "dimension" | "measure", key: string, selected: boolean) => { disabled?: boolean; title?: string; suffix?: string },
+  ) => (
+    <article className="builder-card panel">
+      <div className="builder-header">
+        <div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>{hint}</p></div>
+        <span className="builder-count">{dimValues.length + measValues.length} colonnes</span>
+      </div>
+      <div className="builder-groups">
+        <div><strong>Dimensions</strong><span>{dimensionsHint}</span><div className="choice-grid">{dims.map((item) => {
+          const selected = dimValues.includes(item.key);
+          const state = note?.("dimension", item.key, selected) ?? {};
+          return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={state.disabled} title={state.title} onClick={() => toggle(item.key, dimValues, setDims)}><i>{selected ? "✓" : "+"}</i>{item.label}{state.suffix ?? ""}</button>;
+        })}</div></div>
+        <div><strong>Mesures</strong><span>Quels indicateurs calculer</span><div className="choice-grid measures-grid">{meas.map((item) => {
+          const selected = measValues.includes(item.key);
+          const state = note?.("measure", item.key, selected) ?? {};
+          return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={state.disabled} title={state.title} onClick={() => toggle(item.key, measValues, setMeas)}><i>{selected ? "✓" : "+"}</i>{item.label}{state.suffix ?? ""}</button>;
+        })}</div></div>
+      </div>
+    </article>
+  );
+
+  const CSP_DIMENSIONS = [{ key: "year", label: "Année" }, { key: "region", label: "Région" }, { key: "age", label: "Tranche d’âge" }, { key: "sex", label: "Sexe" }];
+  const CSP_MEASURES = [{ key: "effectif", label: "Effectif pondéré" }, { key: "population", label: "Actifs en emploi" }, { key: "share", label: "Part de la CSP" }];
+
+  const builderCard = source === "damir"
+    ? builder("Chaque croisement des dimensions forme une ligne ; chaque mesure devient une colonne.",
+        metadata.dimensions, dimensions, setDimensions, metadata.measures, measures, setMeasures,
+        "Comment découper la donnée",
+        (kind, key, selected) => {
+          if (kind !== "measure") return {};
+          const item = metadata.measures.find((entry) => entry.key === key);
+          const disabled = Boolean(item?.requires_homogeneous_unit) && !homogeneousUnitSelected && !selected;
+          return disabled
+            ? { disabled, title: "Sélectionnez une prestation ou ajoutez la dimension Prestation", suffix: " · prestation" }
+            : {};
+        })
+    : source === "pathologies"
+    ? builder("Les totaux nationaux sont utilisés lorsqu’une dimension n’est pas sélectionnée.",
+        pathologyMetadata?.dimensions ?? [], pathologyDimensions, setPathologyDimensions,
+        pathologyMetadata?.measures ?? [], pathologyMeasures, setPathologyMeasures,
+        "Comment découper la population")
+    : source === "csp"
+    ? builder("Chaque ligne décrit la CSP sélectionnée selon les découpages choisis.",
+        CSP_DIMENSIONS, cspDimensions, setCspDimensions, CSP_MEASURES, cspMeasures, setCspMeasures,
+        "Comment découper la population")
+    : source === "population"
+    ? builder("Une ligne correspond à un millésime et aux découpages retenus.",
+        populationMetadata?.dimensions ?? [], populationDimensions, setPopulationDimensions,
+        populationMetadata?.measures ?? [], populationMeasures, setPopulationMeasures,
+        "Comment découper la population",
+        (kind, key, selected) => {
+          if (kind !== "dimension") return {};
+          const required = (key === "year" && populationStartYear !== populationEndYear)
+            || (key === "region" && populationRegion === "__all__");
+          return required
+            ? { disabled: selected, title: "Dimension nécessaire pour ce périmètre", suffix: " · requise" }
+            : {};
+        })
+    : builder("Une ligne correspond à un millésime, une cause et un périmètre de population publiés.",
+        mortalityMetadata?.dimensions ?? [], mortalityDimensions, setMortalityDimensions,
+        mortalityMetadata?.measures ?? [], mortalityMeasures, setMortalityMeasures,
+        "Comment découper les décès",
+        (kind, key, selected) => {
+          if (kind !== "dimension") return {};
+          const required = (key === "year" && mortalityStartYear !== mortalityEndYear)
+            || (key === "cause" && mortalityCause === "__all__")
+            || (key === "population" && mortalityPopulation === "__all__");
+          return required
+            ? { disabled: selected, title: "Dimension nécessaire pour ce périmètre", suffix: " · requise" }
+            : {};
+        });
+
+  const exportBlocked = Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000;
 
   return (
     <div className="content-wrap extraction-page">
-      <section className="hero analysis-hero">
-        <div><div className="eyebrow"><span>Base sur mesure</span> Données agrégées</div><h1>Extraire</h1><p>Composez une base propre, estimez son volume et emportez avec Excel les définitions et le périmètre utilisés.</p><div className="extraction-source-switch"><button type="button" className={source === "damir" ? "active" : ""} onClick={() => chooseSource("damir")}>Dépenses DAMIR</button><button type="button" className={source === "pathologies" ? "active" : ""} onClick={() => chooseSource("pathologies")}>Pathologies</button><button type="button" className={source === "csp" ? "active" : ""} onClick={() => chooseSource("csp")}>CSP</button><button type="button" className={source === "mortality" ? "active" : ""} onClick={() => chooseSource("mortality")}>Mortalité</button><button type="button" className={source === "population" ? "active" : ""} onClick={() => chooseSource("population")}>Population</button></div></div>
-        <div className="extraction-actions"><button type="button" onClick={() => exportData("csv")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "csv" ? "Préparation…" : "Exporter CSV"}</button><button className="primary" type="button" onClick={() => exportData("xlsx")} disabled={Boolean(exporting) || !preview?.rows.length || preview.total_rows > 250000}>{exporting === "xlsx" ? "Préparation…" : "Exporter Excel"}</button><InfoHint label="le contenu du fichier Excel">Le classeur porte un onglet Métadonnées : source, période, filtres, définitions, formules, statut de consolidation et règles de masquage propres à la source.</InfoHint></div>
+      <PageHero
+        variant="analysis-hero"
+        eyebrowLabel="Base sur mesure"
+        eyebrowDetail="Données agrégées"
+        title="Extraire"
+        mission="Composez une base propre, estimez son volume et emportez avec Excel les définitions et le périmètre utilisés."
+        action={onOpenMethodology
+          ? <button type="button" className="method-link" onClick={onOpenMethodology}>Données &amp; méthode →</button>
+          : undefined}
+      />
+
+      {/* Cinq sources, une seule charpente — les mêmes onglets que les cinq
+          bases, pour que changer de source soit un changement de sujet et non
+          un changement d'outil. */}
+      <nav className="damir-sections" role="tablist" aria-label="Source à extraire">
+        {SOURCES.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            role="tab"
+            aria-selected={source === item.key}
+            className={source === item.key ? "active" : ""}
+            onClick={() => chooseSource(item.key)}
+          >
+            <strong>{item.label}</strong>
+            <small>{item.hint}</small>
+          </button>
+        ))}
+      </nav>
+
+      {/* Le périmètre en haut, comme sur les cinq bases : l'écran se lit de
+          haut en bas — quelle source, quel périmètre, quelles colonnes, ce que
+          ça donne. */}
+      <section className="panel extraction-context">
+        <div className="extraction-filters">{filterRow}</div>
+        <p className="extraction-caveat">
+          <strong>{CONTEXTS[source].caveatTitle}</strong>
+          <span>{CONTEXTS[source].caveat}</span>
+        </p>
       </section>
+
       <div className={`extraction-loading-track ${loading ? "active" : ""}`} role="status" aria-label={loading ? "Aperçu en cours d’actualisation" : "Aperçu à jour"}><span /></div>
 
-      {source === "damir" ? <div className="analysis-workspace extraction-workspace">
-        <AdvancedFilterPanel metadata={metadata} value={filters} onChange={setFilters} />
-        <section className="extraction-main">
-          <article className="builder-card panel">
-            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Chaque croisement des dimensions forme une ligne ; chaque mesure devient une colonne.</p></div><span className="builder-count">{dimensions.length + measures.length} colonnes</span></div>
-            <div className="builder-groups">
-              <div><strong>Dimensions</strong><span>Comment découper la donnée</span><div className="choice-grid">{metadata.dimensions.map((item) => <button type="button" key={item.key} className={dimensions.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, dimensions, setDimensions)}><i>{dimensions.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-              <div><strong>Mesures</strong><span>Quels indicateurs calculer</span><div className="choice-grid measures-grid">{metadata.measures.map((item) => {
-                const selected = measures.includes(item.key);
-                const disabled = item.requires_homogeneous_unit && !homogeneousUnitSelected && !selected;
-                return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={disabled} title={disabled ? "Sélectionnez une prestation ou ajoutez la dimension Prestation" : undefined} onClick={() => toggle(item.key, measures, setMeasures)}><i>{selected ? "✓" : "+"}</i>{item.label}{disabled ? " · prestation" : ""}</button>;
-              })}</div></div>
+      {builderCard}
+
+      <article className="preview-card panel">
+        <div className="preview-header">
+          <div>
+            <span className="section-kicker">Aperçu dynamique</span>
+            <h2>Base extraite</h2>
+            <p>{preview ? `${new Intl.NumberFormat("fr-FR").format(preview.total_rows)} lignes estimées dans le périmètre` : "Sélectionnez au moins une dimension et une mesure"}</p>
+          </div>
+          {/* Les exports agissent sur ce tableau : leur place est ici, et non
+              dans le titre de la page, où ils précédaient ce qu'ils exportent. */}
+          <div className="extraction-actions">
+            {preview?.limited ? <span className="extraction-sample">Échantillon des 500 premières lignes</span> : null}
+            <button type="button" onClick={() => exportData("csv")} disabled={exportBlocked}>{exporting === "csv" ? "Préparation…" : "Exporter CSV"}</button>
+            <button className="primary" type="button" onClick={() => exportData("xlsx")} disabled={exportBlocked}>{exporting === "xlsx" ? "Préparation…" : "Exporter Excel"}</button>
+            <InfoHint label="le contenu du fichier Excel">Le classeur porte un onglet Métadonnées : source, période, filtres, définitions, formules, statut de consolidation et règles de masquage propres à la source.</InfoHint>
+          </div>
+        </div>
+        {preview && preview.total_rows > 250000 ? <div className="analysis-warnings"><span>ⓘ L’export dépasse 250 000 lignes. Réduisez le périmètre ou le nombre de dimensions avant de lancer le téléchargement.</span></div> : null}
+        {error ? <div className="analysis-error"><strong>Impossible de générer l’aperçu</strong><span>{error}</span></div> : null}
+        {loading ? <div className="preview-loading"><div className="skeleton" /></div> : preview?.rows.length ? (
+          <>
+            <div className="advanced-table-wrap" role="region" aria-label="Aperçu de la base extraite" tabIndex={0}>
+              <table className="advanced-table"><caption className="sr-only">Aperçu paginé des données qui seront exportées</caption><thead><tr>{preview.columns.map((column) => <th scope="col" key={column.key}>{column.label}</th>)}</tr></thead><tbody>{visiblePreviewRows.map((row, index) => <tr key={`${previewPage}-${index}`}>{preview.columns.map((column) => <td key={column.key} title={formatCell(row[column.key], column.kind)} className={column.kind === "dimension" ? "" : "numeric"}>{formatCell(row[column.key], column.kind)}</td>)}</tr>)}</tbody></table>
             </div>
-          </article>
-          {previewPanel}
-        </section>
-      </div> : source === "pathologies" ? <div className="pathology-extraction-workspace">
-        <aside className="panel pathology-extraction-filters">
-          <div><span className="section-kicker">Source</span><h2>Périmètre Pathologies</h2></div>
-          <label><span>Niveau 1 · Famille</span><select value={pathologyFamily} onChange={(event) => choosePathologyFamily(event.target.value)}>{pathologyMetadata?.families.map((item) => <option key={item.label}>{item.label}</option>)}</select></label>
-          <label><span>Niveau 2 · Catégorie</span><select value={pathologyGroup} onChange={(event) => choosePathologyGroup(event.target.value)}>{pathologyGroups.map((item) => <option value={item.code} key={`${item.code}-${item.label}`}>{item.label}</option>)}</select></label>
-          <label><span>Niveau 3 · Détail</span><select value={pathologyTop} onChange={(event) => setPathologyTop(event.target.value)}>{pathologyOptions.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-          <div className="pathology-period"><label><span>Début</span><select value={pathologyStartYear} onChange={(event) => setPathologyStartYear(Number(event.target.value))}>{pathologyMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>Fin</span><select value={pathologyEndYear} onChange={(event) => setPathologyEndYear(Number(event.target.value))}>{pathologyMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label></div>
-          <div className="pathology-extraction-quality"><strong>Secret statistique</strong><span>Les petits effectifs peuvent être masqués à la source.</span></div>
-        </aside>
-        <section className="extraction-main">
-          <article className="builder-card panel">
-            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Les totaux nationaux sont utilisés lorsqu’une dimension n’est pas sélectionnée.</p></div><span className="builder-count">{pathologyDimensions.length + pathologyMeasures.length} colonnes</span></div>
-            <div className="builder-groups">
-              <div><strong>Dimensions</strong><span>Comment découper la population</span><div className="choice-grid">{pathologyMetadata?.dimensions.map((item) => <button type="button" key={item.key} className={pathologyDimensions.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, pathologyDimensions, setPathologyDimensions)}><i>{pathologyDimensions.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-              <div><strong>Mesures</strong><span>Quels indicateurs calculer</span><div className="choice-grid measures-grid">{pathologyMetadata?.measures.map((item) => <button type="button" key={item.key} className={pathologyMeasures.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, pathologyMeasures, setPathologyMeasures)}><i>{pathologyMeasures.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-            </div>
-          </article>
-          {previewPanel}
-        </section>
-      </div> : source === "csp" ? <div className="pathology-extraction-workspace csp-extraction-workspace">
-        <aside className="panel pathology-extraction-filters">
-          <div><span className="section-kicker">Source</span><h2>Périmètre CSP</h2></div>
-          <label><span>Niveau de lecture</span><select value={cspLevel} onChange={(event) => chooseCspLevel(event.target.value as "groupe_6" | "categorie_29")}><option value="groupe_6">6 grands groupes</option><option value="categorie_29">29 catégories détaillées</option></select></label>
-          <label><span>CSP observée</span><select value={cspCode} onChange={(event) => setCspCode(event.target.value)}>{cspOptions.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-          <div className="csp-extraction-year"><span>Millésime</span><strong>2023</strong></div>
-          <div className="pathology-extraction-quality csp-extraction-quality"><strong>Champ Insee</strong><span>Actifs ayant un emploi · effectifs pondérés avec IPONDI.</span></div>
-        </aside>
-        <section className="extraction-main">
-          <article className="builder-card panel">
-            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Chaque ligne décrit la CSP sélectionnée selon les découpages choisis.</p></div><span className="builder-count">{cspDimensions.length + cspMeasures.length} colonnes</span></div>
-            <div className="builder-groups">
-              <div><strong>Dimensions</strong><span>Comment découper la population</span><div className="choice-grid">{[{ key: "year", label: "Année" }, { key: "region", label: "Région" }, { key: "age", label: "Tranche d’âge" }, { key: "sex", label: "Sexe" }].map((item) => <button type="button" key={item.key} className={cspDimensions.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, cspDimensions, setCspDimensions)}><i>{cspDimensions.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-              <div><strong>Mesures</strong><span>Quels indicateurs calculer</span><div className="choice-grid measures-grid">{[{ key: "effectif", label: "Effectif pondéré" }, { key: "population", label: "Actifs en emploi" }, { key: "share", label: "Part de la CSP" }].map((item) => <button type="button" key={item.key} className={cspMeasures.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, cspMeasures, setCspMeasures)}><i>{cspMeasures.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-            </div>
-          </article>
-          {previewPanel}
-        </section>
-      </div> : source === "population" ? <div className="pathology-extraction-workspace csp-extraction-workspace">
-        <aside className="panel pathology-extraction-filters">
-          <div><span className="section-kicker">Source</span><h2>Périmètre Population</h2></div>
-          <label><span>Territoire</span><select value={populationRegion} onChange={(event) => setPopulationRegion(event.target.value)}><option value="__all__">Tous les territoires</option>{populationMetadata?.regions.filter((item) => item.code !== "99").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-          <label><span>Tranche d’âge</span><select value={populationAge} onChange={(event) => setPopulationAge(event.target.value)}><option value="__all__">Toutes les tranches</option>{populationMetadata?.ages.filter((item) => item.code !== "tsage").map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-          <label><span>Sexe</span><select value={populationSex} onChange={(event) => setPopulationSex(event.target.value)}><option value="__all__">Les deux</option><option value="femmes">Femmes</option><option value="hommes">Hommes</option></select></label>
-          <div className="pathology-period"><label><span>Début</span><select value={populationStartYear} onChange={(event) => setPopulationStartYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>Fin</span><select value={populationEndYear} onChange={(event) => setPopulationEndYear(Number(event.target.value))}>{populationMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label></div>
-          <div className="pathology-extraction-quality"><strong>Au 1er janvier</strong><span>Estimations Insee, rétropolées sur les 13 régions actuelles depuis 1975. Le total « Ensemble » est recalculé par somme des hommes et des femmes.</span></div>
-        </aside>
-        <section className="extraction-main">
-          <article className="builder-card panel">
-            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Une ligne correspond à un millésime et aux découpages retenus.</p></div><span className="builder-count">{populationDimensions.length + populationMeasures.length} colonnes</span></div>
-            <div className="builder-groups">
-              <div><strong>Dimensions</strong><span>Comment découper la population</span><div className="choice-grid">{populationMetadata?.dimensions.map((item) => {
-                const selected = populationDimensions.includes(item.key);
-                const required = (item.key === "year" && populationStartYear !== populationEndYear)
-                  || (item.key === "region" && populationRegion === "__all__");
-                return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={required && selected} title={required ? "Dimension nécessaire pour ce périmètre" : undefined} onClick={() => toggle(item.key, populationDimensions, setPopulationDimensions)}><i>{selected ? "✓" : "+"}</i>{item.label}{required ? " · requise" : ""}</button>;
-              })}</div></div>
-              <div><strong>Mesures</strong><span>Quels indicateurs exporter</span><div className="choice-grid measures-grid">{populationMetadata?.measures.map((item) => <button type="button" key={item.key} className={populationMeasures.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, populationMeasures, setPopulationMeasures)}><i>{populationMeasures.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-            </div>
-          </article>
-          {previewPanel}
-        </section>
-      </div> : <div className="pathology-extraction-workspace mortality-extraction-workspace">
-        <aside className="panel pathology-extraction-filters">
-          <div><span className="section-kicker">Source</span><h2>Périmètre Mortalité</h2></div>
-          <label><span>Cause de décès</span><SearchableCauseSelect options={mortalityMetadata?.causes ?? []} value={mortalityCause} onChange={setMortalityCause} allOption={{ code: "__all__", label: "Toutes les causes disponibles" }} /></label>
-          <label><span>Population publiée</span><select value={mortalityPopulation} onChange={(event) => setMortalityPopulation(event.target.value)}><option value="__all__">Tous les périmètres publiés</option>{mortalityMetadata?.populations.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}</select></label>
-          <div className="pathology-period"><label><span>Début</span><select value={mortalityStartYear} onChange={(event) => setMortalityStartYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label><label><span>Fin</span><select value={mortalityEndYear} onChange={(event) => setMortalityEndYear(Number(event.target.value))}>{mortalityMetadata?.years.map((item) => <option key={item}>{item}</option>)}</select></label></div>
-          <div className="pathology-extraction-quality mortality-extraction-quality"><strong>Effectifs bruts</strong><span>L’export porte les décès publiés, jamais un taux : le CépiDc ne publie pas de population exposée. Les Croisements, eux, rapportent désormais ces décès à la population résidente Insee.</span></div>
-        </aside>
-        <section className="extraction-main">
-          <article className="builder-card panel">
-            <div className="builder-header"><div><span className="section-kicker">Structure de la base</span><h2>Choisir les colonnes</h2><p>Une ligne correspond à un millésime, une cause et un périmètre de population publiés.</p></div><span className="builder-count">{mortalityDimensions.length + mortalityMeasures.length} colonnes</span></div>
-            <div className="builder-groups">
-              <div><strong>Dimensions</strong><span>Comment découper les décès</span><div className="choice-grid">{mortalityMetadata?.dimensions.map((item) => {
-                const selected = mortalityDimensions.includes(item.key);
-                const required = (item.key === "year" && mortalityStartYear !== mortalityEndYear)
-                  || (item.key === "cause" && mortalityCause === "__all__")
-                  || (item.key === "population" && mortalityPopulation === "__all__");
-                return <button type="button" key={item.key} className={selected ? "selected" : ""} disabled={required && selected} title={required ? "Dimension nécessaire pour ce périmètre" : undefined} onClick={() => toggle(item.key, mortalityDimensions, setMortalityDimensions)}><i>{selected ? "✓" : "+"}</i>{item.label}{required ? " · requise" : ""}</button>;
-              })}</div></div>
-              <div><strong>Mesures</strong><span>Quels indicateurs exporter</span><div className="choice-grid measures-grid">{mortalityMetadata?.measures.map((item) => <button type="button" key={item.key} className={mortalityMeasures.includes(item.key) ? "selected" : ""} onClick={() => toggle(item.key, mortalityMeasures, setMortalityMeasures)}><i>{mortalityMeasures.includes(item.key) ? "✓" : "+"}</i>{item.label}</button>)}</div></div>
-            </div>
-          </article>
-          {previewPanel}
-        </section>
-      </div>}
+            <nav className="preview-pagination" aria-label="Pagination de l’aperçu"><span>Lignes {previewStart}–{previewEnd} sur {new Intl.NumberFormat("fr-FR").format(preview.rows.length)} affichables</span><div><button type="button" disabled={previewPage === 0} onClick={() => setPreviewPage((page) => Math.max(0, page - 1))}>← Précédent</button><strong>{previewPage + 1} / {previewPageCount}</strong><button type="button" disabled={previewPage >= previewPageCount - 1} onClick={() => setPreviewPage((page) => Math.min(previewPageCount - 1, page + 1))}>Suivant →</button></div></nav>
+          </>
+        ) : <div className="empty-extraction"><span>＋</span><strong>Votre base apparaîtra ici</strong><p>Ajoutez des dimensions et des mesures pour lancer l’agrégation.</p></div>}
+      </article>
     </div>
   );
 }
+
+export default ExtractionPage;

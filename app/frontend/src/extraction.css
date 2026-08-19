@@ -1,0 +1,166 @@
+/* Extraire : la charpente des cinq bases, appliquée à l'atelier d'export.
+ *
+ * Fichier dédié adossé aux jetons — rien n'entre dans `styles.css`.
+ *
+ * L'écran empilait un titre porteur de cinq boutons de source, puis une colonne
+ * de filtres à gauche et l'atelier à droite. Les cinq bases, elles, posent des
+ * onglets sous le titre et le périmètre en rangée juste dessous. Deux
+ * grammaires pour un même geste — choisir une source, poser un périmètre — se
+ * remarquaient d'autant plus qu'on passe de l'une à l'autre par la barre
+ * latérale. Ici, la page se lit de haut en bas : quelle source, quel périmètre,
+ * quelles colonnes, ce que ça donne.
+ */
+
+.extraction-context {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  /* Les listes déroulantes des filtres s'ouvrent par-dessus le bord du panneau :
+     rien ne doit les rogner. */
+  overflow: visible;
+}
+
+/* La rangée de filtres. `auto-fit` plutôt qu'un nombre de colonnes fixe : les
+   cinq sources n'ont pas le même nombre de contrôles — deux pour CSP, neuf pour
+   DAMIR — et une grille figée laisserait des trous chez l'une ou serrerait
+   l'autre. */
+.extraction-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  /* `start` et non `end` : les cinq sources n'ont pas le même nombre de champs
+     par colonne, et un alignement par le bas décrochait « Période » d'une demi-
+     hauteur sous « Prestations ». Les intitulés doivent commencer sur la même
+     ligne — c'est par eux qu'on lit la rangée. */
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.extraction-filters > label { display: block; min-width: 0; }
+.extraction-filters > label > span,
+.extraction-period > span,
+.extraction-fixed > span {
+  display: block;
+  margin: 0 0 6px 2px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.extraction-filters select {
+  width: 100%;
+  height: 39px;
+  padding: 0 31px 0 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  background: var(--surface-sunken);
+  font-family: inherit;
+  font-size: var(--text-xs);
+}
+.extraction-filters select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+
+/* Une période est une chose, pas deux. « Début » et « Fin » occupaient deux
+   cellules de la grille et se retrouvaient parfois sur deux rangées, la seconde
+   année orpheline sous la première. Elles partagent désormais un intitulé. */
+.extraction-period { min-width: 0; }
+.extraction-period > div { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+
+/* La cause de décès porte des libellés longs — elle prend deux colonnes quand
+   la place existe, et retombe sur une seule quand elle manque. */
+.extraction-wide { grid-column: span 2; }
+
+/* Un périmètre que l'utilisateur ne choisit pas : le millésime CSP est unique.
+   Il se présente comme un champ pour rester dans l'alignement de la rangée,
+   mais sans en avoir l'apparence cliquable. */
+.extraction-fixed { min-width: 0; }
+.extraction-fixed > strong {
+  display: flex;
+  align-items: center;
+  min-height: 39px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-secondary);
+  background: var(--surface);
+  font-size: var(--text-xs);
+  font-weight: 650;
+}
+
+/* Le panneau de filtres DAMIR entre dans la rangée sans son propre cadre —
+   même traitement que dans le rail d'Explorer. Ses sections deviennent les
+   cellules de la grille. */
+.extraction-filters .advanced-filter-panel {
+  display: contents;
+  position: static;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.extraction-filters .advanced-filter-heading { display: none; }
+.extraction-filters .filter-section {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.extraction-filters .filter-section-title { margin-bottom: 6px; }
+.extraction-filters .filter-section-title strong {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.extraction-filters .period-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+
+/* La réserve de la source. Elle ne se cache pas derrière une icône : elle dit
+   ce que l'export ne dit pas — un secret statistique, une liquidation
+   incomplète, des décès sans population exposée. */
+.extraction-caveat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+.extraction-caveat strong {
+  color: var(--ink);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Les exports vivent dans l'en-tête de l'aperçu, avec ce qu'ils exportent. */
+.preview-header .extraction-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.extraction-sample {
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+}
+
+@media (max-width: 900px) {
+  .extraction-wide { grid-column: auto; }
+}
+
+@media (max-width: 640px) {
+  .extraction-filters { grid-template-columns: 1fr; }
+  .preview-header .extraction-actions { width: 100%; }
+}

@@ -11,6 +11,7 @@ import "./infoHint.css";
 import "./correlations.css";
 import "./pivot.css";
 import "./methodology.css";
+import "./extraction.css";
 import "./components/copyLinkButton.css";
 import "./components/compareRail.css";
 import "./components/seriesDrawer.css";

@@ -1434,3 +1434,30 @@ aurait coûté plus qu'il n'aurait préservé.
   il est raccourci.
 - `docs/ETAT_CROISEMENTS_ET_TABLEAU.md` corrigé : il affirmait le contraire sur
   trois points. **88 tests verts**, build vert.
+
+## v9 · Extraire — la charpente des cinq bases
+
+- **Même dynamique que les cinq bases** : `PageHero`, puis les cinq sources en
+  onglets `damir-sections`, puis **le périmètre en rangée** dans
+  `.extraction-context`. L'écran se lit de haut en bas — quelle source, quel
+  périmètre, quelles colonnes, ce que ça donne — au lieu d'un titre porteur de
+  boutons et d'une colonne de filtres à gauche.
+- **Les exports rejoignent l'en-tête de l'aperçu** : ils agissent sur ce tableau,
+  ils ne doivent pas le précéder. « Données & méthode → » apparaît, comme
+  ailleurs.
+- **Cinq blocs de constructeur fondus en un** (`builder`) : ils étaient
+  identiques au libellé près ; leurs vraies différences — unité homogène,
+  dimension requise — passent par un rappel `note`.
+- **Défaut antérieur trouvé et réparé** : le commit 3604991 (« un seul module
+  d'export », message « rien n'est perdu ») avait supprimé **trois routes
+  d'aperçu** — DAMIR, Pathologies, CSP. Trois sources sur cinq répondaient
+  **405 Method Not Allowed** depuis le 17 août. Les fonctions n'avaient jamais
+  cessé d'être importées : seules les déclarations manquaient.
+- **Second défaut** : recliquer l'onglet déjà actif vidait l'aperçu sans rien
+  relancer. Un garde d'une ligne.
+- **`test_extraction_routes.py`** : les cinq aperçus déclarés et fonctionnels, et
+  surtout un contrôle structurel qui relit `api.ts` et vérifie que **tout chemin
+  appelé par le client est déclaré par le serveur**. Vérifié en remettant
+  `main.py` dans son état cassé : le test nomme la route absente.
+- Nouveau `extraction.css` adossé aux jetons ; `styles.css` intact. **95 tests
+  verts**, build vert.

@@ -262,7 +262,7 @@ function App() {
           {page === "population" ? <PopulationPage key={`population-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "pivot" ? <PivotPage key={`pivot-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} /> : null}
+          {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} onOpenMethodology={() => navigate("methodology")} /> : null}
           {page === "methodology" ? <MethodologyPage /> : null}
         </Suspense></PageErrorBoundary>}
       </main>

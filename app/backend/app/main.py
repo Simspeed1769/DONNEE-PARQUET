@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import io
 import os
@@ -495,6 +495,20 @@ def _csp_spec(payload: CspExtractionRequest) -> ExportSpec:
     )
 
 
+# Les trois routes qui suivent avaient disparu au commit 3604991, quand les cinq
+# blocs CSV + Excel ont fusionné dans `ExportSpec`. Le message annonçait « rien
+# n'est perdu » : les exports, en effet, ont survécu — mais les aperçus de DAMIR,
+# Pathologies et CSP répondaient 405 depuis, soit trois des cinq sources, dont la
+# principale. Les fonctions sous-jacentes, elles, n'avaient jamais cessé d'être
+# importées : seules les déclarations manquaient.
+@app.post("/api/csp/extraction/preview")
+def csp_extraction_preview_view(payload: CspExtractionRequest) -> dict[str, Any]:
+    try:
+        return csp_extraction_preview(repository, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
 @app.post("/api/csp/extraction.csv")
 def csp_extraction_csv(payload: CspExtractionRequest) -> StreamingResponse:
     return csv_response(_csp_spec(payload))
@@ -527,6 +541,14 @@ def _pathologies_spec(payload: PathologyExtractionRequest) -> ExportSpec:
             ["Secret statistique", "Les effectifs inférieurs à 10 patients peuvent être masqués à la source."],
         ],
     )
+
+
+@app.post("/api/pathologies/extraction/preview")
+def pathologies_extraction_preview_view(payload: PathologyExtractionRequest) -> dict[str, Any]:
+    try:
+        return pathology_extraction_preview(repository, payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.post("/api/pathologies/extraction.csv")
@@ -590,6 +612,14 @@ def _damir_spec(payload: ExtractionRequest) -> ExportSpec:
             [["Consolidation", method["reliability"].get("status", "Indisponible")]],
         ],
     )
+
+
+@app.post("/api/extraction/preview")
+def extraction_preview_view(payload: ExtractionRequest) -> dict[str, Any]:
+    try:
+        return extraction_preview(repository, payload, REGIONS)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.post("/api/extraction.csv")
