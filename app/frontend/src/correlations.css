@@ -508,15 +508,6 @@
 
 /* Le rappel de méthode : permanent, jamais replié — c'est la garde contre le
    sophisme écologique, elle n'a pas sa place dans un tiroir qu'on ignore. */
-.guided-read-note {
-  padding: var(--space-4) var(--space-5);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
-}
-.guided-read-note strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: var(--text-xs); font-weight: 650; }
-.guided-read-note p { margin: 0; max-width: 78ch; color: var(--ink-secondary); font-size: var(--text-xs); line-height: 1.6; }
-
 .guided-sentences {
   display: flex;
   flex-direction: column;
@@ -579,18 +570,54 @@
 }
 .guided-card-actions button:not(.link-button):hover { color: var(--ink); border-color: var(--line-strong); }
 
-.guided-region-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-3); }
-.guided-region-legend button {
+/* La légende du nuage : quelle dimension on surligne, puis ses modalités.
+ *
+ * Les deux rangées sont volontairement distinctes à l'œil. Celle du haut est un
+ * *choix* — trois boutons qu'on clique, et qui restent enfoncés ; celle du bas
+ * est une *lecture* — des pastilles qu'on survole, et qui n'engagent rien. Leur
+ * donner la même apparence ferait croire qu'on peut cliquer une région pour la
+ * garder allumée. */
+.guided-cell-legend { margin-top: var(--space-3); }
+
+.guided-legend-dims { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.guided-legend-dims > span {
+  margin-right: 2px;
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+}
+.guided-legend-dims button {
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  background: transparent;
+  font-family: inherit;
+  font-size: var(--text-2xs);
+  cursor: pointer;
+  transition: color .16s var(--ease), background-color .16s var(--ease);
+}
+.guided-legend-dims button:hover { color: var(--ink); background: var(--surface-sunken); }
+.guided-legend-dims button.on {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--surface-sunken);
+  font-weight: 650;
+}
+.guided-legend-dims button:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 1px; }
+
+.guided-legend-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-2); }
+.guided-legend-chips button {
   padding: 5px 11px;
   border: 1px solid var(--line);
   border-radius: var(--radius-pill);
   color: var(--ink-muted);
   background: var(--surface);
+  font-family: inherit;
   font-size: var(--text-2xs);
   cursor: default;
   transition: border-color .16s var(--ease), color .16s var(--ease);
 }
-.guided-region-legend button.on { color: var(--accent-ink); border-color: var(--accent); background: var(--accent); }
+.guided-legend-chips button.on { color: var(--accent-ink); border-color: var(--accent); background: var(--accent); }
 
 .guided-detail-panel {
   margin-top: var(--space-3);

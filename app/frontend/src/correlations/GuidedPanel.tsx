@@ -28,6 +28,7 @@ import { useChartTokens, type ChartTokens } from "../charts/tokens";
 import { effectsOption, formatEffect } from "./RegressionPanel";
 import { ExportPngButton } from "../components/ExportPngButton";
 import { SOURCE_LINE } from "../panorama/exportSlide";
+import { InfoHint } from "../components/InfoHint";
 import { csvFromRows } from "../utils";
 
 type Props = { catalogue: CorrelationCatalogue | null };
@@ -35,6 +36,24 @@ type Props = { catalogue: CorrelationCatalogue | null };
 type YKind = "damir" | "patho";
 type XKind = "csp" | "patho" | "damir";
 type XEntry = { id: string; kind: XKind; metric: string; selection: string | null };
+
+/** Les trois dimensions d'une cellule, et où lire leur code dans `point.key`
+ *  (`région:âge:sexe`).
+ *
+ *  L'ordre des modalités vient du **code**, jamais du libellé : « Moins de
+ *  20 ans » se rangerait en dernier dans l'ordre alphabétique, ce qui ferait
+ *  d'une légende d'âge une suite sans début.
+ *
+ *  Le surlignage vaut mieux qu'une couleur par modalité : douze régions ou huit
+ *  tranches d'âge dépassent de loin le nombre de teintes qu'un œil sépare
+ *  simultanément, et une palette qui déborde ne trompe pas seulement le
+ *  daltonien. Une modalité à la fois se lit toujours. */
+const HIGHLIGHT_DIMS = [
+  { key: "region", label: "Région", position: 0 },
+  { key: "age", label: "Âge", position: 1 },
+  { key: "sex", label: "Sexe", position: 2 },
+] as const;
+type HighlightDim = (typeof HIGHLIGHT_DIMS)[number]["key"];
 
 const MAX_X = 3;
 const DEFAULT_YEAR = 2022;
@@ -110,7 +129,7 @@ function guidedReading(term: RegressionTerm, yLabel: string, ageSexHeld: boolean
  */
 function scatterOption(
   points: RegressionResult["points"], term: RegressionTerm, yLabel: string,
-  tokens: ChartTokens, highlightedRegion: string | null,
+  tokens: ChartTokens, highlight: { dim: HighlightDim; value: string } | null,
 ): EChartsOption {
   const data = points
     .map((point) => ({ point, x: point.predictors[term.key] }))
@@ -156,8 +175,8 @@ function scatterOption(
       symbolSize: 12,
       itemStyle: {
         color: (params: any) => {
-          const region = data[params.dataIndex]?.point.region;
-          return highlightedRegion && region !== highlightedRegion
+          const point = data[params.dataIndex]?.point;
+          return highlight && point?.[highlight.dim] !== highlight.value
             ? tokens.seriesOther : tokens.series[0];
         },
         borderColor: tokens.surface,
@@ -186,7 +205,8 @@ export function GuidedPanel({ catalogue }: Props) {
   const [endYear, setEndYear] = useState(DEFAULT_YEAR);
 
   const [primaryKey, setPrimaryKey] = useState<string | null>(null);
-  const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const [highlightDim, setHighlightDim] = useState<HighlightDim>("region");
+  const [highlighted, setHighlighted] = useState<string | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<RegressionResult["points"][number] | null>(null);
 
   const [result, setResult] = useState<RegressionResult | null>(null);
@@ -298,11 +318,20 @@ export function GuidedPanel({ catalogue }: Props) {
 
   const primaryTerm = xTerms.find((term) => term.key === primaryKey) ?? xTerms[0] ?? null;
 
-  const regionsInPlay = useMemo(() => {
-    const seen = new Set<string>();
-    (result?.points ?? []).forEach((point) => { if (point.region) seen.add(point.region); });
-    return (catalogue?.regions ?? []).map((item) => item.label).filter((label) => seen.has(label));
-  }, [result, catalogue]);
+  /** Les modalités réellement présentes dans le nuage, dans l'ordre de leur
+   *  code. On ne liste pas le catalogue : une modalité qu'aucune cellule ne
+   *  porte offrirait un surlignage qui n'allume rien. */
+  const modalitiesInPlay = useMemo(() => {
+    const dim = HIGHLIGHT_DIMS.find((item) => item.key === highlightDim)!;
+    const ranks = new Map<string, number>();
+    (result?.points ?? []).forEach((point) => {
+      const label = point[dim.key];
+      if (label && !ranks.has(label)) {
+        ranks.set(label, Number(point.key.split(":")[dim.position]));
+      }
+    });
+    return [...ranks.entries()].sort((a, b) => a[1] - b[1]).map(([label]) => label);
+  }, [result, highlightDim]);
 
   /** Le périmètre en une ligne : sans lui, l'image ne dit pas sur quelles
    *  cellules porte le modèle. */
@@ -353,8 +382,13 @@ export function GuidedPanel({ catalogue }: Props) {
        *  C'est un avertissement de comparabilité au sens de `CLAUDE.md` : il
        *  reste visible, il ne va pas derrière une icône. */}
       <p className="guided-unit">
-        Chaque point compare une région, une tranche d’âge et un sexe.
+        Chaque point compare une région, une tranche d’âge et un sexe — jamais une personne.
         {result ? ` ${result.coverage.kept} points au total.` : null}
+        <InfoHint label="ce qu’un point permet de dire">
+          Ces données peuvent dire « les territoires où les agriculteurs pèsent plus dépensent
+          plus en indemnités journalières par habitant », jamais « un agriculteur consomme plus
+          d’indemnités journalières ».
+        </InfoHint>
       </p>
 
       <ol className="guided-steps">
@@ -446,6 +480,10 @@ export function GuidedPanel({ catalogue }: Props) {
           <label className="rail-check">
             <input type="checkbox" checked={ageSexHeld} onChange={(event) => setAgeSexHeld(event.target.checked)} />
             <span>À âge et sexe comparables</span>
+            <InfoHint label="le contrôle d’âge et de sexe">
+              Sans lui, on attribue à la variable choisie ce qui n’est que la structure d’âge des
+              régions : sur la part des agriculteurs, l’effet passe de +13,4 à −2,0 — il change de sens.
+            </InfoHint>
           </label>
           <label className="rail-check">
             <input type="checkbox" checked={regionHeld} onChange={(event) => setRegionHeld(event.target.checked)} />
@@ -471,14 +509,6 @@ export function GuidedPanel({ catalogue }: Props) {
         </li>
       </ol>
 
-      <div className="guided-read-note">
-        <strong>Comment lire ces résultats</strong>
-        <p>
-          Chaque point est une cellule région × âge × sexe, jamais une personne. Ces données peuvent dire
-          « les territoires où les agriculteurs pèsent plus dépensent plus en indemnités journalières par
-          habitant », jamais « un agriculteur consomme plus d’indemnités journalières ».
-        </p>
-      </div>
 
       {error ? <div className="explore-error"><strong>Le modèle n’a pas pu être ajusté</strong><span>{error}</span></div> : null}
 
@@ -543,7 +573,8 @@ export function GuidedPanel({ catalogue }: Props) {
                 </div>
               </header>
               <EChart
-                option={scatterOption(result.points, primaryTerm, yLabel, tokens, hoveredRegion)}
+                option={scatterOption(result.points, primaryTerm, yLabel, tokens,
+                  highlighted ? { dim: highlightDim, value: highlighted } : null)}
                 height={SCATTER_HEIGHT}
                 stale={loading}
                 ariaLabel={`Nuage des cellules · ${primaryTerm.label} et ${yLabel}`}
@@ -557,19 +588,37 @@ export function GuidedPanel({ catalogue }: Props) {
                   });
                 }}
               />
-              {regionsInPlay.length ? (
-                <div className="guided-region-legend" role="list" aria-label="Surligner une région">
-                  {regionsInPlay.map((region) => (
-                    <button
-                      type="button"
-                      key={region}
-                      className={hoveredRegion === region ? "on" : ""}
-                      onMouseEnter={() => setHoveredRegion(region)}
-                      onMouseLeave={() => setHoveredRegion(null)}
-                      onFocus={() => setHoveredRegion(region)}
-                      onBlur={() => setHoveredRegion(null)}
-                    >{region}</button>
-                  ))}
+              {/* Une cellule a trois dimensions ; la légende n'en montrait
+                  qu'une. Le sélecteur les rend toutes les trois lisibles sans
+                  rien ajouter à l'écran — les pastilles changent de contenu,
+                  pas de place. */}
+              {modalitiesInPlay.length ? (
+                <div className="guided-cell-legend">
+                  <div className="guided-legend-dims" role="group" aria-label="Dimension à surligner">
+                    <span>Surligner</span>
+                    {HIGHLIGHT_DIMS.map((dim) => (
+                      <button
+                        type="button"
+                        key={dim.key}
+                        className={highlightDim === dim.key ? "on" : ""}
+                        aria-pressed={highlightDim === dim.key}
+                        onClick={() => { setHighlightDim(dim.key); setHighlighted(null); }}
+                      >{dim.label}</button>
+                    ))}
+                  </div>
+                  <div className="guided-legend-chips" role="list">
+                    {modalitiesInPlay.map((value) => (
+                      <button
+                        type="button"
+                        key={value}
+                        className={highlighted === value ? "on" : ""}
+                        onMouseEnter={() => setHighlighted(value)}
+                        onMouseLeave={() => setHighlighted(null)}
+                        onFocus={() => setHighlighted(value)}
+                        onBlur={() => setHighlighted(null)}
+                      >{value}</button>
+                    ))}
+                  </div>
                 </div>
               ) : null}
               {selectedPoint ? (

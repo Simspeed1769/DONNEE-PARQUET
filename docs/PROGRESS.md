@@ -1414,3 +1414,23 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Trois tests** verrouillent le calcul, dont celui qui vérifie que le décompte
   affiché et le `n` du modèle sont le même nombre — deux comptes divergents
   seraient pires que pas de compte. **88 tests verts.**
+
+## v9 · Croisements — le contrôle expliqué, le nuage à trois dimensions
+
+- **« À âge et sexe comparables » dit enfin ce qu'il fait**, derrière un « ? ».
+  La question méritait une mesure : sur sept variables testées, le contrôle
+  **change le signe une fois** (part des agriculteurs : +13,4 → −2,0) et
+  **rétrécit l'effet à chaque fois** (Covid : 482 → 92). Sans lui, on attribue à
+  la variable ce qui n'est que la structure d'âge des régions.
+- **Le nuage se lit sur ses trois dimensions.** Un sélecteur *Région / Âge /
+  Sexe* surmonte les pastilles ; l'ordre des modalités vient du **code** de la
+  clé et non du libellé — « Moins de 20 ans » se rangerait en dernier dans
+  l'ordre alphabétique. Surlignage plutôt que couleur par modalité : douze
+  régions ou huit tranches d'âge dépassent le nombre de teintes qu'un œil sépare
+  simultanément.
+- **L'encart rose « Comment lire ces résultats » est supprimé.** La règle
+  écologique reste permanente sur la ligne d'unité (« — jamais une personne ») ;
+  l'exemple, plus long, passe derrière le « ? ». L'avertissement n'est pas caché,
+  il est raccourci.
+- `docs/ETAT_CROISEMENTS_ET_TABLEAU.md` corrigé : il affirmait le contraire sur
+  trois points. **88 tests verts**, build vert.

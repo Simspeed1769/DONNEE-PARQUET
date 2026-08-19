@@ -35,9 +35,10 @@ Un écran, un modèle, trois temps numérotés dans un seul panneau :
 
 Sous le panneau, dans cet ordre :
 
-1. un encart rose permanent **« Comment lire ces résultats »**, trois lignes, qui
-   énonce la règle écologique — un point est une cellule région × âge × sexe,
-   jamais une personne ;
+1. ~~un encart rose permanent « Comment lire ces résultats »~~ — **supprimé.** La
+   règle écologique tient désormais sur la ligne permanente en tête de panneau
+   (« … — jamais une personne »), et l'exemple, plus long, est passé derrière un
+   « ? ». L'avertissement n'est pas caché : il est raccourci ;
 2. **le verdict en une phrase**, en corps de texte ;
 3. le **nuage des cellules** (191 points), ses deux axes nommés, un sélecteur
    d'abscisse quand il y a plusieurs variables, et **treize pastilles de régions**
@@ -64,18 +65,18 @@ que **le lien n'est pas établi**. Les deux se contredisent à l'œil.
 sandwich entre un encart rose et un grand nuage. Elle devrait être le premier
 élément lu après les réglages.
 
-**c. Le nuage est monochrome.** 191 points d'une seule teinte : on n'y voit ni
-les régions, ni l'âge, ni le sexe, alors que ce sont les trois dimensions de la
-cellule. Les treize pastilles en dessous laissent croire à une lecture par
-région qui n'existe qu'au clic, une région à la fois.
+**c. ~~Le nuage est monochrome.~~ Corrigé.** Un sélecteur *Région / Âge / Sexe*
+surmonte les pastilles : les trois dimensions de la cellule se surlignent
+désormais, une modalité à la fois. Le surlignage a été préféré à une couleur par
+modalité — douze régions ou huit tranches d'âge dépassent le nombre de teintes
+qu'un œil sépare simultanément.
 
-**d. Le sous-titre** « Ce que vous voulez expliquer, par quoi, à quoi comparable
-— en trois temps » répète les trois intitulés numérotés qui le suivent
-immédiatement.
+**d. ~~Le sous-titre~~ — supprimé.**
 
-**e. Rien ne dit combien de cellules ont été perdues.** 191 cellules, pour
-12 régions × 8 âges × 2 sexes = 192 attendues. Il en manque une, et l'écran ne
-le signale pas.
+**e. ~~Rien ne dit combien de cellules ont été perdues.~~ Corrigé.** Le serveur
+renvoie `coverage` ; l'écran affiche « 1 écartée — non renseignée dans
+« Part dans la population active » ». La cellule manquante est
+Île-de-France · moins de 20 ans · femmes, absente de la source CSP.
 
 ## Ce que je propose
 
@@ -84,15 +85,18 @@ le signale pas.
 2. **Reléguer le R²** hors de la ligne de bilan, dans « Ce que ce modèle ne dit
    pas », avec la phrase qui manque : *ce pourcentage monte mécaniquement quand
    on ajoute des contrôles, il ne mesure pas la force du lien*.
-3. **Colorer le nuage par région** par défaut — la palette catégorielle est
-   faite pour douze modalités. Les pastilles deviennent alors une **légende**
-   cliquable plutôt qu'un jeu de devinettes.
-4. **Supprimer le sous-titre.**
-5. **Afficher les cellules écartées** à côté du compte, comme le Panorama le
-   fait déjà pour les territoires sans valeur.
+3. ~~Colorer le nuage par région~~ — **fait autrement** : un sélecteur des trois
+   dimensions, et le surlignage plutôt que la couleur (voir **c**).
+4. ~~Supprimer le sous-titre~~ — **fait.**
+5. ~~Afficher les cellules écartées~~ — **fait.**
 
-L'encart rose, lui, **reste visible** : c'est un avertissement de comparabilité,
-et `CLAUDE.md` interdit de les cacher.
+Sur l'encart rose, la note disait qu'il devait **rester visible**, `CLAUDE.md`
+interdisant de cacher un avertissement de comparabilité. Il a été supprimé, et
+la règle reste pourtant affichée en permanence : `CLAUDE.md` demande aussi
+qu'« une explication de plus d'une ligne ne s'affiche pas en permanence ». Les
+deux se concilient en séparant la **règle** — « chaque point compare une région,
+une tranche d'âge et un sexe — jamais une personne », toujours à l'écran — de
+son **exemple**, qui est long et vit derrière le « ? ».
 
 ---
 
@@ -160,9 +164,9 @@ coder qu'après.
    mal que de bien à côté d'un verdict qui dit l'inverse. Mais c'est peut-être
    le chiffre qu'on cite en réunion. Qu'en penses-tu ?
 
-2. **Le nuage : coloré par région, par âge, ou neutre ?** La région a douze
-   modalités, le maximum lisible. L'âge en a huit et raconterait peut-être mieux
-   la dispersion. On ne peut pas faire les deux.
+2. ~~**Le nuage : coloré par région, par âge, ou neutre ?**~~ **Tranché** : ni
+   l'un ni l'autre en couleur simultanée — un sélecteur, et le surlignage d'une
+   modalité à la fois. On peut donc faire les trois, successivement.
 
 3. **La rampe du Tableau : neutre absolue, ou froide fixe ?** Une rampe grise
    distingue moins bien qu'une rampe bleue. La mission dit « neutre » ; je le lis
