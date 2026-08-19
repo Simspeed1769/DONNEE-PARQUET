@@ -1461,3 +1461,23 @@ aurait coûté plus qu'il n'aurait préservé.
   `main.py` dans son état cassé : le test nomme la route absente.
 - Nouveau `extraction.css` adossé aux jetons ; `styles.css` intact. **95 tests
   verts**, build vert.
+
+## v9 · Audit des chiffres — Phase 1 exécutée
+
+- **Harnais `tools/audit/`**, une commande : `python -m tools.audit.lancer`.
+  `reference.py` **n'importe rien de `app/`** — la règle anti-circularité rendue
+  mécanique. Aucune dépendance nouvelle, `data/` jamais modifié (vérifié).
+- **12 contrôles : 7 conformes, 5 écarts expliqués, 0 défaut.**
+- **I-06, le plus important, est conforme.** Le cube compact est fidèle au brut,
+  cellule par cellule sur les 5 762 787 clés : zéro clé manquante ou en trop,
+  pire écart absolu **3,6e-07 €**, pire écart relatif **4,2e-13**, `qte` exact au
+  bit près.
+- **Trois découvertes qui ne sont pas des défauts mais changent la lecture :**
+  la région « Non renseignée » pèse **16,7 %** du remboursé (234,8 Md€) ;
+  « Autres » n'est **pas** le repli du `COALESCE` mais un grand poste **nommé**
+  de la nomenclature, le repli ne se déclenchant jamais — avec un risque latent
+  de collision d'étiquettes ; les montants négatifs viennent bien des
+  régularisations, décomposition exacte sur 12 années.
+- **Un amendement de critère, déclaré dans le rapport** : la comparaison relative
+  seule classait I-06c en défaut sur des cellules valant 4,4e-16 €. Métrique
+  corrigée par un plancher absolu de 1e-6 €, tolérance relative inchangée.
