@@ -1,127 +1,196 @@
-/* Le tableau « Ce que compte chaque mesure ».
+/* Le référentiel : des tableaux qu'on parcourt, pas des paragraphes qu'on subit.
  *
- *  Rien ici n'est une couleur en dur : tout vient des jetons de theme.css, si
- *  bien que le tableau suit le thème clair comme le sombre sans être décrit
- *  deux fois. Le tableau défile dans son propre cadre plutôt que de pousser la
- *  page en largeur.
+ * Fichier dédié adossé aux jetons — rien n'entre dans `styles.css`.
+ *
+ * Un référentiel se consulte : on y vient avec une question précise et on veut
+ * la ligne, pas la page. Tout ce qui suit sert cette lecture-là — une colonne de
+ * gauche qui donne le nom, une colonne de droite qui donne la réserve, et rien
+ * entre les deux qui retienne l'œil.
  */
 
-.method-denominators {
-  margin-top: 24px;
-}
+.methodology-page { max-width: 1500px; }
 
-.method-denominators > header {
-  margin-bottom: 14px;
-}
+.ref-panel { padding: var(--space-5) var(--space-5) var(--space-4); }
 
-.method-denominators > header h2 {
-  margin: 0 0 4px;
-  font-size: 20px;
-  font-weight: 660;
-  color: var(--ink);
-}
-
-.method-denominators > header p {
-  margin: 0;
-  max-width: 68ch;
-  font-size: 14px;
-  line-height: 1.55;
+.ref-intro {
+  max-width: 82ch;
+  margin: 0 0 var(--space-4);
   color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.6;
 }
+.ref-intro strong { color: var(--ink); font-weight: 650; }
 
-.method-denominator-group {
-  margin-top: 18px;
-  padding: 16px 18px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--surface);
-}
-
-.method-denominator-group h3 {
-  margin: 0 0 4px;
-  font-size: 12px;
-  font-weight: 680;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.method-denominator-group > p {
-  margin: 0 0 12px;
-  max-width: 74ch;
-  font-size: 13px;
+.ref-sous-intro {
+  max-width: 82ch;
+  margin: 0 0 var(--space-3);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
   line-height: 1.55;
-  color: var(--ink-secondary);
 }
 
-/* Le tableau peut être plus large que la colonne : il défile chez lui. */
-.method-denominator-scroll {
-  overflow-x: auto;
-}
+/* Un tableau large ne fait jamais défiler la page : il défile dans son cadre. */
+.ref-scroll { overflow-x: auto; }
 
-.method-denominator-group table {
+.ref-table {
   width: 100%;
-  min-width: 560px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--text-xs);
 }
-
-.method-denominator-group thead th {
-  padding: 0 12px 8px 0;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 640;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
+.ref-table th,
+.ref-table td {
+  padding: 10px var(--space-3);
   border-bottom: 1px solid var(--line);
-}
-
-.method-denominator-group td,
-.method-denominator-group tbody th {
-  padding: 10px 12px 10px 0;
-  vertical-align: top;
-  line-height: 1.5;
-  color: var(--ink-secondary);
-  border-bottom: 1px solid var(--grid);
-}
-
-.method-denominator-group tbody tr:last-child td,
-.method-denominator-group tbody tr:last-child th {
-  border-bottom: none;
-}
-
-/* La première colonne nomme la ligne : c'est un en-tête, pas une donnée. Elle
-   reprend donc la casse du nom de la mesure, et non la capitalisation que les
-   en-têtes de colonne portent ailleurs dans la feuille. */
-.method-denominator-group tbody th {
-  /* La feuille globale donne un fond aux en-têtes de tableau : ici, la colonne
-     nomme la ligne et doit rester dans le fil des autres cellules. */
-  background: none;
   text-align: left;
-  font-size: 13px;
-  font-weight: 620;
-  letter-spacing: normal;
-  text-transform: none;
+  vertical-align: top;
+}
+.ref-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ref-table tbody th {
   color: var(--ink);
+  font-weight: 650;
+}
+.ref-table td { color: var(--ink-secondary); line-height: 1.55; }
+.ref-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ref-table thead th.num { text-align: right; }
+.ref-table tbody tr:last-child th,
+.ref-table tbody tr:last-child td { border-bottom: 0; }
+
+.ref-table code {
+  padding: 1px 5px;
+  border-radius: var(--radius-xs, 4px);
+  background: var(--surface-sunken);
+  color: var(--ink-secondary);
+  font-size: .92em;
 }
 
-/* Un total n'a pas de dénominateur : le tiret le dit, en retrait, plutôt qu'une
-   case vide qui se lirait comme un oubli. */
-.method-denominator-none {
-  color: var(--ink-muted);
-}
-
-.method-denominator-note {
+/* La réserve d'une ligne : elle suit la définition, en retrait, et ne se cache
+   pas. C'est un avertissement de comparabilité — sa place est sous les yeux. */
+.ref-reserve {
   display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  line-height: 1.5;
+  margin-top: 5px;
+  padding-left: var(--space-2);
+  border-left: 2px solid var(--accent-line);
   color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
 }
 
-@media (max-width: 720px) {
-  .method-denominator-group {
-    padding: 14px;
-  }
+.ref-origine { color: var(--ink-muted); font-size: var(--text-2xs); }
+.ref-aucun { color: var(--ink-muted); font-style: italic; }
+.ref-regle { font-weight: 500 !important; color: var(--ink-secondary) !important; }
+
+.ref-unite {
+  display: inline-block;
+  min-width: 34px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--ink-secondary);
+  font-size: var(--text-2xs);
+  text-align: center;
+}
+
+/* Oui / non : le mot porte le sens, la couleur ne fait que l'appuyer. Un
+   daltonien lit « non » aussi bien que quiconque. */
+.ref-oui-non {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+}
+.ref-oui-non.oui { color: var(--good-text); background: var(--good-wash); }
+.ref-oui-non.non { color: var(--warning-text); background: var(--warning-wash); }
+
+/* — Le tableau des sources, dépliable — */
+.ref-row { cursor: pointer; transition: background-color .14s var(--ease); }
+.ref-row:hover { background: var(--surface-hover); }
+.ref-row.ouverte { background: var(--surface-sunken); }
+.ref-row.ouverte th, .ref-row.ouverte td { border-bottom-color: transparent; }
+
+.ref-puce {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--accent);
+}
+.ref-puce.masked { background: var(--warning-text); }
+.ref-puce.weighted { background: var(--info-text, var(--ink-muted)); }
+.ref-puce.raw { background: var(--ink-muted); }
+
+.ref-chevron { width: 1%; }
+.ref-chevron button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink-muted);
+  background: var(--surface);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 1;
+  cursor: pointer;
+}
+.ref-chevron button:focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
+
+.ref-detail-row > td { padding: 0 var(--space-3) var(--space-4); background: var(--surface-sunken); }
+.ref-detail { max-width: 92ch; }
+.ref-detail > p { margin: 0 0 var(--space-3); color: var(--ink-secondary); font-size: var(--text-xs); line-height: 1.6; }
+.ref-detail h4 {
+  margin: 0 0 var(--space-2);
+  color: var(--ink);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.ref-detail ul { margin: 0 0 var(--space-3); padding-left: var(--space-4); }
+.ref-detail li {
+  margin-bottom: 6px;
+  color: var(--ink-secondary);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+}
+.ref-grain { color: var(--ink-muted) !important; font-size: var(--text-2xs) !important; }
+
+/* — Les familles de mesures — */
+.ref-famille { margin-bottom: var(--space-5); }
+.ref-famille:last-child { margin-bottom: 0; }
+.ref-famille > h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+.ref-famille > h3 span {
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  color: var(--ink-muted);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .ref-panel { padding: var(--space-4) var(--space-4) var(--space-3); }
+  .ref-table { font-size: var(--text-2xs); }
+  .ref-table th, .ref-table td { padding: 8px var(--space-2); }
 }

@@ -182,6 +182,14 @@ function App() {
     return "Open DAMIR";
   }, [page, extractionSource]);
 
+  /** Ouvrir le référentiel **à la bonne page**.
+   *
+   *  Atterrir toujours sur « Les sources » obligeait à re-chercher ce qu'on
+   *  venait consulter. Depuis un écran DAMIR, la question porte presque toujours
+   *  sur une mesure ; depuis une autre base, sur la source elle-même. */
+  const ouvrirReferentiel = (section: "sources" | "mesures") =>
+    navigate("methodology", new URLSearchParams({ section }));
+
   const sourceContext = useMemo(() => {
     if (page === "pathologies" || (page === "extraction" && extractionSource === "pathologies")) return "Pathologies";
     if (page === "csp" || (page === "extraction" && extractionSource === "csp")) return "CSP";
@@ -255,15 +263,15 @@ function App() {
         </header>
         {error ? <div className="content-wrap"><div className="error-banner"><strong>Impossible de démarrer DAMIR Studio</strong><span>{error}</span></div></div> : null}
         {!metadata ? <Loader /> : <PageErrorBoundary key={`${page}-${routeVersion}`}><Suspense fallback={<Loader />}>
-          {page === "damir" ? <DamirPage key={`damir-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "pathologies" ? <PathologyPage key={`pathologies-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "csp" ? <CspPage key={`csp-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "mortality" ? <MortalityPage key={`mortality-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "population" ? <PopulationPage key={`population-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "pivot" ? <PivotPage key={`pivot-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} onOpenMethodology={() => navigate("methodology")} /> : null}
-          {page === "methodology" ? <MethodologyPage /> : null}
+          {page === "damir" ? <DamirPage key={`damir-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("mesures")} /> : null}
+          {page === "pathologies" ? <PathologyPage key={`pathologies-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("sources")} /> : null}
+          {page === "csp" ? <CspPage key={`csp-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("sources")} /> : null}
+          {page === "mortality" ? <MortalityPage key={`mortality-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("sources")} /> : null}
+          {page === "population" ? <PopulationPage key={`population-${routeVersion}`} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("sources")} /> : null}
+          {page === "correlations" ? <CorrelationsPage key={`correlations-${routeVersion}`} onOpenMethodology={() => ouvrirReferentiel("sources")} /> : null}
+          {page === "pivot" ? <PivotPage key={`pivot-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onOpenExtraction={(params) => navigate("extraction", params)} onOpenMethodology={() => ouvrirReferentiel("mesures")} /> : null}
+          {page === "extraction" ? <ExtractionPage key={`extraction-${routeVersion}`} metadata={metadata} routeVersion={routeVersion} onSourceChange={setExtractionSource} onOpenMethodology={() => ouvrirReferentiel("mesures")} /> : null}
+          {page === "methodology" ? <MethodologyPage key={`methodology-${routeVersion}`} routeVersion={routeVersion} /> : null}
         </Suspense></PageErrorBoundary>}
       </main>
     </div>

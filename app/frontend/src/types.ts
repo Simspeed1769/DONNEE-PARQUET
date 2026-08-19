@@ -19,7 +19,17 @@ export type MeasureOption = {
   invalid_grand_posts: string[];
 };
 
-export type DimensionOption = { key: string; label: string };
+export type DimensionOption = {
+  key: string;
+  label: string;
+  /** Les champs qui suivent ne sont servis que par `/api/methodology` : ailleurs,
+   *  une dimension n'est qu'un nom à afficher dans un sélecteur. */
+  column?: string;
+  description?: string | null;
+  origin?: string | null;
+  caution?: string | null;
+  modalities?: number | null;
+};
 
 export type Reliability = {
   available: boolean;

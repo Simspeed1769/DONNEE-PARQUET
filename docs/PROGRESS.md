@@ -1501,3 +1501,25 @@ aurait coûté plus qu'il n'aurait préservé.
   somme à somme et jamais ligne à ligne.
 - Typographie française appliquée au rapport lui-même (virgule décimale, espace
   fine insécable) : la Phase 5 l'exigera de l'application. **13 contrôles.**
+
+## v9 · Le référentiel — à plat, en tableaux, adressable
+
+- **Plus de tiroir modal.** Le dictionnaire des mesures DAMIR — la seule page
+  qu'on vient vraiment consulter — était à trois gestes, dans une modale qui ne
+  s'adresse pas par une URL, ne s'imprime pas et se referme dès qu'on regarde
+  ailleurs. Tout est désormais à plat, sous les **mêmes onglets que les cinq
+  bases** : Sources · Mesures DAMIR · Dimensions DAMIR · Dénominateurs ·
+  Garde-fous.
+- **L'onglet vit dans l'URL** : `?page=methodology&section=mesures` se partage.
+  Et chaque écran ouvre le référentiel **au bon endroit** — un écran DAMIR mène
+  aux mesures, une autre base aux sources.
+- **Les onze dimensions DAMIR sont enfin expliquées.** Elles n'étaient qu'une
+  liste de onze noms. Chacune porte maintenant ce qu'elle découpe, d'où elle
+  vient, son nombre réel de modalités et sa précaution — dont celles que
+  l'audit a établies : la région « Non renseignée » pèse 16,7 % du remboursé.
+  Nouveau `app/dimension_notes.py`.
+- **Défaut trouvé et corrigé pendant la refonte** : `additive` n'était pas servi
+  par `/api/methodology`. La colonne l'affichait « non » pour les douze mesures,
+  soit le contraire du vrai pour les huit additives. Le champ est servi ; et
+  l'écran affiche « — » plutôt que « non » si jamais il manquait.
+- `methodology.css` réécrit, adossé aux jetons. **95 tests verts**, build vert.

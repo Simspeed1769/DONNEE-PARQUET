@@ -1,10 +1,11 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from functools import lru_cache
 from typing import Any, Literal
 
 from pydantic import Field
 
+from .dimension_notes import DIMENSION_NOTES
 from .analysis import (
     DIMENSIONS,
     METRICS,
@@ -195,6 +196,19 @@ def studio_metadata(repo: QueryRepository) -> dict[str, Any]:
 # cinq sources.
 
 
+def _modalites(repo: QueryRepository, liste: str | None) -> int | None:
+    """Le nombre réel de modalités, lu dans les métadonnées déjà calculées.
+
+    `None` plutôt que zéro quand le décompte n'a pas de sens : les niveaux
+    inférieurs de la hiérarchie de prestations dépendent du niveau choisi, et
+    annoncer « 0 poste » serait faux là où la bonne réponse est « cela dépend ».
+    """
+    if liste is None:
+        return None
+    valeurs = repo.metadata().get(liste)
+    return len(valeurs) if isinstance(valeurs, list) else None
+
+
 def methodology(repo: QueryRepository) -> dict[str, Any]:
     reliability = reliability_metadata(repo)
     damir_year_rows = repo.query("SELECT MIN(soi_ann) AS first_year, MAX(soi_ann) AS last_year FROM cube")
@@ -262,6 +276,13 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
         "formula": metric.formula,
         "caveat": metric.caveat,
         "requires_homogeneous_unit": metric.requires_homogeneous_unit,
+        # `additive` décide de ce qu'on a le droit d'empiler, et le référentiel
+        # l'affiche en colonne. Absent de la charge utile, il s'y lisait
+        # « non » pour les douze mesures — un défaut plus grave que l'omission,
+        # puisqu'il affirmait le contraire de la vérité sur les huit additives.
+        "additive": metric.additive,
+        "unit_key": metric.unit_key,
+        "unit_label": metric.unit_label,
         "invalid_grand_posts": list(POSTES_SANS_BASE) if metric.key == "copayment" else [],
     } for metric in METRICS.values()]
     return {
@@ -365,7 +386,22 @@ def methodology(repo: QueryRepository) -> dict[str, Any]:
         },
         "reliability": reliability,
         "measures": measures,
-        "dimensions": [{"key": key, "label": label} for key, (label, _) in DIMENSIONS.items()],
+        # Onze noms sans un mot d'explication ne font pas un référentiel : chaque
+        # dimension porte désormais ce qu'elle découpe, d'où elle vient, son
+        # nombre réel de modalités, et la précaution qui décide d'une lecture
+        # juste ou fausse.
+        "dimensions": [
+            {
+                "key": key,
+                "label": label,
+                "column": expression,
+                "description": DIMENSION_NOTES.get(key, {}).get("description"),
+                "origin": DIMENSION_NOTES.get(key, {}).get("origin"),
+                "caution": DIMENSION_NOTES.get(key, {}).get("caution"),
+                "modalities": _modalites(repo, DIMENSION_NOTES.get(key, {}).get("modalities_from")),
+            }
+            for key, (label, expression) in DIMENSIONS.items()
+        ],
         "compatibility_rules": [
             {"key": "no_denominator", "label": "Pas de dénominateur, pas de fréquence par assuré", "status": "active"},
             {"key": "quantity_units", "label": "Volumes sommés et moyennes pondérées par les quantités ; effet de mix signalé", "status": "active"},
