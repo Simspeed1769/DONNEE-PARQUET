@@ -1481,3 +1481,23 @@ aurait coûté plus qu'il n'aurait préservé.
 - **Un amendement de critère, déclaré dans le rapport** : la comparaison relative
   seule classait I-06c en défaut sur des cellules valant 4,4e-16 €. Métrique
   corrigée par un plancher absolu de 1e-6 €, tolérance relative inchangée.
+
+## v9 · Audit — rendu PDF, et deux contrôles corrigés par l'audit lui-même
+
+- **Rapport PDF de 8 pages**, `docs/audit/AUDIT_CHIFFRES.pdf`, engendré par la
+  même commande. Rendu par le navigateur déjà installé (Edge, mode sans
+  interface) : **aucune bibliothèque PDF ajoutée**.
+- **Le résumé ne recopie plus aucun chiffre** : les quatre valeurs qu'il citait
+  étaient codées en dur et auraient menti au prochain millésime, pendant que le
+  tableau aurait dit vrai. Elles dérivent maintenant des contrôles.
+- **I-10 était faux, et l'audit l'a attrapé.** La décomposition `SUM(rem −
+  rem_neg)` concluait à 68,75 M€ d'incohérence — parce que `rem_neg` vaut `NULL`
+  sur les deux tiers des lignes et que `rem − NULL` vaut `NULL`. Corrigé en
+  somme à somme, qui est ce que fait le produit. Les 12 années négatives sont
+  toutes expliquées par les régularisations.
+- **I-11, nouveau contrôle né de cette erreur** : `rem_neg` absent sur 67,5 % des
+  lignes, `rem_ref` et `bse_ref` sur 50,9 %. Absence normale — pas de base de
+  remboursement, pas de régularisation — mais toute décomposition doit se faire
+  somme à somme et jamais ligne à ligne.
+- Typographie française appliquée au rapport lui-même (virgule décimale, espace
+  fine insécable) : la Phase 5 l'exigera de l'application. **13 contrôles.**

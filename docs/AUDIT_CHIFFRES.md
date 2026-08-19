@@ -1,6 +1,6 @@
 # Audit des chiffres — les résultats affichés sont-ils justes ?
 
-*Exécuté le 19 August 2026 à 09:26, branche `heads/v2`, commit `2ea2939`.*
+*Exécuté le 19 August 2026 à 10:09, branche `heads/v2`, commit `5d25588`.*
 
 Rapport **régénéré** par `python -m tools.audit.lancer`. Ne pas le modifier
 à la main : toute correction doit passer par le harnais, sans quoi le rapport
@@ -10,10 +10,10 @@ cesserait d'être reproductible.
 
 ## Décompte
 
-| Contrôles exécutés | 12 |
+| Contrôles exécutés | 13 |
 |---|---:|
 | Conformes | 7 |
-| Écarts expliqués | 5 |
+| Écarts expliqués | 6 |
 | **Défauts confirmés** | **0** |
 | En attente | 0 |
 
@@ -59,18 +59,19 @@ vérifie l'absence, pas la nullité.
 
 | Réf | Base | Contrôle | Comment la référence est obtenue | Attendu | Obtenu | Écart | Verdict |
 |---|---|---|---|---|---|---|---|
-| **I-01** | DAMIR | Σ des modalités de « region » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9324 | 1 405 038 187 493,9731 | 2.90e-14 | ⚠️ Écart expliqué |
-| **I-02** | DAMIR | Σ des modalités de « age » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9324 | 1 405 038 187 493,9788 | 3.30e-14 | ⚠️ Écart expliqué |
-| **I-03** | DAMIR | Σ des modalités de « sexe » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9321 | 1 405 038 187 493,9763 | 3.15e-14 | ⚠️ Écart expliqué |
-| **I-04** | DAMIR | Σ des grands postes, « Autres » compris, = total du cube | SQL manuel : jointure gauche sur `prs_nat_transco.csv`, COALESCE écrit à la main | 1 405 038 187 493,9326 | 1 405 038 187 493,9744 | 2.97e-14 | ✅ Conforme |
-| **I-05** | DAMIR | Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste | SQL manuel, agrégations parent et enfant calculées séparément puis rapprochées | parent | Σ enfants | 1.19e-14 | ✅ Conforme |
-| **I-06a** | DAMIR | Compact contre brut — total, mesure par mesure | deux SQL manuels, un par fichier Parquet ; aucun code du produit | brut | compact | 3.34e-13 | ✅ Conforme |
-| **I-06b** | DAMIR | Compact contre brut — par année × mesure | idem, agrégé à l'année de soins | brut | compact | 5.75e-14 | ✅ Conforme |
-| **I-06c** | DAMIR | Compact contre brut — cellule par cellule, sur la clé complète (8 colonnes) | jointures externes entre les deux Parquet agrégés à la même clé ; SQL manuel | mêmes clés, mêmes valeurs | 0 clé(s) en désaccord · 0 cellule(s) hors tolérance | 1.14e-12 | ✅ Conforme |
-| **I-07** | DAMIR | `cube_where` du produit contre un WHERE écrit à la main (8 scénarios) | **SQL manuel**, prédicat rédigé à la main pour chaque scénario ; `cube_where` fournit la valeur *testée*, jamais l'attendue | prédicat manuel | prédicat du produit | 2.16e-16 | ✅ Conforme |
-| **I-08** | DAMIR | Codes `prs_nat` non couverts par la transcodification : nombre et poids | SQL manuel, jointure gauche sur `prs_nat_transco.csv` puis comptage des orphelins | 0 code orphelin | 0 code(s) | 0.000 % | ✅ Conforme |
+| **I-01** | DAMIR | Σ des modalités de « region » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9326 | 1 405 038 187 493,9734 | 2,90e-14 | ⚠️ Écart expliqué |
+| **I-02** | DAMIR | Σ des modalités de « age » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9324 | 1 405 038 187 493,9788 | 3,30e-14 | ⚠️ Écart expliqué |
+| **I-03** | DAMIR | Σ des modalités de « sexe » = total, et poids du résidu | SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit | 1 405 038 187 493,9324 | 1 405 038 187 493,9761 | 3,11e-14 | ⚠️ Écart expliqué |
+| **I-04** | DAMIR | Σ des grands postes, « Autres » compris, = total du cube | SQL manuel : jointure gauche sur `prs_nat_transco.csv`, COALESCE écrit à la main | 1 405 038 187 493,9324 | 1 405 038 187 493,9744 | 2,99e-14 | ✅ Conforme |
+| **I-05** | DAMIR | Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste | SQL manuel, agrégations parent et enfant calculées séparément puis rapprochées | parent | Σ enfants | 1,17e-14 | ✅ Conforme |
+| **I-06a** | DAMIR | Compact contre brut — total, mesure par mesure | deux SQL manuels, un par fichier Parquet ; aucun code du produit | brut | compact | 3,75e-13 | ✅ Conforme |
+| **I-06b** | DAMIR | Compact contre brut — par année × mesure | idem, agrégé à l'année de soins | brut | compact | 5,56e-14 | ✅ Conforme |
+| **I-06c** | DAMIR | Compact contre brut — cellule par cellule, sur la clé complète (8 colonnes) | jointures externes entre les deux Parquet agrégés à la même clé ; SQL manuel | mêmes clés, mêmes valeurs | 0 clé(s) en désaccord · 0 cellule(s) hors tolérance | 6,93e-13 | ✅ Conforme |
+| **I-07** | DAMIR | `cube_where` du produit contre un WHERE écrit à la main (8 scénarios) | **SQL manuel**, prédicat rédigé à la main pour chaque scénario ; `cube_where` fournit la valeur *testée*, jamais l'attendue | prédicat manuel | prédicat du produit | 2,17e-16 | ✅ Conforme |
+| **I-08** | DAMIR | Codes `prs_nat` non couverts par la transcodification : nombre et poids | SQL manuel, jointure gauche sur `prs_nat_transco.csv` puis comptage des orphelins | 0 code orphelin | 0 code(s) | 0,000 % | ✅ Conforme |
 | **I-09** | DAMIR | « Autres », `__other__` et « Reste du périmètre » ne se confondent jamais | SQL manuel sur la transcodification ; lecture du code pour les deux replis | trois notions disjointes | deux le sont ; la troisième est indiscernable du repli | — | ⚠️ Écart expliqué |
-| **I-10** | DAMIR | Origine des montants négatifs de « Autres » | SQL manuel, décomposition `rem = rem_neg + (rem − rem_neg)` | rem = régularisations + remboursements réels | décomposition incohérente | — | ⚠️ Écart expliqué |
+| **I-10** | DAMIR | Origine des montants négatifs de « Autres » | SQL manuel, décomposition somme à somme `SUM(rem) − SUM(rem_neg)` | le remboursé hors régularisations reste positif | 12/12 année(s) | 0 | ⚠️ Écart expliqué |
+| **I-11** | DAMIR | Valeurs absentes (`NULL`) dans les colonnes de mesure | SQL manuel, comptage direct par colonne sur le Parquet compact | recensement | 3 colonne(s) au-delà de 1 % | — | ⚠️ Écart expliqué |
 
 ## Ce que chaque contrôle a trouvé
 
@@ -78,19 +79,19 @@ vérifie l'absence, pas la nullité.
 
 14 modalités, aucune ligne d'agrégat : le total national **est** la somme, et l'additivité est exacte (écart 2.90e-14).
 
-Le point qui mérite l'attention est ailleurs. Le résidu « Non renseignée » pèse 234 847 172 300,0404 € sur 1 405 038 187 493,9324 €, soit **16.715 %**. Additionner les seules modalités nommées donne 1 170 191 015 193,8918 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
+Le point qui mérite l'attention est ailleurs. Le résidu « Non renseignée » pèse 234 847 172 300,0404 € sur 1 405 038 187 493,9326 €, soit **16,715 %**. Additionner les seules modalités nommées donne 1 170 191 015 193,8921 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
 
 ### I-02 — Σ des modalités de « age » = total, et poids du résidu
 
 9 modalités, aucune ligne d'agrégat : le total national **est** la somme, et l'additivité est exacte (écart 3.30e-14).
 
-Le point qui mérite l'attention est ailleurs. Le résidu « Âge inconnu » pèse 19 415 776 474,6799 € sur 1 405 038 187 493,9324 €, soit **1.382 %**. Additionner les seules modalités nommées donne 1 385 622 411 019,2524 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
+Le point qui mérite l'attention est ailleurs. Le résidu « Âge inconnu » pèse 19 415 776 474,6799 € sur 1 405 038 187 493,9324 €, soit **1,382 %**. Additionner les seules modalités nommées donne 1 385 622 411 019,2524 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
 
 ### I-03 — Σ des modalités de « sexe » = total, et poids du résidu
 
-4 modalités, aucune ligne d'agrégat : le total national **est** la somme, et l'additivité est exacte (écart 3.15e-14).
+4 modalités, aucune ligne d'agrégat : le total national **est** la somme, et l'additivité est exacte (écart 3.11e-14).
 
-Le point qui mérite l'attention est ailleurs. Le résidu « Non renseigné et Inconnu » pèse 17 062 522 398,9300 € sur 1 405 038 187 493,9321 €, soit **1.214 %**. Additionner les seules modalités nommées donne 1 387 975 665 095,0022 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
+Le point qui mérite l'attention est ailleurs. Le résidu « Non renseigné et Inconnu » pèse 17 062 522 398,9300 € sur 1 405 038 187 493,9324 €, soit **1,214 %**. Additionner les seules modalités nommées donne 1 387 975 665 095,0024 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, mais qu'un lecteur additionne les autres et croie tenir le total.
 
 ### I-04 — Σ des grands postes, « Autres » compris, = total du cube
 
@@ -98,47 +99,47 @@ Le point qui mérite l'attention est ailleurs. Le résidu « Non renseigné et I
 
 ### I-05 — Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste
 
-158 comparaisons · pire écart absolu 1.50e-03 · pire écart relatif 1.19e-14 (sous-poste de « Consultations / Visites ») · 2 valeur(s) absente(s) · 0 hors tolérance
+158 comparaisons · pire écart absolu 1.48e-03 · pire écart relatif 1.17e-14 (sous-poste de « Consultations / Visites ») · 2 valeur(s) absente(s) · 0 hors tolérance
 
 ### I-06a — Compact contre brut — total, mesure par mesure
 
-7 comparaisons · pire écart absolu 4.69e-01 · pire écart relatif 3.34e-13 (rem) · 0 hors tolérance
+7 comparaisons · pire écart absolu 5.27e-01 · pire écart relatif 3.75e-13 (rem) · 0 hors tolérance
 
-- `rem` — brut 1 405 038 187 493,4636, compact 1 405 038 187 493,9326, écart 3.34e-13
-- `dep` — brut 1 601 792 223 029,3792, compact 1 601 792 223 029,8145, écart 2.72e-13
-- `depas` — brut 111 499 127 051,3762, compact 111 499 127 051,3620, écart 1.27e-13
+- `rem` — brut 1 405 038 187 493,4050, compact 1 405 038 187 493,9324, écart 3.75e-13
+- `dep` — brut 1 601 792 223 029,3628, compact 1 601 792 223 029,8145, écart 2.82e-13
+- `depas` — brut 111 499 127 051,3756, compact 111 499 127 051,3620, écart 1.22e-13
 - `qte` — brut 133 320 833 455, compact 133 320 833 455, écart 0.00e+00
-- `rem_ref` — brut 1 280 885 049 724,9458, compact 1 280 885 049 725,0500, écart 8.14e-14
-- `bse_ref` — brut 1 289 338 934 189,8154, compact 1 289 338 934 189,8650, écart 3.84e-14
-- `rem_neg` — brut -43 502 681 794,0322, compact -43 502 681 794,0304, écart 4.05e-14
+- `rem_ref` — brut 1 280 885 049 724,9426, compact 1 280 885 049 725,0500, écart 8.39e-14
+- `bse_ref` — brut 1 289 338 934 189,8071, compact 1 289 338 934 189,8650, écart 4.49e-14
+- `rem_neg` — brut -43 502 681 794,0320, compact -43 502 681 794,0304, écart 3.63e-14
 
 ### I-06b — Compact contre brut — par année × mesure
 
-84 comparaisons · pire écart absolu 8.15e-03 · pire écart relatif 5.75e-14 (rem 2023) · 0 hors tolérance
+84 comparaisons · pire écart absolu 7.61e-03 · pire écart relatif 5.56e-14 (rem 2021) · 0 hors tolérance
 
 ### I-06c — Compact contre brut — cellule par cellule, sur la clé complète (8 colonnes)
 
-**0 clé absente du compact, 0 en trop.** Sur les 7 mesures, le pire écart **absolu** entre une cellule du brut et la même cellule du compact est de **2.38e-07 €**, et le pire écart **relatif** — mesuré sur les seules cellules dépassant le plancher de 1e-06 € — de **1.14e-12**. C'est exactement l'ordre de grandeur de l'accumulation flottante prévu en Phase 0 (√n·ε ≈ 5e-13). `qte` est identique au bit près. **Le compact est fidèle au brut.**
+**0 clé absente du compact, 0 en trop.** Sur les 7 mesures, le pire écart **absolu** entre une cellule du brut et la même cellule du compact est de **2.38e-07 €**, et le pire écart **relatif** — mesuré sur les seules cellules dépassant le plancher de 1e-06 € — de **6.93e-13**. C'est exactement l'ordre de grandeur de l'accumulation flottante prévu en Phase 0 (√n·ε ≈ 5e-13). `qte` est identique au bit près. **Le compact est fidèle au brut.**
 
-- `rem` — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 1.14e-12 · 0 hors tolérance
-- `dep` — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 4.42e-13 · 0 hors tolérance
-- `depas` — 5 762 787 cellules · pire écart absolu 2.98e-08 € · pire écart relatif 7.89e-14 · 0 hors tolérance
+- `rem` — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 2.84e-13 · 0 hors tolérance
+- `dep` — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 6.93e-13 · 0 hors tolérance
+- `depas` — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 6.95e-14 · 0 hors tolérance
 - `qte` — 5 762 787 cellules · pire écart absolu 0.00e+00 € · pire écart relatif 0.00e+00 · 0 hors tolérance
-- `rem_ref` — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 4.22e-13 · 0 hors tolérance
-- `bse_ref` — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 6.73e-13 · 0 hors tolérance
-- `rem_neg` — 5 762 787 cellules · pire écart absolu 1.19e-07 € · pire écart relatif 6.85e-16 · 0 hors tolérance
+- `rem_ref` — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 2.11e-13 · 0 hors tolérance
+- `bse_ref` — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 1.55e-13 · 0 hors tolérance
+- `rem_neg` — 5 762 787 cellules · pire écart absolu 1.19e-07 € · pire écart relatif 6.50e-16 · 0 hors tolérance
 
 ### I-07 — `cube_where` du produit contre un WHERE écrit à la main (8 scénarios)
 
-8 comparaisons · pire écart absolu 1.22e-04 · pire écart relatif 2.16e-16 (ALD seulement) · 0 hors tolérance
+8 comparaisons · pire écart absolu 6.10e-05 · pire écart relatif 2.17e-16 (toutes les régions listées = pas de filtre) · 0 hors tolérance
 
-- période seule, 2018–2020 — manuel 357 198 804 583,1325 = produit 357 198 804 583,1324
+- période seule, 2018–2020 — manuel 357 198 804 583,1324 = produit 357 198 804 583,1324
 - une région — manuel 165 238 548 535,4804 = produit 165 238 548 535,4804
-- trois régions — manuel 393 323 861 538,5912 = produit 393 323 861 538,5912
+- trois régions — manuel 393 323 861 538,5911 = produit 393 323 861 538,5912
 - un sexe — manuel 651 093 808 067,4810 = produit 651 093 808 067,4810
 - deux tranches d'âge — manuel 264 951 287 081,3328 = produit 264 951 287 081,3328
 - région × sexe × âge — manuel 975 959 689,8200 = produit 975 959 689,8200
-- ALD seulement — manuel 564 185 935 943,6729 = produit 564 185 935 943,6730
+- ALD seulement — manuel 564 185 935 943,6730 = produit 564 185 935 943,6730
 - toutes les régions listées = pas de filtre — manuel 140 857 153 745,4104 = produit 140 857 153 745,4104
 
 ### I-08 — Codes `prs_nat` non couverts par la transcodification : nombre et poids
@@ -158,20 +159,36 @@ Les deux autres notions, elles, sont bien disjointes : `__other__` est une senti
 
 ### I-10 — Origine des montants négatifs de « Autres »
 
-12 année(s) où « Autres » est négatif. La décomposition est exacte : le négatif vient des **régularisations** (`rem_neg`), une composante du cube et non un défaut d'agrégation. Comportement légitime, à documenter.
+12 année(s) où « Autres » affiche un remboursé négatif. Sur **12 d'entre elles**, le remboursé hors régularisations reste **positif** : le signe négatif vient donc entièrement des régularisations (`rem_neg`), qui sont une composante du cube et non un artefact d'agrégation. **Comportement légitime, à documenter — pas un défaut à corriger.**
 
-- **2014** — remboursé -30 671 828,6100 € = régularisations -45 584 477,6500 € + remboursements réels 9 106 403,2100 €, sur 43 codes
-- **2015** — remboursé -639 807 805,5600 € = régularisations -677 198 778,4400 € + remboursements réels 22 292 409,5000 €, sur 46 codes
-- **2016** — remboursé -636 547 104,4500 € = régularisations -674 971 624,1300 € + remboursements réels 25 009 861,9700 €, sur 46 codes
-- **2017** — remboursé -646 910 118,1600 € = régularisations -683 492 296,5100 € + remboursements réels 25 551 288,0400 €, sur 47 codes
-- **2018** — remboursé -663 962 680,4700 € = régularisations -685 476 918,9200 € + remboursements réels 12 278 461,8900 €, sur 45 codes
-- **2019** — remboursé -666 476 364,1400 € = régularisations -688 416 277,1500 € + remboursements réels 11 081 132,4900 €, sur 49 codes
-- **2020** — remboursé -670 848 547,5600 € = régularisations -688 015 966,8500 € + remboursements réels 3 972 242,4800 €, sur 47 codes
-- **2021** — remboursé -768 807 376,4800 € = régularisations -786 031 544,3400 € + remboursements réels 5 475 313,2800 €, sur 49 codes
-- **2022** — remboursé -731 996 790,9400 € = régularisations -755 713 358,1200 € + remboursements réels 5 867 708,4200 €, sur 56 codes
-- **2023** — remboursé -682 062 643,4300 € = régularisations -723 520 725,5500 € + remboursements réels 16 139 266,5800 €, sur 57 codes
-- **2024** — remboursé -894 361 847,0000 € = régularisations -1 076 576 155,3100 € + remboursements réels 119 077 356,6500 €, sur 60 codes
-- **2025** — remboursé -1 016 836 509,7700 € = régularisations -1 204 234 534,4700 € + remboursements réels 118 647 998,8300 €, sur 61 codes
+- **2014** — remboursé -30 671 828,6100 € = régularisations -45 584 477,6500 € + remboursements hors régularisations 14 912 649,0400 €, sur 43 codes
+- **2015** — remboursé -639 807 805,5600 € = régularisations -677 198 778,4400 € + remboursements hors régularisations 37 390 972,8800 €, sur 46 codes
+- **2016** — remboursé -636 547 104,4500 € = régularisations -674 971 624,1300 € + remboursements hors régularisations 38 424 519,6800 €, sur 46 codes
+- **2017** — remboursé -646 910 118,1600 € = régularisations -683 492 296,5100 € + remboursements hors régularisations 36 582 178,3500 €, sur 47 codes
+- **2018** — remboursé -663 962 680,4700 € = régularisations -685 476 918,9200 € + remboursements hors régularisations 21 514 238,4500 €, sur 45 codes
+- **2019** — remboursé -666 476 364,1400 € = régularisations -688 416 277,1500 € + remboursements hors régularisations 21 939 913,0100 €, sur 49 codes
+- **2020** — remboursé -670 848 547,5600 € = régularisations -688 015 966,8500 € + remboursements hors régularisations 17 167 419,2900 €, sur 47 codes
+- **2021** — remboursé -768 807 376,4800 € = régularisations -786 031 544,3400 € + remboursements hors régularisations 17 224 167,8600 €, sur 49 codes
+- **2022** — remboursé -731 996 790,9400 € = régularisations -755 713 358,1200 € + remboursements hors régularisations 23 716 567,1800 €, sur 56 codes
+- **2023** — remboursé -682 062 643,4300 € = régularisations -723 520 725,5500 € + remboursements hors régularisations 41 458 082,1200 €, sur 57 codes
+- **2024** — remboursé -894 361 847 € = régularisations -1 076 576 155,3100 € + remboursements hors régularisations 182 214 308,3100 €, sur 60 codes
+- **2025** — remboursé -1 016 836 509,7700 € = régularisations -1 204 234 534,4700 € + remboursements hors régularisations 187 398 024,7000 €, sur 61 codes
+
+### I-11 — Valeurs absentes (`NULL`) dans les colonnes de mesure
+
+**L'absence est massive et parfaitement normale — mais il faut la connaître pour ne pas écrire de contrôle faux.** `rem_ref` manque sur 50,9 % des lignes, `bse_ref` manque sur 50,9 % des lignes, `rem_neg` manque sur 67,5 % des lignes.
+
+Une base de remboursement absente (`bse_ref`, `rem_ref`) signifie qu'il n'y en a pas — une prestation forfaitaire, une indemnité journalière — et non qu'elle vaut zéro. Une régularisation absente (`rem_neg`) signifie qu'il n'y a pas eu de régularisation. Dans les deux cas, `SUM` écarte les absents, ce qui donne le bon total.
+
+**La conséquence pratique**, apprise à nos dépens : toute décomposition doit se faire **somme à somme** et jamais ligne à ligne. `SUM(rem − rem_neg)` écarte les deux tiers des lignes et se trompe de 68,75 M€ ; `SUM(rem) − SUM(rem_neg)` est juste. Le produit emploie bien la seconde forme.
+
+- `rem` — 6 lignes absentes sur 5 762 787 (0,000 %)
+- `dep` — 0 lignes absentes sur 5 762 787 (0,000 %)
+- `depas` — 0 lignes absentes sur 5 762 787 (0,000 %)
+- `qte` — 0 lignes absentes sur 5 762 787 (0,000 %)
+- `rem_ref` — 2 930 798 lignes absentes sur 5 762 787 (50,857 %)
+- `bse_ref` — 2 930 798 lignes absentes sur 5 762 787 (50,857 %)
+- `rem_neg` — 3 892 606 lignes absentes sur 5 762 787 (67,547 %)
 
 ## Défauts confirmés
 

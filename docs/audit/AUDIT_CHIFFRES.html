@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Audit des chiffres — DAMIR Studio</title>
+<style>
+@page { size: A4; margin: 16mm 14mm 14mm; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: #1a1d21;
+  background: #fff;
+  font: 10pt/1.5 "Segoe UI", system-ui, sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+h1 { margin: 0 0 4pt; font-size: 21pt; letter-spacing: -.3pt; }
+h2 {
+  margin: 20pt 0 8pt;
+  padding-bottom: 4pt;
+  border-bottom: 1.5pt solid #c0392b;
+  font-size: 13pt;
+  page-break-after: avoid;
+}
+h3 { margin: 13pt 0 4pt; font-size: 10.5pt; page-break-after: avoid; }
+p { margin: 0 0 7pt; }
+code { padding: 0 2pt; background: #f2f3f5; font-family: Consolas, monospace; font-size: .9em; }
+strong { font-weight: 650; }
+
+.kicker {
+  color: #c0392b; font-size: 8pt; font-weight: 700;
+  letter-spacing: 1.2pt; text-transform: uppercase;
+}
+.meta { margin: 0 0 14pt; color: #5b6470; font-size: 8.5pt; }
+
+/* — L'essentiel, encadré, en tête — */
+.resume {
+  margin: 0 0 16pt; padding: 11pt 13pt;
+  border: 1pt solid #dfe3e8; border-left: 3pt solid #c0392b;
+  background: #fbfbfc;
+  page-break-inside: avoid;
+}
+.resume p:last-child { margin-bottom: 0; }
+
+/* — Le décompte, en pastilles — */
+.compte { display: flex; gap: 7pt; margin: 0 0 14pt; page-break-inside: avoid; }
+.compte div {
+  flex: 1; padding: 8pt 6pt; border: 1pt solid #dfe3e8; border-radius: 3pt;
+  text-align: center; background: #fbfbfc;
+}
+.compte b { display: block; font-size: 17pt; line-height: 1.1; }
+.compte span { color: #5b6470; font-size: 7.5pt; text-transform: uppercase; letter-spacing: .4pt; }
+.compte .fort b { color: #c0392b; }
+
+table { width: 100%; border-collapse: collapse; margin: 0 0 12pt; font-size: 8.2pt; }
+caption {
+  margin-bottom: 5pt; color: #5b6470; font-size: 8pt; font-style: italic; text-align: left;
+}
+th, td { overflow-wrap: anywhere; padding: 5pt 6pt; border-bottom: .5pt solid #e4e7eb; text-align: left; vertical-align: top; }
+thead th {
+  border-bottom: 1pt solid #b9c0c8;
+  color: #3c444e; font-size: 7.5pt; font-weight: 700;
+  letter-spacing: .3pt; text-transform: uppercase;
+}
+thead { display: table-header-group; }
+tr { page-break-inside: avoid; }
+tbody tr:nth-child(even) { background: #fafbfc; }
+td.ref { font-weight: 700; white-space: nowrap; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.verdict { display: inline-block; padding: 1.5pt 5pt; border-radius: 2pt;
+           font-size: 7.5pt; font-weight: 700; white-space: nowrap; }
+.conforme { color: #1c6b3f; background: #e6f4ec; }
+.explique { color: #8a5a00; background: #fdf3e0; }
+.defaut   { color: #a02121; background: #fbe9e9; }
+.attente  { color: #4a5058; background: #eef0f2; }
+
+.detail { margin: 0 0 10pt; padding-left: 11pt; font-size: 8.5pt; }
+.detail li { margin-bottom: 2.5pt; }
+
+.fiche { margin-bottom: 13pt; page-break-inside: avoid; }
+.fiche .comment {
+  margin: 3pt 0 6pt; color: #5b6470; font-size: 8pt;
+}
+
+footer {
+  margin-top: 20pt; padding-top: 7pt; border-top: .5pt solid #e4e7eb;
+  color: #7a828c; font-size: 7.5pt;
+}
+.saut { page-break-before: always; }
+</style></head><body>
+
+<p class="kicker">DAMIR Studio · Contrôle des données</p>
+<h1>Les chiffres affichés sont-ils justes ?</h1>
+<p class="meta">
+  Phase exécutée : Phase 1 — cohérence interne de DAMIR ·
+  19/08/2026 à 10:09 ·
+  branche <code>heads/v2</code> · commit <code>5d25588</code>
+</p>
+
+<div class="resume"><p><strong>Le contrôle décisif est conforme.</strong> Le cube compact — celui que l'application interroge — est fidèle au cube brut de 1 1 Go  <strong>cellule par cellule</strong> sur les 5 762 787 clés : aucune clé manquante ni surnuméraire. Le pire écart relatif est de <strong>6,9e-13</strong> et le pire écart absolu de <strong>2,4e-07 €</strong> — l'ordre de grandeur de l'arrondi machine. Les volumes sont identiques au bit près.</p><p><strong>Aucun défaut de calcul n'a été trouvé</strong> sur les 13 contrôles de cette phase. 6 contrôles portent un « écart expliqué » : le calcul est juste, mais le résultat demande une précaution de lecture, écrite en clair.</p><p><strong>La précaution la plus importante :</strong> <strong>16,7 %</strong> du montant remboursé — 234,8 Md€ — porte une région « Non renseignée ». Additionner les régions nommées donne 1 170,2 Md€ là où le total national est de 1 405,0 Md€. L'application n'escamote rien : la modalité est offerte et étiquetée. Le risque est que le lecteur, lui, l'oublie.</p></div>
+
+<div class="compte">
+  <div><b>13</b><span>Contrôles</span></div>
+  <div><b>7</b><span>Conformes</span></div>
+  <div><b>6</b><span>Écarts expliqués</span></div>
+  <div class="fort"><b>0</b><span>Défauts</span></div>
+  <div><b>0</b><span>En attente</span></div>
+</div>
+
+<h2>Comment lire ce rapport</h2>
+<p>Chaque ligne du tableau est un contrôle. La colonne <strong>« comment la référence
+est obtenue »</strong> est celle qui décide si le contrôle vaut quelque chose : une
+vérification qui demanderait sa réponse au code qu'elle teste ne prouverait rien.
+Ici, toutes les valeurs attendues viennent de <strong>SQL écrit à la main</strong>
+directement sur les fichiers de données, sans passer par une seule fonction de
+l'application.</p>
+
+<table>
+  <caption>Les quatre verdicts, sans nuance intermédiaire.</caption>
+  <thead><tr><th style="width:22%">Verdict</th><th>Ce qu'il signifie</th></tr></thead>
+  <tbody>
+    <tr><td><span class="verdict conforme">Conforme</span></td>
+        <td>Écart nul, ou dans la tolérance déclarée avant l'exécution.</td></tr>
+    <tr><td><span class="verdict explique">Écart expliqué</span></td>
+        <td>Divergence réelle, dont la cause est identifiée et écrite. <strong>Le calcul est
+            juste</strong> ; c'est la lecture qui demande une précaution.</td></tr>
+    <tr><td><span class="verdict defaut">Défaut</span></td>
+        <td>L'application se trompe. L'écran touché et l'ampleur sont décrits.</td></tr>
+    <tr><td><span class="verdict attente">En attente</span></td>
+        <td>Référence indisponible, ou contrôle impossible à écrire sans circularité.</td></tr>
+  </tbody>
+</table>
+
+<h2>Les tolérances, déclarées avant l'exécution</h2>
+<table>
+  <thead><tr><th style="width:26%">Nature</th><th style="width:17%">Seuil</th><th>Pourquoi</th></tr></thead>
+  <tbody>
+    <tr><td>Effectifs, comptages</td><td class="num">exact</td>
+        <td>Ce sont des entiers. Aucun mécanisme numérique ne peut en changer la valeur.</td></tr>
+    <tr><td>Sommes de montants</td><td class="num">1e-9 relatif</td>
+        <td>L'accumulation flottante sur 5,76 M lignes produit ~5e-13 ; mesuré : 3,8e-13.
+            Le seuil est mille fois au-dessus du bruit, et mille fois en dessous de toute
+            erreur de logique.</td></tr>
+    <tr><td>Ratios</td><td class="num">1e-8 relatif</td>
+        <td>L'erreur d'un quotient cumule celle de ses deux termes.</td></tr>
+    <tr><td>Plancher absolu</td><td class="num">1e-6 €</td>
+        <td>Sous le millionième d'euro, aucune grandeur comptable ne se distingue.</td></tr>
+    <tr><td>Références externes</td><td class="num">aucune</td>
+        <td>Un écart n'y est jamais toléré : il est expliqué, ou il reste un défaut.</td></tr>
+  </tbody>
+</table>
+
+<div class="resume">
+  <p><strong>Un amendement, déclaré plutôt que passé sous silence.</strong> Le premier jet du harnais
+  comparait en relatif seul et classait le contrôle I-06c en <em>défaut</em> :
+  « 300 % d'écart ». Vérification faite, ces écarts portaient sur des cellules dont
+  la somme vaut 4,4 × 10<sup>−16</sup> € — des résidus d'arrondi nés de l'annulation
+  entre un débit et un crédit. Rapporter un tel écart à un tel dénominateur ne mesure
+  rien.</p>
+  <p>Le critère combine désormais un plancher absolu et la tolérance relative,
+  <strong>laquelle n'a pas bougé</strong>. Ce n'est pas un seuil relevé pour faire
+  passer une ligne : c'est une métrique corrigée. Les deux mesures — écart absolu et
+  écart relatif — sont publiées côte à côte pour que le lecteur juge lui-même.</p>
+</div>
+
+<h2 class="saut">Le tableau des contrôles</h2>
+<table>
+  <thead><tr>
+    <th style="width:7%">Réf</th>
+    <th style="width:29%">Contrôle</th>
+    <th style="width:29%">Comment la référence est obtenue</th>
+    <th style="width:14%">Obtenu</th>
+    <th style="width:8%">Écart</th>
+    <th style="width:13%">Verdict</th>
+  </tr></thead>
+  <tbody><tr><td class="ref">I-01</td><td>Σ des modalités de « region » = total, et poids du résidu</td><td>SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</td><td class="num">1 405 038 187 493,9734</td><td class="num">2,90e-14</td><td><span class="verdict explique">Écart expliqué</span></td></tr><tr><td class="ref">I-02</td><td>Σ des modalités de « age » = total, et poids du résidu</td><td>SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</td><td class="num">1 405 038 187 493,9788</td><td class="num">3,30e-14</td><td><span class="verdict explique">Écart expliqué</span></td></tr><tr><td class="ref">I-03</td><td>Σ des modalités de « sexe » = total, et poids du résidu</td><td>SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</td><td class="num">1 405 038 187 493,9761</td><td class="num">3,11e-14</td><td><span class="verdict explique">Écart expliqué</span></td></tr><tr><td class="ref">I-04</td><td>Σ des grands postes, « Autres » compris, = total du cube</td><td>SQL manuel : jointure gauche sur `prs_nat_transco.csv`, COALESCE écrit à la main</td><td class="num">1 405 038 187 493,9744</td><td class="num">2,99e-14</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-05</td><td>Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste</td><td>SQL manuel, agrégations parent et enfant calculées séparément puis rapprochées</td><td class="num">Σ enfants</td><td class="num">1,17e-14</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-06a</td><td>Compact contre brut — total, mesure par mesure</td><td>deux SQL manuels, un par fichier Parquet ; aucun code du produit</td><td class="num">compact</td><td class="num">3,75e-13</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-06b</td><td>Compact contre brut — par année × mesure</td><td>idem, agrégé à l&#x27;année de soins</td><td class="num">compact</td><td class="num">5,56e-14</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-06c</td><td>Compact contre brut — cellule par cellule, sur la clé complète (8 colonnes)</td><td>jointures externes entre les deux Parquet agrégés à la même clé ; SQL manuel</td><td class="num">0 clé(s) en désaccord · 0 cellule(s) hors tolérance</td><td class="num">6,93e-13</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-07</td><td>`cube_where` du produit contre un WHERE écrit à la main (8 scénarios)</td><td>SQL manuel, prédicat rédigé à la main pour chaque scénario ; `cube_where` fournit la valeur *testée*, jamais l&#x27;attendue</td><td class="num">prédicat du produit</td><td class="num">2,17e-16</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-08</td><td>Codes `prs_nat` non couverts par la transcodification : nombre et poids</td><td>SQL manuel, jointure gauche sur `prs_nat_transco.csv` puis comptage des orphelins</td><td class="num">0 code(s)</td><td class="num">0,000 %</td><td><span class="verdict conforme">Conforme</span></td></tr><tr><td class="ref">I-09</td><td>« Autres », `__other__` et « Reste du périmètre » ne se confondent jamais</td><td>SQL manuel sur la transcodification ; lecture du code pour les deux replis</td><td class="num">deux le sont ; la troisième est indiscernable du repli</td><td class="num">—</td><td><span class="verdict explique">Écart expliqué</span></td></tr><tr><td class="ref">I-10</td><td>Origine des montants négatifs de « Autres »</td><td>SQL manuel, décomposition somme à somme `SUM(rem) − SUM(rem_neg)`</td><td class="num">12/12 année(s)</td><td class="num">0</td><td><span class="verdict explique">Écart expliqué</span></td></tr><tr><td class="ref">I-11</td><td>Valeurs absentes (`NULL`) dans les colonnes de mesure</td><td>SQL manuel, comptage direct par colonne sur le Parquet compact</td><td class="num">3 colonne(s) au-delà de 1 %</td><td class="num">—</td><td><span class="verdict explique">Écart expliqué</span></td></tr></tbody>
+</table>
+
+<h2>Ce que chaque contrôle a trouvé</h2>
+<div class="fiche"><h3>I-01 — Σ des modalités de « region » = total, et poids du résidu</h3><p class="comment">Référence obtenue par : SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</p><p>14 modalités, aucune ligne d&#x27;agrégat : le total national <strong>est</strong> la somme, et l&#x27;additivité est exacte (écart 2.90e-14).</p><p>Le point qui mérite l&#x27;attention est ailleurs. Le résidu « Non renseignée » pèse 234 847 172 300,0404 € sur 1 405 038 187 493,9326 €, soit <strong>16,715 %</strong>. Additionner les seules modalités nommées donne 1 170 191 015 193,8921 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l&#x27;application ; le risque n&#x27;est pas qu&#x27;elle soit cachée, mais qu&#x27;un lecteur additionne les autres et croie tenir le total.</p></div><div class="fiche"><h3>I-02 — Σ des modalités de « age » = total, et poids du résidu</h3><p class="comment">Référence obtenue par : SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</p><p>9 modalités, aucune ligne d&#x27;agrégat : le total national <strong>est</strong> la somme, et l&#x27;additivité est exacte (écart 3.30e-14).</p><p>Le point qui mérite l&#x27;attention est ailleurs. Le résidu « Âge inconnu » pèse 19 415 776 474,6799 € sur 1 405 038 187 493,9324 €, soit <strong>1,382 %</strong>. Additionner les seules modalités nommées donne 1 385 622 411 019,2524 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l&#x27;application ; le risque n&#x27;est pas qu&#x27;elle soit cachée, mais qu&#x27;un lecteur additionne les autres et croie tenir le total.</p></div><div class="fiche"><h3>I-03 — Σ des modalités de « sexe » = total, et poids du résidu</h3><p class="comment">Référence obtenue par : SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit</p><p>4 modalités, aucune ligne d&#x27;agrégat : le total national <strong>est</strong> la somme, et l&#x27;additivité est exacte (écart 3.11e-14).</p><p>Le point qui mérite l&#x27;attention est ailleurs. Le résidu « Non renseigné et Inconnu » pèse 17 062 522 398,9300 € sur 1 405 038 187 493,9324 €, soit <strong>1,214 %</strong>. Additionner les seules modalités nommées donne 1 387 975 665 095,0024 € — il manque exactement ce résidu. La modalité est bien offerte et étiquetée par l&#x27;application ; le risque n&#x27;est pas qu&#x27;elle soit cachée, mais qu&#x27;un lecteur additionne les autres et croie tenir le total.</p></div><div class="fiche"><h3>I-04 — Σ des grands postes, « Autres » compris, = total du cube</h3><p class="comment">Référence obtenue par : SQL manuel : jointure gauche sur `prs_nat_transco.csv`, COALESCE écrit à la main</p><p>19 grands postes. « Autres » (prestations sans correspondance dans la transcodification) : -8 049 289 616,5700 €.</p></div><div class="fiche"><h3>I-05 — Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste</h3><p class="comment">Référence obtenue par : SQL manuel, agrégations parent et enfant calculées séparément puis rapprochées</p><p>158 comparaisons · pire écart absolu 1.48e-03 · pire écart relatif 1.17e-14 (sous-poste de « Consultations / Visites ») · 2 valeur(s) absente(s) · 0 hors tolérance</p></div><div class="fiche"><h3>I-06a — Compact contre brut — total, mesure par mesure</h3><p class="comment">Référence obtenue par : deux SQL manuels, un par fichier Parquet ; aucun code du produit</p><p>7 comparaisons · pire écart absolu 5.27e-01 · pire écart relatif 3.75e-13 (rem) · 0 hors tolérance</p><ul class='detail'><li><code>rem</code> — brut 1 405 038 187 493,4050, compact 1 405 038 187 493,9324, écart 3.75e-13</li><li><code>dep</code> — brut 1 601 792 223 029,3628, compact 1 601 792 223 029,8145, écart 2.82e-13</li><li><code>depas</code> — brut 111 499 127 051,3756, compact 111 499 127 051,3620, écart 1.22e-13</li><li><code>qte</code> — brut 133 320 833 455, compact 133 320 833 455, écart 0.00e+00</li><li><code>rem_ref</code> — brut 1 280 885 049 724,9426, compact 1 280 885 049 725,0500, écart 8.39e-14</li><li><code>bse_ref</code> — brut 1 289 338 934 189,8071, compact 1 289 338 934 189,8650, écart 4.49e-14</li><li><code>rem_neg</code> — brut -43 502 681 794,0320, compact -43 502 681 794,0304, écart 3.63e-14</li></ul></div><div class="fiche"><h3>I-06b — Compact contre brut — par année × mesure</h3><p class="comment">Référence obtenue par : idem, agrégé à l&#x27;année de soins</p><p>84 comparaisons · pire écart absolu 7.61e-03 · pire écart relatif 5.56e-14 (rem 2021) · 0 hors tolérance</p></div><div class="fiche"><h3>I-06c — Compact contre brut — cellule par cellule, sur la clé complète (8 colonnes)</h3><p class="comment">Référence obtenue par : jointures externes entre les deux Parquet agrégés à la même clé ; SQL manuel</p><p><strong>0 clé absente du compact, 0 en trop.</strong> Sur les 7 mesures, le pire écart <strong>absolu</strong> entre une cellule du brut et la même cellule du compact est de <strong>2.38e-07 €</strong>, et le pire écart <strong>relatif</strong> — mesuré sur les seules cellules dépassant le plancher de 1e-06 € — de <strong>6.93e-13</strong>. C&#x27;est exactement l&#x27;ordre de grandeur de l&#x27;accumulation flottante prévu en Phase 0 (√n·ε ≈ 5e-13). <code>qte</code> est identique au bit près. <strong>Le compact est fidèle au brut.</strong></p><ul class='detail'><li><code>rem</code> — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 2.84e-13 · 0 hors tolérance</li><li><code>dep</code> — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 6.93e-13 · 0 hors tolérance</li><li><code>depas</code> — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 6.95e-14 · 0 hors tolérance</li><li><code>qte</code> — 5 762 787 cellules · pire écart absolu 0.00e+00 € · pire écart relatif 0.00e+00 · 0 hors tolérance</li><li><code>rem_ref</code> — 5 762 787 cellules · pire écart absolu 2.38e-07 € · pire écart relatif 2.11e-13 · 0 hors tolérance</li><li><code>bse_ref</code> — 5 762 787 cellules · pire écart absolu 5.96e-08 € · pire écart relatif 1.55e-13 · 0 hors tolérance</li><li><code>rem_neg</code> — 5 762 787 cellules · pire écart absolu 1.19e-07 € · pire écart relatif 6.50e-16 · 0 hors tolérance</li></ul></div><div class="fiche"><h3>I-07 — `cube_where` du produit contre un WHERE écrit à la main (8 scénarios)</h3><p class="comment">Référence obtenue par : SQL manuel, prédicat rédigé à la main pour chaque scénario ; `cube_where` fournit la valeur *testée*, jamais l&#x27;attendue</p><p>8 comparaisons · pire écart absolu 6.10e-05 · pire écart relatif 2.17e-16 (toutes les régions listées = pas de filtre) · 0 hors tolérance</p><ul class='detail'><li>période seule, 2018–2020 — manuel 357 198 804 583,1324 = produit 357 198 804 583,1324</li><li>une région — manuel 165 238 548 535,4804 = produit 165 238 548 535,4804</li><li>trois régions — manuel 393 323 861 538,5911 = produit 393 323 861 538,5912</li><li>un sexe — manuel 651 093 808 067,4810 = produit 651 093 808 067,4810</li><li>deux tranches d&#x27;âge — manuel 264 951 287 081,3328 = produit 264 951 287 081,3328</li><li>région × sexe × âge — manuel 975 959 689,8200 = produit 975 959 689,8200</li><li>ALD seulement — manuel 564 185 935 943,6730 = produit 564 185 935 943,6730</li><li>toutes les régions listées = pas de filtre — manuel 140 857 153 745,4104 = produit 140 857 153 745,4104</li></ul></div><div class="fiche"><h3>I-08 — Codes `prs_nat` non couverts par la transcodification : nombre et poids</h3><p class="comment">Référence obtenue par : SQL manuel, jointure gauche sur `prs_nat_transco.csv` puis comptage des orphelins</p><p><strong>0 code sur 1 342 n&#x27;est sans correspondance</strong>, et aucune ligne de transcodification n&#x27;a de grand poste vide. La couverture est totale, et le repli <code>COALESCE(..., &#x27;Autres&#x27;)</code> ne se déclenche jamais sur ces données.</p><ul class='detail'><li>« Autres » — 90 codes · -8 049 289 616,5700 €</li><li>« Autres Postes » — 20 codes · 2 614 214 765,2300 €</li></ul></div><div class="fiche"><h3>I-09 — « Autres », `__other__` et « Reste du périmètre » ne se confondent jamais</h3><p class="comment">Référence obtenue par : SQL manuel sur la transcodification ; lecture du code pour les deux replis</p><p><strong>Le document de référence décrit « Autres » comme les prestations sans correspondance dans la transcodification. Ce n&#x27;est pas ce qui se passe.</strong> « Autres » est un <strong>grand poste nommé</strong> de la nomenclature — 90 codes, -8 049 289 616,5700 € — et la nomenclature porte en outre un « Autres Postes » distinct. Le repli du <code>COALESCE</code> est aujourd&#x27;hui vide.</p><p>Il en découle un <strong>risque latent</strong>, qui ne produit aujourd&#x27;hui aucun chiffre faux : le repli et la catégorie réelle portent <strong>la même étiquette</strong>. Si un code venait à sortir de la transcodification — une nomenclature qui évolue, un millésime de plus — son montant se fondrait dans le grand poste « Autres » sans que rien ne le signale, et « Autres » cesserait d&#x27;être ce que la nomenclature dit qu&#x27;il est.</p><p>Les deux autres notions, elles, sont bien disjointes : <code>__other__</code> est une sentinelle préfixée, « Reste du périmètre » un complément de sélection. Ni l&#x27;une ni l&#x27;autre ne peut entrer en collision avec une chaîne de donnée.</p></div><div class="fiche"><h3>I-10 — Origine des montants négatifs de « Autres »</h3><p class="comment">Référence obtenue par : SQL manuel, décomposition somme à somme `SUM(rem) − SUM(rem_neg)`</p><p>12 année(s) où « Autres » affiche un remboursé négatif. Sur <strong>12 d&#x27;entre elles</strong>, le remboursé hors régularisations reste <strong>positif</strong> : le signe négatif vient donc entièrement des régularisations (<code>rem_neg</code>), qui sont une composante du cube et non un artefact d&#x27;agrégation. <strong>Comportement légitime, à documenter — pas un défaut à corriger.</strong></p><ul class='detail'><li><strong>2014</strong> — remboursé -30 671 828,6100 € = régularisations -45 584 477,6500 € + remboursements hors régularisations 14 912 649,0400 €, sur 43 codes</li><li><strong>2015</strong> — remboursé -639 807 805,5600 € = régularisations -677 198 778,4400 € + remboursements hors régularisations 37 390 972,8800 €, sur 46 codes</li><li><strong>2016</strong> — remboursé -636 547 104,4500 € = régularisations -674 971 624,1300 € + remboursements hors régularisations 38 424 519,6800 €, sur 46 codes</li><li><strong>2017</strong> — remboursé -646 910 118,1600 € = régularisations -683 492 296,5100 € + remboursements hors régularisations 36 582 178,3500 €, sur 47 codes</li><li><strong>2018</strong> — remboursé -663 962 680,4700 € = régularisations -685 476 918,9200 € + remboursements hors régularisations 21 514 238,4500 €, sur 45 codes</li><li><strong>2019</strong> — remboursé -666 476 364,1400 € = régularisations -688 416 277,1500 € + remboursements hors régularisations 21 939 913,0100 €, sur 49 codes</li><li><strong>2020</strong> — remboursé -670 848 547,5600 € = régularisations -688 015 966,8500 € + remboursements hors régularisations 17 167 419,2900 €, sur 47 codes</li><li><strong>2021</strong> — remboursé -768 807 376,4800 € = régularisations -786 031 544,3400 € + remboursements hors régularisations 17 224 167,8600 €, sur 49 codes</li><li><strong>2022</strong> — remboursé -731 996 790,9400 € = régularisations -755 713 358,1200 € + remboursements hors régularisations 23 716 567,1800 €, sur 56 codes</li><li><strong>2023</strong> — remboursé -682 062 643,4300 € = régularisations -723 520 725,5500 € + remboursements hors régularisations 41 458 082,1200 €, sur 57 codes</li><li><strong>2024</strong> — remboursé -894 361 847 € = régularisations -1 076 576 155,3100 € + remboursements hors régularisations 182 214 308,3100 €, sur 60 codes</li><li><strong>2025</strong> — remboursé -1 016 836 509,7700 € = régularisations -1 204 234 534,4700 € + remboursements hors régularisations 187 398 024,7000 €, sur 61 codes</li></ul></div><div class="fiche"><h3>I-11 — Valeurs absentes (`NULL`) dans les colonnes de mesure</h3><p class="comment">Référence obtenue par : SQL manuel, comptage direct par colonne sur le Parquet compact</p><p><strong>L&#x27;absence est massive et parfaitement normale — mais il faut la connaître pour ne pas écrire de contrôle faux.</strong> <code>rem_ref</code> manque sur 50,9 % des lignes, <code>bse_ref</code> manque sur 50,9 % des lignes, <code>rem_neg</code> manque sur 67,5 % des lignes.</p><p>Une base de remboursement absente (<code>bse_ref</code>, <code>rem_ref</code>) signifie qu&#x27;il n&#x27;y en a pas — une prestation forfaitaire, une indemnité journalière — et non qu&#x27;elle vaut zéro. Une régularisation absente (<code>rem_neg</code>) signifie qu&#x27;il n&#x27;y a pas eu de régularisation. Dans les deux cas, <code>SUM</code> écarte les absents, ce qui donne le bon total.</p><p><strong>La conséquence pratique</strong>, apprise à nos dépens : toute décomposition doit se faire <strong>somme à somme</strong> et jamais ligne à ligne. <code>SUM(rem − rem_neg)</code> écarte les deux tiers des lignes et se trompe de 68,75 M€ ; <code>SUM(rem) − SUM(rem_neg)</code> est juste. Le produit emploie bien la seconde forme.</p><ul class='detail'><li><code>rem</code> — 6 lignes absentes sur 5 762 787 (0,000 %)</li><li><code>dep</code> — 0 lignes absentes sur 5 762 787 (0,000 %)</li><li><code>depas</code> — 0 lignes absentes sur 5 762 787 (0,000 %)</li><li><code>qte</code> — 0 lignes absentes sur 5 762 787 (0,000 %)</li><li><code>rem_ref</code> — 2 930 798 lignes absentes sur 5 762 787 (50,857 %)</li><li><code>bse_ref</code> — 2 930 798 lignes absentes sur 5 762 787 (50,857 %)</li><li><code>rem_neg</code> — 3 892 606 lignes absentes sur 5 762 787 (67,547 %)</li></ul></div>
+
+<h2 class="saut">Les données auditées</h2>
+<table>
+  <thead><tr><th style="width:34%">Fichier</th><th>Empreinte</th></tr></thead>
+  <tbody><tr><td><code>cube_damir.parquet</code></td><td>1 091 430 439 o · modifié 2026-07-30 15:22 UTC (non haché : trop volumineux)</td></tr><tr><td><code>cube_damir_compact.parquet</code></td><td>121 948 630 o · sha256 26e201a9cfa55de5</td></tr><tr><td><code>prs_nat_transco.csv</code></td><td>153 189 o · sha256 03dde2813fad7ecf</td></tr></tbody>
+</table>
+<p>Le cube brut n'est pas haché : à 1,1 Go, son empreinte cryptographique coûterait
+plus que l'ensemble des contrôles. Il est identifié par sa taille et sa date.</p>
+
+<h2>Ce que cette phase ne dit pas</h2>
+<p>Cette phase établit que <strong>DAMIR est cohérent avec lui-même</strong>. Elle ne
+dit pas encore que les chiffres sont <em>vrais</em> : cela demande de les confronter
+à ce que publient l'Assurance Maladie, l'Insee et le CépiDc. Ces valeurs de référence
+ne peuvent pas être écrites de mémoire — une référence inventée invaliderait
+l'audit entier — et le poste est hors ligne par principe. Elles restent donc à
+fournir.</p>
+<p>Restent également à mesurer : la <strong>parité entre les quatre écrans</strong>
+qui calculent les mêmes indicateurs par des chemins différents, les invariants et
+cas limites, et l'affichage. Une piste est déjà repérée et attend d'être chiffrée :
+dans l'écran Extraire, cocher « Ticket modérateur » pourrait modifier la valeur du
+« Montant remboursé » affiché à côté.</p>
+
+<footer>
+  Rapport engendré par <code>python -m tools.audit.lancer</code> — il se régénère,
+  il ne se corrige pas à la main. DAMIR Studio · Forsides.
+</footer>
+</body></html>

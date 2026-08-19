@@ -17,7 +17,7 @@ from pathlib import Path
 
 from . import reference as ref
 from .socle import (CONFORME, DEFAUT, EXPLIQUE, PLANCHER_MONTANT, TOLERANCES,
-                    Comparaison, Controle, formater)
+                    Comparaison, Controle, sci, formater)
 
 BACKEND = ref.RACINE / "app" / "backend"
 
@@ -96,7 +96,7 @@ def _filtres(con) -> list[Controle]:
         reference_par="**SQL manuel**, prédicat rédigé à la main pour chaque scénario ; "
                       "`cube_where` fournit la valeur *testée*, jamais l'attendue",
         attendu="prédicat manuel", obtenu="prédicat du produit",
-        ecart=f"{lot.pire:.2e}",
+        ecart=sci(lot.pire),
         verdict=lot.verdict,
         note=lot.resume(),
         details=detail,

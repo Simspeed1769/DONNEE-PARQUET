@@ -77,6 +77,10 @@ class Controle:
     note: str = ""
     #: Détail des comparaisons, pour la section qui suit le tableau.
     details: list[str] = field(default_factory=list)
+    #: Les valeurs **brutes** du contrôle, pour que tout texte de synthèse les
+    #: dérive au lieu de les recopier. Un résumé qui recopie un chiffre est un
+    #: chiffre de plus à maintenir, et le premier à mentir quand la donnée bouge.
+    chiffres: dict[str, float] = field(default_factory=dict)
 
 
 def ecart_relatif(attendu: float | None, obtenu: float | None) -> float | None:
@@ -159,6 +163,20 @@ class Comparaison:
             texte += f" · {self.absents} valeur(s) absente(s)"
         texte += f" · {self.hors_tolerance} hors tolérance"
         return texte
+
+
+def sci(valeur: float) -> str:
+    """Notation scientifique à la française : 4,3e-13, et non 4.3e-13.
+
+    La Phase 5 contrôlera que l'application écrit ses décimales avec une virgule.
+    Il serait mal venu que le rapport qui l'exige ne s'y tienne pas.
+    """
+    return f"{valeur:.2e}".replace(".", ",")
+
+
+def pct(valeur: float, decimales: int = 1) -> str:
+    """Un pourcentage à la française : « 16,7 % », virgule et espace insécable."""
+    return f"{valeur:.{decimales}f}".replace(".", ",") + chr(8239) + "%"
 
 
 def formater(valeur: Any) -> str:

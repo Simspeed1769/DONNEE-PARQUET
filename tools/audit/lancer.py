@@ -11,7 +11,7 @@ from __future__ import annotations
 import sys
 import time
 
-from . import phase1_filtres, phase1_interne, rapport
+from . import phase1_filtres, phase1_interne, rapport, rapport_pdf
 
 
 def main() -> int:
@@ -21,8 +21,11 @@ def main() -> int:
     controles += phase1_filtres.executer()
     controles.sort(key=lambda c: c.ref)
     chemin = rapport.ecrire(rapport.rendre(controles, "Phase 1"))
+    pdf = rapport_pdf.ecrire_pdf(controles, "Phase 1")
     duree = time.time() - debut
-    print(f"{len(controles)} controles en {duree:.1f}s -> {chemin}")
+    print(f"{len(controles)} controles en {duree:.1f}s")
+    print(f"  Markdown : {chemin}")
+    print(f"  PDF      : {pdf if pdf else 'non produit'}")
     for c in controles:
         print(f"  {c.verdict:16s} {c.ref:6s} {c.libelle}")
     return 0

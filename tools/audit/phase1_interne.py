@@ -25,7 +25,7 @@ C'est cette version-là qui est contrôlée ici, et la colonne « référence »
 from __future__ import annotations
 
 from . import reference as ref
-from .socle import (CONFORME, DEFAUT, EXPLIQUE, PLANCHER_MONTANT, Comparaison, Controle,
+from .socle import (CONFORME, DEFAUT, EXPLIQUE, PLANCHER_MONTANT, Comparaison, Controle, pct, sci,
                     TOLERANCES, ecart_relatif, formater)
 
 #: Les modalités « résiduelles » : présentes dans la donnée, mais qui ne
@@ -65,7 +65,7 @@ def _residu(con, dimension: str) -> Controle:
         reference_par="SQL manuel sur le Parquet compact, sans `cube_where` ni aucune fonction du produit",
         attendu=formater(total),
         obtenu=formater(somme_modalites),
-        ecart=f"{gap:.2e}",
+        ecart=sci(gap),
         # L'additivité est exacte, et c'est ce que mesure `ecart`. Le verdict, lui,
         # tient compte du **résidu** : quand il dépasse 1 %, un lecteur qui
         # additionne les modalités nommées ne retrouve pas le total, et il doit le
@@ -77,12 +77,13 @@ def _residu(con, dimension: str) -> Controle:
             f"{len(modalites)} modalités, aucune ligne d'agrégat : le total national "
             f"**est** la somme, et l'additivité est exacte (écart {gap:.2e}).{PARA}"
             f"Le point qui mérite l'attention est ailleurs. Le résidu « {libelle} » "
-            f"pèse {formater(residu)} € sur {formater(total)} €, soit **{part:.3f} %**. "
+            f"pèse {formater(residu)} € sur {formater(total)} €, soit **{pct(part, 3)}**. "
             f"Additionner les seules modalités nommées donne {formater(connus)} € — "
             f"il manque exactement ce résidu. La modalité est bien offerte et "
             f"étiquetée par l'application ; le risque n'est pas qu'elle soit cachée, "
             f"mais qu'un lecteur additionne les autres et croie tenir le total."
         ),
+        chiffres={"total": total, "residu": residu, "part": part, "connus": connus},
     )
 
 
@@ -107,7 +108,7 @@ def _compact_contre_brut(con) -> list[Controle]:
     controles.append(Controle(
         ref="I-06a", base="DAMIR", libelle="Compact contre brut — total, mesure par mesure",
         reference_par="deux SQL manuels, un par fichier Parquet ; aucun code du produit",
-        attendu="brut", obtenu="compact", ecart=f"{lot.pire:.2e}",
+        attendu="brut", obtenu="compact", ecart=sci(lot.pire),
         verdict=lot.verdict, note=lot.resume(), details=detail,
     ))
 
@@ -121,7 +122,7 @@ def _compact_contre_brut(con) -> list[Controle]:
     controles.append(Controle(
         ref="I-06b", base="DAMIR", libelle="Compact contre brut — par année × mesure",
         reference_par="idem, agrégé à l'année de soins",
-        attendu="brut", obtenu="compact", ecart=f"{lot.pire:.2e}",
+        attendu="brut", obtenu="compact", ecart=sci(lot.pire),
         verdict=lot.verdict, note=lot.resume(),
     ))
 
@@ -170,6 +171,9 @@ def _compact_contre_brut(con) -> list[Controle]:
             f"pire écart relatif {rel_max:.2e} · {hors} hors tolérance"
         )
 
+    valeurs_cles = con.execute(
+        f"WITH c AS ({agr('compact')}) SELECT COUNT(*) FROM c"
+    ).fetchone()[0]
     desaccord = manquantes + surnumeraires
     conforme = desaccord == 0 and hors_total == 0
     controles.append(Controle(
@@ -178,7 +182,7 @@ def _compact_contre_brut(con) -> list[Controle]:
         reference_par="jointures externes entre les deux Parquet agrégés à la même clé ; SQL manuel",
         attendu="mêmes clés, mêmes valeurs",
         obtenu=f"{formater(desaccord)} clé(s) en désaccord · {formater(hors_total)} cellule(s) hors tolérance",
-        ecart=f"{pire_rel:.2e}",
+        ecart=sci(pire_rel),
         verdict=CONFORME if conforme else DEFAUT,
         note=(
             f"**{formater(manquantes)} clé absente du compact, "
@@ -191,6 +195,7 @@ def _compact_contre_brut(con) -> list[Controle]:
             f"`qte` est identique au bit près. **Le compact est fidèle au brut.**"
         ),
         details=detail,
+        chiffres={"cles": float(valeurs_cles), "pire_absolu": pire_abs, "pire_relatif": pire_rel},
     ))
     return controles
 
@@ -209,7 +214,7 @@ def _hierarchie(con) -> list[Controle]:
         libelle="Σ des grands postes, « Autres » compris, = total du cube",
         reference_par="SQL manuel : jointure gauche sur `prs_nat_transco.csv`, COALESCE écrit à la main",
         attendu=formater(total), obtenu=formater(somme_gp),
-        ecart=f"{gap:.2e}" if gap is not None else "—",
+        ecart=sci(gap) if gap is not None else "—",
         verdict=CONFORME if gap is not None and gap <= 1e-9 else DEFAUT,
         note=(
             f"{len(par_gp)} grands postes. « Autres » (prestations sans correspondance "
@@ -270,7 +275,7 @@ def _hierarchie(con) -> list[Controle]:
         ref="I-05", base="DAMIR",
         libelle="Cascade : Σ postes = grand poste, Σ sous-postes = poste, Σ prestations = sous-poste",
         reference_par="SQL manuel, agrégations parent et enfant calculées séparément puis rapprochées",
-        attendu="parent", obtenu="Σ enfants", ecart=f"{lot.pire:.2e}",
+        attendu="parent", obtenu="Σ enfants", ecart=sci(lot.pire),
         verdict=lot.verdict, note=lot.resume(),
     ))
     return controles
@@ -317,7 +322,7 @@ def _transcodification(con) -> list[Controle]:
         reference_par="SQL manuel, jointure gauche sur `prs_nat_transco.csv` puis comptage des orphelins",
         attendu="0 code orphelin",
         obtenu=f"{formater(repli)} code(s)",
-        ecart=f"{part:.3f} %",
+        ecart=pct(part, 3),
         verdict=CONFORME if repli == 0 else EXPLIQUE,
         note=(
             f"**{formater(non_jointes)} code sur {formater(codes)} n'est sans "
@@ -363,44 +368,103 @@ def _transcodification(con) -> list[Controle]:
 
 
 def _negatifs(con) -> list[Controle]:
-    """I-10 — l'origine des montants négatifs de « Autres »."""
+    """I-10 — l'origine des montants négatifs de « Autres ».
+
+    La première version de ce contrôle écrivait la décomposition
+    `SUM(rem - rem_neg)`, et concluait à une incohérence de 68,75 M€. Elle avait
+    tort, et l'erreur est instructive : `rem_neg` vaut `NULL` sur les deux tiers
+    des lignes, et `rem - NULL` vaut `NULL`, que `SUM` écarte. La décomposition
+    doit donc se faire **somme à somme** — `SUM(rem) - SUM(rem_neg)` — qui est
+    exactement ce que fait le produit. Le recensement de ces absences est devenu
+    le contrôle I-11.
+    """
     rows = con.execute(
         """
         SELECT c.soi_ann AS annee,
                SUM(c.rem)::DOUBLE AS rem,
                SUM(c.rem_neg)::DOUBLE AS rem_neg,
-               SUM(c.rem - c.rem_neg)::DOUBLE AS hors_regul,
+               (SUM(c.rem) - SUM(c.rem_neg))::DOUBLE AS hors_regul,
                COUNT(DISTINCT c.prs_nat) AS codes
         FROM compact c LEFT JOIN transco t ON t.prs_nat = c.prs_nat
         WHERE COALESCE(t.grand_poste, 'Autres') = 'Autres'
         GROUP BY 1 ORDER BY 1
         """
     ).fetchall()
-    negatives = [row for row in rows if (row[1] or 0) < 0]
+    negatives = [r for r in rows if (r[1] or 0) < 0]
+
+    # La question de fond : le négatif vient-il **entièrement** des
+    # régularisations ? Autrement dit, le remboursement hors régularisations
+    # reste-t-il positif ? Si oui, le signe n'est pas une anomalie d'agrégation.
+    explique_par_regul = [r for r in negatives if (r[3] or 0) > 0]
     detail = [
         f"**{r[0]}** — remboursé {formater(r[1])} € = régularisations {formater(r[2])} € "
-        f"+ remboursements réels {formater(r[3])} €, sur {formater(r[4])} codes"
+        f"+ remboursements hors régularisations {formater(r[3])} €, sur {formater(r[4])} codes"
         for r in negatives
     ]
-    coherent = all(
-        abs((r[1] or 0) - ((r[2] or 0) + (r[3] or 0))) <= 1e-6 * max(1.0, abs(r[1] or 1))
-        for r in negatives
-    )
+    tout_explique = len(explique_par_regul) == len(negatives)
+
     return [Controle(
         ref="I-10", base="DAMIR",
         libelle="Origine des montants négatifs de « Autres »",
-        reference_par="SQL manuel, décomposition `rem = rem_neg + (rem − rem_neg)`",
-        attendu="rem = régularisations + remboursements réels",
-        obtenu="vérifié" if coherent else "décomposition incohérente",
-        ecart="0" if coherent else "—",
-        verdict=EXPLIQUE if negatives else CONFORME,
+        reference_par="SQL manuel, décomposition somme à somme `SUM(rem) − SUM(rem_neg)`",
+        attendu="le remboursé hors régularisations reste positif",
+        obtenu=f"{len(explique_par_regul)}/{len(negatives)} année(s)",
+        ecart="0" if tout_explique else "—",
+        verdict=EXPLIQUE if tout_explique else DEFAUT,
         note=(
-            f"{len(negatives)} année(s) où « Autres » est négatif. La décomposition "
-            f"est exacte : le négatif vient des **régularisations** (`rem_neg`), une "
-            f"composante du cube et non un défaut d'agrégation. "
-            "Comportement légitime, à documenter." if negatives else
-            "Aucune année négative."
+            f"{len(negatives)} année(s) où « Autres » affiche un remboursé négatif. "
+            f"Sur **{len(explique_par_regul)} d'entre elles**, le remboursé hors "
+            f"régularisations reste **positif** : le signe négatif vient donc "
+            f"entièrement des régularisations (`rem_neg`), qui sont une composante "
+            f"du cube et non un artefact d'agrégation. "
+            + ("**Comportement légitime, à documenter — pas un défaut à corriger.**"
+               if tout_explique else
+               "**Certaines années restent inexpliquées et demandent un examen.**")
         ),
+        details=detail,
+    )]
+
+
+def _valeurs_absentes(con) -> list[Controle]:
+    """I-11 — les colonnes de mesure qui valent `NULL`, et ce que cela change.
+
+    Contrôle né d'une erreur de l'audit lui-même : `rem_neg` est absent des deux
+    tiers des lignes, et l'ignorer produit des décompositions fausses. Il valait
+    donc d'être recensé pour de bon.
+    """
+    total = con.execute("SELECT COUNT(*) FROM compact").fetchone()[0]
+    detail, notables = [], []
+    for mesure in ref.MESURES:
+        n = con.execute(f"SELECT COUNT(*) FROM compact WHERE {mesure} IS NULL").fetchone()[0]
+        part = 100.0 * n / total if total else 0.0
+        detail.append(f"`{mesure}` — {formater(n)} lignes absentes sur {formater(total)} ({pct(part, 3)})")
+        if part > 1.0:
+            notables.append((mesure, part))
+
+    return [Controle(
+        ref="I-11", base="DAMIR",
+        libelle="Valeurs absentes (`NULL`) dans les colonnes de mesure",
+        reference_par="SQL manuel, comptage direct par colonne sur le Parquet compact",
+        attendu="recensement",
+        obtenu=f"{len(notables)} colonne(s) au-delà de 1 %",
+        ecart="—",
+        verdict=EXPLIQUE if notables else CONFORME,
+        note=(
+            "**L'absence est massive et parfaitement normale — mais il faut la "
+            "connaître pour ne pas écrire de contrôle faux.** "
+            + ", ".join(f"`{m}` manque sur {pct(p)} des lignes" for m, p in notables)
+            + ".{PARA}"
+            "Une base de remboursement absente (`bse_ref`, `rem_ref`) signifie qu'il "
+            "n'y en a pas — une prestation forfaitaire, une indemnité journalière — "
+            "et non qu'elle vaut zéro. Une régularisation absente (`rem_neg`) "
+            "signifie qu'il n'y a pas eu de régularisation. Dans les deux cas, "
+            "`SUM` écarte les absents, ce qui donne le bon total.{PARA}"
+            "**La conséquence pratique**, apprise à nos dépens : toute décomposition "
+            "doit se faire **somme à somme** et jamais ligne à ligne. "
+            "`SUM(rem − rem_neg)` écarte les deux tiers des lignes et se trompe de "
+            "68,75 M€ ; `SUM(rem) − SUM(rem_neg)` est juste. Le produit emploie bien "
+            "la seconde forme."
+        ).replace("{PARA}", PARA),
         details=detail,
     )]
 
@@ -416,5 +480,6 @@ def executer() -> list[Controle]:
     controles += _hierarchie(con)
     controles += _transcodification(con)
     controles += _negatifs(con)
+    controles += _valeurs_absentes(con)
     con.close()
     return controles
