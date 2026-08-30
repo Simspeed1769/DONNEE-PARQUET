@@ -203,7 +203,7 @@ export function PanoramaSection({
             const intensity = 0.12 + 0.76 * value / overseasMax;
             return (
               <button type="button" key={item.code} className={item.code === region ? "selected" : ""}
-                style={{ backgroundColor: `rgba(236,76,83,${intensity})` }}
+                style={{ backgroundColor: `color-mix(in srgb, var(--accent) ${Math.round(intensity * 100)}%, transparent)` }}
                 onClick={() => setRegion(item.code === region ? "FR" : item.code)}>
                 <strong>{item.label}</strong>
                 <small>{measure === "share" ? `${formatNumber(value, 2)} %` : formatNumber(value)}</small>

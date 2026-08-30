@@ -141,7 +141,7 @@ export function tooltipCommon(tokens: ChartTokens) {
     borderWidth: 1,
     padding: [10, 12] as [number, number],
     textStyle: { color: tokens.ink, fontSize: 12, fontFamily: tokens.font },
-    extraCssText: "box-shadow: 0 8px 28px rgba(0,0,0,.14); border-radius: 10px;",
+    extraCssText: "box-shadow: var(--shadow); border-radius: var(--radius);",
   };
 }
 

@@ -45,28 +45,51 @@
 :root {
   color-scheme: light;
 
-  /* — Surfaces et encres — */
-  --paper: #f7f6f3;
+  /* — Surfaces et encres : sept couleurs, et six alias —
+     L'ensemble fermé compte sept couleurs d'interface. Les six jetons du
+     second groupe ne sont pas des couleurs de plus : ce sont des *alias* qui
+     valent exactement l'une des sept. Leur nom est conservé pour ne pas
+     réécrire 283 déclarations sans qu'un seul pixel change. Ils marquent où
+     une nuance existait autrefois ; ils n'en produisent plus.
+     `--surface-hover` fait exception : il vaut déjà le calque à 4 % du premier
+     moment, de sorte que le survol reste uniforme d'ici à ce qu'il soit posé
+     sur tous les éléments interactifs. */
+  --paper: #fbfaf8;
   --surface: #ffffff;
-  --surface-raised: #ffffff;
-  --surface-sunken: #f2f1ed;
-  --surface-hover: #f6f5f1;
-
-  --ink: #14130f;
-  --ink-secondary: #4e4c45;
-  --ink-muted: #7d7a71;
+  --ink: #1a1a1a;
+  --ink-accent: #5b0c02;
+  --ink-secondary: #6b6b6b;
   --ink-inverse: #ffffff;
+  --line: #e5e3df;
 
-  --line: #e4e2db;
-  --line-strong: #cfccc2;
-  --grid: #eceae3;
+  --surface-raised: var(--surface);
+  --surface-sunken: var(--paper);
+  --surface-hover: color-mix(in srgb, var(--ink) 4%, var(--surface));
+  --ink-muted: var(--ink-secondary);
+  --line-strong: var(--line);
+  --grid: var(--line);
 
-  /* — Accent de marque — */
-  --accent: #d8383c;
-  --accent-hover: #bd2d31;
+  /* — L'accent, et rien qui s'en écarte —
+     Une seule teinte. Les trois jetons qui suivent n'en sont pas d'autres :
+     ce sont des dérivations mécaniques de celle-là, pas des couleurs choisies.
+     `--accent-wash` vaut les 8 % du surlignage de ligne. `--accent-hover`
+     disparaîtra quand le calque de survol uniforme sera posé — il n'est là
+     que pour ne pas éteindre les survols entre deux phases. */
+  --accent: #ef4647;
   --accent-ink: #ffffff;
-  --accent-wash: #fdeeee;
-  --accent-line: #f2cdcd;
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, var(--ink));
+  --accent-wash: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  --accent-line: color-mix(in srgb, var(--accent) 28%, var(--surface));
+
+  /* — La barre latérale —
+     Elle est sombre dans les deux thèmes, donc ses encres vivent ici et non
+     dans les surfaces de la page. Le noir était froid quand la page était
+     chaude : les deux zones semblaient appartenir à deux applications. Quatre
+     encres, toutes sur la même dominante que le papier. */
+  --sidebar: #1c1917;
+  --sidebar-ink: #a8a29e;
+  --sidebar-ink-active: #fafaf9;
+  --sidebar-line: #2c2825;
 
   /* — États — */
   --good: #0ca30c;
@@ -98,7 +121,9 @@
   --tooltip-ink: #ffffff;
   --overlay: rgba(18, 28, 43, .34);
 
-  /* — Anneau de focus — */
+  /* — Anneau de focus —
+     C'est `--ink-accent` à 25 %. Ce n'est pas une ombre : la règle « une seule
+     ombre » ne le concerne pas, il ne décrit aucune élévation. */
   --focus-ring: rgba(91, 12, 2, .25);
 
   /* — La teinte d'une série SEULE au graphique — l'accent de l'outil.
@@ -154,39 +179,58 @@
   /* Territoire sans donnée : ni un zéro, ni une valeur basse. */
   --map-void: #e8e6df;
 
-  /* — Typographie — */
+  /* — Typographie : sept pas, pas un de plus —
+     Le plancher est à 12 px. L'interface reposait auparavant sur du 7,4 à
+     11 px : les écrans denses ont grandi, c'est le prix assumé du plancher.
+     Trois graisses seulement — 400, 600, 800 — là où quinze coexistaient,
+     dont six entre 600 et 660 qu'aucun œil ne distinguait. */
   --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --text-2xs: .688rem;
-  --text-xs: .75rem;
-  --text-sm: .813rem;
-  --text-base: .875rem;
-  --text-md: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.625rem;
-  --text-2xl: 2.125rem;
-  --text-hero: clamp(2.25rem, 4vw, 3rem);
+  --text-xs: .75rem;     /* 12 */
+  --text-sm: .8125rem;   /* 13 */
+  --text-base: .9375rem; /* 15 */
+  --text-md: 1.125rem;   /* 18 */
+  --text-lg: 1.5rem;     /* 24 */
+  --text-xl: 2.5rem;     /* 40 */
+  --text-hero: 4rem;     /* 64 */
 
-  /* — Espacement, rayons, ombres — */
+  /* — Espacement : huit pas, aucune valeur hors échelle — */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --space-10: 40px;
   --space-12: 48px;
+  --space-16: 64px;
 
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 14px;
-  --radius-pill: 999px;
+  /* — Un rayon. `--radius-round` est la seule exception, réservée à ce qui est
+       rond par nature : puces, points de légende, numéros d'étape. — */
+  --radius: 4px;
+  --radius-round: 50%;
 
-  --shadow-sm: 0 1px 2px rgba(20, 19, 15, .05);
-  --shadow: 0 4px 16px rgba(20, 19, 15, .07);
-  --shadow-lg: 0 18px 44px rgba(20, 19, 15, .14);
+  /* — Une ombre, réservée à ce qui flotte : popovers, menus, tiroirs.
+       Une carte posée sur la page se tient par son filet, pas par son ombre. */
+  --shadow: 0 8px 24px rgba(26, 26, 26, .12);
 
-  --ease: cubic-bezier(.22, .61, .36, 1);
+  /* — Hauteurs des commandes — */
+  --control-h: 36px;
+  --nav-h: 44px;
+
+  /* — Quatre durées, une par moment, et une seule courbe —
+       150 ms le survol, 200 ms le changement de vue. Les deux suivantes sont
+       imposées par les moments eux-mêmes : un chiffre qui se transforme met
+       300 ms, une pulsation de squelette ne peut pas battre à 150 ms. */
+  --dur-hover: 150ms;
+  --dur-view: 200ms;
+  --dur-count: 300ms;
+  --dur-pulse: 1200ms;
+  --ease: cubic-bezier(.32, .72, 0, 1);
+}
+
+/* Le pas de 64 px ne tient pas sur un écran étroit : il recule d'un pas, il
+   ne sort pas de l'échelle. */
+@media (max-width: 720px) {
+  :root { --text-hero: 2.5rem; }
 }
 
 /* Le mode sombre : ses propres marches, validées contre la surface sombre.
@@ -198,24 +242,16 @@
 
     --paper: #0e0d0c;
     --surface: #171614;
-    --surface-raised: #1f1e1b;
-    --surface-sunken: #121110;
-    --surface-hover: #24221f;
-
     --ink: #f6f5f1;
+    --ink-accent: #f2b3ad;
     --ink-secondary: #b9b6ac;
-    --ink-muted: #8b8880;
     --ink-inverse: #14130f;
-
     --line: #2c2a26;
-    --line-strong: #3d3a35;
-    --grid: #26241f;
 
     --accent: #f0575b;
-    --accent-hover: #f87074;
     --accent-ink: #14130f;
-    --accent-wash: #2a1817;
-    --accent-line: #4a2725;
+
+    --sidebar: #0b0a09;
 
     --good: #0ca30c;
     --good-text: #35c935;
@@ -274,9 +310,7 @@
     --diverge-7: #8fc0f5;
     --map-void: #2e2c28;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
-    --shadow: 0 4px 16px rgba(0, 0, 0, .45);
-    --shadow-lg: 0 18px 44px rgba(0, 0, 0, .6);
+    --shadow: 0 8px 24px rgba(0, 0, 0, .5);
   }
 }
 
@@ -285,24 +319,16 @@
 
   --paper: #0e0d0c;
   --surface: #171614;
-  --surface-raised: #1f1e1b;
-  --surface-sunken: #121110;
-  --surface-hover: #24221f;
-
   --ink: #f6f5f1;
+  --ink-accent: #f2b3ad;
   --ink-secondary: #b9b6ac;
-  --ink-muted: #8b8880;
   --ink-inverse: #14130f;
-
   --line: #2c2a26;
-  --line-strong: #3d3a35;
-  --grid: #26241f;
 
   --accent: #f0575b;
-  --accent-hover: #f87074;
   --accent-ink: #14130f;
-  --accent-wash: #2a1817;
-  --accent-line: #4a2725;
+
+  --sidebar: #0b0a09;
 
   --good: #0ca30c;
   --good-text: #35c935;
@@ -363,9 +389,7 @@
   --diverge-7: #8fc0f5;
   --map-void: #2e2c28;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
-  --shadow: 0 4px 16px rgba(0, 0, 0, .45);
-  --shadow-lg: 0 18px 44px rgba(0, 0, 0, .6);
+  --shadow: 0 8px 24px rgba(0, 0, 0, .5);
 }
 
 /* ── Deux palettes, un seul commutateur ──────────────────────────────────────
@@ -415,8 +439,11 @@
 }
 
 /* La teinte d'une série seule au graphique. Elle suit la palette choisie, et
-   c'est elle qui donne à l'outil sa dominante. */
-:root { --accent-chart: #d8383c; }
+   c'est elle qui donne à l'outil sa dominante. En palette rouge, elle *est*
+   l'accent de l'interface : deux rouges presque identiques côte à côte se
+   lisent comme un défaut de rendu, pas comme une intention. Les rampes et la
+   palette catégorielle, elles, ne bougent pas — leurs écarts sont mesurés. */
+:root { --accent-chart: var(--accent); }
 
 @media (prefers-color-scheme: dark) {
   :root:where(:not([data-theme="light"])) {
@@ -428,7 +455,7 @@
     --ramp-6: #f2918e;
     --ramp-7: #f9bcb9;
     --ramp-8: #fde3e1;
-    --accent-chart: #e66767;
+    --accent-chart: var(--accent);
   }
   :root:where(:not([data-theme="light"]))[data-palette="blue"] {
     --ramp-1: #0d366b;
@@ -454,7 +481,7 @@
   --ramp-6: #f2918e;
   --ramp-7: #f9bcb9;
   --ramp-8: #fde3e1;
-  --accent-chart: #e66767;
+  --accent-chart: var(--accent);
 }
 
 :root[data-theme="dark"][data-palette="blue"] {

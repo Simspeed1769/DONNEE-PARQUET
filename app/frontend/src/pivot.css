@@ -5,20 +5,20 @@
  * code une **grandeur**, jamais une identité — c'est pourquoi ce n'est pas la
  * palette catégorielle qui sert ici. */
 
-.pivot-page { width: min(1680px, 100%); padding: 34px 40px 64px; }
+.pivot-page { width: min(1680px, 100%); padding: var(--space-8) var(--space-8) var(--space-16); }
 .pivot-hero { align-items: center; }
-.pivot-hero p strong { color: var(--ink); font-weight: 700; }
+.pivot-hero p strong { color: var(--ink); font-weight: 800; }
 
-.pivot-hero-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+.pivot-hero-actions { display: flex; gap: var(--space-2); flex: 0 0 auto; }
 .pivot-hero-actions button {
-  min-height: 37px;
-  padding: 0 14px;
+  min-height: var(--control-h);
+  padding: 0 var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--ink-secondary);
   background: var(--surface);
-  font-size: .62rem;
-  font-weight: 750;
+  font-size: var(--text-xs);
+  font-weight: 800;
   cursor: pointer;
 }
 .pivot-hero-actions button:hover { color: var(--ink); border-color: var(--line-strong); }
@@ -28,29 +28,29 @@
   background: var(--accent-wash);
 }
 
-.pivot-stage { margin-top: 16px; padding: 20px 22px 14px; }
+.pivot-stage { margin-top: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-3); }
 .pivot-stage-head {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 18px;
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
-.pivot-stage-head h2 { margin: 0; color: var(--ink); font-size: 1.05rem; letter-spacing: -.015em; }
+.pivot-stage-head h2 { margin: 0; color: var(--ink); font-size: var(--text-lg); letter-spacing: -.015em; }
 
-.pivot-controls { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.pivot-controls { display: flex; align-items: flex-end; gap: var(--space-2); flex-wrap: wrap; }
 .pivot-measure { min-width: 190px; }
 .pivot-aggregation { min-width: 176px; }
 /* Les deux sélecteurs empruntent la forme des champs de la barre de portée :
    même hauteur, même filet, et un panneau qui se pose au-dessus du contenu. */
 .pivot-controls .choice-select { border-color: var(--line-strong); border-radius: var(--radius); }
-.pivot-controls .choice-select summary { min-height: 37px; padding: 0 11px; }
+.pivot-controls .choice-select summary { min-height: var(--control-h); padding: 0 var(--space-3); }
 .pivot-controls .choice-select summary > span:first-child { display: none; }
 .pivot-controls .choice-select summary strong {
   max-width: none;
   color: var(--ink-soft);
-  font-size: .62rem;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: 400;
 }
 .pivot-controls .choice-popover {
   position: absolute;
@@ -62,17 +62,17 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow-floating);
+  box-shadow: var(--shadow);
 }
 
-.pivot-note { margin: 10px 0 0; color: var(--warning-text); font-size: .6rem; }
+.pivot-note { margin: var(--space-2) 0 0; color: var(--warning-text); font-size: var(--text-xs); }
 
 /* — Le tableau —
    Il défile dans son propre cadre : un croisé large ne doit pas faire défiler
    la page, et l'en-tête doit rester lisible pendant qu'on parcourt les lignes. */
 .pivot-table-wrap {
   max-height: 560px;
-  margin-top: 12px;
+  margin-top: var(--space-3);
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -93,12 +93,12 @@
 }
 .pivot-table thead th button {
   width: 100%;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   border: 0;
   color: var(--ink-secondary);
   background: transparent;
   font: inherit;
-  font-size: .62rem;
+  font-size: var(--text-xs);
   font-weight: 800;
   text-align: right;
   cursor: pointer;
@@ -114,22 +114,22 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  padding: 10px 12px;
+  padding: var(--space-2) var(--space-3);
   background: var(--surface-sunken);
   color: var(--ink);
-  font-size: .64rem;
-  font-weight: 700;
+  font-size: var(--text-sm);
+  font-weight: 800;
   text-align: left;
   white-space: nowrap;
 }
-.pivot-corner { z-index: 3; color: var(--ink-muted); font-weight: 800; font-size: .58rem; }
+.pivot-corner { z-index: 3; color: var(--ink-muted); font-weight: 800; font-size: var(--text-xs); }
 
 .pivot-table tbody td,
 .pivot-table tfoot td {
-  padding: 9px 12px;
+  padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--line);
   color: var(--ink);
-  font-size: .68rem;
+  font-size: var(--text-sm);
   text-align: right;
   white-space: nowrap;
 }
@@ -151,17 +151,17 @@
 
 .pivot-warnings {
   display: grid;
-  gap: 5px;
-  margin: 12px 0 0;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
 }
 .pivot-warnings li {
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius);
   color: var(--warning-text);
   background: var(--warning-wash);
-  font-size: .58rem;
+  font-size: var(--text-xs);
   line-height: 1.45;
 }
 
@@ -169,55 +169,55 @@
    Ce qui distingue ce tableau d'un croisé de tableur. Elle vit sous le
    tableau plutôt qu'en tiroir latéral : à cette largeur, un panneau de côté
    volait la place aux colonnes. */
-.pivot-method { margin-top: 16px; padding: 20px 24px 22px; }
+.pivot-method { margin-top: var(--space-4); padding: var(--space-4) var(--space-6) var(--space-6); }
 .pivot-method > header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 14px;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--line);
 }
 .pivot-method > header span {
   display: block;
   color: var(--accent-hover);
-  font-size: .5rem;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: 800;
   letter-spacing: .07em;
   text-transform: uppercase;
 }
-.pivot-method > header h3 { margin: 6px 0 0; color: var(--ink); font-size: .86rem; }
+.pivot-method > header h3 { margin: var(--space-1) 0 0; color: var(--ink); font-size: var(--text-md); }
 .pivot-method > header button {
   display: grid;
   place-items: center;
   width: 30px;
   height: 30px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--ink-secondary);
   background: var(--surface);
-  font-size: 1rem;
+  font-size: var(--text-md);
   cursor: pointer;
 }
-.pivot-method section { margin-top: 16px; }
+.pivot-method section { margin-top: var(--space-4); }
 .pivot-method section > span {
   display: block;
   color: var(--ink-muted);
-  font-size: .5rem;
-  font-weight: 850;
+  font-size: var(--text-xs);
+  font-weight: 800;
   letter-spacing: .07em;
   text-transform: uppercase;
 }
-.pivot-method section p { margin: 7px 0 0; color: var(--ink-secondary); font-size: .62rem; line-height: 1.55; }
+.pivot-method section p { margin: var(--space-2) 0 0; color: var(--ink-secondary); font-size: var(--text-xs); line-height: 1.55; }
 .pivot-method section strong {
   display: block;
-  margin: 7px 0 0;
-  padding: 11px 12px;
-  border-radius: var(--radius-sm);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius);
   color: var(--ink);
   background: var(--surface-sunken);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: .6rem;
+  font-size: var(--text-xs);
   font-weight: 600;
 }
 /* Le point de vigilance porte une **pastille en tête de ligne**, pas un liseré
@@ -227,8 +227,8 @@
    de la feuille de « Repères », supprimée au point 2.4 — il n'avait pas à lui
    survivre. */
 .pivot-method section.limitation {
-  padding: 12px 13px;
-  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius);
   background: var(--warning-wash);
 }
 .pivot-method section.limitation p {
@@ -240,25 +240,25 @@
   flex: 0 0 auto;
   width: 6px;
   height: 6px;
-  margin-top: 6px;
-  border-radius: 50%;
+  margin-top: var(--space-1);
+  border-radius: var(--radius-round);
   background: var(--warning);
   content: "";
 }
 .pivot-method-rule {
-  margin-top: 18px;
-  padding: 12px 13px;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-3);
   border: 1px solid var(--good-line);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--good-text);
   background: var(--good-wash);
-  font-size: .56rem;
-  font-weight: 700;
+  font-size: var(--text-xs);
+  font-weight: 800;
   line-height: 1.5;
 }
 
 @media (max-width: 900px) {
-  .pivot-page { padding: 28px 22px 48px; }
+  .pivot-page { padding: var(--space-6) var(--space-6) var(--space-12); }
   .pivot-stage-head { align-items: flex-start; flex-direction: column; }
   .pivot-controls { width: 100%; }
 }
