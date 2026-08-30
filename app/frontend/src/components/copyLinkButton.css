@@ -6,13 +6,14 @@
 .copy-link-button {
   display: grid;
   place-items: center;
-  width: var(--control-h); height: var(--control-h);
+  width: 36px;
+  height: 36px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--ink-secondary);
   background: var(--surface);
   cursor: pointer;
-  transition: color var(--dur-hover) var(--ease), border-color var(--dur-hover) var(--ease), background var(--dur-hover) var(--ease);
+  transition: color .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
 }
 .copy-link-button:hover {
   color: var(--ink);

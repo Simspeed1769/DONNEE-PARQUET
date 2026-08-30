@@ -16,16 +16,16 @@
   max-width: 82ch;
   margin: 0 0 var(--space-4);
   color: var(--ink-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   line-height: 1.6;
 }
-.ref-intro strong { color: var(--ink); font-weight: 600; }
+.ref-intro strong { color: var(--ink); font-weight: 650; }
 
 .ref-sous-intro {
   max-width: 82ch;
   margin: 0 0 var(--space-3);
   color: var(--ink-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   line-height: 1.55;
 }
 
@@ -35,11 +35,11 @@
 .ref-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
 }
 .ref-table th,
 .ref-table td {
-  padding: var(--space-2) var(--space-3);
+  padding: 10px var(--space-3);
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
@@ -51,7 +51,7 @@
   border-bottom: 1px solid var(--line-strong);
   background: var(--surface);
   color: var(--ink-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
@@ -59,7 +59,7 @@
 }
 .ref-table tbody th {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 650;
 }
 .ref-table td { color: var(--ink-secondary); line-height: 1.55; }
 .ref-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -68,38 +68,38 @@
 .ref-table tbody tr:last-child td { border-bottom: 0; }
 
 .ref-table code {
-  padding: var(--space-1) var(--space-1);
-  border-radius: var(--radius);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs, 4px);
   background: var(--surface-sunken);
   color: var(--ink-secondary);
-  font-size: var(--text-md);
+  font-size: .92em;
 }
 
 /* La réserve d'une ligne : elle suit la définition, en retrait, et ne se cache
    pas. C'est un avertissement de comparabilité — sa place est sous les yeux. */
 .ref-reserve {
   display: block;
-  margin-top: var(--space-1);
+  margin-top: 5px;
   padding-left: var(--space-2);
   border-left: 2px solid var(--accent-line);
   color: var(--ink-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 
-.ref-origine { color: var(--ink-muted); font-size: var(--text-sm); }
+.ref-origine { color: var(--ink-muted); font-size: var(--text-2xs); }
 .ref-aucun { color: var(--ink-muted); font-style: italic; }
-.ref-regle { font-weight: 400 !important; color: var(--ink-secondary) !important; }
+.ref-regle { font-weight: 500 !important; color: var(--ink-secondary) !important; }
 
 .ref-unite {
   display: inline-block;
   min-width: 34px;
-  padding: var(--space-1) var(--space-1);
+  padding: 2px 6px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--surface-sunken);
   color: var(--ink-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   text-align: center;
 }
 
@@ -107,16 +107,16 @@
    daltonien lit « non » aussi bien que quiconque. */
 .ref-oui-non {
   display: inline-block;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius);
-  font-size: var(--text-sm);
-  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-2xs);
+  font-weight: 700;
 }
 .ref-oui-non.oui { color: var(--good-text); background: var(--good-wash); }
 .ref-oui-non.non { color: var(--warning-text); background: var(--warning-wash); }
 
 /* — Le tableau des sources, dépliable — */
-.ref-row { cursor: pointer; transition: background-color var(--dur-hover) var(--ease); }
+.ref-row { cursor: pointer; transition: background-color .14s var(--ease); }
 .ref-row:hover { background: var(--surface-hover); }
 .ref-row.ouverte { background: var(--surface-sunken); }
 .ref-row.ouverte th, .ref-row.ouverte td { border-bottom-color: transparent; }
@@ -125,8 +125,8 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  margin-right: var(--space-2);
-  border-radius: var(--radius-round);
+  margin-right: 8px;
+  border-radius: 50%;
   vertical-align: middle;
   background: var(--accent);
 }
@@ -139,11 +139,11 @@
   width: 24px;
   height: 24px;
   border: 1px solid var(--line);
-  border-radius: var(--radius-round);
+  border-radius: 50%;
   color: var(--ink-muted);
   background: var(--surface);
   font-family: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   line-height: 1;
   cursor: pointer;
 }
@@ -151,23 +151,23 @@
 
 .ref-detail-row > td { padding: 0 var(--space-3) var(--space-4); background: var(--surface-sunken); }
 .ref-detail { max-width: 92ch; }
-.ref-detail > p { margin: 0 0 var(--space-3); color: var(--ink-secondary); font-size: var(--text-sm); line-height: 1.6; }
+.ref-detail > p { margin: 0 0 var(--space-3); color: var(--ink-secondary); font-size: var(--text-xs); line-height: 1.6; }
 .ref-detail h4 {
   margin: 0 0 var(--space-2);
   color: var(--ink);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
 .ref-detail ul { margin: 0 0 var(--space-3); padding-left: var(--space-4); }
 .ref-detail li {
-  margin-bottom: var(--space-1);
+  margin-bottom: 6px;
   color: var(--ink-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   line-height: 1.55;
 }
-.ref-grain { color: var(--ink-muted) !important; font-size: var(--text-sm) !important; }
+.ref-grain { color: var(--ink-muted) !important; font-size: var(--text-2xs) !important; }
 
 /* — Les familles de mesures — */
 .ref-famille { margin-bottom: var(--space-5); }
@@ -178,19 +178,19 @@
   gap: var(--space-2);
   margin: 0 0 var(--space-2);
   color: var(--ink);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
 }
 .ref-famille > h3 span {
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius);
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
   background: var(--surface-sunken);
   color: var(--ink-muted);
-  font-size: var(--text-sm);
-  font-weight: 800;
+  font-size: var(--text-2xs);
+  font-weight: 700;
 }
 
 @media (max-width: 860px) {
   .ref-panel { padding: var(--space-4) var(--space-4) var(--space-3); }
-  .ref-table { font-size: var(--text-sm); }
-  .ref-table th, .ref-table td { padding: var(--space-2) var(--space-2); }
+  .ref-table { font-size: var(--text-2xs); }
+  .ref-table th, .ref-table td { padding: 8px var(--space-2); }
 }

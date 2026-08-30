@@ -18,27 +18,27 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
   text-align: left;
 }
 .export-png-panel label { display: block; }
 .export-png-panel label > span {
   display: block;
-  margin-bottom: var(--space-1);
+  margin-bottom: 5px;
   color: var(--ink-muted);
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-size: var(--text-2xs);
+  font-weight: 640;
 }
 .export-png-panel input {
   width: 100%;
-  height: var(--control-h);
-  padding: 0 var(--space-2);
+  height: 34px;
+  padding: 0 10px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
   font: inherit;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
 }
 .export-png-panel input:focus-visible {
   border-color: var(--accent);
@@ -48,19 +48,19 @@
 .export-png-panel p {
   margin: 0;
   color: var(--ink-muted);
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 .export-png-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3); }
 .export-png-actions button:last-child {
-  padding: var(--space-2) var(--space-3);
+  padding: 7px 14px;
   border: 1px solid var(--accent);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-ink);
   font: inherit;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-size: var(--text-2xs);
+  font-weight: 640;
   cursor: pointer;
 }
 .export-png-actions button:last-child:disabled { opacity: .6; cursor: progress; }

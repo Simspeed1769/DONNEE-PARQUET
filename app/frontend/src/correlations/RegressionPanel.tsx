@@ -89,7 +89,7 @@ export function effectsOption(terms: RegressionTerm[], tokens: ChartTokens,
       borderWidth: 1,
       padding: [10, 12],
       textStyle: { color: tokens.ink, fontSize: 12, fontFamily: tokens.font },
-      extraCssText: "box-shadow: var(--shadow); border-radius: var(--radius);",
+      extraCssText: "box-shadow: 0 8px 28px rgba(0,0,0,.14); border-radius: 10px;",
       formatter: (params: any) => {
         const term = terms[params.dataIndex];
         if (!term) return "";

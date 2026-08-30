@@ -38,23 +38,23 @@
 .extraction-period > span,
 .extraction-fixed > span {
   display: block;
-  margin: 0 0 var(--space-1) var(--space-1);
+  margin: 0 0 6px 2px;
   color: var(--ink-muted);
-  font-size: var(--text-base);
+  font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
 }
 .extraction-filters select {
   width: 100%;
-  height: var(--control-h);
-  padding: 0 var(--space-8) 0 var(--space-3);
+  height: 39px;
+  padding: 0 31px 0 11px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: var(--ink);
   background: var(--surface-sunken);
   font-family: inherit;
-  font-size: var(--text-base);
+  font-size: var(--text-xs);
 }
 .extraction-filters select:focus {
   border-color: var(--accent);
@@ -79,14 +79,14 @@
 .extraction-fixed > strong {
   display: flex;
   align-items: center;
-  min-height: var(--control-h);
-  padding: 0 var(--space-3);
+  min-height: 39px;
+  padding: 0 12px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: var(--ink-secondary);
   background: var(--surface);
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: 650;
 }
 
 /* Le panneau de filtres DAMIR entre dans la rangée sans son propre cadre —
@@ -110,10 +110,10 @@
   padding: 0;
   border: 0;
 }
-.extraction-filters .filter-section-title { margin-bottom: var(--space-1); }
+.extraction-filters .filter-section-title { margin-bottom: 6px; }
 .extraction-filters .filter-section-title strong {
   color: var(--ink-muted);
-  font-size: var(--text-base);
+  font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: .05em;
   text-transform: uppercase;
@@ -127,17 +127,17 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-1) var(--space-2);
+  gap: 4px var(--space-2);
   margin: var(--space-4) 0 0;
   padding-top: var(--space-3);
   border-top: 1px solid var(--line);
   color: var(--ink-secondary);
-  font-size: var(--text-base);
+  font-size: var(--text-xs);
   line-height: 1.5;
 }
 .extraction-caveat strong {
   color: var(--ink);
-  font-size: var(--text-base);
+  font-size: var(--text-2xs);
   font-weight: 800;
   letter-spacing: .04em;
   text-transform: uppercase;
@@ -153,7 +153,7 @@
 }
 .extraction-sample {
   color: var(--ink-muted);
-  font-size: var(--text-base);
+  font-size: var(--text-2xs);
 }
 
 @media (max-width: 900px) {
