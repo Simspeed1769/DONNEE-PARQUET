@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { applyStoredPalette } from "./charts/palette";
 import "./theme.css";
+import "./fonts.css";
 import "./styles.css";
 import "./explore.css";
 import "./seriesPicker.css";

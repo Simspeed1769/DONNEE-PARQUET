@@ -154,8 +154,13 @@
   /* Territoire sans donnée : ni un zéro, ni une valeur basse. */
   --map-void: #e8e6df;
 
-  /* — Typographie — */
+  /* — Typographie —
+     Deux familles, embarquées dans `public/fonts/` et déclarées par
+     `fonts.css` : une serif pour ce qui se lit, une sans pour ce qui se compte.
+     Les replis restent des polices système, pour que l'écran tienne debout
+     avant l'arrivée des fichiers. */
   --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Source Serif 4", Cambria, Georgia, "Times New Roman", serif;
   --text-2xs: .688rem;
   --text-xs: .75rem;
   --text-sm: .813rem;

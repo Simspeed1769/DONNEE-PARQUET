@@ -10,6 +10,16 @@
       content="DAMIR Studio — exploration des dépenses de santé de l’Assurance Maladie"
     />
     <title>DAMIR Studio · Forsides</title>
+    <!--
+      Les deux sous-ensembles latins sont préchargés : sans cela, le navigateur
+      ne découvre les polices qu'après avoir analysé la feuille de style, et le
+      texte bascule sous les yeux du lecteur. Les fichiers sont locaux, ce
+      préchargement ne déclenche aucun appel réseau vers l'extérieur. Les
+      sous-ensembles « latin-ext » ne sont pas préchargés : ils ne servent qu'aux
+      noms propres étrangers, et se chargent à la demande.
+    -->
+    <link rel="preload" href="/fonts/source-serif-4-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <!--
