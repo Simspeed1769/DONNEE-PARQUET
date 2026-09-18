@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class QueryRepository(Protocol):
     has_delays: bool
+    has_settlement: bool
 
     def query(self, sql: str, params: list[Any] | None = None) -> list[dict[str, Any]]: ...
 
@@ -230,10 +231,17 @@ def _in_filter(clauses: list[str], params: list[Any], column: str, values: list[
 
 
 def cube_where(payload: FilterPayload, *, ignore_sex: bool = False,
-               exclude_base_less: bool = False) -> tuple[str, list[Any]]:
+               exclude_base_less: bool = False, year_column: str = "c.soi_ann") -> tuple[str, list[Any]]:
+    """Le filtre commun aux deux cubes.
+
+    `year_column` est le seul point de divergence entre la lecture en année de
+    soins (`c.soi_ann`, cube principal) et celle en année de règlement
+    (`c.flx_ann`, cube des règlements) : les dimensions, elles, sont les mêmes
+    de part et d'autre, donc les filtres de population valent sur les deux.
+    """
     if payload.start_year > payload.end_year:
         raise ValueError("La période sélectionnée est invalide.")
-    clauses = ["c.soi_ann BETWEEN ? AND ?"]
+    clauses = [f"{year_column} BETWEEN ? AND ?"]
     params: list[Any] = [payload.start_year, payload.end_year]
     for value, column in (
         (payload.grand_post, "t.grand_poste"),
@@ -346,6 +354,7 @@ def _analysis_metadata_cached(repo: QueryRepository, regions_key: tuple[tuple[in
         "insurances": [{"code": code, "label": INSURANCES.get(code, f"Assurance {code}")} for code in values["insurances"]],
         "envelopes": [{"code": code, "label": ENVELOPES.get(code, f"Enveloppe {code}")} for code in values["envelopes"]],
         "has_delays": repo.has_delays,
+        "has_settlement": repo.has_settlement,
     }
 
 

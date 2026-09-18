@@ -18,6 +18,7 @@ coverage/
 # poids du dépôt sans rien apporter, puisqu'ils se régénèrent depuis les cubes
 # sources en quelques minutes.
 data/cube_damir_compact.parquet
+data/cube_reglement.parquet
 data/.cache/
 
 # Sources brutes CSP : elles servent à reconstruire les données, mais ne sont

@@ -184,7 +184,26 @@ def _care_axis_rows(repo: QueryRepository, payload: ExploreRequest,
     )
 
 
-def _payment_axis_rows(repo: QueryRepository, payload: ExploreRequest) -> list[dict[str, Any]]:
+def _payment_axis_rows(repo: QueryRepository, payload: ExploreRequest,
+                       expression: str) -> list[dict[str, Any]]:
+    """Les mêmes composantes qu'en année de soins, datées au règlement.
+
+    Le cube des règlements porte les mêmes colonnes et les mêmes dimensions que
+    le cube principal : le découpage et les filtres y valent donc autant. Sans
+    lui, on retombe sur le cube des délais, qui ne connaît que le remboursement.
+    """
+    if repo.has_settlement:
+        where, params = cube_where(payload, year_column="c.flx_ann")
+        base_less_params = list(POSTES_SANS_BASE) * 2
+        return repo.query(
+            f"""
+            SELECT c.flx_ann AS year, {expression} AS bucket, {', '.join(_COMPONENT_SQL)}
+            FROM settlement c LEFT JOIN transco t USING (prs_nat)
+            WHERE {where}
+            GROUP BY 1, 2
+            """,
+            [*base_less_params, *params],
+        )
     if not repo.has_delays:
         raise ValueError("Le cube des délais n’est pas disponible.")
     where, params = delay_where(payload, payment_axis=True)
@@ -215,12 +234,12 @@ def _service_labels(repo: QueryRepository, codes: list[int]) -> dict[int, str]:
     return {int(row["code"]): str(row["label"]) for row in rows}
 
 
-def _measure_availability(payload: ExploreRequest) -> dict[str, str | None]:
+def _measure_availability(payload: ExploreRequest, settlement: bool = False) -> dict[str, str | None]:
     """Explique, mesure par mesure, pourquoi elle est indisponible — ou None."""
     reasons: dict[str, str | None] = {}
     for key, metric in METRICS.items():
         reason: str | None = None
-        if payload.time_axis == "payment" and key != "reimbursed":
+        if payload.time_axis == "payment" and not settlement and key != "reimbursed":
             reason = "Seul le montant remboursé existe en date de remboursement."
         elif metric.requires_homogeneous_unit and len(payload.service_codes) != 1:
             reason = "Sélectionnez une prestation précise : les volumes ne s’additionnent pas entre prestations."
@@ -230,12 +249,17 @@ def _measure_availability(payload: ExploreRequest) -> dict[str, str | None]:
     return reasons
 
 
-def _warnings(payload: ExploreRequest, folded: int) -> list[str]:
+def _warnings(payload: ExploreRequest, folded: int, settlement: bool = False) -> list[str]:
     warnings: list[str] = []
-    if payload.time_axis == "payment":
+    if payload.time_axis == "payment" and not settlement:
         warnings.append(
             "En date de remboursement, les filtres de population ne s’appliquent pas : "
             "le cube des délais ne porte que la prestation et la période."
+        )
+    elif payload.time_axis == "payment":
+        warnings.append(
+            "Année de règlement AMO : paiements de l’année, toutes années de soins confondues. "
+            "Ce n’est pas l’année comptable d’une complémentaire."
         )
     if not payload.grand_post and not payload.service_codes:
         warnings.append(
@@ -326,8 +350,9 @@ def explore(repo: QueryRepository, payload: ExploreRequest,
     breakdown = payload.breakdown or "none"
     dimension_label, expression, _ = _dimension_sql(breakdown)
     if payload.time_axis == "payment":
-        rows = _payment_axis_rows(repo, payload)
-        breakdown, dimension_label = "none", "Ensemble du périmètre"
+        rows = _payment_axis_rows(repo, payload, expression)
+        if not repo.has_settlement:
+            breakdown, dimension_label = "none", "Ensemble du périmètre"
     else:
         rows = _care_axis_rows(repo, payload, expression)
 
@@ -401,7 +426,7 @@ def explore(repo: QueryRepository, payload: ExploreRequest,
         for year, cell in per_year.items():
             _add(grand_total.setdefault(year, _empty()), cell)
 
-    availability = _measure_availability(payload)
+    availability = _measure_availability(payload, repo.has_settlement)
     return {
         "breakdown": breakdown,
         "breakdown_label": dimension_label,
@@ -434,5 +459,5 @@ def explore(repo: QueryRepository, payload: ExploreRequest,
             for key, (label, _) in DIMENSIONS.items()
             if key != "year"
         ],
-        "warnings": _warnings(payload, len(folded)),
+        "warnings": _warnings(payload, len(folded), repo.has_settlement),
     }

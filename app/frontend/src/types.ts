@@ -67,6 +67,7 @@ export type Metadata = {
   insurances: CodeOption[];
   envelopes: CodeOption[];
   has_delays: boolean;
+  has_settlement: boolean;
   reliability: Reliability;
   semantic_version: string;
 };

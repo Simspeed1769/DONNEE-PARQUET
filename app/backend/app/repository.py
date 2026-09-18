@@ -39,6 +39,12 @@ CUBE_PATH = DATA_DIR / "cube_damir.parquet"
 # le cube brut est lu directement, simplement plus lentement.
 COMPACT_CUBE_PATH = DATA_DIR / "cube_damir_compact.parquet"
 DELAYS_PATH = DATA_DIR / "cube_delais.parquet"
+# Cube des règlements : une ligne par année de flux, produit par
+# `tools/build_cube_reglement.py`. Il porte les mêmes mesures que le cube
+# principal — dépense comprise, ce que le cube des délais n'a pas — mais
+# datées au paiement. Optionnel : sans lui, la lecture en année de règlement
+# retombe sur le seul remboursement du cube des délais.
+SETTLEMENT_PATH = DATA_DIR / "cube_reglement.parquet"
 TRANSCO_PATH = DATA_DIR / "prs_nat_transco.csv"
 CACHE_DIR = DATA_DIR / ".cache"
 PATHOLOGIES_PATH = Path(os.environ.get(
@@ -202,6 +208,11 @@ class DamirRepository:
         if self.has_delays:
             self._connection.execute(
                 f"CREATE VIEW delays AS SELECT * FROM read_parquet('{_duckdb_path(DELAYS_PATH)}')"
+            )
+        self.has_settlement = SETTLEMENT_PATH.exists()
+        if self.has_settlement:
+            self._connection.execute(
+                f"CREATE VIEW settlement AS SELECT * FROM read_parquet('{_duckdb_path(SETTLEMENT_PATH)}')"
             )
         self.has_pathologies = PATHOLOGIES_PATH.exists()
         if self.has_pathologies:

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { downloadText, runTimeBasis, type TimeBasisResponse } from "../api";
 import { ScopeBar } from "../components/ScopeBar";
 import { EChart } from "../charts/EChart";
@@ -9,16 +9,33 @@ import { formatValue } from "../utils";
 import { essentialChart } from "./essentialChart";
 import type { SectionProps } from "./PanoramaSection";
 
-export type TimeBasis = "care" | "payment" | "both";
+/** Deux datations, et plus de troisième voie : la comparaison des deux
+ *  courbes AMO a disparu avec le cube des règlements. Elle n'avait de raison
+ *  d'être que tant que l'axe règlement ne portait que le remboursement — une
+ *  courbe seule ne se lisait pas sans son jumeau. Maintenant que la dépense,
+ *  la part AMO et le reste existent des deux côtés, chaque axe se suffit. */
+export type TimeBasis = "care" | "payment";
 
-export function TimeBasisSection({ metadata, filters, setFilters, mode }: SectionProps & { mode: "payment" | "both" }) {
+type MeasureKey = "reimbursed" | "expense" | "coverage" | "out_of_pocket";
+
+/** Le temps de la première réponse : un seul bouton, jamais zéro. */
+const FALLBACK_MEASURES: TimeBasisResponse["measures"] = [{
+  key: "reimbursed", label: "Montant remboursé", kind: "money",
+  definition: "", formula: "", caveat: null,
+}];
+
+export function TimeBasisSection({ metadata, filters, setFilters }: SectionProps) {
   const tokens = useChartTokens();
   const [data, setData] = useState<TimeBasisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<"line" | "bar">("line");
-  const incompatible = Boolean(filters.regions.length || filters.ages.length || filters.sexes.length
-    || filters.insurances.length || filters.envelopes.length || filters.ald !== null);
+  const [form, setForm] = useState<"line" | "bar">("bar");
+  const [measure, setMeasure] = useState<MeasureKey>("reimbursed");
+  /** Sans cube des règlements, l'axe retombe sur le cube des délais : la
+   *  prestation et la période seules y filtrent. */
+  const restricted = !metadata.has_settlement;
+  const incompatible = restricted && Boolean(filters.regions.length || filters.ages.length
+    || filters.sexes.length || filters.insurances.length || filters.envelopes.length || filters.ald !== null);
   const key = JSON.stringify(filters);
   useEffect(() => {
     setData(null);
@@ -34,50 +51,65 @@ export function TimeBasisSection({ metadata, filters, setFilters, mode }: Sectio
     return () => { active = false; controller.abort(); };
   }, [key, incompatible]);
 
+  const available = data?.available_measures ?? ["reimbursed"];
+  /** Une mesure retirée par le serveur ne doit pas laisser un graphique vide :
+   *  on retombe sur le remboursement, qui existe sur les deux cubes. */
+  const active: MeasureKey = available.includes(measure) ? measure : "reimbursed";
+  const card = data?.measures.find((item) => item.key === active);
+  const kind = card?.kind === "percent" ? "percent" : "money";
+
   const subject = filters.sub_post ?? filters.post ?? filters.grand_post ?? "Toutes prestations";
   const scope = [subject, filters.service_codes.length ? `Prestations : ${filters.service_codes.join(", ")}` : null,
-    "France entière, tous bénéficiaires", `${filters.start_year}–${filters.end_year}`].filter(Boolean).join(" · ");
+    restricted ? "France entière, tous bénéficiaires" : null,
+    `${filters.start_year}–${filters.end_year}`].filter(Boolean).join(" · ");
   const latest = data?.latest_flow;
   const cutoff = latest ? `${String(latest % 100).padStart(2, "0")}/${Math.floor(latest / 100)}` : "date inconnue";
-  const completeness = metadata.reliability.completeness?.find((item) => item.year === filters.end_year)?.ratio ?? null;
-  const title = mode === "both" ? "Remboursements AMO : soins et règlements" : "Remboursements AMO par année de règlement";
-  const columns = mode === "both" ? ["Année", "Année de soins (€)", "Année de règlement AMO (€)"]
-    : ["Année", "Année de règlement AMO (€)"];
-  const rows: ChartRow[] = data ? [
-    ...(mode === "both" ? [{ key: "care", label: "Année de soins (survenance)", colorIndex: 0, values: data.rows.map((r) => r.care) }] : []),
-    { key: "payment", label: "Année de règlement AMO", colorIndex: 1, values: data.rows.map((r) => r.payment) },
-  ] : [];
+  const title = `${card?.label ?? "Montant remboursé"} par année de règlement AMO`;
+
+  const rows: ChartRow[] = useMemo(() => data ? [{
+    key: active, label: card?.label ?? "Montant remboursé", colorIndex: 1,
+    values: data.rows.map((row) => row[active]),
+  }] : [], [data, active, card]);
   const noValues = data && !rows.some((row) => row.values.some((value) => value !== null));
   const build = (palette: ChartTokens) => essentialChart(seriesOption({
-    years: data?.rows.map((r) => r.year) ?? [], rows, kind: "money", tokens: palette,
+    years: data?.rows.map((r) => r.year) ?? [], rows, kind, tokens: palette,
     consolidatedThrough: null, form,
   }), palette);
-  const provisionalNote = filters.end_year > (metadata.reliability.consolidated_through ?? filters.end_year) && completeness !== null
-    ? ` À l’échelle de l’ensemble DAMIR, environ ${Math.round(completeness * 100)} % des montants AMO ${filters.end_year} sont observés ; année provisoire.` : "";
-  const shortNote = mode === "both"
-    ? `Flux arrêtés à ${cutoff}. Soins récents incomplets ; règlement = paiements de l’année.${provisionalNote}`
-    : `Flux arrêtés à ${cutoff}. Paiements AMO de l’année, y compris pour des soins antérieurs.${provisionalNote}`;
+
+  const shortNote = `Flux arrêtés à ${cutoff}. Paiements AMO de l’année, y compris pour des soins antérieurs.`;
   const warnings = [
     ...(data?.warnings ?? []),
     ...(data?.rows.filter((r) => r.payment_months < 12)
-      .map((r) => `${r.year} : ${r.payment_months}/12 mois de flux disponibles. Le total en règlement est partiel ou absent.`) ?? []),
+      .map((r) => `${r.year} : ${r.payment_months}/12 mois de flux disponibles. Le total de l’année est partiel ou absent.`) ?? []),
   ];
+  const columns = ["Année", ...(data?.measures ?? []).map((item) => `${item.label} (${item.kind === "percent" ? "%" : "€"})`)];
   const exportCsv = () => {
     if (!data) return;
     const lines: (string | number | null)[][] = [
       [title], [scope], [shortNote], ...warnings.map((w) => [w]),
       [...columns, "Mois de flux disponibles"],
-      ...data.rows.map((r) => mode === "both" ? [r.year, r.care, r.payment, r.payment_months]
-        : [r.year, r.payment, r.payment_months]),
+      ...data.rows.map((r) => [r.year, ...data.measures.map((item) => r[item.key as MeasureKey]), r.payment_months]),
     ];
-    downloadText(`damir_${mode}_${filters.start_year}_${filters.end_year}.csv`, "\uFEFF" + lines
+    downloadText(`damir_reglement_${filters.start_year}_${filters.end_year}.csv`, "﻿" + lines
       .map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(";"))
       .join("\r\n"));
   };
+
   return <>
-    <ScopeBar metadata={metadata} value={filters} onChange={setFilters} loading={loading}>
-      <div className="time-basis-measure"><span>Mesure</span><strong>Montant remboursé AMO</strong></div>
-    </ScopeBar>
+    <ScopeBar metadata={metadata} value={filters} onChange={setFilters} loading={loading} />
+    {/* Quatre mesures, quatre boutons, sur leur propre ligne : dans la colonne
+        étroite de la barre de périmètre, les libellés se cassaient en quatre
+        lignes et la cible devenait trop petite pour être visée. */}
+    <div className="time-basis-controls time-basis-measures">
+      <span>Mesure</span>
+      <div className="pathology-toggle" role="group" aria-label="Mesure affichée">
+        {(data?.measures ?? FALLBACK_MEASURES).map((item) => (
+          <button type="button" key={item.key} className={active === item.key ? "active" : ""}
+            aria-pressed={active === item.key} title={item.definition ?? undefined}
+            onClick={() => setMeasure(item.key as MeasureKey)}>{item.label}</button>
+        ))}
+      </div>
+    </div>
     {incompatible ? <div className="panel time-basis-notice" role="status">
       <p>La date de remboursement est disponible uniquement pour la France entière, tous bénéficiaires et régimes confondus. Les filtres de prestation restent utilisables.</p>
       <button type="button" onClick={() => setFilters((current) => ({ ...current, regions: [], ages: [],
@@ -91,21 +123,16 @@ export function TimeBasisSection({ metadata, filters, setFilters, mode }: Sectio
         </div>
       </header>
       <div className="damir-stage-chart">
-        {loading ? <p role="status" className="damir-fallback">Calcul des deux datations…</p>
+        {loading ? <p role="status" className="damir-fallback">Lecture des règlements…</p>
           : noValues ? <p className="damir-fallback">Aucune donnée pour ce périmètre.</p>
           : data ? <EChart option={build(tokens)} height={420} ariaLabel={title} /> : null}
       </div>
       {data ? <>
-        <div className="chart-legend time-basis-legend" role="list" aria-label="Légende du graphique">
-          {rows.map((row) => <span key={row.key} className="legend-item" role="listitem">
-            <i className={`time-basis-swatch ${row.key}`} />{row.label}
-          </span>)}
-        </div>
         <p className="time-basis-note">{shortNote}</p>
         <footer className="damir-stage-foot"><span className="damir-source">Source : Open DAMIR · AMO</span>
           <div className="damir-actions">
-            <ExportPngButton defaultTitle={title} scope={scope} sourceLine={`Open DAMIR · ${shortNote} Aucun effet ROC identifiable.`}
-              filenamePrefix="damir_dates" buildOption={build} caveatCount={warnings.length} disabled={Boolean(noValues)} />
+            <ExportPngButton defaultTitle={title} scope={scope} sourceLine={`Open DAMIR · ${shortNote}`}
+              filenamePrefix="damir_reglement" buildOption={build} caveatCount={warnings.length} disabled={Boolean(noValues)} />
             <button type="button" onClick={exportCsv}>Exporter le CSV</button>
           </div>
         </footer>
@@ -113,11 +140,14 @@ export function TimeBasisSection({ metadata, filters, setFilters, mode }: Sectio
           <details className="damir-details"><summary>Voir les valeurs ({data.rows.length} années)</summary>
             <div className="damir-table-scroll"><table><thead><tr>{columns.map((c) => <th key={c}>{c}</th>)}</tr></thead>
               <tbody>{data.rows.map((r) => <tr key={r.year}><th scope="row">{r.year}</th>
-                {mode === "both" ? <td>{formatValue(r.care, "money")}</td> : null}
-                <td>{formatValue(r.payment, "money")}</td></tr>)}</tbody></table></div>
+                {data.measures.map((item) => <td key={item.key}>
+                  {formatValue(r[item.key as MeasureKey], item.kind === "percent" ? "percent" : "money")}
+                </td>)}</tr>)}</tbody></table></div>
           </details>
-          <div className="time-basis-limits"><strong>Ce que cette comparaison permet de lire</strong>
-            <p>Deux calendriers AMO, sans mesure de la comptabilité ni du ROC de la complémentaire. La dépense présentée, la part AMO et le reste après AMO sont disponibles seulement en année de soins.</p>
+          <div className="time-basis-limits"><strong>Ce que cette lecture permet de lire</strong>
+            <p>{restricted
+              ? "Le cube des règlements n’est pas installé : seul le montant remboursé existe sur cet axe, et les filtres de population ne s’y appliquent pas."
+              : "L’exercice de paiement de l’Assurance Maladie, dépense et part AMO comprises. Ce n’est pas l’année comptable d’une complémentaire, et l’écart avec l’année de soins ne mesure pas le ROC."}</p>
             {warnings.filter((w) => w.includes("/12")).map((w) => <p key={w}>{w}</p>)}
           </div>
         </div>

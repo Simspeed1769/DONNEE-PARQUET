@@ -91,6 +91,7 @@ from .repository import (
     CSP_GEOJSON_PATH,
     DATA_DIR,
     DELAYS_PATH,
+    SETTLEMENT_PATH,
     FRONTEND_ASSETS,
     FRONTEND_DIST,
     REGIONS,
@@ -166,14 +167,23 @@ def _build_metadata() -> dict[str, Any]:
     return {**base, **analysis_metadata(repository, REGIONS), **studio}
 
 
+def metadata_token() -> str:
+    """La clé du cache disque des métadonnées.
+
+    Elle nomme tous les fichiers qui peuvent en changer le contenu — le cube
+    des règlements compris, sans quoi son installation passerait inaperçue —
+    et la version de schéma, qui invalide les entrées d'une version antérieure.
+    """
+    return f"v{METADATA_SCHEMA}-{fingerprint([repository.cube_path, DELAYS_PATH, SETTLEMENT_PATH, TRANSCO_PATH])}"
+
+
 @app.get("/api/meta")
 @lru_cache(maxsize=1)
 def metadata() -> dict[str, Any]:
     # Ces métadonnées coûtent plusieurs balayages du cube et ne changent qu'avec
     # les fichiers de données : le cache disque évite de les repayer à chaque
     # lancement, et l'empreinte les invalide dès qu'un cube bouge.
-    token = f"v{METADATA_SCHEMA}-{fingerprint([repository.cube_path, DELAYS_PATH, TRANSCO_PATH])}"
-    return DISK_CACHE.get_or_build("metadata", token, _build_metadata)
+    return DISK_CACHE.get_or_build("metadata", metadata_token(), _build_metadata)
 
 
 @app.get("/api/options")

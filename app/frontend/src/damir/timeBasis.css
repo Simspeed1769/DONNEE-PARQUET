@@ -2,6 +2,10 @@
 .time-basis-controls > span { color: var(--ink-secondary); font-weight: 600; }
 .time-basis-controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .time-basis-measure { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+/* La ligne des mesures suit la barre de périmètre : même retrait, et un
+   bouton qui garde son libellé sur une seule ligne. */
+.time-basis-measures { margin: 16px 0 0; }
+.time-basis-measures .pathology-toggle button { white-space: nowrap; }
 .time-basis-measure span { color: var(--ink-muted); font-size: .75rem; }
 .time-basis-measure strong { color: var(--ink); font-size: .9rem; }
 .time-basis-notice { padding: 20px; }

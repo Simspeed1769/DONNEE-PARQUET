@@ -70,7 +70,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
   const [measureKey, setMeasureKey] = useState(() => params.get("measure") || "reimbursed");
   const [timeBasis, setTimeBasis] = useState<TimeBasis>(() => {
     const raw = params.get("time_basis");
-    return metadata.has_delays && (raw === "payment" || raw === "both") ? raw : "care";
+    return metadata.has_delays && raw === "payment" ? raw : "care";
   });
 
   const consolidated = metadata.reliability.consolidated_through;
@@ -145,8 +145,8 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
         <div className="time-basis-controls">
           <span>Lecture des années</span>
           <div className="pathology-toggle" role="group" aria-label="Datation des remboursements">
-            {([{ key: "care", label: "Année de soins (survenance)" }, { key: "payment", label: "Année de règlement AMO" },
-              { key: "both", label: "Comparer les deux" }] as const).map((item) => (
+            {([{ key: "care", label: "Année de soins (survenance)" },
+              { key: "payment", label: "Année de règlement AMO" }] as const).map((item) => (
               <button key={item.key} type="button" className={timeBasis === item.key ? "active" : ""}
                 aria-pressed={timeBasis === item.key} onClick={() => setTimeBasis(item.key)}>{item.label}</button>
             ))}
@@ -154,7 +154,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
         </div>
       ) : null}
       {section === "panorama" && timeBasis === "care" ? <PanoramaSection {...shared} /> : null}
-      {section === "panorama" && timeBasis !== "care" ? <TimeBasisSection {...shared} mode={timeBasis} /> : null}
+      {section === "panorama" && timeBasis === "payment" ? <TimeBasisSection {...shared} /> : null}
       {section === "compare" ? <CompareSection {...shared} /> : null}
     </div>
   );

@@ -245,6 +245,7 @@ l'application** : `data/` est en lecture seule au runtime.
 | `cube_damir.parquet` | 1,09 Go | ~45 M | source de vérité, grain mois |
 | `cube_damir_compact.parquet` | 117 Mo | **5 762 787** | 15 : `soi_ann, prs_nat, asu_nat, age, sexe, region, env, ald, rem, dep, depas, qte, rem_ref, bse_ref, rem_neg` |
 | `cube_delais.parquet` | 13 Mo | **1 821 268** | 5 : `soi_ann, soi_moi, flx, prs_nat, rem` |
+| `cube_reglement.parquet` | 116 Mo | **5 526 096** | 15 : `flx_ann`, puis les mêmes dimensions et mesures que le cube compact |
 | `pathologies/effectifs.parquet` | 49 Mo | **5 796 000** | 16, dont `ntop` (patients), `npop` (population de référence), `dept`, `cla_age_5` |
 | `csp/csp_core.parquet` | 12,7 Mo | **696 159** | 20, dont `effectif` (pondéré IPONDI), `population_reference` |
 | `population/population.parquet` | 93 Ko | **33 480** | 9, dont `age_90_plus_agrege` |
@@ -331,6 +332,7 @@ SET preserve_insertion_order = false
 ```sql
 CREATE VIEW cube        AS SELECT * FROM read_parquet('…cube_damir_compact.parquet')
 CREATE VIEW delays      AS SELECT * FROM read_parquet('…cube_delais.parquet')
+CREATE VIEW settlement  AS SELECT * FROM read_parquet('…cube_reglement.parquet')
 CREATE VIEW pathologies AS SELECT * FROM read_parquet('…effectifs.parquet')
 CREATE VIEW csp         AS SELECT * FROM read_parquet([…], union_by_name = true)
 CREATE VIEW population  AS SELECT * FROM read_parquet('…population.parquet')
@@ -564,7 +566,7 @@ et `immutable, max-age=31536000` sur `/assets/`.
 | `POST /api/explore` | agrégation générique par dimension | `lru_cache(64)` |
 | `POST /api/explore/options` | modalités classées par poids + recherche | `lru_cache(32)` sur le **seul périmètre** |
 | `POST /api/panorama` | sujets × facettes en un balayage | `lru_cache(64)` + référentiel en `lru_cache(16)` |
-| `POST /api/time-basis` | remboursements AMO par année de soins, de règlement, ou les deux | `lru_cache(32)` |
+| `POST /api/time-basis` | les quatre mesures par année de règlement AMO | `lru_cache(32)` |
 | `POST /api/pivot` | le croisé à deux dimensions : composantes brutes + formules | `lru_cache(32)` |
 
 Astuce notable sur `/api/explore/options` : la clé de cache neutralise `query`
@@ -1905,11 +1907,18 @@ que les liquidations tardives n'y sont pas toutes remontées : le dernier point
 d'une courbe est donc un **plancher**.
 
 **Année de soins / année de règlement AMO** — le Panorama propose les deux
-lectures et leur comparaison. La première rattache un remboursement à l'année
-du soin ; la seconde au mois où l'AMO a payé. La vue règlement porte seulement
-sur le montant remboursé, ne reprend pas les filtres de population et ne donne
-pas l'année comptable d'une complémentaire. Un écart entre les deux calendriers
-est un signal de cadence, pas une mesure de l'effet ROC.
+lectures. La première rattache une dépense à l'année du soin ; la seconde à
+l'année où l'AMO a payé, toutes années de soins confondues. Depuis le cube des
+règlements, la seconde porte les mêmes mesures que la première — dépense
+présentée, part AMO et reste après AMO comprises — et accepte les mêmes filtres.
+Sans ce cube, elle retombe sur le cube des délais et se limite au remboursement,
+sans filtre de population. Elle ne donne pas l'année comptable d'une
+complémentaire, et un écart entre les deux calendriers est un signal de cadence,
+pas une mesure de l'effet ROC.
+
+*La comparaison des deux courbes sur un même graphique a disparu avec ce cube :
+elle n'existait que parce que l'axe règlement n'avait qu'une seule mesure à
+montrer.*
 
 **CépiDc** — Centre d'épidémiologie sur les causes médicales de décès (INSERM).
 

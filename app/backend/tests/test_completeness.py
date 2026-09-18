@@ -101,10 +101,10 @@ class CompletenessTests(unittest.TestCase):
         le cache vient d'être reconstruit — et échouerait chez quelqu'un dont
         l'entrée date d'avant. Le contrôle porte donc sur le mécanisme.
         """
-        from app.main import DELAYS_PATH, DISK_CACHE, TRANSCO_PATH, fingerprint
+        from app.main import DISK_CACHE, metadata_token
 
-        raw = fingerprint([repository.cube_path, DELAYS_PATH, TRANSCO_PATH])
-        token = f"v{METADATA_SCHEMA}-{raw}"
+        token = metadata_token()
+        raw = token.split("-", 1)[1]
         self.assertNotEqual(token, raw, "la version de schéma n'entre pas dans la clé")
 
         entry = DISK_CACHE._entry("metadata")

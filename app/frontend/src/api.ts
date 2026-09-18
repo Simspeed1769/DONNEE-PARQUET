@@ -120,8 +120,12 @@ export type CorrelationCatalogue = {
 };
 
 export type TimeBasisResponse = {
+  available_measures: string[];
+  measures: Array<{ key: string; label: string; kind: "money" | "percent" | "quantity";
+    definition: string; formula: string; caveat: string | null }>;
   latest_flow: number | null;
-  rows: Array<{ year: number; care: number | null; payment: number | null; payment_months: number }>;
+  rows: Array<{ year: number; payment_months: number; reimbursed: number | null;
+    expense: number | null; coverage: number | null; out_of_pocket: number | null }>;
   warnings: string[];
 };
 
