@@ -21,6 +21,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { CompareSection } from "../damir/CompareSection";
 import { PanoramaSection } from "../damir/PanoramaSection";
+import { TimeBasisSection, type TimeBasis } from "../damir/TimeBasisSection";
+import "../damir/timeBasis.css";
 import { hasLegacyCompareParams, redirectLegacyCompareParams } from "../damir/legacyCompare";
 import type { AdvancedFilters, Metadata } from "../types";
 import { filtersFromSearch, writeFilters, yearStatusLabel } from "../utils";
@@ -66,6 +68,10 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
    *  de section est un changement de question, pas de sujet. */
   const [filters, setFilters] = useState<AdvancedFilters>(() => filtersFromSearch(metadata, params));
   const [measureKey, setMeasureKey] = useState(() => params.get("measure") || "reimbursed");
+  const [timeBasis, setTimeBasis] = useState<TimeBasis>(() => {
+    const raw = params.get("time_basis");
+    return metadata.has_delays && (raw === "payment" || raw === "both") ? raw : "care";
+  });
 
   const consolidated = metadata.reliability.consolidated_through;
   const provisional = consolidated !== null && filters.end_year > consolidated;
@@ -79,8 +85,9 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
     next.set("section", section);
     writeFilters(next, filters);
     next.set("measure", measureKey);
+    next.set("time_basis", timeBasis);
     window.history.replaceState(null, "", `${window.location.pathname}?${next.toString()}`);
-  }, [section, filters, measureKey]);
+  }, [section, filters, measureKey, timeBasis]);
 
   const shared = {
     metadata, filters, setFilters, measureKey, setMeasureKey,
@@ -99,7 +106,8 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
               manque, « liquidé à 91 % » le mesure — et c'est la différence
               entre savoir qu'il faut se méfier et savoir de combien. */}
           <span className={`status-chip ${provisional ? "provisional" : "reliable"}`}>
-            {provisional ? yearStatusLabel(metadata, filters.end_year) : metadata.reliability.status}
+            {section === "panorama" && timeBasis !== "care" ? "Règlements AMO observés"
+              : provisional ? yearStatusLabel(metadata, filters.end_year) : metadata.reliability.status}
           </span>
           <button type="button" className="method-link" onClick={onOpenMethodology}>Données &amp; méthode →</button>
         </div>
@@ -133,7 +141,20 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
        *  Un popover qui rate son fondu reste un popover. Une section qui rate
        *  le sien devient une page vide. Le rapport entre le risque et les
        *  140 ms gagnées ne tient pas : la bascule est instantanée. */}
-      {section === "panorama" ? <PanoramaSection {...shared} /> : null}
+      {section === "panorama" && metadata.has_delays ? (
+        <div className="time-basis-controls">
+          <span>Lecture des années</span>
+          <div className="pathology-toggle" role="group" aria-label="Datation des remboursements">
+            {([{ key: "care", label: "Année de soins (survenance)" }, { key: "payment", label: "Année de règlement AMO" },
+              { key: "both", label: "Comparer les deux" }] as const).map((item) => (
+              <button key={item.key} type="button" className={timeBasis === item.key ? "active" : ""}
+                aria-pressed={timeBasis === item.key} onClick={() => setTimeBasis(item.key)}>{item.label}</button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {section === "panorama" && timeBasis === "care" ? <PanoramaSection {...shared} /> : null}
+      {section === "panorama" && timeBasis !== "care" ? <TimeBasisSection {...shared} mode={timeBasis} /> : null}
       {section === "compare" ? <CompareSection {...shared} /> : null}
     </div>
   );

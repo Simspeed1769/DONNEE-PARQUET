@@ -384,7 +384,7 @@ renvoie `None` / `null`, jamais 0.**
 | `quantity` | Volume de la prestation | Activité | ✅ | unités hétérogènes entre prestations |
 | `average_reimbursed` | Remboursement moyen par unité | Montants moyens | ❌ | ni coût par patient ni tarif ; dépend du mix |
 | `average_expense` | Dépense moyenne par unité | Montants moyens | ❌ | idem |
-| `coverage` | Taux de prise en charge AMO | Prise en charge | ❌ | une évolution agrégée peut n'être qu'un effet de structure |
+| `coverage` | Part financée par la Sécurité sociale | Prise en charge | ❌ | ratio des sommes rem/dep ; mix de prestations, complétude et anomalies à vérifier ; ni remboursement complémentaire ni mesure du ROC |
 | `negative` | Régularisations négatives | Avancé | ✅ | — |
 | `gross_reimbursed` | Remboursé hors régularisations | Avancé | ✅ | — |
 | `negative_share` | Part des régularisations | Avancé | ❌ | — |
@@ -564,6 +564,7 @@ et `immutable, max-age=31536000` sur `/assets/`.
 | `POST /api/explore` | agrégation générique par dimension | `lru_cache(64)` |
 | `POST /api/explore/options` | modalités classées par poids + recherche | `lru_cache(32)` sur le **seul périmètre** |
 | `POST /api/panorama` | sujets × facettes en un balayage | `lru_cache(64)` + référentiel en `lru_cache(16)` |
+| `POST /api/time-basis` | remboursements AMO par année de soins, de règlement, ou les deux | `lru_cache(32)` |
 | `POST /api/pivot` | le croisé à deux dimensions : composantes brutes + formules | `lru_cache(32)` |
 
 Astuce notable sur `/api/explore/options` : la clé de cache neutralise `query`
@@ -1902,6 +1903,13 @@ maternité, non remboursable, codes réservés) : d'où `POSTES_SANS_BASE`.
 remboursement effectif. Une année de soins récente est « en consolidation » tant
 que les liquidations tardives n'y sont pas toutes remontées : le dernier point
 d'une courbe est donc un **plancher**.
+
+**Année de soins / année de règlement AMO** — le Panorama propose les deux
+lectures et leur comparaison. La première rattache un remboursement à l'année
+du soin ; la seconde au mois où l'AMO a payé. La vue règlement porte seulement
+sur le montant remboursé, ne reprend pas les filtres de population et ne donne
+pas l'année comptable d'une complémentaire. Un écart entre les deux calendriers
+est un signal de cadence, pas une mesure de l'effet ROC.
 
 **CépiDc** — Centre d'épidémiologie sur les causes médicales de décès (INSERM).
 

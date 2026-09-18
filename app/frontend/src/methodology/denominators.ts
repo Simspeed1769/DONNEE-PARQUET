@@ -41,7 +41,7 @@ export const DENOMINATORS: DenominatorGroup[] = [
       { measure: "Remboursement moyen par unité", numerator: "Somme des remboursements", denominator: "Somme des quantités de la prestation",
         note: "Ce n'est ni un coût par patient ni un tarif : une moyenne d'ensemble dépend du mélange de prestations." },
       { measure: "Dépense moyenne par unité", numerator: "Somme des dépenses présentées", denominator: "Somme des quantités de la prestation" },
-      { measure: "Taux de prise en charge AMO", numerator: "100 × somme des remboursements", denominator: "Somme des dépenses présentées" },
+      { measure: "Part financée par la Sécurité sociale", numerator: "100 × somme des remboursements", denominator: "Somme des dépenses présentées" },
       { measure: "Régularisations négatives", numerator: "Somme des remboursements négatifs", denominator: null },
       { measure: "Remboursé hors régularisations", numerator: "Montant remboursé − régularisations négatives", denominator: null },
       { measure: "Part des régularisations", numerator: "−100 × régularisations négatives", denominator: "Remboursement hors régularisations" },

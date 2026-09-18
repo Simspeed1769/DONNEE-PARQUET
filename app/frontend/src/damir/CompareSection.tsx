@@ -157,6 +157,10 @@ export function CompareSection({
     [sharedResponse, measureKey],
   );
   const additive = measure?.additive ?? true;
+  const measureWarnings = [
+    ...(sharedResponse?.warnings ?? []),
+    ...(measure?.caveat ? [measure.caveat] : []),
+  ];
   const responseIsCurrent = sharedResponse?.breakdown === (activeBreakdown.field ?? "none")
     && responseKey === sharedFetchKey;
 
@@ -687,7 +691,7 @@ export function CompareSection({
               sourceLine={SOURCE_LINE}
               filenamePrefix="damir-comparer"
               buildOption={buildChart}
-              caveatCount={sharedResponse?.warnings.length ?? 0}
+              caveatCount={measureWarnings.length}
               disabled={!chartSeries.length}
             />
             <button type="button" onClick={exportCsv} disabled={!chartSeries.length}>Exporter le CSV</button>
@@ -719,10 +723,10 @@ export function CompareSection({
             </div>
           </details>
 
-          {sharedResponse?.warnings.length ? (
-            <details className="damir-details">
-              <summary>Ce que ce graphique ne montre pas ({sharedResponse.warnings.length})</summary>
-              <ul className="damir-caveats">{sharedResponse.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
+          {measureWarnings.length ? (
+            <details className="damir-details" open={measureKey === "coverage" || undefined}>
+              <summary>Ce que ce graphique ne montre pas ({measureWarnings.length})</summary>
+              <ul className="damir-caveats">{measureWarnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
             </details>
           ) : null}
         </div>

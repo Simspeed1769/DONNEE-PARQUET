@@ -135,13 +135,30 @@ export type SlideInput = {
 };
 
 export function buildSlides(input: SlideInput): Slide[] {
-  return [
+  const slides = [
     evolutionSlide(input),
     territorySlide(input),
     ageSlide(input),
     sexSlide(input),
     decompositionSlide(input),
   ];
+  if (input.measure.key === "coverage") {
+    const rows = subjectRows(input.response, input.measure);
+    const invalidYears = input.response.years.filter((_, index) =>
+      rows.some((row) => {
+        const value = row.values[index];
+        return value !== null && (value < -1e-8 || value > 100 + 1e-8);
+      }));
+    for (const slide of slides) {
+      if (input.measure.caveat && !slide.caveats.includes(input.measure.caveat)) {
+        slide.caveats.push(input.measure.caveat);
+      }
+      if (invalidYears.length) slide.caveats.unshift(
+        `Ratio hors de 0 à 100 % en ${invalidYears.join(", ")} sur le périmètre sélectionné : `
+        + "les montants enregistrés doivent être vérifiés. Ne pas interpréter le solde comme un reste à charge.");
+    }
+  }
+  return slides;
 }
 
 /** La forme retenue : celle demandée si elle figure dans les offres. */
@@ -177,11 +194,11 @@ function consolidationCaveat(years: number[], consolidatedThrough: number | null
 
   if (!rates.length) {
     return `Les années postérieures à ${consolidatedThrough} sont encore en consolidation : `
-      + "les liquidations tardives n'y sont pas toutes remontées, le dernier point est donc un plancher.";
+      + "les liquidations tardives n'y sont pas toutes remontées. Les montants et les ratios peuvent encore évoluer.";
   }
   return `Exercice${rates.length > 1 ? "s" : ""} encore en consolidation — ${rates.join(", ")} `
     + "à la date des derniers flux observés. Les liquidations tardives n'y sont pas remontées : "
-    + "le dernier point est un plancher, et la variation qu'il dessine est sous-estimée.";
+    + "les montants et les ratios peuvent encore évoluer, sans sens de correction garanti pour un ratio.";
 }
 
 /** La prolongation est-elle calculable ? Sans quoi la forme n'est pas offerte.

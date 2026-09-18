@@ -1523,3 +1523,10 @@ aurait coûté plus qu'il n'aurait préservé.
   soit le contraire du vrai pour les huit additives. Le champ est servi ; et
   l'écran affiche « — » plutôt que « non » si jamais il manquait.
 - `methodology.css` réécrit, adossé aux jetons. **95 tests verts**, build vert.
+
+## v9 · Datation AMO — soins et règlements
+
+- Ajout d'une bascule Panorama « Année de soins / Année de remboursement AMO / Comparer les deux ».
+- La nouvelle vue utilise le cube des délais sans modifier les Parquet ; elle affiche les montants AMO et un tableau vérifiable.
+- Les graphiques dédiés restent sobres : titre, axes, légende, courbes ou barres, et une réserve courte sur la lecture.
+- L'effet ROC n'est pas déduit : la vue documente deux calendriers AMO, pas la comptabilité de la complémentaire.

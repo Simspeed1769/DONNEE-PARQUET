@@ -169,10 +169,12 @@ METRICS = {
                "Dépense présentée rapportée au volume de la prestation sélectionnée.",
                "Somme des dépenses / somme des quantités",
                "Ne correspond ni à un coût par patient ni nécessairement à un tarif ; une moyenne globale dépend du mix de prestations.", False, False),
-        Metric("coverage", "Taux de prise en charge AMO", "100.0 * SUM(c.rem) / NULLIF(SUM(c.dep), 0)", "percent", "Prise en charge",
-               "Part de la dépense présentée remboursée par l’Assurance Maladie obligatoire.",
-               "100 × remboursements / dépenses",
-               "Une évolution agrégée peut provenir d’un changement de structure des prestations.", False, False),
+        Metric("coverage", "Part financée par la Sécurité sociale", "100.0 * SUM(c.rem) / NULLIF(SUM(c.dep), 0)", "percent", "Prise en charge",
+               "Sur 100 € de dépense présentée, montant remboursé par l’Assurance Maladie obligatoire (AMO).",
+               "100 × somme des remboursements / somme des dépenses présentées",
+               "Le solde relève du patient et/ou de la complémentaire selon les garanties ; il ne mesure pas les remboursements des mutuelles ni un effet ROC. "
+               "Une évolution peut provenir du mix de prestations ou de données incomplètes. Un ratio hors de 0 à 100 % doit être vérifié avant toute interprétation. "
+               "Open DAMIR ne couvre pas l’intégralité de l’hospitalisation publique.", False, False),
         Metric("negative", "Régularisations négatives", "SUM(c.rem_neg)", "money", "Avancé",
                "Montants de remboursements enregistrés négativement.", "Somme des remboursements négatifs"),
         Metric("gross_reimbursed", "Remboursé hors régularisations", "SUM(c.rem) - SUM(c.rem_neg)", "money", "Avancé",

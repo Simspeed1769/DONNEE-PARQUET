@@ -110,7 +110,7 @@ class ExportTests(unittest.TestCase):
         self.assertIn("Définition", flat)
         self.assertIn("Formule", flat)
         self.assertIn("Montant remboursé", flat)
-        self.assertIn("Taux de prise en charge AMO", flat)
+        self.assertIn("Part financée par la Sécurité sociale", flat)
         self.assertIn("Consolidation", flat)
 
     def test_column_widths_and_number_formats_survive(self) -> None:

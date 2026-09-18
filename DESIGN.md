@@ -205,6 +205,11 @@ avec décalage **et** flou.
     bonne part de la démographie du territoire — sur données réelles, l'effet
     apparent de la CSP est presque divisé par deux une fois l'âge tenu constant.
     C'est la raison d'être de l'unité région × âge × sexe.
+18. **La datation reste lisible en une seconde.** La comparaison des années de
+    soins et de règlement AMO garde un titre, deux axes, une légende et une
+    phrase de lecture ; les valeurs détaillées restent dans le tableau. Elle
+    utilise la serif Source Serif 4 pour le titre et Inter pour les contrôles,
+    comme le reste de DAMIR, sans créer une troisième hiérarchie visuelle.
 
 ## Ce qu'on ne fait pas
 

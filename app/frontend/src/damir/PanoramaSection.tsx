@@ -22,6 +22,7 @@ import type { Dispatch, SetStateAction } from "react";
 import type { ECharts } from "echarts/core";
 import { runPanorama, type PanoramaRequest } from "../api";
 import { ScopeBar } from "../components/ScopeBar";
+import { InfoHint } from "../components/InfoHint";
 import { EChart } from "../charts/EChart";
 import { useChartTokens } from "../charts/tokens";
 import { OFF_MAP_REGIONS, useFrenchMap } from "../charts/frenchMap";
@@ -241,18 +242,18 @@ export function PanoramaSection({
     const values = yearValues(lead.total, measure, response.components, years.length);
     const last = values.at(-1) ?? null;
     const previous = values.at(-2) ?? null;
-    const first = values.find((value) => value !== null) ?? null;
-    const delta = last !== null && previous !== null && previous !== 0
-      ? (100 * (last - previous)) / Math.abs(previous) : null;
-    const span = years.length - 1;
-    const cagr = first !== null && last !== null && first > 0 && last > 0 && span > 0
-      ? 100 * (Math.pow(last / first, 1 / span) - 1) : null;
+    const delta = last !== null && previous !== null
+      ? measure.kind === "percent" ? last - previous
+        : previous !== 0 ? (100 * (last - previous)) / Math.abs(previous) : null
+      : null;
 
     return [
       { key: "last", value: formatValue(last, measure.kind), label: String(years.at(-1)) },
       {
         key: "delta",
-        value: delta === null ? "—" : formatValue(delta, "percent", true),
+        value: delta === null ? "—" : measure.kind === "percent"
+          ? `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2, signDisplay: "exceptZero" }).format(delta)} points`
+          : formatValue(delta, "percent", true),
         label: `vs ${years.at(-2) ?? "—"}`,
         tone: delta === null ? "neutral" : delta >= 0 ? "up" : "down",
       },
@@ -349,6 +350,9 @@ export function PanoramaSection({
   const openExtraction = () => {
     const next = new URLSearchParams();
     writeFilters(next, filters);
+    next.set("dimensions", "year");
+    next.set("measures", measureKey === "coverage"
+      ? "reimbursed,expense,coverage,out_of_pocket" : measureKey);
     onOpenExtraction(next);
   };
 
@@ -356,7 +360,11 @@ export function PanoramaSection({
     <>
       <ScopeBar metadata={metadata} value={filters} onChange={setFilters} loading={loading}>
         <label className="scope-bar-measure">
-          <span>Mesure</span>
+          <span>Mesure {measureKey === "coverage" ? (
+            <InfoHint label="la part financée par la Sécurité sociale">
+              {"Somme des remboursements ÷ somme des dépenses présentées × 100 : 80 % signifie 80 € remboursés pour 100 € présentés. L’écart entre deux années se lit en points, et le solde ne correspond pas à ce que paie la mutuelle seule."}
+            </InfoHint>
+          ) : null}</span>
           <select value={measureKey} onChange={(event) => setMeasureKey(event.target.value)}>
             {measureFamilies.map(([family, items]) => (
               <optgroup key={family} label={family}>
@@ -505,7 +513,9 @@ export function PanoramaSection({
               />
             ) : null}
             <button type="button" onClick={exportCsv} disabled={!slide}>Exporter le CSV</button>
-            <button type="button" onClick={openExtraction}>Extraire la donnée</button>
+            <button type="button" onClick={openExtraction}>
+              {measureKey === "coverage" ? "Voir les montants et la part Sécu" : "Extraire la donnée"}
+            </button>
           </div>
         </footer>
 
@@ -532,7 +542,7 @@ export function PanoramaSection({
             </details>
 
             {slide.caveats.length || response?.warnings.length ? (
-              <details className="damir-details">
+              <details className="damir-details" open={measureKey === "coverage" || undefined}>
                 <summary>Ce que ce graphique ne montre pas ({slide.caveats.length + (response?.warnings.length ?? 0)})</summary>
                 <ul className="damir-caveats">
                   {slide.caveats.map((caveat) => <li key={caveat}>{caveat}</li>)}

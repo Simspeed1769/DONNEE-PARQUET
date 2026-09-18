@@ -22,6 +22,7 @@ from .exports import ExportSpec, csv_response, metadata_header, xlsx_response
 from .analysis import (
     DIMENSIONS,
     METRICS,
+    FilterPayload,
     ExtractionRequest,
     analysis_metadata,
     extraction_columns,
@@ -82,6 +83,7 @@ from .explore import ExploreRequest, OptionsRequest, aggregate_options, explore,
 from .panorama import PanoramaRequest, panorama, reference_block
 from .pivot import PivotRequest, pivot
 from .studio import methodology, studio_metadata
+from .time_basis import time_basis
 
 
 from .repository import (
@@ -153,7 +155,7 @@ DISK_CACHE = DiskCache(CACHE_DIR)
 #: c'est un fichier JSON qui décide. Constaté en ajoutant `completeness` au
 #: point 3.4 : l'entrée en cache locale ne le contenait pas, et rien ne l'aurait
 #: signalé.
-METADATA_SCHEMA = 2
+METADATA_SCHEMA = 3
 
 
 def _build_metadata() -> dict[str, Any]:
@@ -246,6 +248,19 @@ def panorama_view(payload: PanoramaRequest) -> dict[str, Any]:
     """
     try:
         return _panorama_cached(payload.model_dump_json())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@lru_cache(maxsize=32)
+def _time_basis_cached(payload_json: str) -> dict[str, Any]:
+    return time_basis(repository, FilterPayload.model_validate_json(payload_json))
+
+
+@app.post("/api/time-basis")
+def time_basis_view(payload: FilterPayload) -> dict[str, Any]:
+    try:
+        return _time_basis_cached(payload.model_dump_json())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

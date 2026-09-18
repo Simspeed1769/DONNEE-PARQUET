@@ -1,0 +1,20 @@
+.time-basis-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 0 0 16px; }
+.time-basis-controls > span { color: var(--ink-secondary); font-weight: 600; }
+.time-basis-controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.time-basis-measure { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.time-basis-measure span { color: var(--ink-muted); font-size: .75rem; }
+.time-basis-measure strong { color: var(--ink); font-size: .9rem; }
+.time-basis-notice { padding: 20px; }
+.time-basis-notice p, .time-basis-limits p { max-width: 80ch; line-height: 1.5; margin: 6px 0 12px; }
+.time-basis-note, .time-basis-scope { color: var(--ink-secondary); font-size: .85rem; line-height: 1.5; }
+.time-basis-note { margin: 0; padding: 8px 24px 16px; }
+.time-basis-legend { margin: 0 24px; }
+.time-basis-swatch { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--series-1); }
+.time-basis-swatch.payment { background: var(--series-2); }
+.time-basis-scope { margin: 8px 0 0; }
+.time-basis-limits { padding: 16px 0; font-size: .85rem; color: var(--ink-secondary); }
+.time-basis-reperes { color: var(--ink-secondary); font-size: .8rem; }
+@media (max-width: 640px) {
+  .time-basis-controls .pathology-toggle { flex-wrap: wrap; }
+  .time-basis-chart .damir-stage-head { align-items: flex-start; flex-direction: column; }
+}

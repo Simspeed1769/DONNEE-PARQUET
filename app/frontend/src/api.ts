@@ -119,6 +119,16 @@ export type CorrelationCatalogue = {
   unit_factors: Record<string, string[]>;
 };
 
+export type TimeBasisResponse = {
+  latest_flow: number | null;
+  rows: Array<{ year: number; care: number | null; payment: number | null; payment_months: number }>;
+  warnings: string[];
+};
+
+export function runTimeBasis(payload: AdvancedFilters, signal?: AbortSignal): Promise<TimeBasisResponse> {
+  return post<TimeBasisResponse>("/api/time-basis", payload, signal);
+}
+
 /* `CorrelationRequest` / `CorrelationResult` et `runCorrelation` sont partis
    avec l'écran avancé : la corrélation appariée n'avait plus d'appelant. Le
    catalogue, lui, sert toujours — c'est lui qui peuple Croisements. */
