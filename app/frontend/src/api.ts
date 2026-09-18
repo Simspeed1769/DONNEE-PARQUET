@@ -1,4 +1,5 @@
 import type {
+  Reliability,
   ExtractionPreview,
   ExtractionRequest,
   HierarchyOptions,
@@ -131,6 +132,12 @@ export type TimeBasisResponse = {
 
 export function runTimeBasis(payload: AdvancedFilters, signal?: AbortSignal): Promise<TimeBasisResponse> {
   return post<TimeBasisResponse>("/api/time-basis", payload, signal);
+}
+
+/** La cadence de liquidation du périmètre de prestations : seuls le grand
+ *  poste, le poste, le sous-poste et les prestations comptent. */
+export function runReliability(payload: AdvancedFilters, signal?: AbortSignal): Promise<Reliability> {
+  return post<Reliability>("/api/reliability", payload, signal);
 }
 
 /* `CorrelationRequest` / `CorrelationResult` et `runCorrelation` sont partis

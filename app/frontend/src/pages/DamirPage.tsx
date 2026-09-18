@@ -19,12 +19,13 @@
    ──────────────────────────────────────────────────────────────────────────── */
 
 import { useEffect, useMemo, useState } from "react";
+import { runReliability } from "../api";
 import { CompareSection } from "../damir/CompareSection";
 import { PanoramaSection } from "../damir/PanoramaSection";
 import { TimeBasisSection, type TimeBasis } from "../damir/TimeBasisSection";
 import "../damir/timeBasis.css";
 import { hasLegacyCompareParams, redirectLegacyCompareParams } from "../damir/legacyCompare";
-import type { AdvancedFilters, Metadata } from "../types";
+import type { AdvancedFilters, Metadata, Reliability } from "../types";
 import { filtersFromSearch, writeFilters, yearStatusLabel } from "../utils";
 
 /** Réécrit l'adresse une fois, avant que quoi que ce soit — ici ou dans les
@@ -73,7 +74,28 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
     return metadata.has_delays && raw === "payment" ? raw : "care";
   });
 
-  const consolidated = metadata.reliability.consolidated_through;
+  /** La cadence de liquidation du périmètre choisi. Les honoraires
+   *  hospitaliers se règlent plus vite que les séjours : le taux « liquidé
+   *  à N % » et le redressement de la dernière année doivent suivre le poste,
+   *  pas rester ceux de tout DAMIR. Seul le périmètre de prestations compte,
+   *  le cube des délais ne connaît pas la population. */
+  const scopeKey = JSON.stringify([filters.grand_post, filters.post, filters.sub_post, filters.service_codes]);
+  const [scoped, setScoped] = useState<Reliability | null>(null);
+  useEffect(() => {
+    if (!metadata.has_delays) return;
+    const controller = new AbortController();
+    let active = true;
+    runReliability(filters, controller.signal)
+      .then((next) => { if (active) setScoped(next.available ? next : null); })
+      .catch(() => { if (active) setScoped(null); });
+    return () => { active = false; controller.abort(); };
+  }, [scopeKey, metadata.has_delays]);
+  /** Les sections lisent la cadence dans les métadonnées : on leur donne
+   *  celles du périmètre, sans rien changer à leur code. */
+  const scopedMetadata = useMemo<Metadata>(
+    () => scoped ? { ...metadata, reliability: scoped } : metadata, [metadata, scoped]);
+
+  const consolidated = scopedMetadata.reliability.consolidated_through;
   const provisional = consolidated !== null && filters.end_year > consolidated;
 
   // Chaque section écrit sa propre part de l'adresse ; celle-ci n'écrit que ce
@@ -90,7 +112,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
   }, [section, filters, measureKey, timeBasis]);
 
   const shared = {
-    metadata, filters, setFilters, measureKey, setMeasureKey,
+    metadata: scopedMetadata, filters, setFilters, measureKey, setMeasureKey,
     onOpenExtraction, routeVersion,
   };
 
@@ -107,7 +129,7 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
               entre savoir qu'il faut se méfier et savoir de combien. */}
           <span className={`status-chip ${provisional ? "provisional" : "reliable"}`}>
             {section === "panorama" && timeBasis !== "care" ? "Règlements AMO observés"
-              : provisional ? yearStatusLabel(metadata, filters.end_year) : metadata.reliability.status}
+              : provisional ? yearStatusLabel(scopedMetadata, filters.end_year) : scopedMetadata.reliability.status}
           </span>
           <button type="button" className="method-link" onClick={onOpenMethodology}>Données &amp; méthode →</button>
         </div>
@@ -153,10 +175,49 @@ export function DamirPage({ metadata, routeVersion, onOpenExtraction, onOpenMeth
           </div>
         </div>
       ) : null}
+      {section === "panorama" && scoped ? <LiquidationPanel reliability={scoped} filters={filters} /> : null}
       {section === "panorama" && timeBasis === "care" ? <PanoramaSection {...shared} /> : null}
       {section === "panorama" && timeBasis === "payment" ? <TimeBasisSection {...shared} /> : null}
       {section === "compare" ? <CompareSection {...shared} /> : null}
     </div>
+  );
+}
+
+/** La cadence du périmètre, repliée : un tableau par année de soins, et les
+ *  seuils de la courbe. Replié parce qu'on vient au Panorama pour lire une
+ *  prestation, pas sa liquidation — mais quand on projette une année
+ *  incomplète, c'est ici qu'on trouve par quoi diviser. */
+function LiquidationPanel({ reliability, filters }: { reliability: Reliability; filters: AdvancedFilters }) {
+  const subject = filters.sub_post ?? filters.post ?? filters.grand_post ?? "Toutes prestations";
+  const rows = reliability.completeness.filter((row) => row.year >= 2016);
+  const latest = reliability.latest_flow;
+  const cutoff = latest ? `${String(latest % 100).padStart(2, "0")}/${Math.floor(latest / 100)}` : "";
+  const thresholds = Object.entries(reliability.thresholds)
+    .filter(([, delay]) => delay !== null)
+    .map(([level, delay]) => `${level} % à M+${delay}`).join(" · ");
+  const pct = (value: number | null | undefined, digits = 1) =>
+    value == null ? "—" : `${(value * 100).toFixed(digits).replace(".", ",")} %`;
+  return (
+    <details className="damir-details liquidation-panel">
+      <summary>Liquidation du périmètre — {subject}</summary>
+      <p className="liquidation-note">
+        Cadence de règlement de l’Assurance Maladie sur ce périmètre, flux arrêtés à {cutoff}.
+        {thresholds ? ` Courbe : ${thresholds}.` : ""} La part réglée dans l’année est la lecture la plus
+        simple : c’est par elle que se redresse une année encore ouverte.
+      </p>
+      <div className="damir-table-scroll">
+        <table>
+          <thead><tr><th>Année de soins</th><th>Part liquidée à ce jour</th><th>Part réglée dans l’année</th></tr></thead>
+          <tbody>
+            {rows.map((row) => <tr key={row.year}>
+              <th scope="row">{row.year}</th>
+              <td>{pct(row.ratio)}</td>
+              <td>{pct(row.in_year)}</td>
+            </tr>)}
+          </tbody>
+        </table>
+      </div>
+    </details>
   );
 }
 

@@ -49,6 +49,9 @@ export type Reliability = {
     observed: number;
     mature: number | null;
     ratio: number | null;
+    /** Part de l'année de soins réglée au 31 décembre de la même année ;
+     *  absente pour l'année ouverte, où elle vaudrait 100 % par construction. */
+    in_year?: number | null;
   }>;
 };
 

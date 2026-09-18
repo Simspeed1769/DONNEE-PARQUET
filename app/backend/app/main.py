@@ -82,7 +82,7 @@ from .regression import RegressionRequest, regression
 from .explore import ExploreRequest, OptionsRequest, aggregate_options, explore, filter_options
 from .panorama import PanoramaRequest, panorama, reference_block
 from .pivot import PivotRequest, pivot
-from .studio import methodology, studio_metadata
+from .studio import liquidation, methodology, studio_metadata
 from .time_basis import time_basis
 
 
@@ -271,6 +271,28 @@ def _time_basis_cached(payload_json: str) -> dict[str, Any]:
 def time_basis_view(payload: FilterPayload) -> dict[str, Any]:
     try:
         return _time_basis_cached(payload.model_dump_json())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@lru_cache(maxsize=64)
+def _liquidation_cached(payload_json: str) -> dict[str, Any]:
+    return liquidation(repository, FilterPayload.model_validate_json(payload_json))
+
+
+@app.post("/api/reliability")
+def reliability_view(payload: FilterPayload) -> dict[str, Any]:
+    """La cadence de liquidation du périmètre de prestations demandé.
+
+    Seuls le grand poste, le poste, le sous-poste et les prestations comptent :
+    le cube des délais ne connaît pas la population. La période est ignorée
+    aussi — la cadence se mesure sur les années closes, pas sur celles qu'on
+    regarde.
+    """
+    scope = FilterPayload(start_year=2000, end_year=2100, grand_post=payload.grand_post,
+                          post=payload.post, sub_post=payload.sub_post, service_codes=payload.service_codes)
+    try:
+        return _liquidation_cached(scope.model_dump_json())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 

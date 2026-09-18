@@ -567,6 +567,7 @@ et `immutable, max-age=31536000` sur `/assets/`.
 | `POST /api/explore/options` | modalités classées par poids + recherche | `lru_cache(32)` sur le **seul périmètre** |
 | `POST /api/panorama` | sujets × facettes en un balayage | `lru_cache(64)` + référentiel en `lru_cache(16)` |
 | `POST /api/time-basis` | les quatre mesures par année de règlement AMO | `lru_cache(32)` |
+| `POST /api/reliability` | cadence de liquidation du périmètre de prestations : courbe, seuils, part liquidée et part réglée dans l'année | `lru_cache(64)` |
 | `POST /api/pivot` | le croisé à deux dimensions : composantes brutes + formules | `lru_cache(32)` |
 
 Astuce notable sur `/api/explore/options` : la clé de cache neutralise `query`
@@ -1915,6 +1916,19 @@ Sans ce cube, elle retombe sur le cube des délais et se limite au remboursement
 sans filtre de population. Elle ne donne pas l'année comptable d'une
 complémentaire, et un écart entre les deux calendriers est un signal de cadence,
 pas une mesure de l'effet ROC.
+
+**Liquidation par périmètre** — la cadence de règlement (courbe M+0…M+24,
+seuils, part liquidée par année de soins) se calcule pour le périmètre de
+prestations choisi, pas seulement pour tout DAMIR : la puce « liquidé à N % »
+et le redressement de la dernière année suivent le poste. L'encart
+« Liquidation du périmètre », replié sous la bascule du Panorama, donne par
+année de soins deux lectures : la part liquidée à ce jour (profil mois par
+mois, celle de la puce) et la **part réglée dans l'année** (réglée au 31/12 de
+l'année de soins), plus simple et plus robuste pour redresser une année
+ouverte — le profil mois par mois divise décembre par une part de quelques
+pour cent et amplifie la moindre irrégularité (surestimation de 3 à 6 % à
+douze mois sur l'hospitalisation, mesurée en backtest). Le cube des délais ne
+connaît pas la population : ce calcul ignore région, âge et sexe.
 
 *La comparaison des deux courbes sur un même graphique a disparu avec ce cube :
 elle n'existait que parce que l'axe règlement n'avait qu'une seule mesure à
