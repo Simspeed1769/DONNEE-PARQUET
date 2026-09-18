@@ -53,7 +53,12 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
   annuelles de flux** (`cube_parts3/main_AAAA.parquet`, une par année de
   règlement) fournies le 18 septembre — vérifiées : leur AMO annuel est celui du
   cube des délais à l'euro près, et leur somme redonne le cube principal. Elles
-  ne sont pas encore intégrées à l'outil.
+  ne sont pas encore intégrées à l'outil. **Dans l'outil**, on peut les
+  **déduire** : dépense de l'année de règlement ≈ AMO de l'année de règlement
+  (Panorama) ÷ part AMO de l'année de soins (Extraire), en supposant le même
+  partage AMO / reste sur les deux datations. Contrôlé sur les tranches de flux :
+  l'écart est de +0,1 à +0,4 % sur la dépense des honoraires (2023–2025) et de
+  −0,4 à +0,3 % sur celle de l'ensemble.
 - **Mesures**. Dépense présentée ; remboursement AMO ; part AMO = somme des
   remboursements / somme des dépenses ; reste après AMO = dépense − AMO. Ce
   reste comprend la part du patient et celle de la complémentaire : ce n'est pas
@@ -85,7 +90,8 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
 
 | Mesure, par année de règlement | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |
 |---|---:|---:|---:|---:|---:|---:|
-| Dépense présentée (M€) | 14 973,54 | 15 958,35 | 16 553,16 | 18 090,96 | +3,73 % | **+9,29 %** |
+| Dépense déduite (AMO ÷ part AMO de survenance) | 14 982,13 | 15 938,17 | 16 580,15 | 18 072,83 | +4,03 % | +9,00 % |
+| Dépense présentée réelle (tranches de flux) (M€) | 14 973,54 | 15 958,35 | 16 553,16 | 18 090,96 | +3,73 % | **+9,29 %** |
 | Remboursement AMO (M€) | 13 655,08 | 14 549,49 | 15 197,86 | 16 533,03 | +4,46 % | +8,79 % |
 | Reste après AMO (M€) | 1 318,46 | 1 408,86 | 1 355,30 | 1 557,93 | −3,80 % | **+14,95 %** |
 | Part AMO | 91,19 % | 91,17 % | 91,81 % | 91,39 % | +0,64 pt | −0,42 pt |
@@ -130,7 +136,8 @@ par les flux du premier semestre 2026.
 
 | Mesure, par année de règlement | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |
 |---|---:|---:|---:|---:|---:|---:|
-| Dépense présentée (M€) | 1 209,24 | 1 318,09 | 1 380,43 | 1 478,00 | +4,73 % | **+7,07 %** |
+| Dépense déduite (AMO ÷ part AMO de survenance) | 1 211,61 | 1 319,11 | 1 383,22 | 1 483,49 | +4,86 % | +7,25 % |
+| Dépense présentée réelle (tranches de flux) (M€) | 1 209,24 | 1 318,09 | 1 380,43 | 1 478,00 | +4,73 % | **+7,07 %** |
 | Remboursement AMO (M€) | 836,22 | 883,84 | 903,27 | 953,54 | +2,20 % | +5,57 % |
 | Reste après AMO (M€) | 373,03 | 434,25 | 477,17 | 524,46 | **+9,88 %** | **+9,91 %** |
 | Part AMO | 69,15 % | 67,05 % | 65,43 % | 64,52 % | −1,62 pt | −0,92 pt |
@@ -315,9 +322,10 @@ L'application doit tourner (`DAMIR.bat`, http://127.0.0.1:8000).
 2. **Année de règlement** — en haut du Panorama, choisir **Comparer les deux**
    (ou l'adresse avec `time_basis=both`). Les deux courbes sont les deux
    premières lignes des tableaux « année civile ». La dépense, la part AMO et
-   le reste après AMO en année de règlement ne sont pas dans l'outil : le
-   script les lit dans `cube_parts3/main_AAAA.parquet` (une tranche par année
-   de règlement) avec les mêmes filtres de poste que l'outil.
+   le reste après AMO en année de règlement ne sont pas dans l'outil : on les
+   déduit (AMO de règlement ÷ part AMO de survenance, § 2), et le script les
+   contrôle contre `cube_parts3/main_AAAA.parquet` (une tranche par année de
+   règlement) avec les mêmes filtres de poste que l'outil.
    - [Comparer les deux — séjours](http://127.0.0.1:8000/?page=damir&section=panorama&view=evolution&start_year=2022&end_year=2025&grand_post=Hospitalisation&post=Hospitalisation%20Sejour&measure=reimbursed&time_basis=both)
    - [Comparer les deux — honoraires](http://127.0.0.1:8000/?page=damir&section=panorama&view=evolution&start_year=2022&end_year=2025&grand_post=Hospitalisation&post=Hospitalisation%20Honoraires&measure=reimbursed&time_basis=both)
 3. **Décomposition par année de soins, parts réglées dans l'année, maturité,

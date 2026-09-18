@@ -6,9 +6,10 @@ Lecture seule. Imprime une note Markdown ; `--json` imprime les valeurs brutes (
 Chaque bloc est aligné sur un écran ou une méthode de l'outil :
 - A. survenance (année de soins) : `extraction_preview`, le moteur de l'écran Extraire ;
 - B. année de règlement AMO : `time_basis`, la lecture « Comparer les deux » du Panorama,
-     complétée par la décomposition des règlements de l'année selon l'année des soins et,
-     si les tranches annuelles de flux `cube_parts3/` sont présentes, par la dépense,
-     la part AMO et le reste après AMO en année de règlement (absents de l'outil) ;
+     complétée par la décomposition des règlements de l'année selon l'année des soins, par
+     la dépense et le reste après AMO en année de règlement **déduits** (AMO de règlement ÷
+     part AMO de survenance) et, si les tranches annuelles de flux `cube_parts3/` sont
+     présentes, par leurs valeurs réelles, qui contrôlent la déduction ;
 - C. 2025 à maturité : part de l'année de soins déjà réglée au 31/12 de la même année,
      mesurée sur les années closes et appliquée à 2025. La méthode mois par mois de
      `studio._completeness` (la puce « en consolidation ») est donnée en borne haute :
@@ -289,6 +290,21 @@ def render(data):
           f"{fr(pct_change(c[2023], c[2024]), 2, ' %')} | {fr(pct_change(c[2024], c[2025]), 2, ' %')} |")
         p(f"| Par année de règlement | {meur(r[2022])} | {meur(r[2023])} | {meur(r[2024])} | {meur(r[2025])} | "
           f"{fr(pct_change(r[2023], r[2024]), 2, ' %')} | {fr(pct_change(r[2024], r[2025]), 2, ' %')} |")
+        p("")
+        p("Dépense et reste après AMO en année de règlement, **déduits** : AMO de l'année de règlement ÷ part AMO "
+          "de l'année de soins (Extraire). L'hypothèse est que le partage AMO / reste est le même sur les deux datations.")
+        p("")
+        p("| Déduit, par année de règlement | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |")
+        p("|---|---:|---:|---:|---:|---:|---:|")
+        ded = {y: r[y] / (care[y]["coverage"] / 100) for y in YEARS}
+        rest = {y: ded[y] - r[y] for y in YEARS}
+        p(f"| Dépense déduite (M€) | {meur(ded[2022])} | {meur(ded[2023])} | {meur(ded[2024])} | {meur(ded[2025])} | "
+          f"{fr(pct_change(ded[2023], ded[2024]), 2, ' %')} | {fr(pct_change(ded[2024], ded[2025]), 2, ' %')} |")
+        p(f"| Reste après AMO déduit (M€) | {meur(rest[2022])} | {meur(rest[2023])} | {meur(rest[2024])} | {meur(rest[2025])} | "
+          f"{fr(pct_change(rest[2023], rest[2024]), 2, ' %')} | {fr(pct_change(rest[2024], rest[2025]), 2, ' %')} |")
+        if pm:
+            p(f"| Contrôle : écart de la dépense déduite à la dépense réelle des tranches de flux | "
+              + " | ".join(fr(pct_change(pm[y]["expense"], ded[y]), 2, " %") for y in YEARS) + " | | |")
         p("")
         if pm:
             p("Les quatre mesures par année de règlement (tranches annuelles de flux `cube_parts3/`, hors outil) :")
