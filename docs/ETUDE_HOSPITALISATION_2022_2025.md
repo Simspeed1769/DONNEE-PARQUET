@@ -18,12 +18,15 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
   continue. La dépense croît plus vite que l'AMO, la part AMO recule chaque année
   (69,0 % → 67,0 % → 65,3 % → 64,3 %) et le **reste après AMO augmente d'environ
   +10 % par an** (+9,9 % en 2024, +10,8 à +11,4 % en 2025 à maturité).
-- **En année de règlement AMO (année civile)** : séjours +4,5 % en 2024 puis
-  **+8,8 % en 2025** ; honoraires +2,2 % puis **+5,6 %**. La hausse 2025 des
-  séjours en année civile est gonflée d'environ un point et demi par un effet de
-  cadence (davantage de soins 2024 réglés en 2025 : 1 585 M€ contre 1 360 M€ un
-  an plus tôt) — exactement le type d'effet qu'un dispositif comme le ROC produit
-  côté complémentaire.
+- **En année de règlement (année civile)**, grâce aux tranches annuelles de
+  flux fournies le 18 septembre : séjours, dépense +3,7 % en 2024 puis **+9,3 %
+  en 2025**, AMO +4,5 % puis +8,8 %, reste après AMO −3,8 % puis **+15,0 %** ;
+  honoraires, dépense +4,7 % puis +7,1 %, reste après AMO **+9,9 % deux années
+  de suite**, part AMO 67,1 % → 65,4 % → 64,5 %. La hausse 2025 des séjours en
+  année civile est gonflée d'environ un point et demi par un effet de cadence
+  (davantage de soins 2024 réglés en 2025 : 1 585 M€ contre 1 360 M€ un an plus
+  tôt) — exactement le type d'effet qu'un dispositif comme le ROC produit côté
+  complémentaire.
 - **Côté AMO, aucune accélération de cadence** : la part de l'année de soins
   réglée au 31 décembre est stable depuis 2016 (séjours ≈ 90–91 %, honoraires
   ≈ 93–94 %). Une accélération que l'assureur observerait sur ses propres flux
@@ -44,9 +47,13 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
   résultats décrivent donc l'hospitalisation **privée**.
 - **Deux datations**. *Année de soins* (survenance) : les soins de l'année,
   quelle que soit la date du paiement. *Année de règlement AMO* (année civile) :
-  ce que l'AMO a payé pendant l'année, toutes années de soins confondues. Sur
-  cet axe, le fichier ne porte que le remboursement AMO : ni dépense, ni part
-  AMO, ni reste après AMO.
+  ce que l'AMO a payé pendant l'année, toutes années de soins confondues. Le
+  cube de l'outil ne porte, sur cet axe, que le remboursement AMO ; la dépense,
+  la part AMO et le reste après AMO en année de règlement viennent des **tranches
+  annuelles de flux** (`cube_parts3/main_AAAA.parquet`, une par année de
+  règlement) fournies le 18 septembre — vérifiées : leur AMO annuel est celui du
+  cube des délais à l'euro près, et leur somme redonne le cube principal. Elles
+  ne sont pas encore intégrées à l'outil.
 - **Mesures**. Dépense présentée ; remboursement AMO ; part AMO = somme des
   remboursements / somme des dépenses ; reste après AMO = dépense − AMO. Ce
   reste comprend la part du patient et celle de la complémentaire : ce n'est pas
@@ -76,6 +83,13 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
 | dont soins de l'année | 12 408,04 | 13 246,48 | 13 828,45 | 14 947,18 | +4,39 % | +8,09 % |
 | dont soins de l'année précédente | 1 234,35 | 1 293,29 | 1 359,85 | 1 585,08 | +5,15 % | +16,56 % |
 
+| Mesure, par année de règlement | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |
+|---|---:|---:|---:|---:|---:|---:|
+| Dépense présentée (M€) | 14 973,54 | 15 958,35 | 16 553,16 | 18 090,96 | +3,73 % | **+9,29 %** |
+| Remboursement AMO (M€) | 13 655,08 | 14 549,49 | 15 197,86 | 16 533,03 | +4,46 % | +8,79 % |
+| Reste après AMO (M€) | 1 318,46 | 1 408,86 | 1 355,30 | 1 557,93 | −3,80 % | **+14,95 %** |
+| Part AMO | 91,19 % | 91,17 % | 91,81 % | 91,39 % | +0,64 pt | −0,42 pt |
+
 ### 2025 à maturité
 
 | Estimation | Part réglée au 31/12 retenue | AMO 2025 | AMO 24→25 | Dépense 2025 | Reste après AMO | Reste 24→25 |
@@ -86,9 +100,13 @@ incomplète, données arrêtées au 31/12/2025) et **refaire l'exercice en anné
 **Lecture.** La part AMO ne bouge pas : dépense et remboursement dérivent
 ensemble. En 2024, le reste après AMO est stable (+8 M€). En 2025, la baisse
 affichée est une troncature ; à maturité, l'année est en hausse sensible, et le
-reste après AMO avec elle. L'ordre de grandeur (+7 à +8 % d'AMO) est cohérent
-avec l'année civile (+8,8 %) une fois l'effet de cadence retiré. Il sera
-confirmé ou infirmé par les flux du premier semestre 2026.
+reste après AMO avec elle. L'ordre de grandeur (+7 à +8 % d'AMO, dépense
+2025 à maturité de 18,0 à 18,2 Md€) est cohérent avec l'année civile (+8,8 %
+d'AMO, 18,1 Md€ de dépense) une fois l'effet de cadence retiré. En année
+civile, le reste après AMO fait un saut de +15 % en 2025 après une baisse en
+2024 : c'est la lecture qu'aurait une complémentaire en année comptable, et
+elle amplifie la dérive réelle (+9 à +11 %). Le tout sera confirmé ou infirmé
+par les flux du premier semestre 2026.
 
 ## 4. Honoraires — « Hospitalisation Honoraires »
 
@@ -110,6 +128,13 @@ confirmé ou infirmé par les flux du premier semestre 2026.
 | dont soins de l'année | 787,20 | 830,83 | 848,07 | 898,63 | +2,08 % | +5,96 % |
 | dont soins de l'année précédente | 48,88 | 52,87 | 54,98 | 54,64 | +3,99 % | −0,63 % |
 
+| Mesure, par année de règlement | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |
+|---|---:|---:|---:|---:|---:|---:|
+| Dépense présentée (M€) | 1 209,24 | 1 318,09 | 1 380,43 | 1 478,00 | +4,73 % | **+7,07 %** |
+| Remboursement AMO (M€) | 836,22 | 883,84 | 903,27 | 953,54 | +2,20 % | +5,57 % |
+| Reste après AMO (M€) | 373,03 | 434,25 | 477,17 | 524,46 | **+9,88 %** | **+9,91 %** |
+| Part AMO | 69,15 % | 67,05 % | 65,43 % | 64,52 % | −1,62 pt | −0,92 pt |
+
 ### 2025 à maturité
 
 | Estimation | Part réglée au 31/12 retenue | AMO 2025 | AMO 24→25 | Dépense 2025 | Reste après AMO | Reste 24→25 |
@@ -122,7 +147,9 @@ augmente plus vite que la base remboursée par l'AMO, la part AMO recule d'un à
 deux points par an, et le reste après AMO — où vivent les dépassements
 d'honoraires — croît d'environ 10 % par an. Ici, la cadence n'explique rien :
 la part réglée dans l'année est identique en 2024 et 2025, et l'année civile
-(+5,6 %) dit la même chose que l'année de soins à maturité (+6,0 à +6,5 %).
+dit la même chose que l'année de soins à maturité : AMO +5,6 % contre +6,0 à
++6,5 %, dépense +7,1 % contre +7,7 à +8,2 %, reste après AMO +9,9 % contre
++10,8 à +11,4 %.
 C'est une dérive de survenance, qui pèse directement sur une garantie
 hospitalisation couvrant les honoraires.
 
@@ -190,8 +217,10 @@ aux repères ci-dessus (secteur privé) :
 | Séjours — reste après AMO | +0,6 % | +9,3 à +10,7 % |
 | Honoraires — dépense présentée | +4,5 % | +7,7 à +8,2 % |
 | Honoraires — reste après AMO | +9,9 % | +10,8 à +11,4 % |
-| Séjours — AMO en année civile | +4,5 % | +8,8 % (observé) |
-| Honoraires — AMO en année civile | +2,2 % | +5,6 % (observé) |
+| Séjours — dépense en année civile | +3,7 % | +9,3 % (observé) |
+| Séjours — reste après AMO en année civile | −3,8 % | +15,0 % (observé) |
+| Honoraires — dépense en année civile | +4,7 % | +7,1 % (observé) |
+| Honoraires — reste après AMO en année civile | +9,9 % | +9,9 % (observé) |
 
 - Dérive en année de soins de l'assureur **du même ordre** que ces repères, mais
   charge en année comptable **nettement au-dessus** : l'écart est un effet de
@@ -247,8 +276,10 @@ quatre chiffres se retrouvent par soustraction des deux lignes dans le tableau
 ci-dessus. Le message tient sur les deux postes qui comptent pour une garantie
 hospitalisation : séjours stables, honoraires en dérive.
 
-En année de règlement, l'ensemble fait +8,79 % en 2024 et +5,68 % en 2025 ; à
-maturité, 2025 ressort à +5,7 à +6,1 %.
+En année de règlement, l'AMO de l'ensemble fait +8,79 % en 2024 et +5,68 % en
+2025 (dépense +6,54 % puis −1,07 %, part AMO 85,5 % → 87,3 % → 93,3 % : mêmes
+défauts d'enregistrement qu'en survenance) ; à maturité, l'AMO 2025 ressort à
++5,7 à +6,1 %.
 
 ## 8. Limites
 
@@ -283,7 +314,10 @@ L'application doit tourner (`DAMIR.bat`, http://127.0.0.1:8000).
    - [Extraire — tous les postes du grand poste (annexe)](http://127.0.0.1:8000/?page=extraction&source=damir&start_year=2023&end_year=2025&grand_post=Hospitalisation&dimensions=year,post&measures=reimbursed,expense,coverage,out_of_pocket)
 2. **Année de règlement** — en haut du Panorama, choisir **Comparer les deux**
    (ou l'adresse avec `time_basis=both`). Les deux courbes sont les deux
-   premières lignes des tableaux « année civile ».
+   premières lignes des tableaux « année civile ». La dépense, la part AMO et
+   le reste après AMO en année de règlement ne sont pas dans l'outil : le
+   script les lit dans `cube_parts3/main_AAAA.parquet` (une tranche par année
+   de règlement) avec les mêmes filtres de poste que l'outil.
    - [Comparer les deux — séjours](http://127.0.0.1:8000/?page=damir&section=panorama&view=evolution&start_year=2022&end_year=2025&grand_post=Hospitalisation&post=Hospitalisation%20Sejour&measure=reimbursed&time_basis=both)
    - [Comparer les deux — honoraires](http://127.0.0.1:8000/?page=damir&section=panorama&view=evolution&start_year=2022&end_year=2025&grand_post=Hospitalisation&post=Hospitalisation%20Honoraires&measure=reimbursed&time_basis=both)
 3. **Décomposition par année de soins, parts réglées dans l'année, maturité,

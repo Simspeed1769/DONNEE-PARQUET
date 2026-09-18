@@ -44,3 +44,6 @@ docs/sources/*.docx
 .env
 .env.*
 !.env.example
+
+# Tranches annuelles de flux (1,5 Go), source locale optionnelle de tools/etude_roc_hospitalisation.py
+cube_parts3/

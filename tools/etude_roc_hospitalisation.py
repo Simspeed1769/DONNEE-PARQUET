@@ -6,7 +6,9 @@ Lecture seule. Imprime une note Markdown ; `--json` imprime les valeurs brutes (
 Chaque bloc est aligné sur un écran ou une méthode de l'outil :
 - A. survenance (année de soins) : `extraction_preview`, le moteur de l'écran Extraire ;
 - B. année de règlement AMO : `time_basis`, la lecture « Comparer les deux » du Panorama,
-     complétée par la décomposition des règlements de l'année selon l'année des soins ;
+     complétée par la décomposition des règlements de l'année selon l'année des soins et,
+     si les tranches annuelles de flux `cube_parts3/` sont présentes, par la dépense,
+     la part AMO et le reste après AMO en année de règlement (absents de l'outil) ;
 - C. 2025 à maturité : part de l'année de soins déjà réglée au 31/12 de la même année,
      mesurée sur les années closes et appliquée à 2025. La méthode mois par mois de
      `studio._completeness` (la puce « en consolidation ») est donnée en borne haute :
@@ -19,7 +21,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app" / "backend"))
-from app.analysis import ExtractionRequest, FilterPayload, delay_where, extraction_preview
+from app.analysis import ExtractionRequest, FilterPayload, cube_where, delay_where, extraction_preview
 from app.repository import REGIONS, repository
 from app.studio import reliability_metadata
 from app.time_basis import time_basis
@@ -31,6 +33,7 @@ MEASURES = ["reimbursed", "expense", "coverage", "out_of_pocket"]
 MAX_DELAY = 24          # même horizon que la courbe de liquidation de l'outil
 CADENCE_MONTHS = 6      # soins de janvier à juin, paiements suivis six mois : observable chaque année
 BACKTEST_YEARS = range(2019, 2025)
+PARTS_DIR = Path(__file__).resolve().parents[1] / "cube_parts3"   # tranches annuelles de flux, avec la dépense
 
 
 def scope_name(post):
@@ -57,6 +60,33 @@ def care_rows(post, dimensions):
 
 def payment_rows(post):
     return time_basis(repository, payload(post))["rows"]
+
+
+def payment_measures(post):
+    """Dépense, AMO, part et reste par année de règlement, lus dans les tranches annuelles de flux.
+
+    Les tranches `cube_parts3/main_YYYY.parquet` (fournies le 18/09/2026) portent
+    tout le contenu des fichiers de flux de l'année YYYY, dépense comprise —
+    ce que le cube des délais de l'outil n'a pas. Vérifié : leur `rem` par
+    année égale celui du cube des délais, et leur somme redonne le cube brut.
+    """
+    if not PARTS_DIR.exists():
+        return {}
+    where, params = cube_where(payload(post, 2000, 2100))
+    result = {}
+    for year in YEARS:
+        part = PARTS_DIR / f"main_{year}.parquet"
+        if not part.exists():
+            continue
+        row = repository.query(
+            f"""SELECT SUM(c.dep)::DOUBLE AS expense, SUM(c.rem)::DOUBLE AS reimbursed
+                FROM read_parquet('{part.as_posix()}') c LEFT JOIN transco t USING (prs_nat)
+                WHERE {where}""", params)[0]
+        expense, reimbursed = row["expense"], row["reimbursed"]
+        result[year] = {"expense": expense, "reimbursed": reimbursed,
+                        "out_of_pocket": expense - reimbursed if expense is not None else None,
+                        "coverage": 100 * reimbursed / expense if expense else None}
+    return result
 
 
 def payment_cohorts(post):
@@ -189,6 +219,7 @@ def study():
         scopes[scope_name(post)] = {
             "care": care,
             "payment": {int(r["year"]): r for r in payment_rows(post)},
+            "payment_measures": payment_measures(post),
             "cohorts": payment_cohorts(post),
             "in_year_shares": shares,
             "mature": mature,
@@ -232,6 +263,7 @@ def render(data):
     for name, s in data["scopes"].items():
         care, pay, coh, shares, mat, cad, bt = (s["care"], s["payment"], s["cohorts"], s["in_year_shares"],
                                                s["mature"], s["cadence"], s["backtest"])
+        pm = s["payment_measures"]
         p(f"## {name}")
         p("")
         p("### A. Année de soins (survenance) — écran Extraire")
@@ -258,6 +290,20 @@ def render(data):
         p(f"| Par année de règlement | {meur(r[2022])} | {meur(r[2023])} | {meur(r[2024])} | {meur(r[2025])} | "
           f"{fr(pct_change(r[2023], r[2024]), 2, ' %')} | {fr(pct_change(r[2024], r[2025]), 2, ' %')} |")
         p("")
+        if pm:
+            p("Les quatre mesures par année de règlement (tranches annuelles de flux `cube_parts3/`, hors outil) :")
+            p("")
+            p("| Mesure | 2022 | 2023 | 2024 | 2025 | 23→24 | 24→25 |")
+            p("|---|---:|---:|---:|---:|---:|---:|")
+            for key, label in (("expense", "Dépense présentée (M€)"), ("reimbursed", "Remboursement AMO (M€)"),
+                               ("out_of_pocket", "Reste après AMO (M€)")):
+                v = {y: pm[y][key] for y in YEARS}
+                p(f"| {label} | {meur(v[2022])} | {meur(v[2023])} | {meur(v[2024])} | {meur(v[2025])} | "
+                  f"{fr(pct_change(v[2023], v[2024]), 2, ' %')} | {fr(pct_change(v[2024], v[2025]), 2, ' %')} |")
+            v = {y: pm[y]["coverage"] for y in YEARS}
+            p(f"| Part AMO (%) | {fr(v[2022])} | {fr(v[2023])} | {fr(v[2024])} | {fr(v[2025])} | "
+              f"{fr(v[2024] - v[2023], 2, ' pt')} | {fr(v[2025] - v[2024], 2, ' pt')} |")
+            p("")
         p("Décomposition des règlements de l'année civile selon l'année des soins (M€) :")
         p("")
         p("| Année de règlement | Soins de l'année | Soins de l'année précédente | Soins plus anciens | 1er semestre | 2d semestre |")
