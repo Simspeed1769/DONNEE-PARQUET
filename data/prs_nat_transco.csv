@@ -663,52 +663,52 @@
 1078;SUPPLEMENT URGENCE BIOLOGIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1079;SUPPLEMENT URGENCE IMAGERIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1080;SUPPLEMENT URGENCE MODE ARRIVEE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-1121;HONORAIRE DE SURVEILLANCE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1123;SUITE D  EXAMEN DE SANTE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1121;HONORAIRE DE SURVEILLANCE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1123;SUITE D  EXAMEN DE SANTE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 1152;MAJORATION SUIVI DES ENFANTS GRANDS PREMATURES OU ATTEINTS DE PATHOLOGIE CONGENITALE GRAVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1153;MAJORATION CONSULTATION POUR INSUFFISANT CARDIAQUE APRES HOSPITALISATION;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1154;MAJORATION CONSULTATION SUIVI APRES HOSPITALISATION PATIENTS A FORTE COMORBIDITE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-1172;TELESURVEILLANCE : PS EFFECTUANT L'ACCOMPAGNEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1172;TELESURVEILLANCE : PS EFFECTUANT L'ACCOMPAGNEMENT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 1314;FORFAIT CHIRURGIE 1;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
 1315;FORFAIT CHIRURGIE 2;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
-1323;ACTE D'ANESTHESIE CCAM;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
-1721;FORFAIT PROFESSIONNEL (F01) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1722;FORFAIT PROFESSIONNEL (F02) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1723;FORFAIT PROFESSIONNEL (F03) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1724;FORFAIT PROFESSIONNEL (F04) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1725;FORFAIT PROFESSIONNEL (F05) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1726;FORFAIT PROFESSIONNEL (F06) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1727;FORFAIT PROFESSIONNEL (F07) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1728;FORFAIT PROFESSIONNEL (F08) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1729;FORFAIT PROFESSIONNEL (F09) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1731;FORFAIT PROFESSIONNEL (F10) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1732;FORFAIT PROFESSIONNEL (F11) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1733;FORFAIT PROFESSIONNEL (F12) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1734;FORFAIT PROFESSIONNEL (F13) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1735;FORFAIT PROFESSIONNEL (F14) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1736;FORFAIT PROFESSIONNEL (F15) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1741;FORFAIT CONSULTATION (FC0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1742;FORFAIT CONSULTATION (FC1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1743;FORFAIT CONSULTATION (FC2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1744;FORFAIT CONSULTATION (FC3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1745;FORFAIT CONSULTATION (FC4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1746;FORFAIT CONSULTATION (FC5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1747;FORFAIT CONSULTATION (FC6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1748;FORFAIT CONSULTATION (FC7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1749;FORFAIT CONSULTATION (FC8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1751;FORFAIT CONSULTATION (FC9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1761;FORFAIT FORMATION (FF0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1762;FORFAIT FORMATION (FF1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1763;FORFAIT FORMATION (FF2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1764;FORFAIT FORMATION (FF3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1765;FORFAIT FORMATION (FF4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1766;FORFAIT FORMATION (FF5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1767;FORFAIT FORMATION (FF6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1768;FORFAIT FORMATION (FF7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1769;FORFAIT FORMATION (FF8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1771;FORFAIT FORMATION (FF9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1908;FORFAIT SORTIE PRECOCE ET TEST GUTHRIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-1909;FORFAIT SORTIE PRECOCE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+1323;ACTE D'ANESTHESIE CCAM;Hospitalisation;Hospitalisation Honoraires;Anesthésie (CCAM)
+1721;FORFAIT PROFESSIONNEL (F01) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1722;FORFAIT PROFESSIONNEL (F02) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1723;FORFAIT PROFESSIONNEL (F03) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1724;FORFAIT PROFESSIONNEL (F04) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1725;FORFAIT PROFESSIONNEL (F05) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1726;FORFAIT PROFESSIONNEL (F06) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1727;FORFAIT PROFESSIONNEL (F07) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1728;FORFAIT PROFESSIONNEL (F08) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1729;FORFAIT PROFESSIONNEL (F09) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1731;FORFAIT PROFESSIONNEL (F10) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1732;FORFAIT PROFESSIONNEL (F11) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1733;FORFAIT PROFESSIONNEL (F12) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1734;FORFAIT PROFESSIONNEL (F13) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1735;FORFAIT PROFESSIONNEL (F14) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1736;FORFAIT PROFESSIONNEL (F15) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1741;FORFAIT CONSULTATION (FC0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1742;FORFAIT CONSULTATION (FC1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1743;FORFAIT CONSULTATION (FC2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1744;FORFAIT CONSULTATION (FC3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1745;FORFAIT CONSULTATION (FC4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1746;FORFAIT CONSULTATION (FC5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1747;FORFAIT CONSULTATION (FC6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1748;FORFAIT CONSULTATION (FC7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1749;FORFAIT CONSULTATION (FC8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1751;FORFAIT CONSULTATION (FC9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1761;FORFAIT FORMATION (FF0) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1762;FORFAIT FORMATION (FF1) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1763;FORFAIT FORMATION (FF2) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1764;FORFAIT FORMATION (FF3) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1765;FORFAIT FORMATION (FF4) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1766;FORFAIT FORMATION (FF5) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1767;FORFAIT FORMATION (FF6) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1768;FORFAIT FORMATION (FF7) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1769;FORFAIT FORMATION (FF8) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1771;FORFAIT FORMATION (FF9) FILIERES ET RESEAUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1908;FORFAIT SORTIE PRECOCE ET TEST GUTHRIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+1909;FORFAIT SORTIE PRECOCE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 1916;REMUNERATION POUR GARDE ETS PRIVES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1917;REMUNERATION POUR ASTREINTE ETS PRIVES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1992;PERMANENCE REMUNERATION DE NUIT;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
@@ -719,8 +719,8 @@
 1997;PERMANENCE REMUNERATION SAMEDI APRES MIDI;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1998;ASTREINTE DE JOUR CORRESPONDANT SAMU;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 1999;ASTREINTE DE NUIT CORRESPONDANT SAMU;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2100;FORFAIT ENVIRONNEMENT HOSPITALIER 7;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2101;HBGT TEMP NON MEDICALISE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2100;FORFAIT ENVIRONNEMENT HOSPITALIER 7;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2101;HBGT TEMP NON MEDICALISE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2103;SUPPLEMENT TRANSPORT PERMISSION THERAPEUTIQUE (PSY/SSR);Hospitalisation;Transport;Transport
 2104;SUPPLEMENT TRANSPORT PROVISOIRE (PSY/SSR);Hospitalisation;Transport;Transport
 2105;SUPPLEMENT TRANSPORT DEFINITIF (PSY/SSR);Hospitalisation;Transport;Transport
@@ -728,58 +728,58 @@
 2107;TRANSPORT SEANCE DIALYSE;Hospitalisation;Transport;Transport
 2108;SUPPLEMENT TRANSPORT 2;Hospitalisation;Transport;Transport
 2109;SUPPLEMENT TRANSPORT SEANCES;Hospitalisation;Transport;Transport
-2110;FRAIS SEJOUR SSR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2111;FRAIS D HEBERGEMENT ET ENVIRONNEMENT EN GHS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2112;FRAIS DE SEJOUR SUPPLEMENTAIRE AU GHS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2113;GROUPE HOMOGENE DE TARIFS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2110;FRAIS SEJOUR SSR;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+2111;FRAIS D HEBERGEMENT ET ENVIRONNEMENT EN GHS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2112;FRAIS DE SEJOUR SUPPLEMENTAIRE AU GHS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2113;GROUPE HOMOGENE DE TARIFS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2114;SUPPLEMENT SOINS PARTICULIEREMENT COUTEUX (ARRETE DU 29/06/1978);Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2115;SUPPLEMENT SOINS CONTINUS;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2116;SUPPLEMENT NEONATOLOGIE 1;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-2117;SUPPLEMENT NEONATOLOGIE 2;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
+2116;SUPPLEMENT NEONATOLOGIE 1;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2117;SUPPLEMENT NEONATOLOGIE 2;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
 2118;SUPPLEMENT NEONATOLOGIE 3;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2119;SUPPLEMENT DEFIBRILLATEUR;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2120;DIFFERENTIEL TARIFAIRE CLINIQUE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2121;HEMODIALYSE EN CENTRE OU EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2122;AUTODIALYSE SIMPLE OU ASSISTEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2123;ENTRAINEMENT A L HEMODIALYSE A DOMICILE ET A L AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2126;HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2127;DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2128;DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2129;FORFAIT D'HEMODIALYSE EN CENTRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2131;FORFAIT D HEMODIALYSE EN CENTRE POUR ENFANT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2132;FORFAIT D HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2133;DIALYSE TIERCE PERSONNE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2134;FORFAIT D AUTODIALYSE SIMPLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2135;FORFAIT D AUTODIALYSE ASSISTEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2136;FORFAIT D HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2137;FORFAIT DE DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2138;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2139;FORFAIT D ENTRAINEMENT A L HEMODIALYSE A  DOMICILE ET AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2140;FORFAIT D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2121;HEMODIALYSE EN CENTRE OU EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2122;AUTODIALYSE SIMPLE OU ASSISTEE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2123;ENTRAINEMENT A L HEMODIALYSE A DOMICILE ET A L AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2126;HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2127;DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Dialyse
+2128;DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Dialyse
+2129;FORFAIT D'HEMODIALYSE EN CENTRE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2131;FORFAIT D HEMODIALYSE EN CENTRE POUR ENFANT;Hospitalisation;Hospitalisation Sejour;Dialyse
+2132;FORFAIT D HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2133;DIALYSE TIERCE PERSONNE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2134;FORFAIT D AUTODIALYSE SIMPLE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2135;FORFAIT D AUTODIALYSE ASSISTEE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2136;FORFAIT D HEMODIALYSE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2137;FORFAIT DE DIALYSE PERITONEALE AUTOMATISEE (DPA);Hospitalisation;Hospitalisation Sejour;Dialyse
+2138;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE (DPCA);Hospitalisation;Hospitalisation Sejour;Dialyse
+2139;FORFAIT D ENTRAINEMENT A L HEMODIALYSE A  DOMICILE ET AUTODIALYSE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2140;FORFAIT D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE;Hospitalisation;Hospitalisation Sejour;Dialyse
 2141;FRAIS DE CHAMBRE PARTICULIERE POUR CONVENANCE PERSONNELLE;Hospitalisation;Hospi.Chambre Part.Lit Accompa;Hospi Chambre Part. Lit Accomp
-2142;FORFAIT D ENTRAINEMENT A DIALYSE PERITONEALE CONTINUE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2143;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2144;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE CONTINUE AMBULATOIRE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2145;FORFAIT DE DIALYSE PERITONEALE AUTOMATISE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2146;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2147;FORFAIT D'ENTRAINEMENT A L'HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2142;FORFAIT D ENTRAINEMENT A DIALYSE PERITONEALE CONTINUE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2143;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE AUTOMATISEE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2144;FF D ENTRAINEMENT A LA DIALYSE PERITONEALE CONTINUE AMBULATOIRE A DOMICILE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2145;FORFAIT DE DIALYSE PERITONEALE AUTOMATISE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Dialyse
+2146;FORFAIT DE DIALYSE PERITONEALE CONTINUE AMBULATOIRE POUR HOSPITALISATION DE 3 A 6 JOURS;Hospitalisation;Hospitalisation Sejour;Dialyse
+2147;FORFAIT D'ENTRAINEMENT A L'HEMODIALYSE EN UNITE DE DIALYSE MEDICALISEE;Hospitalisation;Hospitalisation Sejour;Dialyse
 2148;SUPPLEMENT  JOURNALIER ZONE HAUTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2149;SUPPLEMENT  JOURNALIER ZONE EXTREME HAUTE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2150;VIDEOCAPSULE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2150;VIDEOCAPSULE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2151;SUPPLEMENT REANIMATION;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2152;SUPPLEMENT SURVEILLANCE CONTINUE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2153;FORFAIT SOINS INTENSIFS;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2154;REANIMATION PEDIATRIQUE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-2155;FORFAIT ENVIRONNEMENT HOSPITALIER 1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2156;FORFAIT ENVIRONNEMENT HOSPITALIER 2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2157;FORFAIT ENVIRONNEMENT HOSPITALIER 3;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2158;FORFAIT ENVIRONNEMENT HOSPITALIER 4;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2163;SUPPLEMENT JOURNALIER DIALYSE PERITONEALE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2164;ADMINISTRATION DE PRODUITS ET PRESTATIONS EN ENVIRONNEMENT HOSPITALIER;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2165;FORFAIT PRESTATION INTERMEDIAIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2167;FORFAIT ENVIRONNEMENT HOSPITALIER 5;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2168;FORFAIT ENVIRONNEMENT HOSPITALIER 6;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2170;FIR ETS PRIVES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2154;REANIMATION PEDIATRIQUE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2155;FORFAIT ENVIRONNEMENT HOSPITALIER 1;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2156;FORFAIT ENVIRONNEMENT HOSPITALIER 2;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2157;FORFAIT ENVIRONNEMENT HOSPITALIER 3;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2158;FORFAIT ENVIRONNEMENT HOSPITALIER 4;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2163;SUPPLEMENT JOURNALIER DIALYSE PERITONEALE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2164;ADMINISTRATION DE PRODUITS ET PRESTATIONS EN ENVIRONNEMENT HOSPITALIER;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2165;FORFAIT PRESTATION INTERMEDIAIRE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2167;FORFAIT ENVIRONNEMENT HOSPITALIER 5;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2168;FORFAIT ENVIRONNEMENT HOSPITALIER 6;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2170;FIR ETS PRIVES;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2180;DIFFERENTIEL TARIFAIRE FIDES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2181;PRELEVEMENT D ORGANE 1;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
 2182;PRELEVEMENT D ORGANE 2;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
@@ -791,100 +791,100 @@
 2189;PRELEVEMENT D'ORGANE 8;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
 2190;PRELEVEMENT D'ORGANE 9;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
 2191;PRELEVEMENT D'ORGANE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
-2196;SUPPLEMENT RADIOTHERAPIE PEDIATRIQUE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2209;FORFAIT CONSULTATION URGENCE HOPITAL MILIEU NUIT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2210;FORFAIT CONSULTATION URGENCE HOPITAL NUIT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2211;FRAIS DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2212;MAJORATION PMSI;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2213;FRAIS DE SEJOUR IME;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2217;FORFAIT CONSULTATION URGENCE HOPITAL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2220;FORFAIT CONSULTATION URGENCE HOPITAL FERIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2196;SUPPLEMENT RADIOTHERAPIE PEDIATRIQUE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2209;FORFAIT CONSULTATION URGENCE HOPITAL MILIEU NUIT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2210;FORFAIT CONSULTATION URGENCE HOPITAL NUIT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2211;FRAIS DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Séjours au prix de journée (SSR, psy, ancien mode)
+2212;MAJORATION PMSI;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2213;FRAIS DE SEJOUR IME;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2217;FORFAIT CONSULTATION URGENCE HOPITAL;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2220;FORFAIT CONSULTATION URGENCE HOPITAL FERIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2221;SUPPLEMENT CHAMBRE PARTICULIERE;Hospitalisation;Hospi.Chambre Part.Lit Accompa;Hospi Chambre Part. Lit Accomp
 2222;SUPPLEMENT POUR SURVEILLANCE DU MALADE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2223;FRAIS D  HOSPITALISATION DU NOUVEAU-NE DONNANT LIEU A FACTURATION EN SUPPLEMENT DE L  HOSPITALISATION DE LA MERE EN MAISON DE REPOS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2223;FRAIS D  HOSPITALISATION DU NOUVEAU-NE DONNANT LIEU A FACTURATION EN SUPPLEMENT DE L  HOSPITALISATION DE LA MERE EN MAISON DE REPOS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2224;SUPPLEMENT POUR  CHAMBRE CHAUDE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2225;SUPPLEMENT POUR INCUBATEUR;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2226;SUPPLEMENT POUR CHAMBRE PLOMBEE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2227;SUPPLEMENT POUR ALIMENTATION PARENTERALE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2229;FORFAIT PRISE EN CHARGE DU NOUVEAU NE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2230;PRIX DE JOURNEE REGIME LOCAL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2229;FORFAIT PRISE EN CHARGE DU NOUVEAU NE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2230;PRIX DE JOURNEE REGIME LOCAL;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2232;FORFAIT TRANSPLANTATION D  ORGANE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
 2234;FORFAIT D  ENTREE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
 2235;FORFAIT D  ACTIVITE NON PROGRAMMEE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Chirurgie
-2237;TM PJ - PART OC;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2240;TARIF JOURNALIER COMPLEMENTAIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2241;FRAIS DE SALLE D  OPERATION;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2242;FRAIS D  ANESTHESIE ET REANIMATION;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2243;FRAIS D  ENVIRONNEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2245;FRAIS DE SALLE D  ACCOUCHEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2246;FRAIS DE SALLE D  ACCOUCHEMENT MULTIPLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2247;FORFAIT PSYCHIATRIE  DE SECURITE - HOSPITALISATION AVEC HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2237;TM PJ - PART OC;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2240;TARIF JOURNALIER COMPLEMENTAIRE;Hospitalisation;Hospitalisation Sejour;Séjours au prix de journée (SSR, psy, ancien mode)
+2241;FRAIS DE SALLE D  OPERATION;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2242;FRAIS D  ANESTHESIE ET REANIMATION;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2243;FRAIS D  ENVIRONNEMENT;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2245;FRAIS DE SALLE D  ACCOUCHEMENT;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2246;FRAIS DE SALLE D  ACCOUCHEMENT MULTIPLE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2247;FORFAIT PSYCHIATRIE  DE SECURITE - HOSPITALISATION AVEC HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Séjours au prix de journée (SSR, psy, ancien mode)
 2250;FORFAIT JOURNALIER - PART OC;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
 2251;FORFAIT JOURNALIER;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
 2252;FORFAIT JOURNALIER DE SORTIE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
 2257;FJ TRANSPLANTATION ORGANES;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
-2258;FORFAIT DE SOINS JOURNALIER;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2258;FORFAIT DE SOINS JOURNALIER;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2260;FORFAIT HOPITAL PROXIMITE COMPLEMENTAIRE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2261;FORFAIT ACCUEIL DU PATIENT N 1;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2262;FORFAIT ACCUEIL DU PATIENT N 2;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2271;FORFAIT HPT GROUPE 1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2272;FORFAIT HPT GROUPE 1.2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2273;FORFAIT HPT 15 %;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2274;FORFAIT HPT GROUPE 2 + FAS1;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2275;FORFAIT HPT GROUPE 2 + FAS2;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2271;FORFAIT HPT GROUPE 1;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2272;FORFAIT HPT GROUPE 1.2;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2273;FORFAIT HPT 15 %;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2274;FORFAIT HPT GROUPE 2 + FAS1;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2275;FORFAIT HPT GROUPE 2 + FAS2;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2282;PARTICIPATION ASSURE TRANSITOIRE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
 2283;PARTICIPATION ASSURE HOSPITALISATION PUBLIQUE (CMU + AME);Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
 2284;PARTICIPATION ASSURE HOSPITALISATION PUBLIQUE (REGIME LOCAL);Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
-2285;PARTICIPATION ASSURE SUR SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2285;PARTICIPATION ASSURE SUR SEJOUR;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2290;FORFAIT JOURNALIER RL PRIVE;Hospitalisation;Hospitalisation Forf.Journalie;Hospi. Forfait Journalier
-2331;RADIUMTHERAPIE ET CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2334;SEANCE D  HEMODIALYSE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2336;FORFAIT POUR CONSULTATION EN CENTRE MEDICO-PSYCHO PEDAGOGIQUE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2339;AUTRES FORFAITS DIVERS (Y COMPRIS NUTRITION ENTERALE A DOMICILE);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2331;RADIUMTHERAPIE ET CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2334;SEANCE D  HEMODIALYSE;Hospitalisation;Hospitalisation Sejour;Dialyse
+2336;FORFAIT POUR CONSULTATION EN CENTRE MEDICO-PSYCHO PEDAGOGIQUE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+2339;AUTRES FORFAITS DIVERS (Y COMPRIS NUTRITION ENTERALE A DOMICILE);Hospitalisation;Hospitalisation Sejour;Séjours au prix de journée (SSR, psy, ancien mode)
 2341;SUPPLEMENT AU FORFAIT CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2343;FORFAIT POUR GARDE DE NUIT OU SAMEDI APRES MIDI EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2344;FORFAIT DE GARDE NUIT ET FERIE EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2345;FORFAIT POUR ASTREINTE DE DEBUT DE NUIT EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2346;FORFAIT POUR ASTREINTE DE NUIT OU SAMEDI APRES MIDI EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2347;FORFAIT D'ASTREINTE NUIT ET FERIE EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2388;FORFAIT PSYCHIATRIE DE SECURITE HOSPITALISATION SANS HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2388;FORFAIT PSYCHIATRIE DE SECURITE HOSPITALISATION SANS HEBERGEMENT;Hospitalisation;Hospitalisation Sejour;Séjours au prix de journée (SSR, psy, ancien mode)
 2389;PRISE EN CHARGE DE NUIT POUR UNE DUREE ENTRE 8 ET 12H;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-2412;ANESTHESIE GENERALE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-2419;FORFAIT INTERVENTION AMBULATOIRE;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-2421;INTERVENTION + ANESTHESIE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2423;FORFAIT INTERVENTION AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-2424;INTERVENTION + ANESTHESIE AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+2412;ANESTHESIE GENERALE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2419;FORFAIT INTERVENTION AMBULATOIRE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+2421;INTERVENTION + ANESTHESIE AMBULATOIRE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2423;FORFAIT INTERVENTION AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
+2424;INTERVENTION + ANESTHESIE AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2425;FORFAIT IVG POUR 24H SUPPLEMENTAIRES - SECTEUR PRIVE/SECTEUR PUBLIC;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-3101;FORFAIT STRUCTURE PS AUXILIAIRES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3145;AMPUTATIONS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3146;AFF RESPIRATOIRES MAX FACIAL ET ORL;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3147;DEVIATION RACHIS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3148;AFF NEURO MUSC OU RHUM INFLAM;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3149;SOINS PALLIATIFS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3151;REEDUC ABDO ET PERINEOSPHINCTERIENNE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3152;RACHIS NON OPERE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3153;RACHIS OPERE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3154;REEDUC AFFECTIONS VASCULAIRES;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3155;MEMBRE INFERIEUR OPERE ;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3156;MEMBRE INFERIEUR NON OPERE ;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3337;FORFAIT FAUSSE COUCHE VILLE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3338;FORFAIT FAUSSE COUCHE VILLE SANS ÉCHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3339;FORFAIT FAUSSE COUCHE ETABLISSEMENT AVEC ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3340;FORFAIT FAUSSE COUCHE ETABLISSEMENT SANS ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3344;ACCOMPAGNEMENT ANTIVITAMINE K INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3345;ACCOMPAGNEMENT ANTIVITAMINE SUIVANT;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3346;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3347;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX DIRECTS SUIVANT ;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3348;ACCOMP. SUIVI INITIAL;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3349;ACCOMP. SUIVI SUPPL.;Hospitalisation;Hospitalisation Honoraires;hospitalisation honoraires
-3358;ACCOMPAGNEMENT CHIMIOTHERAPIE PATIENTS SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS POUR L'ANNEE INITIALE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3368;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX (PREMIERE ANNEE);Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3370;ACCOMPAGNEMENT CHIMIOTHERAPIE SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-3376;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+3101;FORFAIT STRUCTURE PS AUXILIAIRES;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3145;AMPUTATIONS;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3146;AFF RESPIRATOIRES MAX FACIAL ET ORL;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3147;DEVIATION RACHIS;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3148;AFF NEURO MUSC OU RHUM INFLAM;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3149;SOINS PALLIATIFS;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3151;REEDUC ABDO ET PERINEOSPHINCTERIENNE;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3152;RACHIS NON OPERE;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3153;RACHIS OPERE;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3154;REEDUC AFFECTIONS VASCULAIRES;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3155;MEMBRE INFERIEUR OPERE ;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3156;MEMBRE INFERIEUR NON OPERE ;Hospitalisation;Hospitalisation Sejour;Rééducation SMR (codes 2024)
+3337;FORFAIT FAUSSE COUCHE VILLE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3338;FORFAIT FAUSSE COUCHE VILLE SANS ÉCHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3339;FORFAIT FAUSSE COUCHE ETABLISSEMENT AVEC ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3340;FORFAIT FAUSSE COUCHE ETABLISSEMENT SANS ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3344;ACCOMPAGNEMENT ANTIVITAMINE K INITIAL;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3345;ACCOMPAGNEMENT ANTIVITAMINE SUIVANT;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3346;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX INITIAL;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3347;ACCOMPAGNEMENT ANTICOAGULANTS ORAUX DIRECTS SUIVANT ;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3348;ACCOMP. SUIVI INITIAL;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3349;ACCOMP. SUIVI SUPPL.;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
+3358;ACCOMPAGNEMENT CHIMIOTHERAPIE PATIENTS SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS POUR L'ANNEE INITIALE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3368;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX (PREMIERE ANNEE);Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3370;ACCOMPAGNEMENT CHIMIOTHERAPIE SOUS TRAITEMENTS ANTICANCEREUX AU LONG COURS;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+3376;ACCOMPAGNEMENT CHIMIOTHERAPIE AUTRES TRAITEMENTS ANTICANCEREUX;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 3380;HONO DISP COMP  ;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
 3412;TRANSPORT DU PRODUIT;Hospitalisation;Transport;Transport
-4111;FORFAIT DE SURVEILLANCE MEDICALE  1ER HANDICAP;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
-4112;FORFAIT DE SURVEILLANCE MEDICALE REDUIT  2EME HANDICAP;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+4111;FORFAIT DE SURVEILLANCE MEDICALE  1ER HANDICAP;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
+4112;FORFAIT DE SURVEILLANCE MEDICALE REDUIT  2EME HANDICAP;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 4203;SUPPLEMENT TRANSPORT PERSONNE MOBILITE REDUITE;Hospitalisation;Transport;Transport
 4204;FORFAIT TRANSPORT URGENCE EXTRAMUROS CPAM MEUSE;Hospitalisation;Transport;Transport
 4205;FORFAIT TRANSPORT URGENCE INTRAMUROS CPAM MEUSE;Hospitalisation;Transport;Transport
@@ -913,11 +913,11 @@
 4233;INTERVENTION HORS GARDE;Hospitalisation;Transport;Transport
 4315;AUTOPSIE;Hospitalisation;Hospitalisation Honoraires;Hospitalisation Honoraires
 4322;TRANSPORT DU CORPS;Hospitalisation;Transport;Transport
-9112;COMPLEMENT FRAIS DE TRANSPORT ET DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9112;COMPLEMENT FRAIS DE TRANSPORT ET DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 9113;FRAIS OCCASIONNE PAR LE DON D ORGANES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-9114;COMPLEMENT AUX FRAIS D HOSPITALISATION DE LA MERE QUI ALLAITE SON ENFANT;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9114;COMPLEMENT AUX FRAIS D HOSPITALISATION DE LA MERE QUI ALLAITE SON ENFANT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 9143;SUPPLEMENT POUR SOINS AUX POLYTRAUMATISES;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
-9774;ACTES FOURNITURES SORTIE D'HOSPITALISATION COORDONNEE;Hospitalisation;Hospitalisation Sejour;Hospitalisation Sejour
+9774;ACTES FOURNITURES SORTIE D'HOSPITALISATION COORDONNEE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 9901;TRANSPORT POUR PERSONNE ACCOMPAGNANTE (MILITAIRES);Hospitalisation;Transport;Transport
 1066;FORFAIT REGULATEUR SAS;HP;HP;HP
 1138;REMUNERATION ADDITIONNELLE CAPI;HP;HP;HP

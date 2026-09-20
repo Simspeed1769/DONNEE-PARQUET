@@ -1,0 +1,35 @@
+/* Recherche dans un sélecteur à cases (MultiSelect, prop `searchable`).
+   En fichier dédié plutôt qu'ajouté à styles.css ; uniquement des jetons de
+   theme.css. Le reste du sélecteur (.multi-select, .multi-popover, .multi-options)
+   garde ses règles historiques dans styles.css. */
+
+.multi-search {
+  padding: 0 3px 7px;
+}
+.multi-search input {
+  width: 100%;
+  height: 33px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface-sunken);
+  font: inherit;
+  font-size: .59rem;
+  transition: border-color .16s var(--ease), box-shadow .16s var(--ease);
+}
+.multi-search input::placeholder {
+  color: var(--ink-muted);
+}
+.multi-search input:focus-visible {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+.multi-empty {
+  margin: 0;
+  padding: 8px 4px;
+  color: var(--ink-muted);
+  font-size: .55rem;
+  line-height: 1.4;
+}

@@ -14,6 +14,7 @@ import "./pivot.css";
 import "./methodology.css";
 import "./extraction.css";
 import "./components/copyLinkButton.css";
+import "./components/multiSelect.css";
 import "./components/compareRail.css";
 import "./components/seriesDrawer.css";
 import "./components/exportPngButton.css";

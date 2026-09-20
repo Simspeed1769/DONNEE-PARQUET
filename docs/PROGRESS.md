@@ -1530,3 +1530,25 @@ aurait coûté plus qu'il n'aurait préservé.
 - La nouvelle vue utilise le cube des délais sans modifier les Parquet ; elle affiche les montants AMO et un tableau vérifiable.
 - Les graphiques dédiés restent sobres : titre, axes, légende, courbes ou barres, et une réserve courte sur la lecture.
 - L'effet ROC n'est pas déduit : la vue documente deux calendriers AMO, pas la comptabilité de la complémentaire.
+
+## v9 · Hospitalisation — sous-postes lisibles, recherche de prestation, part des dépassements
+
+- **Le poste « Hospitalisation Sejour » se lit en cinq sous-postes** au lieu d'un
+  seul : Séjours MCO et HAD (2111, 2113…) · Rééducation SMR (codes 2024 : 2110,
+  3145–3156) · Séjours au prix de journée (SSR, psy, ancien mode : 2211, 2339…) ·
+  Dialyse · Autres séjours et forfaits. L'anesthésie (1323, 95 % du poste
+  « Honoraires ») a son sous-poste. Reclassement dans `prs_nat_transco.csv`
+  seul, 151 lignes ; le cache des métadonnées suit l'empreinte du fichier.
+  Motif : la réforme du financement des SMR (flux au 01/01/2024) éclate la
+  rééducation sur 14 codes, introuvables à l'œil parmi 139.
+- **Une recherche dans le sélecteur de prestations** (`MultiSelect`, prop
+  `searchable`, CSS dédié `multiSelect.css`) : code ou mot du libellé, sans
+  accent ni casse, chaque mot tapé devant se retrouver ; décompte « n sur N »,
+  sélection hors liste signalée, message quand rien ne correspond dans le
+  périmètre. Activée sur les trois sélecteurs de prestations (barre DAMIR,
+  panneau de filtres, Extraire).
+- **Nouvelle mesure « Part des dépassements dans la dépense »** (`excess_share`),
+  famille Prise en charge : une formule dans `FORMULAS`, dérivée côté client.
+  `METADATA_SCHEMA` 3 → 4, faute de quoi le cache disque servait douze mesures.
+- Étude livrée : `docs/ETUDE_HOSPITALISATION_PAR_POSTE.md` et le prompt de
+  refonte du diapo `docs/PROMPT_CODEX_DIAPO.md`. **103 tests verts**, build vert.

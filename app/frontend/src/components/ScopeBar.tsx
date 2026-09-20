@@ -179,6 +179,7 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
             <span>Prestation</span>
             <MultiSelect
               label="Prestation"
+              searchable
               emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"}
               options={options.services.map((service) => ({ value: service.code, label: `${service.code} · ${service.label}` }))}
               value={draft.service_codes}

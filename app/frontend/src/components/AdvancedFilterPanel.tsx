@@ -108,7 +108,7 @@ export function AdvancedFilterPanel({
       case "sub_post":
         return <ChoiceSelect key={field} label="Sous-poste" disabled={disabled.has("sub_post") || !value.post || optionsLoading} value={value.sub_post ?? ""} onChange={(next) => patch({ sub_post: next || null, service_codes: [] })} options={[{ value: "", label: "Tout le poste" }, ...options.sub_posts.map((item) => ({ value: item, label: item }))]} />;
       case "service_codes":
-        return <MultiSelect key={field} label="Prestations précises" emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"} options={options.services.map((service) => ({ value: service.code, label: `${service.code} · ${service.label}` }))} value={value.service_codes} onChange={(service_codes) => patch({ service_codes })} disabled={disabled.has("service_codes")} />;
+        return <MultiSelect key={field} label="Prestations précises" searchable emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"} options={options.services.map((service) => ({ value: service.code, label: `${service.code} · ${service.label}` }))} value={value.service_codes} onChange={(service_codes) => patch({ service_codes })} disabled={disabled.has("service_codes")} />;
       case "sexes":
         return <MultiSelect key={field} label="Sexe" options={metadata.sexes.map((item) => ({ value: item.code, label: item.label }))} value={value.sexes} onChange={(sexes) => patch({ sexes })} disabled={disabled.has("sexes")} />;
       case "ages":
@@ -157,6 +157,7 @@ export function AdvancedFilterPanel({
         {!hidden.has("sub_post") && !folded.has("sub_post") ? <ChoiceSelect label="Sous-poste" disabled={disabled.has("sub_post") || !value.post || optionsLoading} value={value.sub_post ?? ""} onChange={(next) => patch({ sub_post: next || null, service_codes: [] })} options={[{ value: "", label: "Tout le poste" }, ...options.sub_posts.map((item) => ({ value: item, label: item }))]} /> : null}
         {!hidden.has("service_codes") && !folded.has("service_codes") ? <MultiSelect
           label="Prestations précises"
+          searchable
           emptyLabel={optionsLoading ? "Chargement…" : "Tout le périmètre"}
           options={options.services.map((service) => ({ value: service.code, label: `${service.code} · ${service.label}` }))}
           value={value.service_codes}
