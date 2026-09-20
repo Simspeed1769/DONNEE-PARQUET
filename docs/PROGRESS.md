@@ -1552,3 +1552,10 @@ aurait coûté plus qu'il n'aurait préservé.
   `METADATA_SCHEMA` 3 → 4, faute de quoi le cache disque servait douze mesures.
 - Étude livrée : `docs/ETUDE_HOSPITALISATION_PAR_POSTE.md` et le prompt de
   refonte du diapo `docs/PROMPT_CODEX_DIAPO.md`. **103 tests verts**, build vert.
+
+## 20 septembre 2026 · Diaporama hospitalisation ROC v2
+
+- Refonte Forsides livrée dans `Question Client Hospitalisation ROC v2.pptx` : 9 slides, titre compris, plus la page de fin ; original conservé.
+- Neuf tableaux et quatre graphiques natifs : séries 2022–2025, lecture par poste, rééducation répartie sur deux slides, réserves et hypothèses de maturité visibles.
+- Définitions DAMIR/ROC, ruptures réglementaires, correction de la lecture de part AMO globale et protocole Groupama intégrés ; réforme 2026 et chiffrage ROC restent à préciser.
+- Contrôles : réouverture python-pptx, intégrité OOXML et classeurs embarqués, polices et masques conservés, dix slides rendues dans PowerPoint sans débordement détecté ; build vert, **103 tests verts**.
