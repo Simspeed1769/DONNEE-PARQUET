@@ -25,7 +25,7 @@ type Section = "sources" | "mesures" | "dimensions" | "denominateurs" | "garde-f
 
 const SECTIONS: Array<{ key: Section; label: string; hint: string }> = [
   { key: "sources", label: "Les sources", hint: "Cinq bases, ce qu'elles couvrent" },
-  { key: "mesures", label: "Mesures DAMIR", hint: "Les douze indicateurs" },
+  { key: "mesures", label: "Mesures DAMIR", hint: "Les treize indicateurs" },
   { key: "dimensions", label: "Dimensions DAMIR", hint: "Les onze découpages" },
   { key: "denominateurs", label: "Dénominateurs", hint: "Ce que compte chaque mesure" },
   { key: "garde-fous", label: "Garde-fous", hint: "Ce que l'outil refuse de faire" },
@@ -195,11 +195,11 @@ export function MethodologyPage({ routeVersion = 0 }: Props) {
         </section>
       ) : null}
 
-      {/* — Les douze mesures DAMIR — */}
+      {/* — Les treize mesures DAMIR — */}
       {section === "mesures" ? (
         <section className="panel ref-panel">
           <p className="ref-intro">
-            Les douze indicateurs, groupés par famille. La colonne
+            Les treize indicateurs, groupés par famille. La colonne
             <strong> Additive</strong> décide de ce qu’on a le droit d’empiler :
             une mesure non additive ne se somme pas d’une région à l’autre.
             <InfoHint label="l’additivité">

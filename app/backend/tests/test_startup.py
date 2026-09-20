@@ -27,7 +27,7 @@ class StartupTests(unittest.TestCase):
         d'oublier un import."""
         result = metadata()
         self.assertTrue(result["years"], "aucune année : les métadonnées sont vides")
-        self.assertEqual(len(result["measures"]), 12)
+        self.assertEqual(len(result["measures"]), 13)
         self.assertIn("reliability", result)
 
     def test_first_explore_view_answers(self) -> None:

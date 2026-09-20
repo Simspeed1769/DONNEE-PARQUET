@@ -176,6 +176,11 @@ METRICS = {
                "Le solde relève du patient et/ou de la complémentaire selon les garanties ; il ne mesure pas les remboursements des mutuelles ni un effet ROC. "
                "Une évolution peut provenir du mix de prestations ou de données incomplètes. Un ratio hors de 0 à 100 % doit être vérifié avant toute interprétation. "
                "Open DAMIR ne couvre pas l’intégralité de l’hospitalisation publique.", False, False),
+        Metric("excess_share", "Part des dépassements dans la dépense", "100.0 * SUM(c.depas) / NULLIF(SUM(c.dep), 0)", "percent", "Prise en charge",
+               "Sur 100 € de dépense présentée, montant facturé au-delà de la base de remboursement (dépassements d’honoraires ou de tarif).",
+               "100 × somme des dépassements / somme des dépenses présentées",
+               "Ne dit pas qui paie le dépassement, patient ou complémentaire. Vaut 0 % par construction sur les prestations sans base de remboursement "
+               "(indemnités journalières, forfaits) : à lire sur les honoraires et les actes. Une moyenne globale dépend du mix de prestations.", False, False),
         Metric("negative", "Régularisations négatives", "SUM(c.rem_neg)", "money", "Avancé",
                "Montants de remboursements enregistrés négativement.", "Somme des remboursements négatifs"),
         Metric("gross_reimbursed", "Remboursé hors régularisations", "SUM(c.rem) - SUM(c.rem_neg)", "money", "Avancé",

@@ -1,7 +1,7 @@
 /** Modèle du panorama : un sujet, ou plusieurs, sous toutes leurs dimensions.
  *
  *  Comme pour l'exploration, le serveur n'envoie que des composantes brutes et
- *  la spécification des formules. Les douze indicateurs se dérivent ici, si
+ *  la spécification des formules. Les treize indicateurs se dérivent ici, si
  *  bien que changer de mesure recalcule la carte, les âges, les sexes et
  *  l'évolution sans une seule requête.
  */

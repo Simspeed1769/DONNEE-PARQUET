@@ -58,7 +58,7 @@ interrogeable en quelques centaines de millisecondes.
 **Le choix d'architecture central.** Le serveur **n'envoie jamais un indicateur
 calculé**. Il envoie les *composantes additives brutes* (`rem`, `dep`, `depas`,
 `qte`, `bse_tm`, `rem_tm`, `rem_neg`) **plus la spécification de la formule**
-(`formula_spec`). Le client dérive les douze indicateurs. Conséquences : changer
+(`formula_spec`). Le client dérive les treize indicateurs. Conséquences : changer
 de mesure ne provoque **aucune requête**, et une formule n'existe qu'à un seul
 endroit (`FORMULAS` dans `explore.py`).
 
@@ -374,7 +374,7 @@ seul endroit, et changer d'indicateur à l'écran ne déclenche aucune requête.
 Règle inscrite dans les deux implémentations : **un ratio sans dénominateur
 renvoie `None` / `null`, jamais 0.**
 
-### Les douze indicateurs DAMIR
+### Les treize indicateurs DAMIR
 
 | Clé | Libellé | Famille | Additif | Réserve portée par le code |
 |---|---|---|:---:|---|
@@ -387,6 +387,7 @@ renvoie `None` / `null`, jamais 0.**
 | `average_reimbursed` | Remboursement moyen par unité | Montants moyens | ❌ | ni coût par patient ni tarif ; dépend du mix |
 | `average_expense` | Dépense moyenne par unité | Montants moyens | ❌ | idem |
 | `coverage` | Part financée par la Sécurité sociale | Prise en charge | ❌ | ratio des sommes rem/dep ; mix de prestations, complétude et anomalies à vérifier ; ni remboursement complémentaire ni mesure du ROC |
+| `excess_share` | Part des dépassements dans la dépense | Prise en charge | ❌ | ratio des sommes depas/dep ; ne dit pas qui paie ; 0 % par construction sur les prestations sans base (ajoutée le 20/09/2026) |
 | `negative` | Régularisations négatives | Avancé | ✅ | — |
 | `gross_reimbursed` | Remboursé hors régularisations | Avancé | ✅ | — |
 | `negative_share` | Part des régularisations | Avancé | ❌ | — |

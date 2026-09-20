@@ -30,7 +30,7 @@ from .analysis import (
     delay_where,
 )
 
-# Composantes additives suffisant à reconstituer les douze indicateurs.
+# Composantes additives suffisant à reconstituer les treize indicateurs.
 # `bse_tm` / `rem_tm` portent la variante « ticket modérateur » : elles
 # neutralisent les prestations sans base de remboursement, faute de quoi le
 # ticket modérateur ressort artificiellement négatif.
@@ -109,6 +109,7 @@ FORMULAS: dict[str, dict[str, Any]] = {
     "average_reimbursed": {"numerator": {"rem": 1}, "denominator": {"qte": 1}, "factor": 1},
     "average_expense": {"numerator": {"dep": 1}, "denominator": {"qte": 1}, "factor": 1},
     "coverage": {"numerator": {"rem": 1}, "denominator": {"dep": 1}, "factor": 100},
+    "excess_share": {"numerator": {"depas": 1}, "denominator": {"dep": 1}, "factor": 100},
     "negative": {"numerator": {"rem_neg": 1}, "denominator": None, "factor": 1},
     "gross_reimbursed": {"numerator": {"rem": 1, "rem_neg": -1}, "denominator": None, "factor": 1},
     "negative_share": {
