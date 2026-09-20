@@ -397,6 +397,20 @@ def csp_evolution_view(payload: CspEvolutionRequest) -> dict[str, Any]:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
+@app.get("/api/csp/regions.geojson")
+def csp_regions_geojson() -> FileResponse:
+    """Le fond de carte régional, pour toutes les cartes du produit.
+
+    Consommé par la page CSP et par `charts/frenchMap.ts` : sans cette route,
+    chaque lecture « Territoire » affiche « indisponible ». Elle avait disparu
+    dans la refonte des exports (3604991) sans qu'un test le remarque —
+    `tests/test_startup.py` la couvre désormais.
+    """
+    if not CSP_GEOJSON_PATH.exists():
+        raise HTTPException(status_code=404, detail="Le fond de carte régional n’est pas disponible.")
+    return FileResponse(CSP_GEOJSON_PATH, media_type="application/geo+json")
+
+
 @app.get("/api/population/meta")
 def population_metadata_view() -> dict[str, Any]:
     try:

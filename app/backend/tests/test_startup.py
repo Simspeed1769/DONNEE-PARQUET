@@ -17,7 +17,7 @@ from __future__ import annotations
 import unittest
 
 from app.explore import ExploreRequest, OptionsRequest
-from app.main import _options_aggregate_cached, explore_view, metadata
+from app.main import _options_aggregate_cached, csp_regions_geojson, explore_view, metadata
 
 
 class StartupTests(unittest.TestCase):
@@ -50,6 +50,14 @@ class StartupTests(unittest.TestCase):
         # que le balayage, et c'est bien lui qu'on exerce ici.
         ranking = _options_aggregate_cached(payload.model_dump_json())
         self.assertGreater(len(ranking), 100, "le classement des prestations est vide")
+
+    def test_map_background_is_served(self) -> None:
+        """Le fond de carte porte toutes les cartes du produit : sa route avait
+        disparu dans une refonte sans qu'aucun test ne le voie."""
+        response = csp_regions_geojson()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.media_type, "application/geo+json")
+        self.assertTrue(str(response.path).endswith("regions.geojson"))
 
 
 if __name__ == "__main__":
