@@ -3,7 +3,7 @@
 Pour chaque année de soins, part du remboursement déjà réglée au 31 décembre de
 la même année, sur trois blocs : séjours ordinaires (poste « Hospitalisation
 Sejour » hors rééducation), rééducation (anciens codes 2211 et 2339, nouveaux
-codes 2110 et 3145 à 3156), anesthésie (poste « Hospitalisation Honoraires »).
+codes 2110 et 3145 à 3156), anesthésie (code 1323, le sous-poste Anesthésie).
 
 Ce sont les six chiffres du tableau « Cadence de l'Assurance Maladie » du
 diapo (slide 4). L'encart « Liquidation du périmètre » de l'outil donne la
@@ -24,12 +24,12 @@ TRANSCO = ROOT / "data" / "prs_nat_transco.csv"
 
 REEDUC = (2211, 2339, 2110, 3145, 3146, 3147, 3148, 3149, 3151, 3152, 3153, 3154, 3155, 3156)
 SEJOUR = f"(select prs_nat from read_csv('{TRANSCO.as_posix()}', delim=';', header=true) where poste='Hospitalisation Sejour')"
-HONOS = f"(select prs_nat from read_csv('{TRANSCO.as_posix()}', delim=';', header=true) where poste='Hospitalisation Honoraires')"
+ANESTH = "(1323)"
 
 BLOCS = {
     "Séjours ordinaires (poste Séjour hors rééducation)": f"prs_nat in {SEJOUR} and prs_nat not in {REEDUC}",
     "Rééducation (2211, 2339, 2110, 3145–3156)": f"prs_nat in {REEDUC}",
-    "Anesthésie (poste Honoraires)": f"prs_nat in {HONOS}",
+    "Anesthésie (code 1323)": f"prs_nat in {ANESTH}",
 }
 
 
