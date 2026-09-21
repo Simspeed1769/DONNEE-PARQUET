@@ -1533,10 +1533,12 @@ aurait coûté plus qu'il n'aurait préservé.
 
 ## v9 · Hospitalisation — sous-postes lisibles, recherche de prestation, part des dépassements
 
-- **Le poste « Hospitalisation Sejour » se lit en cinq sous-postes** au lieu d'un
-  seul : Séjours MCO et HAD (2111, 2113…) · Rééducation SMR (codes 2024 : 2110,
-  3145–3156) · Séjours au prix de journée (SSR, psy, ancien mode : 2211, 2339…) ·
-  Dialyse · Autres séjours et forfaits. L'anesthésie (1323, 95 % du poste
+- **Le poste « Hospitalisation Sejour » se lit en quatre sous-postes** au lieu d'un
+  seul : Séjours MCO et HAD (2111, 2113…) · Rééducation et prix de journée (SSR,
+  SMR, psy : anciens codes 2211, 2339 et nouveaux codes 2110, 3145–3156, réunis le
+  21/09 pour que la courbe reste continue à travers la réforme de 2024 et que
+  l'encart « Liquidation du périmètre » réponde : 89,0 % → 84,4 %) · Dialyse ·
+  Autres séjours et forfaits. L'anesthésie (1323, 95 % du poste
   « Honoraires ») a son sous-poste. Reclassement dans `prs_nat_transco.csv`
   seul, 151 lignes ; le cache des métadonnées suit l'empreinte du fichier.
   Motif : la réforme du financement des SMR (flux au 01/01/2024) éclate la
