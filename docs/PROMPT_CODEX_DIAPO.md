@@ -210,8 +210,8 @@ sur la slide de lecture) :
 - 2024 : doublement des franchises et participations forfaitaires (DREES).
 - Novembre 2024 : la dépense du forfait journalier n'est plus enregistrée dans
   DAMIR (changement d'enregistrement, cause non documentée).
-- Juillet 2025 : 262 M€ de prestations hospitalières nouvelles sans libellé dans
-  la nomenclature locale (codes 4243–4247).
+- (Retiré le 21/09 : les 262 M€ de codes nouveaux 4243–4247 de juillet 2025
+  relèvent des transports, pas de l'hospitalisation.)
 - 2026 : la réforme citée par Charlène — à nommer avec elle ; laisser une ligne
   « 2026 : … (à préciser) ».
 

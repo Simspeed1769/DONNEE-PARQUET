@@ -134,8 +134,9 @@ calendrier de bascule des établissements, pas une épidémiologie.
   facturation retardées en 2024, 700 M€ liquidés fin septembre 2024 pour les
   premiers mois) ; forfait journalier non enregistré depuis 11/2024 ;
   doublement des franchises et participations forfaitaires en 2024 (DREES) ;
-  262 M€ de prestations hospitalières nouvelles (codes 4243–4247) depuis
-  juillet 2025 ; la réforme 2026 qu'elle cite, à identifier.
+  la réforme 2026 qu'elle cite, à identifier. (Les 262 M€ de codes nouveaux
+  4243–4247 apparus en juillet 2025 relèvent de l'enveloppe soins de ville et
+  de la plage des transports : ils ne concernent pas l'hospitalisation.)
 - **« Calculer le taux de liquidation 2023 et 2024, puis appliquer une
   déformation ROC. »** Faisable, mais pas depuis DAMIR : la cadence AMO est
   stable, la déformation est propre au canal complémentaire. Ce que l'étude
@@ -200,8 +201,11 @@ calendrier de bascule des établissements, pas une épidémiologie.
   ticket modérateur calculé fait +54 % : les mesures « volume », « moyenne
   par unité » et « ticket modérateur » ne se lisent pas sur ce poste au-delà
   de 2023.
-- Les codes 4243–4247 restent classés « retirés » ; ils portent 262 M€ d'AMO
-  en 2025.
+- Les codes 4243–4247 restent classés « retirés » et rangés par plage sous
+  Hospitalisation ; ils portent 262 M€ d'AMO en 2025, mais leur enveloppe
+  (soins de ville à 91 %), leur plage (42xx, celle des transports) et leur
+  profil (83 % de patients en ALD) désignent plutôt des transports. À
+  reclasser dès que le dictionnaire 2025 donne leur libellé.
 
 ## Annexe — montants par périmètre, 2022–2025 (M€)
 

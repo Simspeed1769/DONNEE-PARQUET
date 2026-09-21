@@ -270,10 +270,13 @@ Montants en M€, année de soins.
   relève mécaniquement la part AMO de l'ensemble.
 - **Codes 4243 à 4247** : classés « retirés » par la nomenclature locale, ils
   apparaissent pour des soins à partir de juillet 2025 (premier flux en novembre
-  2025) : 262 M€ d'AMO en cinq mois, part AMO 96 %, enveloppe hospitalière. Ce
-  sont des prestations **nouvelles**, à identifier avec le dictionnaire 2025 ;
-  selon leur nature, une partie de la baisse apparente d'autres postes en 2025
-  pourrait être un transfert de codes.
+  2025) : 262 M€ d'AMO en cinq mois, part AMO 96 %. Contrairement à ce qui
+  était écrit ici le 18/09, leur enveloppe est **soins de ville** (91 %), leur
+  plage est celle des transports (42xx) et 83 % des montants concernent des
+  patients en ALD : ce sont vraisemblablement des codes de transport nouveaux,
+  rangés sous Hospitalisation par défaut de classement. Ils ne touchent pas
+  les postes de l'étude ; ils peuvent expliquer une partie de la baisse
+  apparente du poste Transport en 2025.
 
 **Correction du message d'hier.** Le taux de prise en charge AMO de l'ensemble
 ne « passe » pas de 85,5 % à 87,6 % au sens d'une meilleure couverture : hors
