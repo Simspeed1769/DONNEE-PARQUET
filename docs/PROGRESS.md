@@ -1533,16 +1533,16 @@ aurait coûté plus qu'il n'aurait préservé.
 
 ## v9 · Hospitalisation — sous-postes lisibles, recherche de prestation, part des dépassements
 
-- **Le poste « Hospitalisation Sejour » se lit en quatre sous-postes** au lieu d'un
-  seul : Séjours MCO et HAD (2111, 2113…) · Rééducation et prix de journée (SSR,
-  SMR, psy : anciens codes 2211, 2339 et nouveaux codes 2110, 3145–3156, réunis le
-  21/09 pour que la courbe reste continue à travers la réforme de 2024 et que
-  l'encart « Liquidation du périmètre » réponde : 89,0 % → 84,4 %) · Dialyse ·
-  Autres séjours et forfaits. L'anesthésie (1323, 95 % du poste
-  « Honoraires ») a son sous-poste. Reclassement dans `prs_nat_transco.csv`
-  seul, 151 lignes ; le cache des métadonnées suit l'empreinte du fichier.
-  Motif : la réforme du financement des SMR (flux au 01/01/2024) éclate la
-  rééducation sur 14 codes, introuvables à l'œil parmi 139.
+- **La rééducation devient un poste à part, « Hospitalisation Reeducation »**,
+  somme de deux sous-postes : Rééducation SMR (codes 2024 : 2110, 3145–3156) et
+  Séjours au prix de journée (SSR, psy, ancien mode : 2211, 2339). Le poste donne
+  le bloc du diapo d'un clic (reste après AMO 523, 546, 593, 633 M€), chaque
+  sous-poste montre la bascule de codes de 2024, et l'encart « Liquidation du
+  périmètre » répond sur le poste (89,0 % → 84,4 %). Le poste « Hospitalisation
+  Sejour » ne contient plus que les séjours ordinaires (MCO et HAD, dialyse,
+  autres) : ses totaux d'avant le 21/09 (15 998 M€ en 2023) se retrouvent en
+  additionnant les deux postes. L'anesthésie (1323, 95 % du poste « Honoraires »)
+  a son sous-poste. Reclassement dans `prs_nat_transco.csv` seul.
 - **Une recherche dans le sélecteur de prestations** (`MultiSelect`, prop
   `searchable`, CSS dédié `multiSelect.css`) : code ou mot du libellé, sans
   accent ni casse, chaque mot tapé devant se retrouver ; décompte « n sur N »,

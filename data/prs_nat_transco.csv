@@ -728,7 +728,7 @@
 2107;TRANSPORT SEANCE DIALYSE;Hospitalisation;Transport;Transport
 2108;SUPPLEMENT TRANSPORT 2;Hospitalisation;Transport;Transport
 2109;SUPPLEMENT TRANSPORT SEANCES;Hospitalisation;Transport;Transport
-2110;FRAIS SEJOUR SSR;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
+2110;FRAIS SEJOUR SSR;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
 2111;FRAIS D HEBERGEMENT ET ENVIRONNEMENT EN GHS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2112;FRAIS DE SEJOUR SUPPLEMENTAIRE AU GHS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2113;GROUPE HOMOGENE DE TARIFS;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
@@ -794,7 +794,7 @@
 2196;SUPPLEMENT RADIOTHERAPIE PEDIATRIQUE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2209;FORFAIT CONSULTATION URGENCE HOPITAL MILIEU NUIT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2210;FORFAIT CONSULTATION URGENCE HOPITAL NUIT;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
-2211;FRAIS DE SEJOUR;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
+2211;FRAIS DE SEJOUR;Hospitalisation;Hospitalisation Reeducation;Séjours au prix de journée (SSR, psy, ancien mode)
 2212;MAJORATION PMSI;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2213;FRAIS DE SEJOUR IME;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 2217;FORFAIT CONSULTATION URGENCE HOPITAL;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
@@ -840,7 +840,7 @@
 2331;RADIUMTHERAPIE ET CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2334;SEANCE D  HEMODIALYSE;Hospitalisation;Hospitalisation Sejour;Dialyse
 2336;FORFAIT POUR CONSULTATION EN CENTRE MEDICO-PSYCHO PEDAGOGIQUE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
-2339;AUTRES FORFAITS DIVERS (Y COMPRIS NUTRITION ENTERALE A DOMICILE);Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
+2339;AUTRES FORFAITS DIVERS (Y COMPRIS NUTRITION ENTERALE A DOMICILE);Hospitalisation;Hospitalisation Reeducation;Séjours au prix de journée (SSR, psy, ancien mode)
 2341;SUPPLEMENT AU FORFAIT CHIMIOTHERAPIE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2343;FORFAIT POUR GARDE DE NUIT OU SAMEDI APRES MIDI EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 2344;FORFAIT DE GARDE NUIT ET FERIE EN ETABLIS. PRIVE;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
@@ -856,17 +856,17 @@
 2424;INTERVENTION + ANESTHESIE AVEC NUITEE;Hospitalisation;Hospitalisation Sejour;Séjours MCO et HAD
 2425;FORFAIT IVG POUR 24H SUPPLEMENTAIRES - SECTEUR PRIVE/SECTEUR PUBLIC;Hospitalisation;Hospitalisation Supplements;Hospitalisation Supplements
 3101;FORFAIT STRUCTURE PS AUXILIAIRES;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
-3145;AMPUTATIONS;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3146;AFF RESPIRATOIRES MAX FACIAL ET ORL;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3147;DEVIATION RACHIS;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3148;AFF NEURO MUSC OU RHUM INFLAM;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3149;SOINS PALLIATIFS;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3151;REEDUC ABDO ET PERINEOSPHINCTERIENNE;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3152;RACHIS NON OPERE;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3153;RACHIS OPERE;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3154;REEDUC AFFECTIONS VASCULAIRES;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3155;MEMBRE INFERIEUR OPERE ;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
-3156;MEMBRE INFERIEUR NON OPERE ;Hospitalisation;Hospitalisation Sejour;Rééducation et prix de journée (SSR, SMR, psy)
+3145;AMPUTATIONS;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3146;AFF RESPIRATOIRES MAX FACIAL ET ORL;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3147;DEVIATION RACHIS;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3148;AFF NEURO MUSC OU RHUM INFLAM;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3149;SOINS PALLIATIFS;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3151;REEDUC ABDO ET PERINEOSPHINCTERIENNE;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3152;RACHIS NON OPERE;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3153;RACHIS OPERE;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3154;REEDUC AFFECTIONS VASCULAIRES;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3155;MEMBRE INFERIEUR OPERE ;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
+3156;MEMBRE INFERIEUR NON OPERE ;Hospitalisation;Hospitalisation Reeducation;Rééducation SMR (codes 2024)
 3337;FORFAIT FAUSSE COUCHE VILLE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 3338;FORFAIT FAUSSE COUCHE VILLE SANS ÉCHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits
 3339;FORFAIT FAUSSE COUCHE ETABLISSEMENT AVEC ECHOGRAPHIE;Hospitalisation;Hospitalisation Sejour;Autres séjours et forfaits

@@ -192,6 +192,11 @@ calendrier de bascule des établissements, pas une épidémiologie.
 
 ## 7. Limites de l'outil rencontrées en chemin (à traiter plus tard, pas maintenant)
 
+*Mise à jour du 21/09 : la rééducation est désormais un poste de l'outil,
+« Hospitalisation Reeducation », avec ses deux sous-postes ; le poste
+« Hospitalisation Sejour » correspond aux « séjours hors SMR » de ce rapport.
+L'encart de liquidation répond sur le poste Rééducation (89,0 % → 84,4 %).*
+
 - `POST /api/reliability` répond « Aucun règlement sur ce périmètre » pour
   des prestations nées en 2024 (codes SMR) : la cadence n'est observée que
   jusqu'en 2023.
