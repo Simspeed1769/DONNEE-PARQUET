@@ -13,7 +13,8 @@ import type { ChartForm } from "../charts/buildOption";
 import type { Reading } from "../explore/model";
 import type { SeriesScope } from "../explore/seriesScope";
 
-export type BreakdownKey = "grand_post" | "post" | "sub_post" | "service" | "region" | "age" | "sex" | "year";
+export type BreakdownKey = "grand_post" | "post" | "sub_post" | "service" | "region" | "age" | "sex"
+  | "sector" | "facility" | "year";
 
 /** `field` est ce qu'on envoie à `/api/explore` ; `null` pour Année, qui
  *  n'est pas une dimension du serveur — elle demande simplement de ne pas en
@@ -26,6 +27,8 @@ export const BREAKDOWNS: Array<{ key: BreakdownKey; label: string; field: string
   { key: "region", label: "Région", field: "region" },
   { key: "age", label: "Âge", field: "age" },
   { key: "sex", label: "Sexe", field: "sex" },
+  { key: "sector", label: "Secteur", field: "sector" },
+  { key: "facility", label: "Type d’établissement", field: "facility" },
   { key: "year", label: "Année", field: null },
 ];
 

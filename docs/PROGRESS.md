@@ -1604,3 +1604,43 @@ aurait coûté plus qu'il n'aurait préservé.
   formule sur les composantes d'une ligne mais un rapport au total du
   périmètre, que `explore.py` ne sait pas évaluer. Le découpage par `sector`
   donne les modalités côte à côte et suffit.
+
+## Panorama « Secteur », et le poste allégé (23/09/2026)
+
+Suite immédiate de la phase précédente : la comparaison public / privé demandée
+à l'écran du panorama, et le ménage dans `data/`.
+
+- **Lecture « Secteur » dans le panorama** (`panorama/slides.ts`,
+  `damir/PanoramaSection.tsx`). Même facture que la lecture « Sexe » : courbe,
+  barres, camembert à sujet unique, classement sur la part du public dès que
+  plusieurs sujets sont comparés. Le privé porte la teinte principale.
+- **Une réserve qui ne se cache jamais.** La lecture affiche toujours, sous
+  « Ce que ce graphique ne montre pas » : les séjours des hôpitaux publics ne
+  sont pas dans Open DAMIR, parce que financés par dotation ils ne sont pas
+  facturés ; le public visible est fait d'actes externes, de pharmacie
+  hospitalière et de forfaits. Un camembert à deux parts dirait le contraire si
+  on le laissait seul.
+- **`sector` et `facility` dans le Comparateur** (`compareModel.ts`) et dans la
+  barre de portée (`seriesScope.ts`), avec leurs deux jetons.
+- **Libellés corrigés.** `_mapped_label` ne connaissait pas les deux nouvelles
+  dimensions : l'écran affichait « 1 » et « 2 » au lieu de « Public » et
+  « Privé ».
+- **Recherche dans les listes à choix multiples** (`MultiSelect.tsx`) : filtre
+  insensible aux accents, compteur « n sur N ». Les 1 342 prestations
+  n'étaient pas parcourables autrement.
+- **Le cube brut retiré du poste.** 2,02 Go que plus aucune requête ne lit ;
+  `data/` passe de 1,8 Go à 413 Mo. Trois endroits de `repository.py`
+  l'exigeaient encore alors que seul le compact est lu — le contrôle de
+  démarrage, la résolution du cube, et `cube_size_bytes` qui mesurait un
+  fichier absent. Corrigés, avec un test
+  (`test_cube_resolution_without_raw_cube`).
+- **`METADATA_SCHEMA` 5 → 6.** `cube_size_bytes` change de sens : il mesure le
+  cube réellement lu. Sans ce passage, le cache disque continuait d'annoncer
+  1 091 Mo — le piège que la constante documente, et qui a resservi.
+- **Ordre à ne pas refaire** : le cube brut a été supprimé avant que le code
+  sache vivre sans lui. Onze tests sont tombés et le serveur n'a plus démarré.
+  Le contrôle d'abord, la suppression ensuite.
+- Vérifié : 105 tests verts, `npm run build` vert, lecture « Secteur » relue à
+  l'écran sur `Hospitalisation Sejour` — privé 95,7 % → 95,8 % de part AMO,
+  public 56,5 % → 64,6 %.
+

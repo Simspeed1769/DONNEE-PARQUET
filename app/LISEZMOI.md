@@ -242,7 +242,7 @@ l'application** : `data/` est en lecture seule au runtime.
 
 | Fichier | Taille | Lignes | Colonnes |
 |---|---:|---:|---|
-| `cube_damir.parquet` | 2,02 Go | **94 214 107** | source de vérité, grain mois ; reconstruit le 23/09/2026 par `tools/build_cube_damir.py` avec `sec`, `ete_typ`, `mdt`, `taa` |
+| `cube_damir.parquet` | *absent* | — | le cube brut au grain mois. Il a servi le 23/09/2026 à fabriquer le compact, puis a été retiré du poste : 2,02 Go que plus aucune requête ne lit. `tools/build_cube_damir.py` le refabrique au besoin. |
 | `cube_damir_compact.parquet` | 226 Mo | **9 834 443** | 18 : `soi_ann, prs_nat, asu_nat, age, sexe, region, env, ald, sec, ete_typ, rem, bse, dep, depas, qte, rem_ref, bse_ref, rem_neg` |
 | `cube_delais.parquet` | 13 Mo | **1 821 268** | 5 : `soi_ann, soi_moi, flx, prs_nat, rem` |
 | `cube_reglement.parquet` | 116 Mo | **5 526 096** | 15 : `flx_ann`, puis les dimensions du compact **sauf `sec` et `ete_typ`**, que son script ne produit pas encore — d'où `ignore_facility=True` dans `cube_where` |
@@ -252,6 +252,10 @@ l'application** : `data/` est en lecture seule au runtime.
 | `mortalite/mortalite_core.parquet` | 19 Ko | **5 160** | 13, dont `is_detail`, `cause_order` |
 | `prs_nat_transco.csv` | 152 Ko | **1 630** | `prs_nat, libelle, grand_poste, poste, sous_poste` |
 | `pathologies/regions.geojson` | 1,1 Mo | — | fond de carte régional |
+
+`data/` pèse **413 Mo** dans cet état. L'application n'ouvre jamais le cube
+brut : toutes ses vues sont posées sur le compact. Le brut ne sert qu'aux
+scripts de `tools/`, hors runtime.
 
 Le cube compact porte **1 342 prestations distinctes** et les années
 **2014 → 2025** ; `/api/meta` filtre ensuite aux années dont le remboursement
@@ -313,8 +317,9 @@ les 144 cellules d'outre-mer où l'âge n'est pas détaillé au-delà de 90 ans.
 ### `DamirRepository` — la couche d'accès
 
 Instancié une fois au démarrage du module (`main.py:410`). Il lève une
-`RuntimeError` si `cube_damir.parquet` ou `prs_nat_transco.csv` manquent —
-ce sont les deux seules données obligatoires. **Tout le reste est optionnel** et
+`RuntimeError` si `prs_nat_transco.csv` manque, ou si **aucun** des deux cubes
+DAMIR n'est là — le compact suffit, et c'est le cas courant : un poste préparé
+par `preparer.bat` n'a que lui. Ce sont les seules données obligatoires. **Tout le reste est optionnel** et
 dégrade proprement : `has_delays`, `has_pathologies`, `has_csp`,
 `has_population`, `has_mortality`. Une base absente fait disparaître son écran,
 elle ne fait pas tomber l'application.
@@ -979,7 +984,7 @@ En-tête : amorce « Open DAMIR · Assurance Maladie », titre, puce de statut
 
 #### Panorama (`damir/PanoramaSection.tsx`, 511 l.)
 
-Une prestation, **quatre lectures**, et c'est le modèle (`panorama/slides.ts`)
+Une prestation, **six lectures**, et c'est le modèle (`panorama/slides.ts`)
 qui décide des formes offertes :
 
 | Lecture | Formes | Conditions |
@@ -988,6 +993,8 @@ qui décide des formes offertes :
 | **Territoire** | Carte · Classement | toujours (hauteur fixée à 520 px pour les deux) |
 | **Âge** | Barres · Barres horizontales · Courbe | toujours |
 | **Sexe** | Courbe · Barres · Camembert | Camembert : mesure additive uniquement. À plusieurs sujets, la lecture bascule en classement sur la part des femmes |
+| **Secteur** | Courbe · Barres · Camembert | Camembert : mesure additive uniquement. À plusieurs sujets, classement sur la part du public. Porte toujours la réserve sur les séjours publics absents de la base (entrée le 23/09/2026) |
+| **Décomposition** | Cascade · Par poste | Mesure additive en montant uniquement : ce qui n'est pas un `quantité × coût` n'est pas offert, pas même grisé |
 
 Ce que ces lectures portent en plus du tracé :
 
@@ -1004,7 +1011,7 @@ Ce que ces lectures portent en plus du tracé :
   X % » ; « région non renseignée : X % du total, sans territoire à
   cartographier » ; la Corse dessinée mais non renseignée ; l'avertissement de
   l'indice de spécialisation quand on compare.
-- **Navigation aux flèches** ← / → entre les quatre lectures (désactivée dans
+- **Navigation aux flèches** ← / → entre les lectures (désactivée dans
   les champs de saisie).
 - **Carte cliquable** : un clic sur un territoire restreint l'écran à cette
   région (uniquement à sujet unique, et jamais sur les codes hors carte).

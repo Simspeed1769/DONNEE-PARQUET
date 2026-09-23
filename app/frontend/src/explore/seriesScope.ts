@@ -55,6 +55,8 @@ const BREAKDOWN_FIELD: Record<string, keyof AdvancedFilters> = {
   insurance: "insurances",
   envelope: "envelopes",
   ald: "ald",
+  sector: "sectors",
+  facility: "facilities",
 };
 
 /** Les champs qu'une série tirée d'une modalité peut redéfinir. Une série
@@ -65,6 +67,7 @@ export function lockedField(breakdown: string, free: boolean): keyof AdvancedFil
 
 const ARRAY_FIELDS = [
   "service_codes", "sexes", "ages", "regions", "insurances", "envelopes",
+  "sectors", "facilities",
 ] as const;
 
 /** Le périmètre de départ d'une série tirée d'une modalité.
@@ -198,6 +201,18 @@ export function scopeChips(scope: SeriesScope | undefined, base: AdvancedFilters
     chips.push({
       field: "envelopes",
       text: named(scope.envelopes, metadata.envelopes, (count) => `${count} enveloppes`),
+    });
+  }
+  if (differs("sectors") && scope.sectors.length) {
+    chips.push({
+      field: "sectors",
+      text: named(scope.sectors, metadata.sectors, (count) => `${count} secteurs`),
+    });
+  }
+  if (differs("facilities") && scope.facilities.length) {
+    chips.push({
+      field: "facilities",
+      text: named(scope.facilities, metadata.facilities, (count) => `${count} types d’établissement`),
     });
   }
   if (scope.ald !== base.ald && scope.ald !== null) {

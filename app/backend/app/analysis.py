@@ -339,7 +339,8 @@ def _metric(key: str) -> Metric:
 def _mapped_label(dimension: str, value: Any, regions: dict[int, str]) -> str:
     if value is None:
         return "Non renseigné"
-    if dimension not in ("sex", "age", "region", "insurance", "envelope", "ald"):
+    if dimension not in ("sex", "age", "region", "insurance", "envelope", "ald",
+                         "sector", "facility"):
         return str(value)
     try:
         code = int(value)
@@ -349,6 +350,7 @@ def _mapped_label(dimension: str, value: Any, regions: dict[int, str]) -> str:
         "sex": SEXES, "age": AGES, "region": regions,
         "insurance": INSURANCES, "envelope": ENVELOPES,
         "ald": {0: "Hors ALD", 1: "ALD"},
+        "sector": SECTORS, "facility": FACILITIES,
     }
     return mappings[dimension].get(code, f"Code {code}")
 

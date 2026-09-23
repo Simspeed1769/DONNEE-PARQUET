@@ -48,7 +48,7 @@ import { bridgeOption, posteOption } from "./decompositionChart";
 import { COVID_YEARS, HORIZON, assumptions, prolong, trendObstacle } from "./trend";
 import { trendOption } from "./trendChart";
 
-export type SlideKey = "evolution" | "territory" | "age" | "sex" | "decomposition";
+export type SlideKey = "evolution" | "territory" | "age" | "sex" | "sector" | "decomposition";
 
 /** Toutes les formes que le panorama sait dessiner, tous écrans confondus.
  *  Chaque lecture n'en expose qu'un sous-ensemble, et seulement celles que sa
@@ -89,6 +89,12 @@ const MALE = "1";
  *  Le bleu et l'orange plutôt que le rose et le bleu : la paire est séparable
  *  pour les deutéranopies, et ne rejoue pas le cliché. */
 const SEX_COLOR: Record<string, number> = { [FEMALE]: 0, [MALE]: 1 };
+
+/** Les deux secteurs, dans l'ordre où on les lit : le privé d'abord, parce
+ *  qu'il porte l'essentiel de ce que la base contient, le public ensuite. */
+const PRIVATE = "2";
+const PUBLIC = "1";
+const SECTOR_COLOR: Record<string, number> = { [PRIVATE]: 0, [PUBLIC]: 1 };
 
 function pct(value: number | null, digits = 1): string {
   if (value === null || !Number.isFinite(value)) return "—";
@@ -140,6 +146,7 @@ export function buildSlides(input: SlideInput): Slide[] {
     territorySlide(input),
     ageSlide(input),
     sexSlide(input),
+    sectorSlide(input),
     decompositionSlide(input),
   ];
   if (input.measure.key === "coverage") {
@@ -671,7 +678,150 @@ function sexSlide({ response, measure, tokens, consolidatedThrough,
   };
 }
 
-/* — 5. Décomposition : d'où vient l'écart — */
+/* — 5. Secteur : public et privé en regard — */
+
+/** Ce qui vient d'un établissement public, ce qui vient du privé.
+ *
+ *  La lecture répond à une question que le reste de l'écran ne peut pas poser :
+ *  la base contient-elle du public sur ce périmètre, et combien. Elle ne dit
+ *  pas que le public y est représenté fidèlement — les séjours des hôpitaux
+ *  publics, financés par dotation, ne sont pas facturés à l'Assurance Maladie
+ *  et ne figurent donc pas dans la source. La réserve accompagne toujours le
+ *  graphique, parce qu'un camembert à deux parts laisserait croire l'inverse.
+ */
+function sectorSlide({ response, measure, tokens, consolidatedThrough,
+                       completenessByYear, forms }: SlideInput): Slide {
+  const comparing = response.subjects.length > 1;
+  const { years } = response;
+  const lead = response.subjects[0];
+  const share = measure.additive;
+  const period = `${years[0]}–${years.at(-1)}`;
+
+  const known = facetOrder(response.reference.sector ?? [], "sector", measure, response.components)
+    .sort((left, right) => (SECTOR_COLOR[left.key] ?? 9) - (SECTOR_COLOR[right.key] ?? 9));
+
+  const caveats = [
+    consolidationCaveat(years, consolidatedThrough, completenessByYear),
+    "Les séjours des hôpitaux publics ne sont pas dans Open DAMIR : financés par dotation, "
+    + "ils ne donnent pas lieu à facturation. Le public visible ici est fait d'actes et de "
+    + "consultations externes, de pharmacie hospitalière et de forfaits.",
+  ].filter((item): item is string => item !== null);
+
+  /* — Plusieurs sujets : un classement sur la part du public — */
+  if (comparing && share) {
+    const rows: ChartRow[] = response.subjects.map((subject, index) => {
+      const bucket = (subject.facets.sector ?? []).find((item) => item.key === PUBLIC);
+      return {
+        key: subject.key,
+        label: subject.label,
+        colorIndex: index,
+        values: [bucket ? shareOf(bucket, subject, measure, response.components) : null],
+      };
+    });
+    const ranked = [...rows].sort((left, right) => (right.values[0] ?? 0) - (left.values[0] ?? 0));
+    const offered: FormOption[] = [{ key: "rank", label: "Classement" }];
+
+    return {
+      key: "sector",
+      nav: "Secteur",
+      title: `Part du public dans le ${lower(measure.label)}, ${period}`,
+      caveats,
+      forms: offered,
+      form: "rank",
+      option: sexCompareOption({
+        rows, tokens, modalityLabel: "public", axisTitle: "Sujets comparés",
+      }),
+      table: {
+        columns: ["Sujet", "Part du public"],
+        rows: ranked.map((row) => [row.label, formatValue(row.values[0], "percent")]),
+      },
+      ariaLabel: `Part du public par sujet, ${measure.label}`,
+      height: Math.max(300, 100 + rows.length * 42),
+      empty: rows.length ? null : "Aucun sujet à comparer.",
+    };
+  }
+
+  /* — Un sujet : les deux secteurs, sous la forme choisie — */
+
+  const rows: ChartRow[] = known.map((reference) => {
+    const bucket = (lead?.facets.sector ?? []).find((item) => item.key === reference.key);
+    return {
+      key: reference.key,
+      label: reference.label,
+      colorIndex: SECTOR_COLOR[reference.key] ?? 0,
+      values: bucket
+        ? yearValues(bucket, measure, response.components, years.length)
+        : years.map(() => null),
+    };
+  });
+
+  const offered: FormOption[] = [
+    { key: "line", label: "Courbe" },
+    { key: "bar", label: "Barres" },
+    // Le camembert partage un tout : deux valeurs d'un taux n'en font pas un.
+    ...(share ? [{ key: "pie" as const, label: "Camembert" }] : []),
+  ];
+  const form = resolveForm(offered, forms.sector);
+  const empty = rows.length ? null : "Le secteur n'est pas renseigné sur ce périmètre.";
+
+  if (form === "pie") {
+    const slices = known.map((reference) => {
+      const bucket = (lead?.facets.sector ?? []).find((item) => item.key === reference.key);
+      return {
+        key: reference.key,
+        label: reference.label,
+        colorIndex: SECTOR_COLOR[reference.key] ?? 0,
+        value: bucket ? periodValue(bucket, measure, response.components) : null,
+      };
+    });
+    const total = slices.reduce((sum, slice) => sum + (slice.value ?? 0), 0);
+
+    return {
+      key: "sector",
+      nav: "Secteur",
+      title: `Partage du ${lower(measure.label)} entre public et privé, ${period}`,
+      caveats,
+      forms: offered,
+      form,
+      option: pieOption({ slices, tokens, kind: measure.kind, centerLabel: `cumul ${period}` }),
+      table: {
+        columns: ["Secteur", measure.label, "Part"],
+        rows: slices.map((slice) => [
+          slice.label,
+          formatValue(slice.value, measure.kind),
+          formatValue(total ? (100 * (slice.value ?? 0)) / total : null, "percent"),
+        ]),
+      },
+      ariaLabel: `Partage entre public et privé, ${measure.label}, ${period}`,
+      height: 430,
+      empty,
+    };
+  }
+
+  return {
+    key: "sector",
+    nav: "Secteur",
+    title: `${measure.label} selon le secteur, ${period}`,
+    caveats,
+    forms: offered,
+    form,
+    option: seriesOption({
+      years, rows, kind: measure.kind, tokens, consolidatedThrough, form: form as SeriesForm,
+    }),
+    table: {
+      columns: ["Année", ...rows.map((row) => row.label)],
+      rows: years.map((year, index) => [
+        String(year),
+        ...rows.map((row) => formatValue(row.values[index], measure.kind)),
+      ]),
+    },
+    ariaLabel: `${measure.label} par secteur et par année`,
+    height: 430,
+    empty,
+  };
+}
+
+/* — 6. Décomposition : d'où vient l'écart — */
 
 /** L'écart entre la première et la dernière année, séparé en ses deux causes.
  *

@@ -60,5 +60,20 @@ class StartupTests(unittest.TestCase):
         self.assertTrue(str(response.path).endswith("regions.geojson"))
 
 
+    def test_cube_resolution_without_raw_cube(self) -> None:
+        """Le cube brut peut manquer : un poste préparé par `preparer.bat` n'a
+        que le compact. La résolution ne doit pas exiger un fichier absent."""
+        from pathlib import Path
+        from unittest.mock import patch
+
+        from app import repository as repo_module
+
+        absent = repo_module.CUBE_PATH.with_name("cube_qui_n_existe_pas.parquet")
+        self.assertFalse(absent.exists())
+        with patch.object(repo_module, "CUBE_PATH", absent):
+            resolved = repo_module.DamirRepository._resolve_cube()
+        self.assertEqual(resolved, repo_module.COMPACT_CUBE_PATH)
+
+
 if __name__ == "__main__":
     unittest.main()

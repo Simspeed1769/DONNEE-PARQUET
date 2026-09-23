@@ -159,7 +159,10 @@ DISK_CACHE = DiskCache(CACHE_DIR)
 #: la liste des mesures est dans les métadonnées, donc dans le cache.
 #: Et le 23/09/2026 en ajoutant les dimensions `sector` et `facility` : la
 #: liste des dimensions et leurs modalités y sont aussi.
-METADATA_SCHEMA = 5
+#: 23/09/2026 : `cube_size_bytes` mesure désormais le cube réellement lu, et
+#: non plus le cube brut, qui peut être absent. Le champ change de sens, donc
+#: le schéma change.
+METADATA_SCHEMA = 6
 
 
 def _build_metadata() -> dict[str, Any]:

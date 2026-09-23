@@ -170,7 +170,11 @@ class DamirRepository:
     """Small read-only query layer shared by the prototype endpoints."""
 
     def __init__(self) -> None:
-        missing = [path.name for path in (CUBE_PATH, TRANSCO_PATH) if not path.exists()]
+        # Le cube brut n'est pas exigé quand le compact est là : un poste
+        # préparé par `preparer.bat`, ou recevant un cube déjà agrégé, n'a que
+        # le second. Il en faut un des deux, pas les deux.
+        required = [TRANSCO_PATH] if COMPACT_CUBE_PATH.exists() else [CUBE_PATH, TRANSCO_PATH]
+        missing = [path.name for path in required if not path.exists()]
         if missing:
             raise RuntimeError(f"Fichier(s) DAMIR introuvable(s) : {', '.join(missing)}")
 
@@ -280,6 +284,11 @@ class DamirRepository:
         """
         if not COMPACT_CUBE_PATH.exists():
             return CUBE_PATH
+        # Le cube brut peut manquer : sur un poste préparé par `preparer.bat`,
+        # seul le compact est installé. Comparer les dates exigerait alors un
+        # fichier absent, et l'application ne démarrerait pas.
+        if not CUBE_PATH.exists():
+            return COMPACT_CUBE_PATH
         if COMPACT_CUBE_PATH.stat().st_mtime < CUBE_PATH.stat().st_mtime:
             print(
                 f"[DAMIR] {COMPACT_CUBE_PATH.name} est plus ancien que {CUBE_PATH.name} : "
@@ -346,7 +355,10 @@ class DamirRepository:
             "grand_posts": [str(row["label"]) for row in grand_posts],
             "regions": regions,
             "source": "Open DAMIR · Assurance Maladie",
-            "cube_size_bytes": CUBE_PATH.stat().st_size,
+            # La taille de ce qui est réellement lu, pas celle d'un fichier qui
+            # peut ne pas être là : un poste n'ayant que le cube compact
+            # n'aurait rien à mesurer.
+            "cube_size_bytes": self.cube_path.stat().st_size,
         }
 
 

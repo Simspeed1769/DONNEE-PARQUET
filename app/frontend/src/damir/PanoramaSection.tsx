@@ -57,8 +57,8 @@ const MAX_SUBJECTS = 8;
  *  que le serveur balaie toutes les facettes en une passe (`_facet_rows`) —
  *  interroger facette par facette relirait le cube autant de fois. La règle du
  *  point 3.5 est tenue : aucune requête supplémentaire. */
-const FACETS = ["region", "age", "sex", "grand_post"];
-const SLIDE_KEYS: SlideKey[] = ["evolution", "territory", "age", "sex", "decomposition"];
+const FACETS = ["region", "age", "sex", "sector", "grand_post"];
+const SLIDE_KEYS: SlideKey[] = ["evolution", "territory", "age", "sex", "sector", "decomposition"];
 
 /** Les formes retenues par lecture voyagent dans l'adresse : une analyse
  *  partagée doit revenir sous la forme sous laquelle elle a été composée. */
@@ -562,7 +562,8 @@ export function PanoramaSection({
 function navLabel(key: SlideKey): string {
   return key === "evolution" ? "Évolution"
     : key === "territory" ? "Territoire"
-    : key === "age" ? "Âge" : "Sexe";
+    : key === "age" ? "Âge"
+    : key === "sector" ? "Secteur" : "Sexe";
 }
 
 
