@@ -48,3 +48,7 @@ docs/sources/*.docx
 
 # Tranches annuelles de flux (1,5 Go), source locale optionnelle de tools/etude_roc_hospitalisation.py
 cube_parts3/
+
+# Dossiers de travail des agents et versions intermédiaires du diapo
+.tmp_roc_v*/
+old_ppt/
