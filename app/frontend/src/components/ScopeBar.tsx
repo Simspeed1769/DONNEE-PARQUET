@@ -132,6 +132,8 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
 
   const extraCount = (draft.insurances.length ? 1 : 0)
     + (draft.envelopes.length ? 1 : 0)
+    + (draft.sectors.length ? 1 : 0)
+    + (draft.facilities.length ? 1 : 0)
     + (draft.ald === null ? 0 : 1);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(defaultFilters(metadata));
@@ -280,6 +282,20 @@ export function ScopeBar({ metadata, value, onChange, children, hidden = [], loa
                   options={metadata.envelopes.map((item) => ({ value: item.code, label: item.label }))}
                   value={draft.envelopes}
                   onChange={(envelopes) => patch({ envelopes })}
+                />
+                <MultiSelect
+                  label="Secteur"
+                  emptyLabel="Tous"
+                  options={metadata.sectors.map((item) => ({ value: item.code, label: item.label }))}
+                  value={draft.sectors}
+                  onChange={(sectors) => patch({ sectors })}
+                />
+                <MultiSelect
+                  label="Type d’établissement"
+                  emptyLabel="Tous"
+                  options={metadata.facilities.map((item) => ({ value: item.code, label: item.label }))}
+                  value={draft.facilities}
+                  onChange={(facilities) => patch({ facilities })}
                 />
                 <label className="scope-bar-drawer-field">
                   <span>Motif d’exonération</span>

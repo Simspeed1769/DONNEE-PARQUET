@@ -41,6 +41,8 @@ export function defaultAdvancedFilters(metadata: Metadata): AdvancedFilters {
     regions: [],
     insurances: [],
     envelopes: [],
+    sectors: [],
+    facilities: [],
     ald: null,
   };
 }
@@ -86,7 +88,7 @@ export function AdvancedFilterPanel({
     if (!hidden.has("grand_post") && !disabled.has("grand_post") && value.grand_post) count += 1;
     if (!hidden.has("post") && !disabled.has("post") && value.post) count += 1;
     if (!hidden.has("sub_post") && !disabled.has("sub_post") && value.sub_post) count += 1;
-    (["service_codes", "sexes", "ages", "regions", "insurances", "envelopes"] as FilterField[]).forEach((field) => {
+    (["service_codes", "sexes", "ages", "regions", "insurances", "envelopes", "sectors", "facilities"] as FilterField[]).forEach((field) => {
       const values = value[field];
       if (!hidden.has(field) && !disabled.has(field) && Array.isArray(values) && values.length) count += 1;
     });
@@ -119,6 +121,10 @@ export function AdvancedFilterPanel({
         return <MultiSelect key={field} label="Nature d’assurance" options={metadata.insurances.map((item) => ({ value: item.code, label: item.label }))} value={value.insurances} onChange={(insurances) => patch({ insurances })} disabled={disabled.has("insurances")} />;
       case "envelopes":
         return <MultiSelect key={field} label="Enveloppe" options={metadata.envelopes.map((item) => ({ value: item.code, label: item.label }))} value={value.envelopes} onChange={(envelopes) => patch({ envelopes })} disabled={disabled.has("envelopes")} />;
+      case "sectors":
+        return <MultiSelect key={field} label="Secteur" options={metadata.sectors.map((item) => ({ value: item.code, label: item.label }))} value={value.sectors} onChange={(sectors) => patch({ sectors })} disabled={disabled.has("sectors")} />;
+      case "facilities":
+        return <MultiSelect key={field} label="Type d’établissement" options={metadata.facilities.map((item) => ({ value: item.code, label: item.label }))} value={value.facilities} onChange={(facilities) => patch({ facilities })} disabled={disabled.has("facilities")} />;
       case "ald":
         return <ChoiceSelect key={field} label="Motif d’exonération" disabled={disabled.has("ald")} value={value.ald === null ? "" : String(value.ald)} onChange={(next) => patch({ ald: next === "" ? null : Number(next) })} options={[{ value: "", label: "Tous les motifs" }, { value: "1", label: "ALD" }, { value: "0", label: "Hors ALD" }]} />;
       default:
@@ -130,7 +136,7 @@ export function AdvancedFilterPanel({
    *  s'attend à les lire, simplement plus bas. */
   const FOLD_ORDER: FilterField[] = [
     "grand_post", "post", "sub_post", "service_codes",
-    "sexes", "ages", "regions", "insurances", "envelopes", "ald",
+    "sexes", "ages", "regions", "insurances", "envelopes", "sectors", "facilities", "ald",
   ];
   const extraFields = <>{FOLD_ORDER.filter((field) => folded.has(field)).map(fieldNode)}</>;
 
@@ -166,12 +172,14 @@ export function AdvancedFilterPanel({
         /> : null}
       </section> : null}
 
-      {(["sexes", "ages", "regions", "insurances", "envelopes", "ald"] as FilterField[])
+      {(["sexes", "ages", "regions", "insurances", "envelopes", "sectors", "facilities", "ald"] as FilterField[])
         .some((field) => !hidden.has(field) && !folded.has(field)) ? <section className="filter-section">
         <div className="filter-section-title"><strong>Population</strong></div>
         {!hidden.has("sexes") && !folded.has("sexes") ? <MultiSelect label="Sexe" options={metadata.sexes.map((item) => ({ value: item.code, label: item.label }))} value={value.sexes} onChange={(sexes) => patch({ sexes })} disabled={disabled.has("sexes")} /> : null}
         {!hidden.has("ages") && !folded.has("ages") ? <MultiSelect label="Tranche d’âge" options={metadata.ages.map((item) => ({ value: item.code, label: item.label }))} value={value.ages} onChange={(ages) => patch({ ages })} disabled={disabled.has("ages")} /> : null}
         {!hidden.has("regions") && !folded.has("regions") ? <MultiSelect label="Territoire" options={metadata.regions.map((item) => ({ value: item.code, label: item.label }))} value={value.regions} onChange={(regions) => patch({ regions })} disabled={disabled.has("regions")} /> : null}
+        {!hidden.has("sectors") && !folded.has("sectors") ? <MultiSelect label="Secteur" options={metadata.sectors.map((item) => ({ value: item.code, label: item.label }))} value={value.sectors} onChange={(sectors) => patch({ sectors })} disabled={disabled.has("sectors")} /> : null}
+        {!hidden.has("facilities") && !folded.has("facilities") ? <MultiSelect label="Type d’établissement" options={metadata.facilities.map((item) => ({ value: item.code, label: item.label }))} value={value.facilities} onChange={(facilities) => patch({ facilities })} disabled={disabled.has("facilities")} /> : null}
         {folded.size ? null : extraFields}
       </section> : null}
 

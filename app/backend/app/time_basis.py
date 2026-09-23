@@ -59,7 +59,7 @@ def time_basis(repo: QueryRepository, payload: FilterPayload) -> dict[str, Any]:
     ]
 
     if repo.has_settlement:
-        where, params = cube_where(payload, year_column="c.flx_ann")
+        where, params = cube_where(payload, year_column="c.flx_ann", ignore_facility=True)
         selects = ", ".join(f"{METRICS[key].expression}::DOUBLE AS {key}" for key in MEASURES)
         rows = repo.query(
             f"""SELECT c.flx_ann AS year, {selects}

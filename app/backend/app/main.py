@@ -157,7 +157,9 @@ DISK_CACHE = DiskCache(CACHE_DIR)
 #: point 3.4 : l'entrée en cache locale ne le contenait pas, et rien ne l'aurait
 #: signalé. Même chose le 20/09/2026 en ajoutant la mesure `excess_share` :
 #: la liste des mesures est dans les métadonnées, donc dans le cache.
-METADATA_SCHEMA = 4
+#: Et le 23/09/2026 en ajoutant les dimensions `sector` et `facility` : la
+#: liste des dimensions et leurs modalités y sont aussi.
+METADATA_SCHEMA = 5
 
 
 def _build_metadata() -> dict[str, Any]:

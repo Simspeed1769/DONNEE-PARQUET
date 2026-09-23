@@ -114,11 +114,13 @@ export function defaultFilters(metadata: Metadata): AdvancedFilters {
     regions: [],
     insurances: [],
     envelopes: [],
+    sectors: [],
+    facilities: [],
     ald: null,
   };
 }
 
-const ARRAY_FIELDS = ["service_codes", "sexes", "ages", "regions", "insurances", "envelopes"] as const;
+const ARRAY_FIELDS = ["service_codes", "sexes", "ages", "regions", "insurances", "envelopes", "sectors", "facilities"] as const;
 
 export function filtersFromSearch(metadata: Metadata, params: URLSearchParams, prefix = ""): AdvancedFilters {
   const defaults = defaultFilters(metadata);

@@ -33,6 +33,29 @@ ENVELOPES = {
     4: "Prévention", 5: "FNAS", 7: "C2S / AME / ACS",
     8: "Alsace-Moselle", 9: "Inconnue", 98: "Sans objet",
 }
+#: Secteur de l'exécutant (`PRS_PPU_SEC`). Attention à la lecture : « Privé »
+#: ne veut pas dire « clinique privée ». La modalité couvre toute la médecine
+#: de ville — pharmacies, dentistes, opticiens, libéraux — et pèse pour cette
+#: raison 95 % de la dépense. Pour distinguer la clinique de l'hôpital, c'est
+#: le type d'établissement qu'il faut lire, pas le secteur.
+SECTORS = {1: "Public", 2: "Privé", 9: "Non renseigné"}
+#: Type d'établissement exécutant (`ETE_TYP_SNDS`). C'est cette variable qui
+#: sépare réellement l'hôpital public de la clinique privée.
+#:
+#: La modalité 99 confond deux choses : « soin de ville, aucun établissement »
+#: et « établissement inconnu ». La modalité 0, qui devrait porter le premier
+#: cas, n'est jamais employée dans les données. Son libellé le dit donc, plutôt
+#: que d'appeler « non renseigné » ce qui est à 99 % de la médecine de ville.
+#: Mesure à l'appui : docs/MESURE_SECTEUR_PUBLIC_PRIVE.md.
+FACILITIES = {
+    0: "Ambulatoire, secteur libéral",
+    1: "Hôpital public",
+    2: "Privé non lucratif (PSPH)",
+    3: "Ex-PJP au budget global",
+    4: "Clinique privée à but lucratif",
+    6: "Privé non lucratif",
+    99: "Hors établissement ou non renseigné",
+}
 
 
 #: Les mesures dont la lecture dépend de l'unité de la prestation — un volume,
@@ -205,6 +228,8 @@ DIMENSIONS = {
     "insurance": ("Nature d’assurance", "c.asu_nat"),
     "envelope": ("Enveloppe", "c.env"),
     "ald": ("Motif d’exonération", "c.ald"),
+    "sector": ("Secteur", "c.sec"),
+    "facility": ("Type d’établissement", "c.ete_typ"),
 }
 
 
@@ -220,6 +245,8 @@ class FilterPayload(BaseModel):
     regions: list[int] = Field(default_factory=list)
     insurances: list[int] = Field(default_factory=list)
     envelopes: list[int] = Field(default_factory=list)
+    sectors: list[int] = Field(default_factory=list)
+    facilities: list[int] = Field(default_factory=list)
     ald: int | None = Field(default=None, ge=0, le=1)
 
 
@@ -236,6 +263,7 @@ def _in_filter(clauses: list[str], params: list[Any], column: str, values: list[
 
 
 def cube_where(payload: FilterPayload, *, ignore_sex: bool = False,
+               ignore_facility: bool = False,
                exclude_base_less: bool = False, year_column: str = "c.soi_ann") -> tuple[str, list[Any]]:
     """Le filtre commun aux deux cubes.
 
@@ -243,6 +271,14 @@ def cube_where(payload: FilterPayload, *, ignore_sex: bool = False,
     soins (`c.soi_ann`, cube principal) et celle en année de règlement
     (`c.flx_ann`, cube des règlements) : les dimensions, elles, sont les mêmes
     de part et d'autre, donc les filtres de population valent sur les deux.
+
+    Sauf deux. `ignore_facility` existe parce que le secteur et le type
+    d'établissement sont entrés dans le cube principal le 23/09/2026 et **pas**
+    dans le cube des règlements, que son script ne sait pas encore produire
+    avec ces colonnes. Les appeler sur ce cube ferait échouer la requête. Les
+    deux appels en année de règlement passent donc `ignore_facility=True` ; le
+    jour où `build_cube_reglement.py` ajoutera les deux dimensions, ce drapeau
+    disparaît et rien d'autre ne bouge.
     """
     if payload.start_year > payload.end_year:
         raise ValueError("La période sélectionnée est invalide.")
@@ -263,6 +299,9 @@ def cube_where(payload: FilterPayload, *, ignore_sex: bool = False,
     _in_filter(clauses, params, "c.region", payload.regions)
     _in_filter(clauses, params, "c.asu_nat", payload.insurances)
     _in_filter(clauses, params, "c.env", payload.envelopes)
+    if not ignore_facility:
+        _in_filter(clauses, params, "c.sec", payload.sectors)
+        _in_filter(clauses, params, "c.ete_typ", payload.facilities)
     if payload.ald is not None:
         clauses.append("c.ald = ?")
         params.append(payload.ald)
@@ -334,7 +373,8 @@ def analysis_metadata(repo: QueryRepository, regions: dict[int, str]) -> dict[st
 def _analysis_metadata_cached(repo: QueryRepository, regions_key: tuple[tuple[int, str], ...]) -> dict[str, Any]:
     regions = dict(regions_key)
     values: dict[str, list[int]] = {}
-    for key, column in (("sexes", "sexe"), ("ages", "age"), ("insurances", "asu_nat"), ("envelopes", "env")):
+    for key, column in (("sexes", "sexe"), ("ages", "age"), ("insurances", "asu_nat"),
+                        ("envelopes", "env"), ("sectors", "sec"), ("facilities", "ete_typ")):
         values[key] = [int(row["code"]) for row in repo.query(
             f"SELECT DISTINCT {column} AS code FROM cube WHERE {column} IS NOT NULL ORDER BY 1"
         )]
@@ -358,6 +398,8 @@ def _analysis_metadata_cached(repo: QueryRepository, regions_key: tuple[tuple[in
         "ages": [{"code": code, "label": AGES.get(code, f"Âge {code}")} for code in values["ages"]],
         "insurances": [{"code": code, "label": INSURANCES.get(code, f"Assurance {code}")} for code in values["insurances"]],
         "envelopes": [{"code": code, "label": ENVELOPES.get(code, f"Enveloppe {code}")} for code in values["envelopes"]],
+        "sectors": [{"code": code, "label": SECTORS.get(code, f"Secteur {code}")} for code in values["sectors"]],
+        "facilities": [{"code": code, "label": FACILITIES.get(code, f"Type {code}")} for code in values["facilities"]],
         "has_delays": repo.has_delays,
         "has_settlement": repo.has_settlement,
     }

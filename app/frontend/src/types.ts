@@ -69,6 +69,8 @@ export type Metadata = {
   ages: CodeOption[];
   insurances: CodeOption[];
   envelopes: CodeOption[];
+  sectors: CodeOption[];
+  facilities: CodeOption[];
   has_delays: boolean;
   has_settlement: boolean;
   reliability: Reliability;
@@ -87,6 +89,8 @@ export type AdvancedFilters = {
   regions: number[];
   insurances: number[];
   envelopes: number[];
+  sectors: number[];
+  facilities: number[];
   ald: number | null;
 };
 

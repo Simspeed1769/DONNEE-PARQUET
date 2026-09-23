@@ -194,7 +194,7 @@ def _payment_axis_rows(repo: QueryRepository, payload: ExploreRequest,
     lui, on retombe sur le cube des délais, qui ne connaît que le remboursement.
     """
     if repo.has_settlement:
-        where, params = cube_where(payload, year_column="c.flx_ann")
+        where, params = cube_where(payload, year_column="c.flx_ann", ignore_facility=True)
         base_less_params = list(POSTES_SANS_BASE) * 2
         return repo.query(
             f"""

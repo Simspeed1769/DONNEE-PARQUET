@@ -21,6 +21,20 @@ data/cube_damir_compact.parquet
 data/cube_reglement.parquet
 data/.cache/
 
+# Chantier de reconstruction du cube (tools/build_cube_damir.py) : parts
+# intermédiaires et cubes candidats. Le .gitattributes envoie tout *.parquet
+# vers Git LFS — sans ces lignes, 2,4 Go de parts partiraient au dépôt.
+data/.cube_parts_v2/
+data/cube_damir_v2.parquet
+data/cube_damir_compact_v2.parquet
+
+# Le cube reconstruit le 23/09/2026 ne passe pas par le dépôt : il se transfère
+# à la main. `data/cube_damir.parquet` reste versionné dans son état d'origine,
+# et ses modifications locales sont masquées par
+#     git update-index --skip-worktree data/cube_damir.parquet
+# (une règle .gitignore serait sans effet sur un fichier déjà suivi).
+# Pour revoir ces modifications un jour : --no-skip-worktree.
+
 # Sources brutes CSP : elles servent à reconstruire les données, mais ne sont
 # pas nécessaires pour exécuter DAMIR (les fichiers csp_core*.parquet le sont).
 data/csp/raw/
@@ -52,3 +66,6 @@ cube_parts3/
 # Dossiers de travail des agents et versions intermédiaires du diapo
 .tmp_roc_v*/
 old_ppt/
+
+# Sauvegarde de l' ancien cube, gardee le temps de valider le nouveau.
+data/cube_damir_ancien.parquet

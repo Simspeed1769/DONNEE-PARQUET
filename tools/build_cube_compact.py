@@ -3,13 +3,25 @@
 Le cube brut `cube_damir.parquet` porte 45 millions de lignes au grain
 mois × prestation × population. Aucune requête de l'application n'utilise le
 mois de soins : l'axe temporel est l'année, et le seul écran qui raisonne en
-mois — la cadence de liquidation — lit le cube des délais, pas celui-ci. Les
-colonnes `bse` et `nb` ne sont lues nulle part non plus.
+mois — la cadence de liquidation — lit le cube des délais, pas celui-ci. La
+colonne `nb` n'est lue nulle part non plus.
 
 Agréger le mois ramène le cube à 5,8 millions de lignes, soit huit fois moins,
 sans perdre aucune information exploitable par l'interface. Les requêtes
 d'exploration passent d'environ deux secondes à quelques centaines de
 millisecondes.
+
+Deux clés d'établissement sont entrées le 23/09/2026 : `sec` (secteur public
+/ privé) et `ete_typ` (type d'établissement exécutant). Elles multiplient le
+nombre de lignes par environ 1,34 — mesuré, pas estimé. Les deux autres
+variables d'établissement du cube brut, `mdt` et `taa`, restent dehors : la
+mesure d'étape A les a trouvées trop peu renseignées pour qu'un écran s'y
+appuie sans mentir (`docs/MESURE_SECTEUR_PUBLIC_PRIVE.md`).
+
+`bse` est de nouveau conservée : l'étude hospitalisation en a besoin pour
+décomposer la part AMO en « remboursé ÷ base » × « base ÷ dépense », et c'est
+cette décomposition qui montre que la dérive de l'anesthésie vient des
+dépassements et non d'un changement de règle.
 
 Le fichier brut n'est jamais modifié : il reste la source de vérité, et ce
 script peut être relancé à volonté après une mise à jour des données.
@@ -30,9 +42,10 @@ SOURCE = ROOT / "data" / "cube_damir.parquet"
 TARGET = ROOT / "data" / "cube_damir_compact.parquet"
 
 # Clés conservées : tout ce sur quoi l'interface sait filtrer ou découper.
-KEYS = ("soi_ann", "prs_nat", "asu_nat", "age", "sexe", "region", "env", "ald")
+KEYS = ("soi_ann", "prs_nat", "asu_nat", "age", "sexe", "region", "env", "ald",
+        "sec", "ete_typ")
 # Mesures additives : leur somme sur les mois d'une année est exacte.
-MEASURES = ("rem", "dep", "depas", "qte", "rem_ref", "bse_ref", "rem_neg")
+MEASURES = ("rem", "bse", "dep", "depas", "qte", "rem_ref", "bse_ref", "rem_neg")
 
 
 def build(source: Path, target: Path) -> None:
@@ -104,7 +117,13 @@ def verify(source: Path, target: Path) -> bool:
 
 
 if __name__ == "__main__":
-    build(SOURCE, TARGET)
-    if not verify(SOURCE, TARGET):
-        TARGET.unlink(missing_ok=True)
+    # Deux arguments facultatifs : ils permettent de fabriquer le compact d'un
+    # cube candidat sans toucher au compact en place, le temps des contrôles.
+    #     python tools/build_cube_compact.py data/cube_damir_v2.parquet \
+    #                                        data/cube_damir_compact_v2.parquet
+    source = Path(sys.argv[1]) if len(sys.argv) > 1 else SOURCE
+    target = Path(sys.argv[2]) if len(sys.argv) > 2 else TARGET
+    build(source, target)
+    if not verify(source, target):
+        target.unlink(missing_ok=True)
         sys.exit(1)

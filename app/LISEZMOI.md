@@ -242,10 +242,10 @@ l'application** : `data/` est en lecture seule au runtime.
 
 | Fichier | Taille | Lignes | Colonnes |
 |---|---:|---:|---|
-| `cube_damir.parquet` | 1,09 Go | ~45 M | source de vérité, grain mois |
-| `cube_damir_compact.parquet` | 117 Mo | **5 762 787** | 15 : `soi_ann, prs_nat, asu_nat, age, sexe, region, env, ald, rem, dep, depas, qte, rem_ref, bse_ref, rem_neg` |
+| `cube_damir.parquet` | 2,02 Go | **94 214 107** | source de vérité, grain mois ; reconstruit le 23/09/2026 par `tools/build_cube_damir.py` avec `sec`, `ete_typ`, `mdt`, `taa` |
+| `cube_damir_compact.parquet` | 226 Mo | **9 834 443** | 18 : `soi_ann, prs_nat, asu_nat, age, sexe, region, env, ald, sec, ete_typ, rem, bse, dep, depas, qte, rem_ref, bse_ref, rem_neg` |
 | `cube_delais.parquet` | 13 Mo | **1 821 268** | 5 : `soi_ann, soi_moi, flx, prs_nat, rem` |
-| `cube_reglement.parquet` | 116 Mo | **5 526 096** | 15 : `flx_ann`, puis les mêmes dimensions et mesures que le cube compact |
+| `cube_reglement.parquet` | 116 Mo | **5 526 096** | 15 : `flx_ann`, puis les dimensions du compact **sauf `sec` et `ete_typ`**, que son script ne produit pas encore — d'où `ignore_facility=True` dans `cube_where` |
 | `pathologies/effectifs.parquet` | 49 Mo | **5 796 000** | 16, dont `ntop` (patients), `npop` (population de référence), `dept`, `cla_age_5` |
 | `csp/csp_core.parquet` | 12,7 Mo | **696 159** | 20, dont `effectif` (pondéré IPONDI), `population_reference` |
 | `population/population.parquet` | 93 Ko | **33 480** | 9, dont `age_90_plus_agrege` |
@@ -392,10 +392,21 @@ renvoie `None` / `null`, jamais 0.**
 | `gross_reimbursed` | Remboursé hors régularisations | Avancé | ✅ | — |
 | `negative_share` | Part des régularisations | Avancé | ❌ | — |
 
-### Les onze dimensions de découpage
+### Les treize dimensions de découpage
 
 `year` · `grand_post` · `post` · `sub_post` · `service` · `region` · `age` ·
-`sex` · `insurance` · `envelope` · `ald`.
+`sex` · `insurance` · `envelope` · `ald` · `sector` · `facility`.
+
+Les deux dernières sont entrées le 23/09/2026. `sector` (`c.sec`) sépare public
+et privé, `facility` (`c.ete_typ`) donne le type d'établissement exécutant.
+
+> ⚠️ **« Privé » n'est pas « clinique privée ».** La modalité privée de
+> `sector` couvre toute la médecine de ville — pharmacies, dentistes,
+> opticiens, libéraux — et pèse pour cette seule raison 95 % de la dépense.
+> C'est `facility` qui distingue l'hôpital de la clinique. Et sa modalité
+> « Hors établissement ou non renseigné » (74 % de la dépense) confond le soin
+> de ville et le manquant : la modalité 0 du SNDS, qui devrait porter le
+> premier cas, n'est jamais employée. Mesure : `docs/MESURE_SECTEUR_PUBLIC_PRIVE.md`.
 
 La hiérarchie des prestations n'est **pas** un arbre chargé d'un coup : c'est
 une cascade de filtres. `GET /api/options?grand_post=&post=&sub_post=` renvoie

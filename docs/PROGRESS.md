@@ -1561,3 +1561,46 @@ aurait coûté plus qu'il n'aurait préservé.
 - Neuf tableaux et quatre graphiques natifs : séries 2022–2025, lecture par poste, rééducation répartie sur deux slides, réserves et hypothèses de maturité visibles.
 - Définitions DAMIR/ROC, ruptures réglementaires, correction de la lecture de part AMO globale et protocole Groupama intégrés ; réforme 2026 et chiffrage ROC restent à préciser.
 - Contrôles : réouverture python-pptx, intégrité OOXML et classeurs embarqués, polices et masques conservés, dix slides rendues dans PowerPoint sans débordement détecté ; build vert, **103 tests verts**.
+
+## Secteur public / privé — mesure, cubes, interface (23/09/2026)
+
+- **Étape A — mesuré avant de reconstruire.** `tools/mesure_secteur.py`, en
+  lecture seule sur un mois de flux (juin 2024, 37,4 M lignes, 30 s). Réponse à
+  la question du client : **92,5 % des séjours facturés dans DAMIR viennent
+  d'établissements privés, 7,1 % du public**, et ces 7,1 % ne sont pas des
+  séjours mais du ticket modérateur, du forfait journalier, du régime local
+  d'Alsace-Moselle et du SSR. L'affirmation de
+  `ETUDE_HOSPITALISATION_PAR_POSTE.md` est confirmée, avec un chiffre à la
+  place d'une déduction. Détail : `docs/MESURE_SECTEUR_PUBLIC_PRIVE.md`.
+- **Étape B — cubes reconstruits.** `tools/build_cube_damir.py` lit les 132
+  `.csv.gz` **directement**, sans les parquets annuels intermédiaires (46 Go
+  économisés). Cube brut 45,2 → 94,2 M lignes (2,02 Go), compact 5,8 → 9,8 M
+  (226 Mo), `bse` de nouveau conservée. Contrôlé par
+  `tools/verifier_cube_v2.py` : totaux identiques année par année et grand
+  poste par grand poste sur les neuf mesures, 1 342 prestations et 2014-2025
+  intactes.
+- **Étape C — exposé dans l'application.** Dimensions `sector` et `facility`,
+  filtres correspondants dans le panneau avancé et le tiroir de la barre de
+  portée, état dans l'URL. `METADATA_SCHEMA` 4 → 5.
+- **Décisions** : les quatre variables entrent dans le cube brut, **deux
+  seulement dans le compact**. `MDT_TYP_COD` est « sans objet » sur 82 % des
+  séjours et `ETE_IND_TAA` ne cible pas les ACE comme le descriptif l'annonce —
+  trop peu renseignées pour qu'un écran s'y appuie. Le prompt de mission
+  proposait `PRS_PPU_SEC` + `MDT_TYP_COD` ; la mesure impose
+  `PRS_PPU_SEC` + `ETE_TYP_SNDS`.
+- **Corrigé au passage** : la correspondance des colonnes du cube, fausse sur
+  cinq lignes dans le prompt (`dep` vient de `FLT_PAI_MNT` et non
+  `PRS_PAI_MNT`, `nb` est un `count(*)`, `rem_ref`/`bse_ref` sont filtrés sur
+  `PRS_REM_TYP = 0`). Les scripts d'ingestion existaient, hors dépôt, dans
+  `..\Annee_Damir\`.
+- **Trouvé** : le schéma d'Open DAMIR change d'une année sur l'autre — trois
+  schémas sur 11 ans (56, 55 puis 57 colonnes), et `A202301.csv.gz` porte des
+  lignes plus courtes que son en-tête. D'où `null_padding=true` et un contrôle
+  des en-têtes avant tout calcul.
+- **Écarté** : le cube des règlements ne reçoit pas les deux dimensions — son
+  script ne sait pas les produire et le fichier est absent du poste. Les deux
+  appels en année de règlement passent `ignore_facility=True`.
+- **Non fait** : une mesure « part du secteur » dédiée. Ce n'est pas une
+  formule sur les composantes d'une ligne mais un rapport au total du
+  périmètre, que `explore.py` ne sait pas évaluer. Le découpage par `sector`
+  donne les modalités côte à côte et suffit.
